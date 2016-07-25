@@ -37,6 +37,11 @@ class RTMedia_Transcoder_Admin {
 		// enqueue scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
 
+		if ( class_exists( 'RTMedia' ) ) {
+			//add_filter( 'attachment_fields_to_edit', array( $this, 'edit_video_thumbnail' ), 11, 2 );
+			//add_filter( 'attachment_fields_to_save', array( $this, 'save_video_thumbnail' ), 11, 1 );
+		}
+
 		$this->transcoder_handler = new RTMedia_Transcoder_Handler();
 
 		if ( is_admin() ) {
@@ -66,7 +71,6 @@ class RTMedia_Transcoder_Admin {
 
 		wp_enqueue_style( 'rtmedia-transcoder-admin-css', RTMEDIA_TRANSCODER_URL . 'admin/css/rtmedia-transcoder-admin.css', array(), RTMEDIA_TRANSCODER_VERSION );
 		wp_register_script( 'rtmedia-transcoder-main', RTMEDIA_TRANSCODER_URL . 'admin/js/rtmedia-transcoder-admin.js', array( 'jquery' ), RTMEDIA_TRANSCODER_VERSION, true );
-		wp_localize_script( 'rtmedia-transcoder-main', 'rtmedia_transcoder_admin_ajax', $admin_ajax );
 		wp_localize_script( 'rtmedia-transcoder-main', 'rtmedia_transcoder_admin_url', admin_url() );
 		wp_localize_script( 'rtmedia-transcoder-main', 'rtmedia_transcoder_admin_url', admin_url() );
 
@@ -94,5 +98,99 @@ class RTMedia_Transcoder_Admin {
 		}
 
 		return $form;
+	}
+
+	function edit_video_thumbnail_wp( $form_fields, $post ) {
+		//die($post->post_mime_type);
+		if ( isset( $post->post_mime_type ) ) {
+			$media_type = explode( '/', $post->post_mime_type );
+			if ( is_array( $media_type ) && 'video' === $media_type[0] ) {
+				$media_id         = $post->ID;
+				$thumbnail_array  = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
+
+				$featured_img_src = "";
+				if (has_post_thumbnail( $post->ID ) ){
+					$image = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'single-post-thumbnail' );
+				  	$featured_img_src = $image[0];
+				}
+
+				$video_thumb_html = '';
+				if ( is_array( $thumbnail_array ) ) {
+					$video_thumb_html .= '<ul> ';
+
+					foreach ( $thumbnail_array as $key => $thumbnail_src ) {
+						$checked = false;
+						if ( $featured_img_src == $thumbnail_src ){
+							$checked = true;
+						}
+						$count   = $key + 1;
+						$video_thumb_html .= '<li style="width: 150px;display: inline-block;">
+								<label for="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '">
+								<input type="radio" ' . esc_attr( $checked ) . ' id="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '" value="' . esc_url( $thumbnail_src ) . '" name="rtmedia-thumbnail" />
+								<img src=" ' . esc_url( $thumbnail_src ) . '" style="max-height: 120px;max-width: 120px; vertical-align: middle;" />
+								</label></li> ';
+					}
+
+					$video_thumb_html .= '  </ul>';
+					$form_fields['rtmedia_video_thumbnail'] = array(
+						'label' => 'Video Thumbnails',
+						'input' => 'html',
+						'html'  => $video_thumb_html,
+					);
+				}
+			}
+		}
+		return $form_fields;
+	}
+
+	function edit_video_thumbnail( $form_fields, $post ) {
+		return $form_fields;
+		if ( isset( $post->post_mime_type ) ) {
+			$media_type = explode( '/', $post->post_mime_type );
+			if ( is_array( $media_type ) && 'video' === $media_type[0] ) {
+				$media_id         = $post->ID;
+				$thumbnail_array  = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
+				$rtmedia_model    = new RTMediaModel();
+				$rtmedia_media    = $rtmedia_model->get( array( 'media_id' => $media_id ) );
+				$video_thumb_html = '';
+				if ( is_array( $thumbnail_array ) ) {
+					$video_thumb_html .= '<ul> ';
+
+					foreach ( $thumbnail_array as $key => $thumbnail_src ) {
+						$checked = checked( $thumbnail_src, $rtmedia_media[0]->cover_art, false );
+						$count   = $key + 1;
+						$video_thumb_html .= '<li style="width: 150px;display: inline-block;">
+								<label for="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '">
+								<input type="radio" ' . esc_attr( $checked ) . ' id="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '" value="' . esc_url( $thumbnail_src ) . '" name="rtmedia-thumbnail" />
+								<img src=" ' . esc_url( $thumbnail_src ) . '" style="max-height: 120px;max-width: 120px; vertical-align: middle;" />
+								</label></li> ';
+					}
+
+					$video_thumb_html .= '  </ul>';
+					$form_fields['rtmedia_video_thumbnail'] = array(
+						'label' => 'Video Thumbnails',
+						'input' => 'html',
+						'html'  => $video_thumb_html,
+					);
+				}
+			}
+		}
+
+		return $form_fields;
+	}
+
+	function save_video_thumbnail( $post ) {
+		$rtmedia_thumbnail = filter_input( INPUT_POST, 'rtmedia-thumbnail', FILTER_SANITIZE_STRING );
+		$id = filter_input( INPUT_POST, 'ID', FILTER_SANITIZE_NUMBER_INT );
+		if ( isset( $rtmedia_thumbnail ) ) {
+			$rtmedia_model = new RTMediaModel();
+			$model         = new RTMediaModel();
+			$media         = $model->get( array( 'media_id' => $id ) );
+			$media_id      = $media[0]->id;
+			$rtmedia_model->update( array( 'cover_art' => $rtmedia_thumbnail ), array( 'media_id' => $id ) );
+			update_activity_after_thumb_set( $media_id );
+		}
+
+		return $post;
 	}
 }
