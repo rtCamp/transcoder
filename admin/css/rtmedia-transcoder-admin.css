@@ -1,0 +1,61 @@
+#rtmedia-transcoding-usage strong {
+    display: inline-block;
+    min-width: 120px;
+}
+
+#rtmedia-transcoding-usage p {
+    overflow: hidden;
+}
+
+.transcoding-used, .transcoding-remaining {
+    background: #7AD03A;
+    float: right;
+    height: 12px;
+    margin-top: 3px;
+    width: 12px;
+}
+
+.transcoding-remaining {
+    background: #dedede;
+}
+
+#rtprogressbar {
+    background: #dedede;
+    height: 10px;
+    position: relative;
+}
+
+#rtprogressbar div {
+    background: #7AD03A;
+    height: 10px;
+    left: 0;
+    position: absolute;
+}
+
+.rtm-transcoder-setting-container {
+    background-color: #fff;
+    float: left;
+    margin-top: 10px;
+    padding: 10px 20px;
+    width: 73.2%;
+}
+
+.rtm-transcoder-sidebar {
+    float: right;
+    width: 20%;
+}
+
+.rtm-transcoder-plan-table {
+    border-collapse: collapse;
+    clear: none;
+}
+
+.rtm-transcoder-plan-table th,
+.rtm-transcoder-plan-table td {
+    border: 1px solid #e7e7e7;
+}
+
+.rtm-transcoder-plan-table th {
+    font-size: 13px;
+    font-weight: 600;
+}
