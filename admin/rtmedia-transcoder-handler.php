@@ -109,10 +109,9 @@ class RTMedia_Transcoder_Handler {
 			preg_match( '/video|audio/i', $single['type'], $type_array );
 
 			if ( preg_match( '/video|audio/i', $single['type'], $type_array ) && ! in_array( $single['type'], array( 'audio/mp3' ) ) && ! in_array( $type, $not_allowed_type ) ) {
-				$options             = rtmedia_get_site_option( 'rtmedia-options' );
-				$options_vedio_thumb = $options['general_videothumbs'];
-				if ( '' === $options_vedio_thumb ) {
-					$options_vedio_thumb = 3;
+				$options_video_thumb = $this->get_thumbnails_required( $media_ids[ $key ] );
+				if ( '' === $options_video_thumb ) {
+					$options_video_thumb = 5;
 				}
 
 				$job_type = 'video';
@@ -128,7 +127,7 @@ class RTMedia_Transcoder_Handler {
 					'force'       => 0,
 					//'size'        => filesize( $single['file'] ),
 					'formats'     => ( true === $autoformat ) ? ( ( 'video' === $type_array[0] ) ? 'mp4' : 'mp3' ) : $autoformat,
-					'thumb_count' => $options_vedio_thumb,
+					'thumb_count' => $options_video_thumb,
 					'rt_id'       => $media_ids[ $key ],
 				);
 				$args = array(
@@ -144,7 +143,7 @@ class RTMedia_Transcoder_Handler {
 							'force'       => 0,
 							//'size'        => filesize( $single['file'] ),
 							'formats'     => ( true === $autoformat ) ? ( ( 'video' === $type_array[0] ) ? 'mp4' : 'mp3' ) : $autoformat,
-							'thumb_count' => $options_vedio_thumb,
+							'thumb_count' => $options_video_thumb,
 				        ),
 				);
 
@@ -194,9 +193,9 @@ class RTMedia_Transcoder_Handler {
 		preg_match( '/video|audio/i', $metadata['mime_type'], $type_array );
 
 		if ( preg_match( '/video|audio/i', $metadata['mime_type'], $type_array ) && ! in_array( $metadata['mime_type'], array( 'audio/mp3' ) ) && ! in_array( $type, $not_allowed_type ) ) {
-			$options_vedio_thumb = 3;
-			if ( '' === $options_vedio_thumb ) {
-				$options_vedio_thumb = 3;
+			$options_video_thumb = $this->get_thumbnails_required( $attachment_id );
+			if ( '' === $options_video_thumb ) {
+				$options_video_thumb = 5;
 			}
 
 			$job_type = 'video';
@@ -219,7 +218,7 @@ class RTMedia_Transcoder_Handler {
 						'force'       => 0,
 						//'size'        => filesize( $single['file'] ),
 						'formats'     => ( true === $autoformat ) ? ( ( 'video' === $type_array[0] ) ? 'mp4' : 'mp3' ) : $autoformat,
-						'thumb_count' => $options_vedio_thumb,
+						'thumb_count' => $options_video_thumb,
 			        ),
 			);
 
@@ -237,6 +236,16 @@ class RTMedia_Transcoder_Handler {
 			$this->update_usage( $this->api_key );
 		}
 		//}
+	}
+
+	public function get_thumbnails_required( $attachment_id = "" ){
+
+		$thumb_count = get_option('number_of_thumbs');
+
+		$thumb_count = apply_filters( 'rt_media_total_video_thumbnails', $thumb_count, $attachment_id );
+
+		return $thumb_count > 10 ? 10 : $thumb_count;
+
 	}
 
 	public function bypass_video_audio( $flag, $file ) {
@@ -484,13 +493,13 @@ class RTMedia_Transcoder_Handler {
 		new RTMediaAdminWidget( 'rtmedia-transcoding-usage', esc_html__( 'Transcoding Usage', 'rtmedia-transcoder' ), $content );
 	}
 
-	public function add_media_thumbnails( $post_id ) {
+	public function add_media_thumbnails( $post_array ) {
 		$post_info              = get_post( $post_id );
 		$post_date_string       = new DateTime( $post_info->post_date );
 		$post_date              = $post_date_string->format( 'Y-m-d G:i:s' );
 		$post_date_thumb_string = new DateTime( $post_info->post_date );
 		$post_date_thumb        = $post_date_thumb_string->format( 'Y/m/' );
-		$post_thumbs            = get_post_meta( $post_id, 'rtmedia_transcode_response', true );
+		$post_thumbs            = $post_array;
 		$post_thumbs_array      = maybe_unserialize( $post_thumbs );
 		$largest_thumb_size     = 0;
 		if( $post_thumbs_array['job_for'] == 'rtmedia' ){
@@ -522,9 +531,50 @@ class RTMedia_Transcoder_Handler {
 		if( $post_thumbs_array['job_for'] == 'rtmedia' ){
 			update_activity_after_thumb_set( $media_id );
 		}
-		update_post_meta( $post_id, 'rtmedia_media_thumbnails', $upload_thumbnail_array );
+		//update_post_meta( $post_id, 'rtmedia_media_thumbnails', $upload_thumbnail_array );
+		update_post_meta( $post_id, '_rt_media_job_id', $post_thumbs_array['job_id'] );
+		update_post_meta( $post_id, '_rt_media_source', $post_thumbs_array['job_for'] );
+		update_post_meta( $post_id, '_rt_media_thumbnails', $upload_thumbnail_array );
 
 		return $largest_thumb;
+	}
+
+	public function add_transcoded_files( $file_post_array, $attachment_id ){
+		$transcoded_files = false;
+		if ( isset( $file_post_array ) && is_array( $file_post_array ) && ( count( $file_post_array > 0 ) ) ) {
+			foreach ( $file_post_array as $key => $format ){
+				if ( is_array( $format ) && ( count( $format > 0 ) ) ) {
+					foreach ( $format as $each => $file ){
+						if(isset( $file )){
+							$download_url                   = urldecode( urldecode( $file ) );
+							$new_wp_attached_file_pathinfo 	= pathinfo( $download_url );
+							$post_mime_type                	= 'mp4' === $new_wp_attached_file_pathinfo['extension'] ? 'video/mp4' : 'audio/mp3';
+							try {
+								$file_bits = file_get_contents( $download_url );
+							} catch ( Exception $e ) {
+								$flag = $e->getMessage();
+							}
+							if ( $file_bits ) {
+
+								//add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
+								$upload_info = wp_upload_bits( $new_wp_attached_file_pathinfo['basename'], null, $file_bits );
+
+								$transcoded_files[ $key ][] = $upload_info['url'];
+							} else {
+								$flag = esc_html__( 'Could not read file.', 'rtmedia-transcoder' );
+								error_log( $flag );
+							}
+						}
+					}
+				}
+			}
+		}
+		if ( !empty( $transcoded_files ) ) {
+			update_post_meta( $attachment_id, '_rt_media_transcoded_files', $transcoded_files );
+
+			$filesd = get_post_meta( $attachment_id, '_rt_media_transcoded_files', true );
+			print_r( maybe_unserialize( $filesd ) );
+		}
 	}
 
 	/**
@@ -563,56 +613,19 @@ class RTMedia_Transcoder_Handler {
 				global $wpdb;
 
 				$id = $this->get_post_id_by_meta_key_and_value( '_rtmedia_transcoding_job_id', $_REQUEST['job_id'] );
-				/*if ( ! isset( $meta_details[0] ) ) {
-					$id = intval( $_REQUEST['rt_id'] );
-				} else {
-					$id = $meta_details[0]->media_id;
-				}*/
+
 				if ( isset( $id ) && is_numeric( $id ) ) {
 					$attachment_id      = $id;
-					update_post_meta( $attachment_id, 'rtmedia_transcode_response', $_POST );
 
 					if ( $has_thumbs ) {
-						$cover_art = $this->add_media_thumbnails( $attachment_id );
+						$cover_art = $this->add_media_thumbnails( $post_array = $_POST );
 					}
 
 					if ( isset( $_POST['format'] ) && 'thumbnail' === sanitize_text_field( wp_unslash( $_POST['format'] ) ) ) {
 						die();
 					}
-					if(isset( $_REQUEST['download_url'] )){
-						$attachemnt_post                = get_post( $attachment_id );
-						$download_url                   = urldecode( urldecode( $_REQUEST['download_url'] ) );
-						$new_wp_attached_file_pathinfo 	= pathinfo( $download_url );
-						$post_mime_type                	= 'mp4' === $new_wp_attached_file_pathinfo['extension'] ? 'video/mp4' : 'audio/mp3';
-						try {
-							$file_bits = file_get_contents( $download_url );
-						} catch ( Exception $e ) {
-							$flag = $e->getMessage();
-						}
-						if ( $file_bits ) {
+					$uploded_files = $this->add_transcoded_files( $_REQUEST['files'], $attachment_id );
 
-							$old_attachment_file = get_attached_file( $attachment_id );
-							if( function_exists( 'wp_delete_file' ) ){  // wp_delete_file is introduced in WordPress 4.2
-								wp_delete_file( $old_attachment_file );
-							} else {
-								unlink( $old_attachment_file );
-							}
-
-							add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
-							$upload_info = wp_upload_bits( $new_wp_attached_file_pathinfo['basename'], null, $file_bits );
-							$wpdb->update( $wpdb->posts, array(
-								'guid'           => $upload_info['url'],
-								'post_mime_type' => $post_mime_type,
-							), array( 'ID' => $attachment_id ) );
-							$old_wp_attached_file          = get_post_meta( $attachment_id, '_wp_attached_file', true );
-							$old_wp_attached_file_pathinfo = pathinfo( $old_wp_attached_file );
-							update_post_meta( $attachment_id, '_wp_attached_file', str_replace( $old_wp_attached_file_pathinfo['basename'], $new_wp_attached_file_pathinfo['basename'], $old_wp_attached_file ) );
-
-						} else {
-							$flag = esc_html__( 'Could not read file.', 'rtmedia-transcoder' );
-							error_log( $flag );
-						}
-					}
 				} else {
 					$flag = esc_html__( 'Something went wrong. The required attachment id does not exists. It must have been deleted.', 'rtmedia-transcoder' );
 					error_log( $flag );
@@ -672,58 +685,17 @@ class RTMedia_Transcoder_Handler {
 					$media              = $model->get_media( array( 'id' => $id ), 0, 1 );
 					$this->media_author = $media[0]->media_author;
 					$attachment_id      = $media[0]->media_id;
-					update_post_meta( $attachment_id, 'rtmedia_transcode_response', $_POST );
 
 					if ( $has_thumbs ) {
-						$cover_art = $this->add_media_thumbnails( $attachment_id );
+						$cover_art = $this->add_media_thumbnails( $post_array = $_POST );
 					}
 
 					if ( isset( $_POST['format'] ) && 'thumbnail' === sanitize_text_field( wp_unslash( $_POST['format'] ) ) ) {
 						die();
 					}
-					if(isset( $_REQUEST['download_url'] )){
-						$this->uploaded['context']      = $media[0]->context;
-						$this->uploaded['context_id']   = $media[0]->context_id;
-						$this->uploaded['media_author'] = $media[0]->media_author;
-						$attachemnt_post                = get_post( $attachment_id );
-						$download_url                   = urldecode( urldecode( $_REQUEST['download_url'] ) );
-						$new_wp_attached_file_pathinfo = pathinfo( $download_url );
-						$post_mime_type                = 'mp4' === $new_wp_attached_file_pathinfo['extension'] ? 'video/mp4' : 'audio/mp3';
-						try {
-							$file_bits = file_get_contents( $download_url );
-						} catch ( Exception $e ) {
-							$flag = $e->getMessage();
-						}
-						if ( $file_bits ) {
 
-							$old_attachment_file = get_attached_file( $attachment_id );
-							if( function_exists( 'wp_delete_file' ) ){  // wp_delete_file is introduced in WordPress 4.2
-								wp_delete_file( $old_attachment_file );
-							} else {
-								unlink( $old_attachment_file );
-							}
+					$uploded_files = $this->add_transcoded_files( $_REQUEST['files'], $attachment_id );
 
-							add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
-							$upload_info = wp_upload_bits( $new_wp_attached_file_pathinfo['basename'], null, $file_bits );
-							$wpdb->update( $wpdb->posts, array(
-								'guid'           => $upload_info['url'],
-								'post_mime_type' => $post_mime_type,
-							), array( 'ID' => $attachment_id ) );
-							$old_wp_attached_file          = get_post_meta( $attachment_id, '_wp_attached_file', true );
-							$old_wp_attached_file_pathinfo = pathinfo( $old_wp_attached_file );
-							update_post_meta( $attachment_id, '_wp_attached_file', str_replace( $old_wp_attached_file_pathinfo['basename'], $new_wp_attached_file_pathinfo['basename'], $old_wp_attached_file ) );
-
-							$activity_id = $media[0]->activity_id;
-							if ( $activity_id ) {
-								$content          = $wpdb->get_var( $wpdb->prepare( "SELECT content FROM {$wpdb->base_prefix}bp_activity WHERE id = %d", $activity_id ) );
-								$activity_content = str_replace( $attachemnt_post->guid, $upload_info['url'], $content );
-								$wpdb->update( $wpdb->base_prefix . 'bp_activity', array( 'content' => $activity_content ), array( 'id' => $activity_id ) );
-							}
-						} else {
-							$flag = esc_html__( 'Could not read file.', 'rtmedia-transcoder' );
-							error_log( $flag );
-						}
-					}
 				} else {
 					$flag = esc_html__( 'Something went wrong. The required attachment id does not exists. It must have been deleted.', 'rtmedia-transcoder' );
 					error_log( $flag );
