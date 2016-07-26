@@ -38,8 +38,8 @@ class RTMedia_Transcoder_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
 
 		if ( class_exists( 'RTMedia' ) ) {
-			//add_filter( 'attachment_fields_to_edit', array( $this, 'edit_video_thumbnail' ), 11, 2 );
-			//add_filter( 'attachment_fields_to_save', array( $this, 'save_video_thumbnail' ), 11, 1 );
+			add_filter( 'attachment_fields_to_edit', array( $this, 'edit_video_thumbnail' ), 11, 2 );
+			add_filter( 'attachment_fields_to_save', array( $this, 'save_video_thumbnail' ), 11, 1 );
 		}
 
 		$this->transcoder_handler = new RTMedia_Transcoder_Handler();
@@ -50,10 +50,16 @@ class RTMedia_Transcoder_Admin {
 	}
 
 	public function menu() {
-		add_options_page( 'rtMedia Transcoder', 'rtMedia Transcoder', 'manage_options', 'rtmedia-transcoder', array( $this, 'settings_page' ) );
+		add_menu_page( 'rtMedia Transcoder', 'rtMedia Transcoder', 'manage_options', 'rtmedia-transcoder', array( $this, 'settings_page' ), '', '40.2222' );
+		add_action( 'admin_init', array( $this, 'register_rtmedia_transcoder_settings' ) );
 	}
 
-	function settings_page() {
+	public function register_rtmedia_transcoder_settings() {
+		//register our settings
+		register_setting( 'rtmedia-transcoder-settings-group', 'number_of_thumbs' );
+	}
+
+	public function settings_page() {
 		include_once( RTMEDIA_TRANSCODER_PATH . 'admin/partials/rtmedia-transcoder-admin-display.php' );
 	}
 
@@ -106,7 +112,11 @@ class RTMedia_Transcoder_Admin {
 			$media_type = explode( '/', $post->post_mime_type );
 			if ( is_array( $media_type ) && 'video' === $media_type[0] ) {
 				$media_id         = $post->ID;
-				$thumbnail_array  = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
+				$thumbnail_array  = get_post_meta( $media_id, '_rt_media_thumbnails', true );
+
+				if ( empty( $thumbnail_array ) ) {
+					$thumbnail_array  = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
+				}
 
 				$featured_img_src = "";
 				if (has_post_thumbnail( $post->ID ) ){
@@ -144,12 +154,16 @@ class RTMedia_Transcoder_Admin {
 	}
 
 	function edit_video_thumbnail( $form_fields, $post ) {
-		return $form_fields;
 		if ( isset( $post->post_mime_type ) ) {
 			$media_type = explode( '/', $post->post_mime_type );
 			if ( is_array( $media_type ) && 'video' === $media_type[0] ) {
 				$media_id         = $post->ID;
-				$thumbnail_array  = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
+				$thumbnail_array  = get_post_meta( $media_id, '_rt_media_thumbnails', true );
+
+				if ( empty( $thumbnail_array ) ) {
+					$thumbnail_array  = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
+				}
+
 				$rtmedia_model    = new RTMediaModel();
 				$rtmedia_media    = $rtmedia_model->get( array( 'media_id' => $media_id ) );
 				$video_thumb_html = '';

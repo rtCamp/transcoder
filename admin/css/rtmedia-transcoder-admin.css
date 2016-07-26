@@ -1,3 +1,8 @@
+.bp-media-settings-boxes-wrapper {
+    float: left;
+    width: 73.2%;
+}
+
 #rtmedia-transcoding-usage strong {
     display: inline-block;
     min-width: 120px;
@@ -34,15 +39,12 @@
 
 .rtm-transcoder-setting-container {
     background-color: #fff;
-    float: left;
     margin-top: 10px;
     padding: 10px 20px;
-    width: 73.2%;
 }
 
 .rtm-transcoder-sidebar {
     float: right;
-    width: 20%;
 }
 
 .rtm-transcoder-plan-table {
