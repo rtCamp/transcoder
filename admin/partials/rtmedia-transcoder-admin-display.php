@@ -5,7 +5,9 @@
  */
 ?>
 
-<h3 class="rtm-option-title"><?php esc_html_e( 'Audio/Video transcoding service', 'rtmedia-transcoder' ); ?></h3>
+<h3 class="rtm-option-title">
+	<?php esc_html_e( 'Audio/Video transcoding service', 'rtmedia-transcoder' ); ?>
+</h3>
 <div class="bp-media-settings-boxes-wrapper">
 	<div id="bp-media-settings-boxes" class="bp-media-settings-boxes-container rtm-transcoder-setting-container">
 		<p>
@@ -145,7 +147,7 @@
 						</button>
 					</form> -->
 					<a href="http://edd.rtcamp.info/checkout?edd_action=add_to_cart&download_id=71&edd_options[price_id]=1" target="_blank" class="button button-primary">
-						Try Now
+						<?php esc_html_e( 'Try Now', 'rtmedia-transcoder' ); ?>
 					</a>
 				<?php }
 					?>
@@ -153,7 +155,7 @@
 				<td>
 					<?php //echo $this->transcoding_subscription_form( 'deluxe', 9.0 ); // @codingStandardsIgnoreLine ?>
 					<a href="http://edd.rtcamp.info/checkout?edd_action=add_to_cart&download_id=71&edd_options[price_id]=2" target="_blank" class="button button-primary">
-						Subscribe
+						<?php esc_html_e( 'Subscribe', 'rtmedia-transcoder' ); ?>
 					</a>
 				</td>
 			</tr>
@@ -161,15 +163,29 @@
 		</table>
 	</div>
 	<div id="bp-media-settings-boxes" class="bp-media-settings-boxes-container rtm-transcoder-setting-container">
-		<h2>Transcoder Settings</h2>
+		<h2>
+			<?php esc_html_e( 'Transcoder Settings', 'rtmedia-transcoder' ); ?>
+		</h2>
 
 		<form method="post" action="options.php">
-		    <?php settings_fields( 'rtmedia-transcoder-settings-group' ); ?>
-		    <?php do_settings_sections( 'rtmedia-transcoder-settings-group' ); ?>
+		    <?php
+			settings_fields( 'rtmedia-transcoder-settings-group' );
+		    do_settings_sections( 'rtmedia-transcoder-settings-group' );
+			?>
 		    <table class="form-table">
 		        <tr valign="top">
-			        <th scope="row">Number of Thumbnails</th>
-			        <td><input type="text" name="number_of_thumbs" value="<?php echo esc_attr( get_option('number_of_thumbs')?get_option('number_of_thumbs'):5 ); ?>" /></td>
+			        <th scope="row">
+						<?php esc_html_e( 'Number of Thumbnails', 'rtmedia-transcoder' ); ?>
+					</th>
+			        <td>
+						<?php $number_of_thumbnails = get_site_option( 'number_of_thumbs', 5 ); ?>
+						<input type="text" name="number_of_thumbs" value="<?php echo esc_attr( $number_of_thumbnails ); ?>" />
+						<p class="description">
+							<?php
+							esc_html_e( 'If you choose more than 1 thumbnail, you will be able to change the thumbnail by going to video edit section. Maximum value is 10' );
+							?>
+						</p>
+					</td>
 		        </tr>
 		    </table>
 
