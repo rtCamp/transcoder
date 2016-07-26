@@ -1,26 +1,58 @@
 <?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of RTMedia_Transcoder_Admin
+ * The admin-specific functionality of the plugin.
  *
- * @author Mangesh
+ * @link       http://example.com
+ * @since      1.0
+ *
+ * @package    rtmedia-trascoder
+ * @subpackage rtmedia-trascoder/admin
  */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * The admin-specific functionality of the plugin.
+ *
+ * @package    rtmedia-trascoder
+ * @subpackage rtmedia-trascoder/admin
+ */
 class RTMedia_Transcoder_Admin {
+	
+	/**
+	 * The object of RTMedia_Transcoder_Handler class.
+	 *
+	 * @since    1.0
+	 * @access   private
+	 * @var      object    $transcoder_handler    The object of RTMedia_Transcoder_Handler class.
+	 */
+	private $transcoder_handler;
+	
+	/**
+	 * The api key of transcoding service subscription.
+	 *
+	 * @since    1.0
+	 * @access   private
+	 * @var      string    $api_key    The api key of transcoding service subscription.
+	 */
+	private $api_key = false;
+	
+	/**
+	 * The api key of transcoding service subscription.
+	 *
+	 * @since    1.0
+	 * @access   private
+	 * @var      string    $stored_api_key    The api key of transcoding service subscription.
+	 */
+	private $stored_api_key = false;
 
-	public $transcoder_handler;
-	public $api_key = false;
-	public $stored_api_key = false;
-
+	/**
+	 * Initialize the class and set its properties.
+	 *
+	 * @since    1.0
+	 */
 	public function __construct() {
 
 		$this->api_key			= get_site_option( 'rtmedia-transcoding-api-key' );
@@ -28,13 +60,12 @@ class RTMedia_Transcoder_Admin {
 
 		$this->load_translation();
 
-		if( !class_exists( 'rtProgress' ) ) {
+		if ( ! class_exists( 'rtProgress' ) ) {
 			include_once( RTMEDIA_TRANSCODER_PATH . 'admin/rtmedia-transcoder-progressbar.php' );
 		}
 
 		include_once( RTMEDIA_TRANSCODER_PATH . 'admin/rtmedia-transcoder-handler.php' );
 
-		// enqueue scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
 
 		if ( class_exists( 'RTMedia' ) ) {
@@ -46,32 +77,50 @@ class RTMedia_Transcoder_Admin {
 
 		if ( is_admin() ) {
 			add_action( 'admin_menu', array( $this, 'menu' ) );
+			add_action( 'admin_init', array( $this, 'register_rtmedia_transcoder_settings' ) );
 		}
 	}
-
+	
+	/**
+	 * Create menu.
+	 *
+	 * @since    1.0
+	 */
 	public function menu() {
 		add_menu_page( 'rtMedia Transcoder', 'rtMedia Transcoder', 'manage_options', 'rtmedia-transcoder', array( $this, 'settings_page' ), '', '40.2222' );
-		add_action( 'admin_init', array( $this, 'register_rtmedia_transcoder_settings' ) );
 	}
-
+	
+	/**
+	 * Register transcoder settings.
+	 *
+	 * @since    1.0
+	 */
 	public function register_rtmedia_transcoder_settings() {
-		//register our settings
 		register_setting( 'rtmedia-transcoder-settings-group', 'number_of_thumbs' );
 	}
-
+	
+	/**
+	 * Display settings page.
+	 *
+	 * @since    1.0
+	 */
 	public function settings_page() {
 		include_once( RTMEDIA_TRANSCODER_PATH . 'admin/partials/rtmedia-transcoder-admin-display.php' );
 	}
 
 	/**
-	 * Loads language translation
+	 * Load language translation.
+	 *
+	 * @since    1.0
 	 */
 	public function load_translation() {
 		load_plugin_textdomain( 'rtmedia-transcoder', false, basename( RTMEDIA_TRANSCODER_PATH ) . '/languages/' );
 	}
 
 	/**
-	 * Loads styles and scripts
+	 * Load styles and scripts
+	 * 
+	 * @since    1.0
 	 */
 	public function enqueue_scripts_styles() {
 
@@ -82,7 +131,16 @@ class RTMedia_Transcoder_Admin {
 
 		wp_enqueue_script( 'rtmedia-transcoder-main' );
 	}
-
+	
+	/**
+	 * Create subscription form for various subscription plans.
+	 * 
+	 * @since    1.0
+	 * @param string $name	 The name of subscription plan.
+	 * @param float  $price  The price of subscription plan.
+	 * @param bool   $force  If true then it always show subscriobe form.
+	 * @return string
+	 */
 	public function transcoding_subscription_form( $name = 'No Name', $price = '0', $force = false ) {
 		if ( $this->api_key ) {
 			$this->transcoder_handler->update_usage( $this->api_key );
@@ -106,8 +164,15 @@ class RTMedia_Transcoder_Admin {
 		return $form;
 	}
 
+	/**
+	 * Display all video thumbnails on attachment edit page.
+	 * 
+	 * @param array   $form_fields  An array of attachment form fields.
+	 * @param WP_Post $post		    The WP_Post attachment object.
+	 * @return array $form_fields
+	 */
 	function edit_video_thumbnail_wp( $form_fields, $post ) {
-		//die($post->post_mime_type);
+
 		if ( isset( $post->post_mime_type ) ) {
 			$media_type = explode( '/', $post->post_mime_type );
 			if ( is_array( $media_type ) && 'video' === $media_type[0] ) {
@@ -118,8 +183,8 @@ class RTMedia_Transcoder_Admin {
 					$thumbnail_array  = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
 				}
 
-				$featured_img_src = "";
-				if (has_post_thumbnail( $post->ID ) ){
+				$featured_img_src = '';
+				if ( has_post_thumbnail( $post->ID ) ) {
 					$image = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'single-post-thumbnail' );
 				  	$featured_img_src = $image[0];
 				}
@@ -130,18 +195,18 @@ class RTMedia_Transcoder_Admin {
 
 					foreach ( $thumbnail_array as $key => $thumbnail_src ) {
 						$checked = false;
-						if ( $featured_img_src == $thumbnail_src ){
+						if ( $featured_img_src == $thumbnail_src ) {
 							$checked = true;
 						}
 						$count   = $key + 1;
-						$video_thumb_html .= '<li style="width: 150px;display: inline-block;">
-								<label for="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '">
-								<input type="radio" ' . esc_attr( $checked ) . ' id="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '" value="' . esc_url( $thumbnail_src ) . '" name="rtmedia-thumbnail" />
-								<img src=" ' . esc_url( $thumbnail_src ) . '" style="max-height: 120px;max-width: 120px; vertical-align: middle;" />
-								</label></li> ';
+						$video_thumb_html .= '<li style="width: 150px;display: inline-block;"> ' .
+							'<label for="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '"> ' .
+							'<input type="radio" ' . esc_attr( $checked ) . ' id="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '" value="' . esc_url( $thumbnail_src ) . '" name="rtmedia-thumbnail" /> ' .
+							'<img src=" ' . esc_url( $thumbnail_src ) . '" style="max-height: 120px;max-width: 120px; vertical-align: middle;" /> ' .
+							'</label></li>';
 					}
 
-					$video_thumb_html .= '  </ul>';
+					$video_thumb_html .= '</ul>';
 					$form_fields['rtmedia_video_thumbnail'] = array(
 						'label' => 'Video Thumbnails',
 						'input' => 'html',
@@ -152,7 +217,14 @@ class RTMedia_Transcoder_Admin {
 		}
 		return $form_fields;
 	}
-
+	
+	/**
+	 * Display all video thumbnails on attachment edit page.
+	 * 
+	 * @param array   $form_fields  An array of attachment form fields.
+	 * @param WP_Post $post		    The WP_Post attachment object.
+	 * @return array $form_fields
+	 */
 	function edit_video_thumbnail( $form_fields, $post ) {
 		if ( isset( $post->post_mime_type ) ) {
 			$media_type = explode( '/', $post->post_mime_type );
@@ -192,7 +264,14 @@ class RTMedia_Transcoder_Admin {
 
 		return $form_fields;
 	}
-
+	
+	/**
+	 * Save selected video thumbnail in attachment meta.
+	 * Selected thumbnail use as cover art for buddypress activity if video was upload in activity.
+	 * 
+	 * @param array $post		An array of post data.
+	 * @return array $form_fields
+	 */
 	function save_video_thumbnail( $post ) {
 		$rtmedia_thumbnail = filter_input( INPUT_POST, 'rtmedia-thumbnail', FILTER_SANITIZE_STRING );
 		$id = filter_input( INPUT_POST, 'ID', FILTER_SANITIZE_NUMBER_INT );
