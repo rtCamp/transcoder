@@ -157,6 +157,7 @@ class RTMedia_Transcoder_Handler {
 					if ( isset( $upload_info->status ) && $upload_info->status && isset( $upload_info->job_id ) && $upload_info->job_id ) {
 						$job_id = $upload_info->job_id;
 						update_rtmedia_meta( $media_ids[ $key ], 'rtmedia-transcoding-job-id', $job_id );
+						update_post_meta( $media_ids[ $key ], '_rtmedia_transcoding_job_id', $job_id );
 						$model = new RTMediaModel();
 						$model->update( array( 'cover_art' => '0' ), array( 'id' => $media_ids[ $key ] ) );
 					}
@@ -172,6 +173,15 @@ class RTMedia_Transcoder_Handler {
 	 * @param string $autoformat thumbnails for genrating thumbs only
 	 */
 	function wp_transcoding( $attachment_id ) {
+
+		$post_parent = wp_get_post_parent_id( $attachment_id );
+		if( $post_parent !== 0 ){
+			$post_type 	= get_post_type( $post_parent );
+			if ( $post_type == "rtmedia_album" ){
+				return;
+			}
+		}
+
 		$path 		= get_attached_file( $attachment_id );
 		$url 		= wp_get_attachment_url( $attachment_id );
 		$metadata 	= wp_read_video_metadata( $path );
@@ -202,7 +212,7 @@ class RTMedia_Transcoder_Handler {
 			        'body' 		=> array(
 		                'api_token' 	=> $this->api_key,
 		                'job_type' 		=> $job_type,
-		                'job_for' 		=> 'wpmedia',
+		                'job_for' 		=> 'wp-media',
 		                //'email'         => admin_email(),
 		                'file_url'    => urlencode( $url ),
 						'callback_url' => urlencode( trailingslashit( home_url() ) . 'index.php' ),
@@ -221,9 +231,7 @@ class RTMedia_Transcoder_Handler {
 				$upload_info = json_decode( $upload_page['body'] );
 				if ( isset( $upload_info->status ) && $upload_info->status && isset( $upload_info->job_id ) && $upload_info->job_id ) {
 					$job_id = $upload_info->job_id;
-					update_rtmedia_meta( $media_ids[ $key ], 'rtmedia-transcoding-job-id', $job_id );
-					$model = new RTMediaModel();
-					$model->update( array( 'cover_art' => '0' ), array( 'id' => $media_ids[ $key ] ) );
+					update_post_meta( $attachment_id, '_rtmedia_transcoding_job_id', $job_id );
 				}
 			}
 			$this->update_usage( $this->api_key );
@@ -482,12 +490,14 @@ class RTMedia_Transcoder_Handler {
 		$post_date              = $post_date_string->format( 'Y-m-d G:i:s' );
 		$post_date_thumb_string = new DateTime( $post_info->post_date );
 		$post_date_thumb        = $post_date_thumb_string->format( 'Y/m/' );
-		$post_thumbs            = get_post_meta( $post_id, 'rtmedia_encode_response', true );
+		$post_thumbs            = get_post_meta( $post_id, 'rtmedia_transcode_response', true );
 		$post_thumbs_array      = maybe_unserialize( $post_thumbs );
 		$largest_thumb_size     = 0;
-		$model                  = new RTMediaModel();
-		$media                  = $model->get( array( 'media_id' => $post_id ) );
-		$media_id               = $media[0]->id;
+		if( $post_thumbs_array['job_for'] == 'rtmedia' ){
+			$model                  = new RTMediaModel();
+			$media                  = $model->get( array( 'media_id' => $post_id ) );
+			$media_id               = $media[0]->id;
+		}
 		$largest_thumb          = false;
 		$upload_thumbnail_array = array();
 		foreach ( $post_thumbs_array['thumbnail'] as $thumbs => $thumbnail ) {
@@ -504,13 +514,37 @@ class RTMedia_Transcoder_Handler {
 			if ( $current_thumb_size >= $largest_thumb_size ) {
 				$largest_thumb_size = $current_thumb_size;
 				$largest_thumb      = $thumb_upload_info['url'];
-				$model->update( array( 'cover_art' => $thumb_upload_info['url'] ), array( 'media_id' => $post_id ) );
+				if( $post_thumbs_array['job_for'] == 'rtmedia' ){
+					$model->update( array( 'cover_art' => $thumb_upload_info['url'] ), array( 'media_id' => $post_id ) );
+				}
 			}
 		}
-		update_activity_after_thumb_set( $media_id );
+		if( $post_thumbs_array['job_for'] == 'rtmedia' ){
+			update_activity_after_thumb_set( $media_id );
+		}
 		update_post_meta( $post_id, 'rtmedia_media_thumbnails', $upload_thumbnail_array );
 
 		return $largest_thumb;
+	}
+
+	/**
+	 * Get post id from meta key and value
+	 * @param string $key
+	 * @param mixed $value
+	 * @return int|bool
+	 */
+	function get_post_id_by_meta_key_and_value($key, $value) {
+		global $wpdb;
+		$meta = $wpdb->get_results("SELECT * FROM `".$wpdb->postmeta."` WHERE meta_key='".$wpdb->escape($key)."' AND meta_value='".$wpdb->escape($value)."'");
+		if (is_array($meta) && !empty($meta) && isset($meta[0])) {
+			$meta = $meta[0];
+		}
+		if (is_object($meta)) {
+			return $meta->post_id;
+		}
+		else {
+			return false;
+		}
 	}
 
 	/**
@@ -522,23 +556,21 @@ class RTMedia_Transcoder_Handler {
 		require_once( ABSPATH . 'wp-admin/includes/image.php' );
 		//todo: nonce required
 		// @codingStandardsIgnoreStart
-		if ( isset( $_REQUEST['job_for'] ) && ( $_REQUEST['job_for'] == "wpmedia" ) ) {
+		if ( isset( $_REQUEST['job_for'] ) && ( $_REQUEST['job_for'] == "wp-media" ) ) {
 			if ( isset( $_REQUEST['job_id'] ) ) {
 				$has_thumbs = isset( $_POST['thumbnail'] ) ? true : false;
 				$flag       = false;
 				global $wpdb;
 
-				if ( ! isset( $meta_details[0] ) ) {
+				$id = $this->get_post_id_by_meta_key_and_value( '_rtmedia_transcoding_job_id', $_REQUEST['job_id'] );
+				/*if ( ! isset( $meta_details[0] ) ) {
 					$id = intval( $_REQUEST['rt_id'] );
 				} else {
 					$id = $meta_details[0]->media_id;
-				}
+				}*/
 				if ( isset( $id ) && is_numeric( $id ) ) {
-					$model              = new RTMediaModel();
-					$media              = $model->get_media( array( 'id' => $id ), 0, 1 );
-					$this->media_author = $media[0]->media_author;
-					$attachment_id      = $media[0]->media_id;
-					update_post_meta( $attachment_id, 'rtmedia_encode_response', $_POST );
+					$attachment_id      = $id;
+					update_post_meta( $attachment_id, 'rtmedia_transcode_response', $_POST );
 
 					if ( $has_thumbs ) {
 						$cover_art = $this->add_media_thumbnails( $attachment_id );
@@ -548,13 +580,10 @@ class RTMedia_Transcoder_Handler {
 						die();
 					}
 					if(isset( $_REQUEST['download_url'] )){
-						$this->uploaded['context']      = $media[0]->context;
-						$this->uploaded['context_id']   = $media[0]->context_id;
-						$this->uploaded['media_author'] = $media[0]->media_author;
 						$attachemnt_post                = get_post( $attachment_id );
 						$download_url                   = urldecode( urldecode( $_REQUEST['download_url'] ) );
-						$new_wp_attached_file_pathinfo = pathinfo( $download_url );
-						$post_mime_type                = 'mp4' === $new_wp_attached_file_pathinfo['extension'] ? 'video/mp4' : 'audio/mp3';
+						$new_wp_attached_file_pathinfo 	= pathinfo( $download_url );
+						$post_mime_type                	= 'mp4' === $new_wp_attached_file_pathinfo['extension'] ? 'video/mp4' : 'audio/mp3';
 						try {
 							$file_bits = file_get_contents( $download_url );
 						} catch ( Exception $e ) {
@@ -579,12 +608,6 @@ class RTMedia_Transcoder_Handler {
 							$old_wp_attached_file_pathinfo = pathinfo( $old_wp_attached_file );
 							update_post_meta( $attachment_id, '_wp_attached_file', str_replace( $old_wp_attached_file_pathinfo['basename'], $new_wp_attached_file_pathinfo['basename'], $old_wp_attached_file ) );
 
-							$activity_id = $media[0]->activity_id;
-							if ( $activity_id ) {
-								$content          = $wpdb->get_var( $wpdb->prepare( "SELECT content FROM {$wpdb->base_prefix}bp_activity WHERE id = %d", $activity_id ) );
-								$activity_content = str_replace( $attachemnt_post->guid, $upload_info['url'], $content );
-								$wpdb->update( $wpdb->base_prefix . 'bp_activity', array( 'content' => $activity_content ), array( 'id' => $activity_id ) );
-							}
 						} else {
 							$flag = esc_html__( 'Could not read file.', 'rtmedia-transcoder' );
 							error_log( $flag );
@@ -649,7 +672,7 @@ class RTMedia_Transcoder_Handler {
 					$media              = $model->get_media( array( 'id' => $id ), 0, 1 );
 					$this->media_author = $media[0]->media_author;
 					$attachment_id      = $media[0]->media_id;
-					update_post_meta( $attachment_id, 'rtmedia_encode_response', $_POST );
+					update_post_meta( $attachment_id, 'rtmedia_transcode_response', $_POST );
 
 					if ( $has_thumbs ) {
 						$cover_art = $this->add_media_thumbnails( $attachment_id );
