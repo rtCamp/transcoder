@@ -148,7 +148,7 @@ class RTMedia_Transcoder_Handler {
 				);
 
 				$transcoding_url = $this->api_url . 'job/';
-				$upload_url   = add_query_arg( $query_args, $transcoding_url . $this->api_key );
+
 				$upload_page = wp_remote_post( $transcoding_url, $args );
 
 				if ( ! is_wp_error( $upload_page ) && ( ( isset( $upload_page['response']['code'] ) && ( 200 === intval( $upload_page['response']['code'] ) ) ) ) ) {
@@ -171,12 +171,12 @@ class RTMedia_Transcoder_Handler {
 	 * @param int $attachment_id
 	 * @param string $autoformat thumbnails for genrating thumbs only
 	 */
-	function wp_transcoding( $attachment_id ) {
+	function wp_transcoding( $attachment_id, $autoformat = true ) {
 
 		$post_parent = wp_get_post_parent_id( $attachment_id );
-		if( $post_parent !== 0 ){
+		if( $post_parent !== 0 ) {
 			$post_type 	= get_post_type( $post_parent );
-			if ( $post_type == "rtmedia_album" ){
+			if ( $post_type == "rtmedia_album" ) {
 				return;
 			}
 		}
@@ -184,8 +184,6 @@ class RTMedia_Transcoder_Handler {
 		$path 		= get_attached_file( $attachment_id );
 		$url 		= wp_get_attachment_url( $attachment_id );
 		$metadata 	= wp_read_video_metadata( $path );
-		//print_r( $metadata ); die();
-		//foreach ( $file_object as $key => $single ) {
 
 		$type_arry        = explode( '.', $url );
 		$type             = strtolower( $type_arry[ count( $type_arry ) - 1 ] );
@@ -223,7 +221,7 @@ class RTMedia_Transcoder_Handler {
 			);
 
 			$transcoding_url = $this->api_url . 'job/';
-			$upload_url   = add_query_arg( $query_args, $transcoding_url . $this->api_key );
+
 			$upload_page = wp_remote_post( $transcoding_url, $args );
 
 			if ( ! is_wp_error( $upload_page ) && ( ( isset( $upload_page['response']['code'] ) && ( 200 === intval( $upload_page['response']['code'] ) ) ) ) ) {
@@ -235,10 +233,9 @@ class RTMedia_Transcoder_Handler {
 			}
 			$this->update_usage( $this->api_key );
 		}
-		//}
 	}
 
-	public function get_thumbnails_required( $attachment_id = "" ){
+	public function get_thumbnails_required( $attachment_id = "" ) {
 
 		$thumb_count = get_option('number_of_thumbs');
 
@@ -484,16 +481,22 @@ class RTMedia_Transcoder_Handler {
 			}
 			$usage = new rtProgress();
 			$content .= $usage->progress_ui( $usage->progress( $usage_details[ $this->api_key ]->used, $usage_details[ $this->api_key ]->total ), false );
-			if ( ( $usage_details[ $this->api_key ]->remaining <= 0 ) && ( -1 != $usage_details[ $this->api_key ]->remaining ) ) {
+			if ( ( $usage_details[ $this->api_key ]->remaining <= 0 ) && ( -1 !== $usage_details[ $this->api_key ]->remaining ) ) {
 				$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your usage limit has been reached. Upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
 			}
 		} else {
 			$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your API key is not valid or is expired.', 'rtmedia-transcoder' ) . '</p></div>';
 		}
-		new RTMediaAdminWidget( 'rtmedia-transcoding-usage', esc_html__( 'Transcoding Usage', 'rtmedia-transcoder' ), $content );
+		?>
+		<div class="postbox" id="rtmedia-transcoding-usage">
+	        <h3 class="hndle"><span><?php esc_html_e( 'Transcoding Usage', 'buddypress-media' ); ?></span></h3>
+	        <div class="inside"><?php echo $content; // @codingStandardsIgnoreLine ?></div>
+        </div>
+		<?php
 	}
 
 	public function add_media_thumbnails( $post_array ) {
+		$post_id 				= $post_array['post_id'];
 		$post_info              = get_post( $post_id );
 		$post_date_string       = new DateTime( $post_info->post_date );
 		$post_date              = $post_date_string->format( 'Y-m-d G:i:s' );
@@ -502,13 +505,16 @@ class RTMedia_Transcoder_Handler {
 		$post_thumbs            = $post_array;
 		$post_thumbs_array      = maybe_unserialize( $post_thumbs );
 		$largest_thumb_size     = 0;
-		if( $post_thumbs_array['job_for'] == 'rtmedia' ){
+
+		if ( 'rtmedia' === $post_thumbs_array['job_for'] ) {
 			$model                  = new RTMediaModel();
 			$media                  = $model->get( array( 'media_id' => $post_id ) );
 			$media_id               = $media[0]->id;
 		}
+
 		$largest_thumb          = false;
 		$upload_thumbnail_array = array();
+
 		foreach ( $post_thumbs_array['thumbnail'] as $thumbs => $thumbnail ) {
 			$thumbresource            = wp_remote_get( $thumbnail );
 			$thumbinfo                = pathinfo( $thumbnail );
@@ -518,34 +524,46 @@ class RTMedia_Transcoder_Handler {
 			$temp_name                = $temp_name_array[ count( $temp_name_array ) - 1 ];
 			$thumbinfo['basename']    = $temp_name;
 			$thumb_upload_info        = wp_upload_bits( $thumbinfo['basename'], null, $thumbresource['body'] );
-			$upload_thumbnail_array[] = $thumb_upload_info['url'];
+			$file 					  = _wp_relative_upload_path( $thumb_upload_info['file'] );
+
+			if ( $file ) {
+				$upload_thumbnail_array[] = $file;
+			}
+
 			$current_thumb_size = @filesize( $thumb_upload_info['file'] );
+
 			if ( $current_thumb_size >= $largest_thumb_size ) {
 				$largest_thumb_size = $current_thumb_size;
 				$largest_thumb      = $thumb_upload_info['url'];
-				if( $post_thumbs_array['job_for'] == 'rtmedia' ){
+				$largest_thumb_url	= $file ? $file : '';
+
+				if ( 'rtmedia' === $post_thumbs_array['job_for'] ) {
 					$model->update( array( 'cover_art' => $thumb_upload_info['url'] ), array( 'media_id' => $post_id ) );
 				}
 			}
 		}
-		if( $post_thumbs_array['job_for'] == 'rtmedia' ){
+
+		if ( 'rtmedia' === $post_thumbs_array['job_for'] ) {
 			update_activity_after_thumb_set( $media_id );
 		}
-		//update_post_meta( $post_id, 'rtmedia_media_thumbnails', $upload_thumbnail_array );
-		update_post_meta( $post_id, '_rt_media_job_id', $post_thumbs_array['job_id'] );
-		update_post_meta( $post_id, '_rt_media_source', $post_thumbs_array['job_for'] );
-		update_post_meta( $post_id, '_rt_media_thumbnails', $upload_thumbnail_array );
+
+		update_post_meta( $post_id, '_rt_media_source', 			$post_thumbs_array['job_for'] );
+		update_post_meta( $post_id, '_rt_media_thumbnails', 		$upload_thumbnail_array );
+
+		if ( $largest_thumb_url ) {
+			update_post_meta( $post_id, '_rt_media_video_thumbnail', $largest_thumb_url );
+		}
 
 		return $largest_thumb;
 	}
 
-	public function add_transcoded_files( $file_post_array, $attachment_id ){
+	public function add_transcoded_files( $file_post_array, $attachment_id ) {
 		$transcoded_files = false;
 		if ( isset( $file_post_array ) && is_array( $file_post_array ) && ( count( $file_post_array > 0 ) ) ) {
-			foreach ( $file_post_array as $key => $format ){
+			foreach ( $file_post_array as $key => $format ) {
 				if ( is_array( $format ) && ( count( $format > 0 ) ) ) {
-					foreach ( $format as $each => $file ){
-						if(isset( $file )){
+					foreach ( $format as $each => $file ) {
+						if( isset( $file ) ) {
 							$download_url                   = urldecode( urldecode( $file ) );
 							$new_wp_attached_file_pathinfo 	= pathinfo( $download_url );
 							$post_mime_type                	= 'mp4' === $new_wp_attached_file_pathinfo['extension'] ? 'video/mp4' : 'audio/mp3';
@@ -559,7 +577,11 @@ class RTMedia_Transcoder_Handler {
 								//add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
 								$upload_info = wp_upload_bits( $new_wp_attached_file_pathinfo['basename'], null, $file_bits );
 
-								$transcoded_files[ $key ][] = $upload_info['url'];
+								$uploaded_file = _wp_relative_upload_path( $upload_info['file'] );
+
+								if ( $uploaded_file ) {
+									$transcoded_files[ $key ][] = $uploaded_file;
+								}
 							} else {
 								$flag = esc_html__( 'Could not read file.', 'rtmedia-transcoder' );
 								error_log( $flag );
@@ -569,11 +591,8 @@ class RTMedia_Transcoder_Handler {
 				}
 			}
 		}
-		if ( !empty( $transcoded_files ) ) {
+		if ( ! empty( $transcoded_files ) ) {
 			update_post_meta( $attachment_id, '_rt_media_transcoded_files', $transcoded_files );
-
-			$filesd = get_post_meta( $attachment_id, '_rt_media_transcoded_files', true );
-			print_r( maybe_unserialize( $filesd ) );
 		}
 	}
 
@@ -583,16 +602,15 @@ class RTMedia_Transcoder_Handler {
 	 * @param mixed $value
 	 * @return int|bool
 	 */
-	function get_post_id_by_meta_key_and_value($key, $value) {
+	function get_post_id_by_meta_key_and_value( $key, $value ) {
 		global $wpdb;
 		$meta = $wpdb->get_results("SELECT * FROM `".$wpdb->postmeta."` WHERE meta_key='".$wpdb->escape($key)."' AND meta_value='".$wpdb->escape($value)."'");
-		if (is_array($meta) && !empty($meta) && isset($meta[0])) {
+		if ( is_array( $meta ) && ! empty( $meta ) && isset( $meta[0] ) ) {
 			$meta = $meta[0];
 		}
-		if (is_object($meta)) {
+		if ( is_object( $meta ) ) {
 			return $meta->post_id;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -615,10 +633,13 @@ class RTMedia_Transcoder_Handler {
 				$id = $this->get_post_id_by_meta_key_and_value( '_rtmedia_transcoding_job_id', $_REQUEST['job_id'] );
 
 				if ( isset( $id ) && is_numeric( $id ) ) {
-					$attachment_id      = $id;
+					$attachment_id      	= $id;
 
+					$post_array 			= $_POST;
+					$post_array['post_id'] 	= $attachment_id;
+					print_r( $post_array );
 					if ( $has_thumbs ) {
-						$cover_art = $this->add_media_thumbnails( $post_array = $_POST );
+						$thumbnail = $this->add_media_thumbnails( $post_array );
 					}
 
 					if ( isset( $_POST['format'] ) && 'thumbnail' === sanitize_text_field( wp_unslash( $_POST['format'] ) ) ) {
@@ -686,8 +707,11 @@ class RTMedia_Transcoder_Handler {
 					$this->media_author = $media[0]->media_author;
 					$attachment_id      = $media[0]->media_id;
 
+					$post_array 			= $_POST;
+					$post_array['post_id'] 	= $attachment_id;
+
 					if ( $has_thumbs ) {
-						$cover_art = $this->add_media_thumbnails( $post_array = $_POST );
+						$cover_art = $this->add_media_thumbnails( $post_array );
 					}
 
 					if ( isset( $_POST['format'] ) && 'thumbnail' === sanitize_text_field( wp_unslash( $_POST['format'] ) ) ) {
