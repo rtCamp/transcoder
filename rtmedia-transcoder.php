@@ -50,6 +50,7 @@ if ( ! defined( 'EDD_RTMEDIA_TRANSCODER_ITEM_NAME' ) ) {
 	define( 'EDD_RTMEDIA_TRANSCODER_ITEM_NAME', 'rtMedia Transcoder' );
 }
 
+require_once RTMEDIA_TRANSCODER_PATH . 'admin/rtmedia-transcoder-functions.php';
 require_once RTMEDIA_TRANSCODER_PATH . 'admin/rtmedia-transcoder-admin.php';
 
 new RTMedia_Transcoder_Admin();
