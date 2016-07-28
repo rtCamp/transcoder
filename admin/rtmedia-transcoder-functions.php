@@ -37,6 +37,20 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 		}
 
 		return do_shortcode( "[video {$video_shortcode_attributes} {$video_poster_attributes}]" );
+	} elseif ( 'audio' === $mime_type[0] ) {
+
+		/**
+		 * @todo  Get transcoded file's URL
+		 */
+		$media_url 	= wp_get_attachment_url( $attachment_id );
+
+		$audio_shortcode_attributes = 'src="' . $media_url . '"';
+
+		foreach ( $attrs as $key => $value ) {
+		    $audio_shortcode_attributes .= ' ' . $key . '="' . $value . '"';
+		}
+
+		return do_shortcode( "[audio {$audio_shortcode_attributes}]" );
 	}
 }
 
