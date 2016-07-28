@@ -125,6 +125,9 @@ class RTMedia_Transcoder_Admin {
 		wp_register_script( 'rtmedia-transcoder-main', RTMEDIA_TRANSCODER_URL . 'admin/js/rtmedia-transcoder-admin.js', array( 'jquery' ), RTMEDIA_TRANSCODER_VERSION, true );
 		wp_localize_script( 'rtmedia-transcoder-main', 'rtmedia_transcoder_admin_url', admin_url() );
 		wp_localize_script( 'rtmedia-transcoder-main', 'rtmedia_transcoder_admin_url', admin_url() );
+		wp_localize_script( 'rtmedia-transcoder-main', 'disable_encoding', esc_html__( 'Are you sure you want to disable the transcoding service?', 'rtmedia-transcoder' ) );
+		wp_localize_script( 'rtmedia-transcoder-main', 'enable_encoding', esc_html__( 'Are you sure you want to enable the transcoding service?', 'rtmedia-transcoder' ) );
+		wp_localize_script( 'rtmedia-transcoder-main', 'something_went_wrong', esc_html__( 'Something went wrong. Please ', 'rtmedia-transcoder' ) . '<a href onclick="location.reload();">' . esc_html__( 'refresh', 'rtmedia-transcoder' ) . '</a>' . esc_html__( ' page.', 'rtmedia-transcoder' ) );
 
 		wp_enqueue_script( 'rtmedia-transcoder-main' );
 	}
@@ -190,6 +193,14 @@ class RTMedia_Transcoder_Admin {
 		        	$base_url 	= $uploads['baseurl'];
 
 					foreach ( $thumbnail_array as $key => $thumbnail_src ) {
+						$file_url = $thumbnail_src;
+						$uploads = wp_get_upload_dir();
+						if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
+							$thumbnail_src = $file_url;
+					    } else {
+					    	$thumbnail_src = $uploads['baseurl'] . '/' . $file_url;
+					    }
+
 						$checked = false;
 						if ( $wp_video_thumbnail === $thumbnail_src ) {
 							$checked = 'checked=checked';
@@ -198,7 +209,7 @@ class RTMedia_Transcoder_Admin {
 						$video_thumb_html .= '<li style="width: 150px;display: inline-block;"> ' .
 							'<label for="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '"> ' .
 							'<input type="radio" ' . esc_attr( $checked ) . ' id="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '" value="' . esc_attr( $thumbnail_src ) . '" name="rtmedia-thumbnail" /> ' .
-							'<img src=" ' . esc_url( $base_url . '/' . $thumbnail_src ) . '" style="max-height: 120px;max-width: 120px; vertical-align: middle;" /> ' .
+							'<img src=" ' . esc_url( $thumbnail_src ) . '" style="max-height: 120px;max-width: 120px; vertical-align: middle;" /> ' .
 							'</label></li>';
 					}
 
