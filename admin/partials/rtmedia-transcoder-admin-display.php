@@ -133,30 +133,31 @@
 				</th>
 				<td>
 					<?php
-					$action = '';
 					$usage_details = get_site_option( 'rtmedia-transcoding-usage' );
 					if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) === 'free' ) ) {
 						echo '<button disabled="disabled" type="submit" class="transcoding-try-now button button-primary">' . esc_html__( 'Current Plan', 'rtmedia-transcoder' ) . '</button>';
 					} else {
-						$action = '/wp-admin/?recurring-purchase=true&price-id=1';
 					?>
-					<!-- <form id="transcoding-try-now-form" action="<?php echo esc_attr( $action ); ?>" method="post">
-						<button
-							type="submit"
-							class="button button-primary"><?php esc_html_e( 'Try Now', 'rtmedia-transcoder' ); ?>
-						</button>
-					</form> -->
-					<a href="http://edd.rtcamp.info/checkout?edd_action=add_to_cart&download_id=71&edd_options[price_id]=1" target="_blank" class="button button-primary">
-						<?php esc_html_e( 'Try Now', 'rtmedia-transcoder' ); ?>
-					</a>
-				<?php }
+						<a href="http://edd.rtcamp.info/?transcoding-plan=free-plan" target="_blank" class="button button-primary">
+							<?php esc_html_e( 'Try Now', 'rtmedia-transcoder' ); ?>
+						</a>
+					<?php
+					}
 					?>
 				</td>
 				<td>
 					<?php //echo $this->transcoding_subscription_form( 'deluxe', 9.0 ); // @codingStandardsIgnoreLine ?>
-					<a href="http://edd.rtcamp.info/checkout?edd_action=add_to_cart&download_id=71&edd_options[price_id]=2" target="_blank" class="button button-primary">
-						<?php esc_html_e( 'Subscribe', 'rtmedia-transcoder' ); ?>
-					</a>
+					<?php
+					if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( 'deluxe' === strtolower( $usage_details[ $this->api_key ]->plan->name ) ) ) {
+						echo '<button disabled="disabled" type="submit" class="transcoding-subscribe button button-primary">' . esc_html__( 'Current Plan', 'rtmedia-transcoder' ) . '</button>';
+					} else {
+					?>
+						<a href="http://edd.rtcamp.info/?transcoding-plan=deluxe-plan" target="_blank" class="button button-primary">
+							<?php esc_html_e( 'Subscribe', 'rtmedia-transcoder' ); ?>
+						</a>
+					<?php
+					}
+					?>
 				</td>
 			</tr>
 			</tbody>
