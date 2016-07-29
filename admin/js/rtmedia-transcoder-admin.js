@@ -99,9 +99,9 @@ jQuery( document ).ready( function( $ ) {
 		} );
 	} );
 
-	jQuery( document ).on( 'click', '#disable-encoding', function ( e ) {
+	jQuery( document ).on( 'click', '#disable-transcoding', function ( e ) {
 		e.preventDefault();
-		if ( confirm( rtmedia_admin_strings.disable_encoding ) ) {
+		if ( confirm( disable_encoding ) ) {
 			var data = {
 				src   : rtmedia_transcoder_admin_url + "images/wpspin_light.gif"
 			};
@@ -109,19 +109,19 @@ jQuery( document ).ready( function( $ ) {
 			//jQuery( this ).after( rtMediaAdmin.templates.rtm_image( data ) );
 
 			var data = {
-				action: 'rtmedia_disable_encoding'
+				action: 'rtmedia_disable_transcoding'
 			};
 
 			// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
 			jQuery.post( ajaxurl, data, function ( response ) {
 				if ( response ) {
-					jQuery( '.settings-error-encoding-disabled' ).remove();
+					jQuery( '.settings-error-transcoding-disabled' ).remove();
 
-					if ( jQuery( '#settings-encoding-successfully-updated' ).length > 0 ) {
-						jQuery( '#settings-encoding-successfully-updated p' ).html( response );
+					if ( jQuery( '#settings-transcoding-successfully-updated' ).length > 0 ) {
+						jQuery( '#settings-transcoding-successfully-updated p' ).html( response );
 					} else {
 						var data = {
-							id : 'settings-encoding-successfully-updated',
+							id : 'settings-transcoding-successfully-updated',
 							msg : response,
 							class : 'updated'
 						};
@@ -129,16 +129,16 @@ jQuery( document ).ready( function( $ ) {
 						//jQuery( 'h2:first' ).after( rtMediaAdmin.templates.rtm_msg_div( data ) );
 					}
 
-					jQuery( '#rtmedia-encoding-usage' ).hide();
-					jQuery( '#disable-encoding' ).next( 'img' ).remove();
-					jQuery( '#disable-encoding' ).hide();
-					jQuery( '#enable-encoding' ).show();
+					jQuery( '#rtmedia-transcoding-usage' ).hide();
+					jQuery( '#disable-transcoding' ).next( 'img' ).remove();
+					jQuery( '#disable-transcoding' ).hide();
+					jQuery( '#enable-transcoding' ).show();
 				} else {
-					jQuery( '#settings-error-encoding-disabled' ).remove();
+					jQuery( '#settings-error-transcoding-disabled' ).remove();
 
 					var data = {
-						id : 'settings-error-encoding-disabled',
-						msg : rtmedia_admin_strings.something_went_wrong,
+						id : 'settings-error-transcoding-disabled',
+						msg : something_went_wrong,
 						class : 'error'
 					};
 
@@ -150,7 +150,7 @@ jQuery( document ).ready( function( $ ) {
 
 	jQuery( document ).on( 'click', '#enable-encoding', function ( e ) {
 		e.preventDefault();
-		if ( confirm( rtmedia_admin_strings.enable_encoding ) ) {
+		if ( confirm( enable_encoding ) ) {
 			var data = {
 				src   : rtmedia_transcoder_admin_url + "images/wpspin_light.gif"
 			};

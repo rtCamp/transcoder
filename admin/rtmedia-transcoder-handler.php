@@ -63,7 +63,7 @@ class RTMedia_Transcoder_Handler {
 							), 10, 1 );
 							add_filter( 'rtmedia_valid_type_check', array( $this, 'bypass_video_audio' ), 10, 2 );
 						}
-					} elseif ( 'deluxe' == strtolower( $usage_details[ $this->api_key ]->plan->name ) ) {
+					} elseif ( 'deluxe' == strtolower( $usage_info[ $this->api_key ]->plan->name ) ) {
 						if ( ( ! class_exists( 'RTMediaFFMPEG' ) && ! class_exists( 'RTMediaKaltura' ) ) || class_exists( 'RTMedia' ) ) {
 							add_filter( 'rtmedia_after_add_media', array( $this, 'transcoding' ), 10, 3 );
 						}
@@ -103,6 +103,7 @@ class RTMedia_Transcoder_Handler {
 		remove_action( 'add_attachment', array($this, 'wp_transcoding') );
 		foreach ( $file_object as $key => $single ) {
 
+			$attachment_id = rtmedia_media_id( $media_ids[ $key ] );
 			$type_arry        = explode( '.', $single['url'] );
 			$type             = strtolower( $type_arry[ count( $type_arry ) - 1 ] );
 			$not_allowed_type = array( 'mp3' );
@@ -156,7 +157,7 @@ class RTMedia_Transcoder_Handler {
 					if ( isset( $upload_info->status ) && $upload_info->status && isset( $upload_info->job_id ) && $upload_info->job_id ) {
 						$job_id = $upload_info->job_id;
 						update_rtmedia_meta( $media_ids[ $key ], 'rtmedia-transcoding-job-id', $job_id );
-						update_post_meta( $media_ids[ $key ], '_rtmedia_transcoding_job_id', $job_id );
+						update_post_meta( $attachment_id, '_rtmedia_transcoding_job_id', $job_id );
 						$model = new RTMediaModel();
 						$model->update( array( 'cover_art' => '0' ), array( 'id' => $media_ids[ $key ] ) );
 					}
@@ -480,8 +481,18 @@ class RTMedia_Transcoder_Handler {
 				}
 			}
 			$usage = new rtProgress();
+
+			/**
+			 * If plan is deluxe/unlimited show progress bar gray all the time, to do
+			 * this override `used` and `total` variable manually
+			 */
+			if ( ! empty( $usage_details[ $this->api_key ]->plan->name ) && ( 'deluxe' === strtolower( $usage_details[ $this->api_key ]->plan->name ) ) ) {
+				$usage_details[ $this->api_key ]->used = 0;
+				$usage_details[ $this->api_key ]->total = 1;
+			}
+
 			$content .= $usage->progress_ui( $usage->progress( $usage_details[ $this->api_key ]->used, $usage_details[ $this->api_key ]->total ), false );
-			if ( ( $usage_details[ $this->api_key ]->remaining <= 0 ) && ( -1 !== $usage_details[ $this->api_key ]->remaining ) ) {
+			if ( ( 0 <= $usage_details[ $this->api_key ]->remaining ) && ( -1 !== $usage_details[ $this->api_key ]->remaining ) ) {
 				$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your usage limit has been reached. Upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
 			}
 		} else {
@@ -538,7 +549,7 @@ class RTMedia_Transcoder_Handler {
 				$largest_thumb_url	= $file ? $file : '';
 
 				if ( 'rtmedia' === $post_thumbs_array['job_for'] ) {
-					$model->update( array( 'cover_art' => $thumb_upload_info['url'] ), array( 'media_id' => $post_id ) );
+					//$model->update( array( 'cover_art' => $thumb_upload_info['url'] ), array( 'media_id' => $post_id ) );
 				}
 			}
 		}
