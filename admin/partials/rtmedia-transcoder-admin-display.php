@@ -133,30 +133,41 @@
 				</th>
 				<td>
 					<?php
-					$usage_details = get_site_option( 'rtmedia-transcoding-usage' );
-					if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) === 'free' ) ) {
-						echo '<button disabled="disabled" type="submit" class="transcoding-try-now button button-primary">' . esc_html__( 'Current Plan', 'rtmedia-transcoder' ) . '</button>';
-					} else {
-					?>
-						<a href="http://edd.rtcamp.info/?transcoding-plan=free-plan" target="_blank" class="button button-primary">
-							<?php esc_html_e( 'Try Now', 'rtmedia-transcoder' ); ?>
-						</a>
-					<?php
-					}
+						$allowed_tags = array(
+						    'a' => array(
+						        'href' => array(),
+						        'target' => array(),
+						        'title' => array(),
+						        'class' => array(),
+						    ),
+						    'div' => array(
+						    	'title' => array(),
+						    	'id' => array(),
+						    ),
+						    'button' => array(
+						        'data-plan' => array(),
+						        'data-price' => array(),
+						        'type' => array(),
+						        'class' => array(),
+						    ),
+						    'textarea' => array(
+						    	'rows' => array(),
+						    	'cols' => array(),
+						    	'id' => array(),
+						    ),
+						    'p' => array(),
+						);
+
+						$button = RTA()->transcoding_subscription_button( 'free', 0 );
+						echo wp_kses( $button, $allowed_tags );
+
 					?>
 				</td>
 				<td>
 					<?php //echo $this->transcoding_subscription_form( 'deluxe', 9.0 ); // @codingStandardsIgnoreLine ?>
 					<?php
-					if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( 'deluxe' === strtolower( $usage_details[ $this->api_key ]->plan->name ) ) ) {
-						echo '<button disabled="disabled" type="submit" class="transcoding-subscribe button button-primary">' . esc_html__( 'Current Plan', 'rtmedia-transcoder' ) . '</button>';
-					} else {
-					?>
-						<a href="http://edd.rtcamp.info/?transcoding-plan=deluxe-plan" target="_blank" class="button button-primary">
-							<?php esc_html_e( 'Subscribe', 'rtmedia-transcoder' ); ?>
-						</a>
-					<?php
-					}
+						$button = RTA()->transcoding_subscription_button( 'deluxe', 9 );
+						echo wp_kses( $button, $allowed_tags );
 					?>
 				</td>
 			</tr>
