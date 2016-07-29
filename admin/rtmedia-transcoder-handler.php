@@ -549,7 +549,7 @@ class RTMedia_Transcoder_Handler {
 				$largest_thumb_url	= $file ? $file : '';
 
 				if ( 'rtmedia' === $post_thumbs_array['job_for'] ) {
-					$model->update( array( 'cover_art' => $thumb_upload_info['url'] ), array( 'media_id' => $post_id ) );
+					//$model->update( array( 'cover_art' => $thumb_upload_info['url'] ), array( 'media_id' => $post_id ) );
 				}
 			}
 		}
