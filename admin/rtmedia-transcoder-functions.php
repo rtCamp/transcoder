@@ -1,4 +1,14 @@
 <?php
+
+/**
+ * Gives the instance of rtMedia_Transcoder_Admin Class
+ * @return object
+ */
+function RTA(){
+	global $rtmedia_transcoder_admin;
+	return $rtmedia_transcoder_admin;
+}
+
 add_shortcode( 'rt_media', 'rt_media_shortcode' );
 
 
@@ -11,7 +21,7 @@ add_shortcode( 'rt_media', 'rt_media_shortcode' );
 function rt_media_shortcode( $attrs, $content = '' ) {
 
 	if ( empty( $attrs['attachment_id'] ) ) {
-	    return;
+	    return false;
 	}
 
 	$attachment_id = $attrs['attachment_id'];
@@ -113,11 +123,20 @@ function rt_media_get_video_url( $attachment_id ) {
 
 add_filter( 'rtmedia_media_thumb', 'rtmedia_transcoded_thumb', 11, 3 );
 
+/**
+ * Give the thumbnail URL for rtMedia gallery shortcode
+ * @param  string $src        thumbnail URL
+ * @param  number $media_id   rtMedia ID
+ * @param  string $media_type media type i.e video, audio etc
+ * @return string             thumbnail URL
+ */
 function rtmedia_transcoded_thumb( $src, $media_id, $media_type ) {
 	if ( 'video' === $media_type ) {
 		$attachment_id = rtmedia_media_id( $media_id );
-		$src = rt_media_get_video_thumbnail( $attachment_id );
+		$thumb_src = rt_media_get_video_thumbnail( $attachment_id );
+		if ( ! empty( $thumb_src ) ) {
+			$src = $thumb_src;
+		}
 	}
-
 	return $src;
 }
