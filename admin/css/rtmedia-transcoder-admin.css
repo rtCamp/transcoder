@@ -63,3 +63,7 @@
     font-size: 13px;
     font-weight: 600;
 }
+
+#trascoder-unsubscribe-dialog {
+    display: none;
+}
