@@ -141,24 +141,23 @@ class RTMedia_Transcoder_Admin {
 	 * @param bool   $force  If true then it always show subscriobe form.
 	 * @return string
 	 */
-	public function transcoding_subscription_form( $name = 'No Name', $price = '0', $force = false ) {
+	public function transcoding_subscription_button( $name = 'No Name', $price = '0', $force = false ) {
 		if ( $this->api_key ) {
 			$this->transcoder_handler->update_usage( $this->api_key );
 		}
-		$action      = '/wp-admin/?recurring-purchase=true&price-id=2';
-		$return_page = esc_url( add_query_arg( array( 'page' => 'rtmedia-addons' ), ( is_multisite() ? network_admin_url( 'admin.php' ) : admin_url( 'admin.php' ) ) ) );
 
 		$usage_details = get_site_option( 'rtmedia-transcoding-usage' );
+
 		if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) === strtolower( $name ) ) && $usage_details[ $this->api_key ]->sub_status && ! $force ) {
-			$form = '<button data-plan="' . esc_attr( $name ) . '" data-price="' . esc_attr( $price ) . '" type="submit" class="button bpm-unsubscribe">' . esc_html__( 'Unsubscribe', 'rtmedia-transcoder' ) . '</button>';
-			$form .= '<div id="bpm-unsubscribe-dialog" title="Unsubscribe">
+			$form = '<button data-plan="' . esc_attr( $name ) . '" data-price="' . esc_attr( $price ) . '" type="submit" class="button button-primary bpm-unsubscribe">' . esc_html__( 'Unsubscribe', 'rtmedia-transcoder' ) . '</button>';
+			$form .= '<div id="trascoder-unsubscribe-dialog" title="Unsubscribe">
 						<p>' . esc_html__( 'Just to improve our service we would like to know the reason for you to leave us.', 'rtmedia-transcoder' ) . '</p>
 						<p><textarea rows="3" cols="18" id="bpm-unsubscribe-note"></textarea></p>
 						</div>';
 		} else {
-			$form = '<form method="post" action="' . $action . '" class="paypal-button" target="_top">
-					<input type="image" src="http://www.paypal.com/en_US/i/btn/btn_subscribe_SM.gif" name="submit" alt="Make payments with PayPal - it\'s fast, free and secure!">
-				</form>';
+			$form = '<a href="http://edd.rtcamp.info/?transcoding-plan=' . $name . '" target="_blank" class="button button-primary">
+						' . esc_html( 'Subscribe', 'rtmedia-transcoder' ) . '
+					</a>';
 		}
 
 		return $form;
@@ -193,6 +192,12 @@ class RTMedia_Transcoder_Admin {
 		        	$base_url 	= $uploads['baseurl'];
 
 					foreach ( $thumbnail_array as $key => $thumbnail_src ) {
+						$checked = false;
+						$thumbnail_src_og = $thumbnail_src;
+						if ( $wp_video_thumbnail === $thumbnail_src ) {
+							$checked = 'checked=checked';
+						}
+
 						$file_url = $thumbnail_src;
 						$uploads = wp_get_upload_dir();
 						if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
@@ -201,14 +206,10 @@ class RTMedia_Transcoder_Admin {
 					    	$thumbnail_src = $uploads['baseurl'] . '/' . $file_url;
 					    }
 
-						$checked = false;
-						if ( $wp_video_thumbnail === $thumbnail_src ) {
-							$checked = 'checked=checked';
-						}
 						$count   = $key + 1;
 						$video_thumb_html .= '<li style="width: 150px;display: inline-block;"> ' .
 							'<label for="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '"> ' .
-							'<input type="radio" ' . esc_attr( $checked ) . ' id="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '" value="' . esc_attr( $thumbnail_src ) . '" name="rtmedia-thumbnail" /> ' .
+							'<input type="radio" ' . esc_attr( $checked ) . ' id="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '" value="' . esc_attr( $thumbnail_src_og ) . '" name="rtmedia-thumbnail" /> ' .
 							'<img src=" ' . esc_url( $thumbnail_src ) . '" style="max-height: 120px;max-width: 120px; vertical-align: middle;" /> ' .
 							'</label></li>';
 					}
@@ -259,7 +260,7 @@ class RTMedia_Transcoder_Admin {
 						$video_thumb_html .= '<li style="width: 150px;display: inline-block;">
 								<label for="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '">
 								<input type="radio" ' . esc_attr( $checked ) . ' id="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '" value="' . esc_attr( $thumbnail_src ) . '" name="rtmedia-thumbnail" />
-								<img src=" ' . esc_url( $base_url . '/' .$thumbnail_src ) . '" style="max-height: 120px;max-width: 120px; vertical-align: middle;" />
+								<img src=" ' . esc_url( $base_url . '/' . $thumbnail_src ) . '" style="max-height: 120px;max-width: 120px; vertical-align: middle;" />
 								</label></li> ';
 					}
 
