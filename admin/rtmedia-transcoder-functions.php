@@ -1,6 +1,7 @@
 <?php
 add_shortcode( 'rt_media', 'rt_media_shortcode' );
 
+
 /**
  * rtMedia short code to display media file in content
  * @param  array $attrs
@@ -39,9 +40,6 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 		return do_shortcode( "[video {$video_shortcode_attributes} {$video_poster_attributes}]" );
 	} elseif ( 'audio' === $mime_type[0] ) {
 
-		/**
-		 * @todo  Get transcoded file's URL
-		 */
 		$media_url 	= wp_get_attachment_url( $attachment_id );
 
 		$audio_shortcode_attributes = 'src="' . $media_url . '"';
@@ -68,8 +66,16 @@ function rt_media_get_video_thumbnail( $attachment_id ) {
 	$thumbnails = get_post_meta( $attachment_id, '_rt_media_video_thumbnail', true );
 
 	if ( ! empty( $thumbnails ) ) {
+
+		$file_url = $thumbnails;
 		$uploads = wp_get_upload_dir();
-		return $uploads['baseurl'] . '/' . $thumbnails;
+		if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
+			$final_file_url = $file_url;
+	    } else {
+	    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
+	    }
+
+		return $final_file_url;
 	}
 
 	return false;
@@ -103,4 +109,15 @@ function rt_media_get_video_url( $attachment_id ) {
 
 	return $final_file_url;
 
+}
+
+add_filter( 'rtmedia_media_thumb', 'rtmedia_transcoded_thumb', 11, 3 );
+
+function rtmedia_transcoded_thumb( $src, $media_id, $media_type ) {
+	if ( 'video' === $media_type ) {
+		$attachment_id = rtmedia_media_id( $media_id );
+		$src = rt_media_get_video_thumbnail( $attachment_id );
+	}
+
+	return $src;
 }
