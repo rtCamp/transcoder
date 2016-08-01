@@ -4,7 +4,7 @@
  * Gives the instance of rtMedia_Transcoder_Admin Class
  * @return object
  */
-function RTA(){
+function rta() {
 	global $rtmedia_transcoder_admin;
 	return $rtmedia_transcoder_admin;
 }
@@ -35,19 +35,21 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 	$mime_type = explode( '/', $type );
 
 	if ( 'video' === $mime_type[0] ) {
+
+		$video_shortcode_attributes = '';
 		$media_url 	= rt_media_get_video_url( $attachment_id );
 
 		$poster 	= rt_media_get_video_thumbnail( $attachment_id );
 
-		$video_shortcode_attributes = 'src="' . $media_url . '"';
-
-		$video_poster_attributes = 'poster="' . $poster . '"';
+		$attrs['src'] 		= $media_url;
+		$attrs['poster'] 	= $poster;
 
 		foreach ( $attrs as $key => $value ) {
 		    $video_shortcode_attributes .= ' ' . $key . '="' . $value . '"';
 		}
 
-		return do_shortcode( "[video {$video_shortcode_attributes} {$video_poster_attributes}]" );
+		return do_shortcode( "[video {$video_shortcode_attributes}]" );
+
 	} elseif ( 'audio' === $mime_type[0] ) {
 
 		$media_url 	= wp_get_attachment_url( $attachment_id );
