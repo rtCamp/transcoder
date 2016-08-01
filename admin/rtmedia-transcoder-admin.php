@@ -69,6 +69,7 @@ class RTMedia_Transcoder_Admin {
 
 		add_filter( 'attachment_fields_to_edit', array( $this, 'edit_video_thumbnail' ), 11, 2 );
 		add_filter( 'attachment_fields_to_save', array( $this, 'save_video_thumbnail' ), 11, 1 );
+		add_filter( 'bp_get_activity_content_body', array( $this, 'rtmedia_transcoder_activity_content_body' ), 1, 2 );
 
 		$this->transcoder_handler = new RTMedia_Transcoder_Handler();
 
@@ -149,14 +150,11 @@ class RTMedia_Transcoder_Admin {
 		$usage_details = get_site_option( 'rtmedia-transcoding-usage' );
 
 		if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) === strtolower( $name ) ) && $usage_details[ $this->api_key ]->sub_status && ! $force ) {
-			$form = '<button data-plan="' . esc_attr( $name ) . '" data-price="' . esc_attr( $price ) . '" type="submit" class="button button-primary bpm-unsubscribe">' . esc_html__( 'Unsubscribe', 'rtmedia-transcoder' ) . '</button>';
-			$form .= '<div id="trascoder-unsubscribe-dialog" title="Unsubscribe">
-						<p>' . esc_html__( 'Just to improve our service we would like to know the reason for you to leave us.', 'rtmedia-transcoder' ) . '</p>
-						<p><textarea rows="3" cols="18" id="bpm-unsubscribe-note"></textarea></p>
-						</div>';
+			$form = '<button disabled="disabled" type="submit" class="button button-primary bpm-unsubscribe">' . esc_html__( 'Current Plan', 'rtmedia-transcoder' ) . '</button>';
 		} else {
+			$plan_name = 'free' === $name ? 'Try Now' : 'Subscribe';
 			$form = '<a href="http://edd.rtcamp.info/?transcoding-plan=' . $name . '" target="_blank" class="button button-primary">
-						' . esc_html( 'Subscribe', 'rtmedia-transcoder' ) . '
+						' . esc_html( $plan_name, 'rtmedia-transcoder' ) . '
 					</a>';
 		}
 
@@ -199,7 +197,7 @@ class RTMedia_Transcoder_Admin {
 						}
 
 						$file_url = $thumbnail_src;
-						$uploads = wp_get_upload_dir();
+
 						if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
 							$thumbnail_src = $file_url;
 					    } else {
@@ -300,5 +298,15 @@ class RTMedia_Transcoder_Admin {
 		}
 
 		return $post;
+	}
+
+	/**
+	 * Parse the short codes in the activity content
+	 * @param  text 	$content
+	 * @param  object 	$activity
+	 * @return text
+	 */
+	public function rtmedia_transcoder_activity_content_body( $content, $activity ) {
+		return do_shortcode( $content );
 	}
 }
