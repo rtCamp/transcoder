@@ -134,6 +134,7 @@ class RTMedia_Transcoder_Handler {
 				$args = array(
 				        'method' 	=> 'POST',
 				        'sslverify' => false,
+				        'timeout' 	=> 60,
 				        'body' 		=> array(
 			                'api_token' 	=> $this->api_key,
 			                'job_type' 		=> $job_type,
@@ -207,6 +208,7 @@ class RTMedia_Transcoder_Handler {
 			$args = array(
 			        'method' 	=> 'POST',
 			        'sslverify' => false,
+			        'timeout' 	=> 60,
 			        'body' 		=> array(
 		                'api_token' 	=> $this->api_key,
 		                'job_type' 		=> $job_type,
@@ -387,6 +389,7 @@ class RTMedia_Transcoder_Handler {
 				$args = array(
 				        'method' 	=> 'POST',
 				        'sslverify' => false,
+				        'timeout'	=> 60,
 				        'body' 		=> array(
 			                'trans_type'    => 'cancel-license',
 			                'license-key' 	=> $this->api_key,
@@ -555,7 +558,7 @@ class RTMedia_Transcoder_Handler {
 		}
 
 		if ( 'rtmedia' === $post_thumbs_array['job_for'] ) {
-			update_activity_after_thumb_set( $media_id );
+			//update_activity_after_thumb_set( $media_id );
 		}
 
 		update_post_meta( $post_id, '_rt_media_source', 			$post_thumbs_array['job_for'] );
