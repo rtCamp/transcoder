@@ -1,6 +1,6 @@
 .bp-media-settings-boxes-wrapper {
     float: left;
-    width: 76.2%;
+    width: 72%;
     margin: 10px 0px 0 2px;
 }
 
@@ -47,6 +47,7 @@
 .rtm-transcoder-sidebar {
     float: right;
     margin: 10px 20px 0 2px;
+    width: 23%;
 }
 
 .rtm-transcoder-plan-table {
