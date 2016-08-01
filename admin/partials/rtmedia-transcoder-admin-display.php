@@ -145,6 +145,7 @@
 						    	'id' => array(),
 						    ),
 						    'button' => array(
+						    	'disabled' => array(),
 						        'data-plan' => array(),
 						        'data-price' => array(),
 						        'type' => array(),
@@ -158,7 +159,7 @@
 						    'p' => array(),
 						);
 
-						$button = RTA()->transcoding_subscription_button( 'free', 0 );
+						$button = $this->transcoding_subscription_button( 'free', 0 );
 						echo wp_kses( $button, $allowed_tags );
 
 					?>
@@ -166,7 +167,7 @@
 				<td>
 					<?php //echo $this->transcoding_subscription_form( 'deluxe', 9.0 ); // @codingStandardsIgnoreLine ?>
 					<?php
-						$button = RTA()->transcoding_subscription_button( 'deluxe', 9 );
+						$button = $this->transcoding_subscription_button( 'deluxe', 9 );
 						echo wp_kses( $button, $allowed_tags );
 					?>
 				</td>
