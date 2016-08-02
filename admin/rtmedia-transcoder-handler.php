@@ -102,7 +102,6 @@ class RTMedia_Transcoder_Handler {
 			add_action( 'rtmedia_transcoder_before_widgets', array( $this, 'usage_widget' ) );
 		}
 		add_action( 'admin_init', array( $this, 'save_api_key' ), 1 );
-		add_action( 'admin_init', array( $this, 'transcoding_api_subscribe' ), 1 );
 
 		if ( $this->api_key ) {
 			// Store api key as different db key if user disable transcoding service.
@@ -194,6 +193,10 @@ class RTMedia_Transcoder_Handler {
 					$job_type = 'thumbnail';
 				}
 
+				if ( 'audio' === $type_array[0] ) {
+					$job_type = 'audio';
+				}
+
 				$query_args   = array(
 					'file_url'    => urlencode( $single['url'] ),
 					'callbackurl' => urlencode( trailingslashit( home_url() ) . 'index.php' ),
@@ -275,6 +278,10 @@ class RTMedia_Transcoder_Handler {
 			if ( 'video/mp4' === $metadata['mime_type'] || 'mp4' === $type ) {
 				$autoformat = 'thumbnails';
 				$job_type = 'thumbnail';
+			}
+
+			if ( 'audio' === $type_array[0] ) {
+				$job_type = 'audio';
 			}
 
 			$args = array(
@@ -370,7 +377,7 @@ class RTMedia_Transcoder_Handler {
 		if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
 			$validation_page = vip_safe_wp_remote_get( $validate_url );
 		} else {
-			$validation_page = wp_remote_get( $validate_url ); // @codingStandardsIgnoreLine 
+			$validation_page = wp_remote_get( $validate_url ); // @codingStandardsIgnoreLine
 		}
 		if ( ! is_wp_error( $validation_page ) ) {
 			$validation_info = json_decode( $validation_page['body'] );
@@ -775,6 +782,7 @@ class RTMedia_Transcoder_Handler {
 	 */
 	public function handle_callback() {
 		require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
 		// @codingStandardsIgnoreStart
 		if ( isset( $_REQUEST['job_for'] ) && ( 'wp-media' == $_REQUEST['job_for'] ) ) {
 			if ( isset( $_REQUEST['job_id'] ) ) {

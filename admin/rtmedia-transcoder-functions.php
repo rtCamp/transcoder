@@ -18,9 +18,6 @@ function rta() {
 	return $rtmedia_transcoder_admin;
 }
 
-add_shortcode( 'rt_media', 'rt_media_shortcode' );
-
-
 /**
  * Builds the [rt_media] shortcode output.
  *
@@ -68,7 +65,19 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 		    $video_shortcode_attributes .= ' ' . $key . '="' . $value . '"';
 		}
 
-		return do_shortcode( "[video {$video_shortcode_attributes}]" );
+		$content = do_shortcode( "[video {$video_shortcode_attributes}]" );
+
+		/**
+		 * Allow user to filter activity content.
+		 *
+		 * @since 1.0
+		 *
+		 * @param string $content    	Activity content.
+		 * @param int $attachment_id  	ID of attachment.
+		 * @param string $media_url  	URL of the media.
+		 * @param string $media_type  	Mime type of the media.
+		 */
+		return apply_filters( 'rt_media_shortcode', $content, $attachment_id, $media_url, $mime_type[0] );
 
 	} elseif ( 'audio' === $mime_type[0] ) {
 
@@ -80,9 +89,24 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 		    $audio_shortcode_attributes .= ' ' . $key . '="' . $value . '"';
 		}
 
-		return do_shortcode( "[audio {$audio_shortcode_attributes}]" );
+		$content = do_shortcode( "[audio {$audio_shortcode_attributes}]" );
+
+		/**
+		 * Allow user to filter activity content.
+		 *
+		 * @since 1.0
+		 *
+		 * @param string $content    	Activity content.
+		 * @param int $attachment_id  	ID of attachment.
+		 * @param string $media_url  	URL of the media.
+		 * @param string $media_type  	Mime type of the media.
+		 */
+		return apply_filters( 'rt_media_shortcode', $content, $attachment_id, $media_url, $mime_type[0] );
+
 	}
 }
+
+add_shortcode( 'rt_media', 'rt_media_shortcode' );
 
 /**
  * Give the transcoded video's thumbnail stored in videos meta.
@@ -172,3 +196,17 @@ function rtmedia_transcoded_thumb( $src, $media_id, $media_type ) {
 	}
 	return $src;
 }
+
+/**
+ * Parse the short codes in the activity content.
+ *
+ * @param  text   $content   activity body content.
+ * @param  object $activity  activity object.
+ *
+ * @return text
+ */
+function rtmedia_transcoder_parse_shortcode( $content, $activity ) {
+	return do_shortcode( $content );
+}
+
+add_filter( 'bp_get_activity_content_body', 'rtmedia_transcoder_parse_shortcode', 1, 2 );
