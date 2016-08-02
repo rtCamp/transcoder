@@ -1,8 +1,13 @@
 <?php
-
-/*
+/**
  * RTMedia Transcoder admin settings.
+ * 
+ * @since      1.0
+ *
+ * @package    rtmedia-transcoder
+ * @subpackage rtmedia-transcoder/admin/partials
  */
+
 ?>
 
 <h3 class="rtm-option-title">
