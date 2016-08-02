@@ -102,7 +102,6 @@ class RTMedia_Transcoder_Handler {
 			add_action( 'rtmedia_transcoder_before_widgets', array( $this, 'usage_widget' ) );
 		}
 		add_action( 'admin_init', array( $this, 'save_api_key' ), 1 );
-		add_action( 'admin_init', array( $this, 'transcoding_api_subscribe' ), 1 );
 
 		if ( $this->api_key ) {
 			// Store api key as different db key if user disable transcoding service.
