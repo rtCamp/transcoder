@@ -69,7 +69,6 @@ class RTMedia_Transcoder_Admin {
 
 		add_filter( 'attachment_fields_to_edit', array( $this, 'edit_video_thumbnail' ), 11, 2 );
 		add_filter( 'attachment_fields_to_save', array( $this, 'save_video_thumbnail' ), 11, 1 );
-		add_filter( 'bp_get_activity_content_body', array( $this, 'rtmedia_transcoder_activity_content_body' ), 1, 2 );
 
 		$this->transcoder_handler = new RTMedia_Transcoder_Handler();
 
@@ -298,17 +297,5 @@ class RTMedia_Transcoder_Admin {
 		}
 
 		return $post;
-	}
-
-	/**
-	 * Parse the short codes in the activity content.
-	 *
-	 * @param  text   $content   activity body content.
-	 * @param  object $activity  activity object.
-	 *
-	 * @return text
-	 */
-	public function rtmedia_transcoder_activity_content_body( $content, $activity ) {
-		return do_shortcode( $content );
 	}
 }
