@@ -14,12 +14,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Handle request/response with trancoder api.
- * 
+ *
  * @package    rtmedia-trascoder
  * @subpackage rtmedia-trascoder/admin
  */
 class RTMedia_Transcoder_Handler {
-	
+
 	/**
 	 * The URL of the api.
 	 *
@@ -28,7 +28,7 @@ class RTMedia_Transcoder_Handler {
 	 * @var      string    $api_url    The URL of the api.
 	 */
 	protected $api_url = 'http://api-rtmedia.rtcamp.info/api/v1/';
-	
+
 	/**
 	 * The URL of the transcoder api.
 	 *
@@ -37,7 +37,7 @@ class RTMedia_Transcoder_Handler {
 	 * @var      string    $edd_api_url    The URL of the transcoder api.
 	 */
 	protected $edd_api_url = 'http://edd.rtcamp.info/';
-	
+
 	/**
 	 * Contain uploaded media information.
 	 *
@@ -46,7 +46,7 @@ class RTMedia_Transcoder_Handler {
 	 * @var      array    $uploaded   Contain uploaded media information.
 	 */
 	public $uploaded = array();
-	
+
 	/**
 	 * The api key of transcoding service subscription.
 	 *
@@ -55,7 +55,7 @@ class RTMedia_Transcoder_Handler {
 	 * @var      string    $api_key    The api key of transcoding service subscription.
 	 */
 	public $api_key = false;
-	
+
 	/**
 	 * The api key of transcoding service subscription.
 	 *
@@ -64,30 +64,30 @@ class RTMedia_Transcoder_Handler {
 	 * @var      string    $stored_api_key    The api key of transcoding service subscription.
 	 */
 	public $stored_api_key = false;
-	
+
 	/**
-	 * Video extensions with comma separated. 
+	 * Video extensions with comma separated.
 	 *
 	 * @since    1.0
 	 * @access   public
-	 * @var      string    $video_extensions    Video extensions with comma separated. 
+	 * @var      string    $video_extensions    Video extensions with comma separated.
 	 */
 	public $video_extensions = ',mov,m4v,m2v,avi,mpg,flv,wmv,mkv,webm,ogv,mxf,asf,vob,mts,qt,mpeg,x-msvideo';
-	
+
 	/**
-	 * Audio extensions with comma separated. 
+	 * Audio extensions with comma separated.
 	 *
 	 * @since    1.0
 	 * @access   public
-	 * @var      string    $audio_extensions    Audio extensions with comma separated. 
+	 * @var      string    $audio_extensions    Audio extensions with comma separated.
 	 */
 	public $audio_extensions = ',wma,ogg,wav,m4a';
-	
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0
-	 * 
+	 *
 	 * @param bool $no_init  If true then do nothing else continue.
 	 */
 	public function __construct( $no_init = false ) {
@@ -163,12 +163,12 @@ class RTMedia_Transcoder_Handler {
 
 	/**
 	 * Send transcoding request and save transcoding job id get in response for uploaded media in buddypress activity.
-	 * 
+	 *
 	 * @since 1.0
-	 * 
+	 *
 	 * @param array	$media_ids		Array of multiple attachment ids.
 	 * @param array $file_object	Array of file objects.
-	 * @param type  $uploaded			
+	 * @param type  $uploaded
 	 * @param bool  $autoformat     If true then genrating thumbs only else also trancode video.
 	 */
 	function transcoding( $media_ids, $file_object, $uploaded, $autoformat = true ) {
@@ -188,10 +188,14 @@ class RTMedia_Transcoder_Handler {
 				}
 
 				$job_type = 'video';
-				
+
 				if ( 'video/mp4' === $single['type'] || 'mp4' === $type ) {
 					$autoformat = 'thumbnails';
 					$job_type = 'thumbnail';
+				}
+
+				if ( 'audio' === $type_array[0] ) {
+					$job_type = 'audio';
 				}
 
 				$query_args   = array(
@@ -239,9 +243,9 @@ class RTMedia_Transcoder_Handler {
 
 	/**
 	 * Send transcoding request and save transcoding job id get in response for uploaded media in WordPress media library.
-	 * 
+	 *
 	 * @since 1.0
-	 * 
+	 *
 	 * @param int    $attachment_id		ID of attachment.
 	 * @param string $autoformat		If true then genrating thumbs only else also trancode video.
 	 */
@@ -277,6 +281,10 @@ class RTMedia_Transcoder_Handler {
 				$job_type = 'thumbnail';
 			}
 
+			if ( 'audio' === $type_array[0] ) {
+				$job_type = 'audio';
+			}
+
 			$args = array(
 				'method' 	=> 'POST',
 				'sslverify' => false,
@@ -307,25 +315,25 @@ class RTMedia_Transcoder_Handler {
 			$this->update_usage( $this->api_key );
 		}
 	}
-	
+
 	/**
 	 * Get number of thumbnails required to generate for video.
-	 * 
+	 *
 	 * @since 1.0
-	 * 
+	 *
 	 * @param int $attachment_id	ID of attachment.
-	 * 
+	 *
 	 * @return int $thumb_count
 	 */
 	public function get_thumbnails_required( $attachment_id = '' ) {
 
 		$thumb_count = get_option('number_of_thumbs');
-		
+
 		/**
 		 * Allow user to filter number of thumbnails required to generate for video.
-		 * 
+		 *
 		 * @since 1.0
-		 * 
+		 *
 		 * @param int $thumb_count    Number of thumbnails set in setting.
 		 * @param int $attachment_id  ID of attachment.
 		 */
@@ -334,15 +342,15 @@ class RTMedia_Transcoder_Handler {
 		return $thumb_count > 10 ? 10 : $thumb_count;
 
 	}
-	
+
 	/**
 	 * Check whether uploaded file is valid audio/video file or not.
-	 * 
+	 *
 	 * @since 1.0
-	 * 
+	 *
 	 * @param boolean $flag		File valid or not.
 	 * @param array   $file		Media file.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public function bypass_video_audio( $flag, $file ) {
@@ -355,15 +363,15 @@ class RTMedia_Transcoder_Handler {
 
 		return $flag;
 	}
-	
+
 	/**
 	 * Check api key is valid or not.
-	 * 
+	 *
 	 * @since 1.0
-	 * 
+	 *
 	 * @param string $key    Api Key.
-	 * 
-	 * @return boolean $status  If true then key is valid else key is not valid.    
+	 *
+	 * @return boolean $status  If true then key is valid else key is not valid.
 	 */
 	public function is_valid_key( $key ) {
 		$validate_url    = trailingslashit( $this->edd_api_url ) . 'rt-eddsl-api/?rt-eddsl-license-key=' . $key;
@@ -377,14 +385,14 @@ class RTMedia_Transcoder_Handler {
 
 		return $status;
 	}
-	
+
 	/**
 	 * Save usage information.
-	 * 
+	 *
 	 * @since 1.0
-	 * 
+	 *
 	 * @param string $key  Api key.
-	 * 
+	 *
 	 * @return array $usage_info  An array containing usage information.
 	 */
 	public function update_usage( $key ) {
@@ -403,9 +411,9 @@ class RTMedia_Transcoder_Handler {
 
 	/**
 	 * Send email to admin when trancoding quota near to limit.
-	 * 
+	 *
 	 * @since 1.0
-	 * 
+	 *
 	 * @param array $usage_details Usage informataion.
 	 */
 	public function nearing_usage_limit( $usage_details ) {
@@ -425,10 +433,10 @@ class RTMedia_Transcoder_Handler {
 		}
 		update_site_option( 'rtmedia-transcoding-usage-limit-mail', 1 );
 	}
-	
+
 	/**
 	 * Send email to admin when trancoding quota is over.
-	 * 
+	 *
 	 * @since 1.0
 	 */
 	public function usage_quota_over() {
@@ -453,7 +461,7 @@ class RTMedia_Transcoder_Handler {
 
 	/**
 	 * Check whether key is valid or not and save api key.
-	 * 
+	 *
 	 * @since 1.0
 	 */
 	public function save_api_key() {
@@ -485,7 +493,7 @@ class RTMedia_Transcoder_Handler {
 
 			update_site_option( 'rtmedia-transcoding-api-key', $apikey );
 			update_site_option( 'rtmedia-transcoding-api-key-stored', $apikey );
-			
+
 			$usage_info  = $this->update_usage( $apikey );
 			$return_page = add_query_arg( array(
 				'page'            => 'rtmedia-transcoder',
@@ -499,11 +507,11 @@ class RTMedia_Transcoder_Handler {
 
 	/**
 	 * Allow user to upload other types media files.
-	 * 
+	 *
 	 * @since 1.0
-	 * 
+	 *
 	 * @param array $types	Mime types.
-	 * 
+	 *
 	 * @return array $types Mime types.
 	 */
 	public function allowed_types( $types ) {
@@ -518,14 +526,14 @@ class RTMedia_Transcoder_Handler {
 
 		return $types;
 	}
-	
+
 	/**
 	 * Allow user to upload other types media files.
-	 * 
+	 *
 	 * @since 1.0
-	 * 
+	 *
 	 * @param array $types Mime types.
-	 * 
+	 *
 	 * @return array	Mime types.
 	 */
 	public function allowed_types_admin_settings( $types ) {
@@ -538,10 +546,10 @@ class RTMedia_Transcoder_Handler {
 
 		return $types;
 	}
-	
+
 	/**
 	 * Display message when user subscribed successfully.
-	 * 
+	 *
 	 * @since 1.0
 	 */
 	public function successfully_subscribed_notice() {
@@ -560,7 +568,7 @@ class RTMedia_Transcoder_Handler {
 
 	/**
 	 * Display usage widget in sidebar on rtmedia transcoder settings page.
-	 * 
+	 *
 	 * @since 1.0
 	 */
 	public function usage_widget() {
@@ -626,14 +634,14 @@ class RTMedia_Transcoder_Handler {
         </div>
 		<?php
 	}
-	
+
 	/**
 	 * Save thumbnails for transcoded video.
-	 * 
+	 *
 	 * @since 1.0
-	 * 
+	 *
 	 * @param array $post_array  Attachment data.
-	 * 
+	 *
 	 * @return url
 	 */
 	public function add_media_thumbnails( $post_array ) {
@@ -697,10 +705,10 @@ class RTMedia_Transcoder_Handler {
 
 		return $largest_thumb;
 	}
-	
+
 	/**
 	 * Save transcoded media files.
-	 * 
+	 *
 	 * @since 1.0
 	 * @param array $file_post_array	Transcoded files.
 	 * @param int   $attachment_id		ID of attachment.
@@ -746,12 +754,12 @@ class RTMedia_Transcoder_Handler {
 
 	/**
 	 * Get post id from meta key and value.
-	 * 
+	 *
 	 * @since 1.0
-	 * 
+	 *
 	 * @param string $key	Meta key.
 	 * @param mixed  $value	Meta value.
-	 * 
+	 *
 	 * @return int|bool		Return post id if found else false.
 	 */
 	function get_post_id_by_meta_key_and_value( $key, $value ) {
@@ -774,7 +782,7 @@ class RTMedia_Transcoder_Handler {
 	 */
 	public function handle_callback() {
 		require_once( ABSPATH . 'wp-admin/includes/image.php' );
-		
+
 		// @codingStandardsIgnoreStart
 		if ( isset( $_REQUEST['job_for'] ) && ( 'wp-media' == $_REQUEST['job_for'] ) ) {
 			if ( isset( $_REQUEST['job_id'] ) ) {
@@ -789,7 +797,7 @@ class RTMedia_Transcoder_Handler {
 
 					$post_array 			= $_POST;
 					$post_array['post_id'] 	= $attachment_id;
-					print_r( $post_array );
+
 					if ( $has_thumbs ) {
 						$thumbnail = $this->add_media_thumbnails( $post_array );
 					}
@@ -802,7 +810,7 @@ class RTMedia_Transcoder_Handler {
 				} else {
 					$flag = esc_html__( 'Something went wrong. The required attachment id does not exists. It must have been deleted.', 'rtmedia-transcoder' );
 				}
-				
+
 				$this->update_usage( $this->api_key );
 
 				if ( isset( $_SERVER['REMOTE_ADDR'] ) && ( '4.30.110.155' === $_SERVER['REMOTE_ADDR'] ) ) {
@@ -874,7 +882,7 @@ class RTMedia_Transcoder_Handler {
 				} else {
 					$flag = esc_html__( 'Something went wrong. The required attachment id does not exists. It must have been deleted.', 'rtmedia-transcoder' );
 				}
-				
+
 				$this->update_usage( $this->api_key );
 
 				if ( isset( $_SERVER['REMOTE_ADDR'] ) && ( '4.30.110.155' === $_SERVER['REMOTE_ADDR'] ) ) {
@@ -911,10 +919,10 @@ class RTMedia_Transcoder_Handler {
 			}
 		}
 	}
-	
+
 	/**
 	 * Hide notices.
-	 * 
+	 *
 	 * @since 1.0
 	 */
 	public function hide_transcoding_notice() {
@@ -923,10 +931,10 @@ class RTMedia_Transcoder_Handler {
 		echo true;
 		die();
 	}
-	
+
 	/**
 	 * Check whether key is entered or not.
-	 * 
+	 *
 	 * @since 1.0
 	 */
 	public function enter_api_key() {
@@ -937,10 +945,10 @@ class RTMedia_Transcoder_Handler {
 		}
 		die();
 	}
-	
+
 	/**
 	 * Disable transcoding.
-	 * 
+	 *
 	 * @since 1.0
 	 */
 	public function disable_transcoding() {
@@ -948,10 +956,10 @@ class RTMedia_Transcoder_Handler {
 		esc_html_e( 'Transcoding disabled successfully.', 'rtmedia-transcoder' );
 		die();
 	}
-	
+
 	/**
 	 * Enable transcoding.
-	 * 
+	 *
 	 * @since 1.0
 	 */
 	function enable_transcoding() {
@@ -959,16 +967,16 @@ class RTMedia_Transcoder_Handler {
 		esc_html_e( 'Transcoding enabled successfully.', 'rtmedia-transcoder' );
 		die();
 	}
-	
+
 	/**
 	 * Return upload path of media uploaded through rtMedia plugin.
-	 * 
+	 *
 	 * @since 1.0
-	 * 
+	 *
 	 * @global mixed $rtmedia_interaction
-	 * 
+	 *
 	 * @param array $upload_dir  Upload directory information.
-	 * 
+	 *
 	 * @return array $upload_dir
 	 */
 	function upload_dir( $upload_dir ) {
@@ -1004,5 +1012,5 @@ class RTMedia_Transcoder_Handler {
 
 		return $upload_dir;
 	}
-	
+
 }
