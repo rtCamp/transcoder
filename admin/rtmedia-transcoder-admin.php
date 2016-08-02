@@ -4,8 +4,8 @@
  *
  * @since      1.0
  *
- * @package    rtmedia-trascoder
- * @subpackage rtmedia-trascoder/admin
+ * @package    rtMediaTranscoder
+ * @subpackage rtMediaTranscoder/Admin
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,8 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * The admin-specific functionality of the plugin.
  *
- * @package    rtmedia-trascoder
- * @subpackage rtmedia-trascoder/admin
+ * @package    rtMediaTranscoder
+ * @subpackage rtMediaTranscoder/Admin
  */
 class RTMedia_Transcoder_Admin {
 

@@ -4,8 +4,8 @@
  *
  * @since      1.0
  *
- * @package    rtmedia-trascoder
- * @subpackage rtmedia-trascoder/admin
+ * @package    rtMediaTranscoder
+ * @subpackage rtMediaTranscoder/TranscoderHandler
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,8 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Handle request/response with trancoder api.
  *
- * @package    rtmedia-trascoder
- * @subpackage rtmedia-trascoder/admin
+ * @package    rtMediaTranscoder
+ * @subpackage rtMediaTranscoder/TranscoderHandler
  */
 class RTMedia_Transcoder_Handler {
 

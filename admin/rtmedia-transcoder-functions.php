@@ -4,8 +4,8 @@
  *
  * @since      1.0
  *
- * @package    rtmedia-transcoder
- * @subpackage rtmedia-transcoder/admin/
+ * @package    rtMediaTranscoder
+ * @subpackage rtMediaTranscoder/Functions
  */
 
 /**

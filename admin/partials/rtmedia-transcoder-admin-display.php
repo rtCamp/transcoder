@@ -4,8 +4,8 @@
  *
  * @since      1.0
  *
- * @package    rtmedia-transcoder
- * @subpackage rtmedia-transcoder/admin/partials
+ * @package    rtMediaTranscoder
+ * @subpackage rtMediaTranscoder/Admin/Partials
  */
 
 ?>
