@@ -1,7 +1,7 @@
 <?php
 /**
  * RTMedia Transcoder functions.
- * 
+ *
  * @since      1.0
  *
  * @package    rtmedia-transcoder
@@ -10,7 +10,7 @@
 
 /**
  * Return instance of rtMedia_Transcoder_Admin Class.
- * 
+ *
  * @return object
  */
 function rta() {
@@ -23,13 +23,13 @@ add_shortcode( 'rt_media', 'rt_media_shortcode' );
 
 /**
  * Builds the [rt_media] shortcode output.
- * 
+ *
  * If media type is video then display transcoded video (mp4 format) if any else original video.
- * 
+ *
  * If media type is audio then display transcoded audio (mp3 format) if any else original audio.
- * 
+ *
  * @since 1.0
- * 
+ *
  * @param array  $attrs {
  *     Attributes of the shortcode.
  *
@@ -68,7 +68,9 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 		    $video_shortcode_attributes .= ' ' . $key . '="' . $value . '"';
 		}
 
-		return do_shortcode( "[video {$video_shortcode_attributes}]" );
+		$content = do_shortcode( "[video {$video_shortcode_attributes}]" );
+
+		return apply_filters( 'rt_media_shortcode', $content, $attachment_id, $media_url, $mime_type[0] );
 
 	} elseif ( 'audio' === $mime_type[0] ) {
 
@@ -80,15 +82,18 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 		    $audio_shortcode_attributes .= ' ' . $key . '="' . $value . '"';
 		}
 
-		return do_shortcode( "[audio {$audio_shortcode_attributes}]" );
+		$content = do_shortcode( "[audio {$audio_shortcode_attributes}]" );
+
+		return apply_filters( 'rt_media_shortcode', $content, $attachment_id, $media_url, $mime_type[0] );
+
 	}
 }
 
 /**
  * Give the transcoded video's thumbnail stored in videos meta.
- * 
+ *
  * @since 1.0
- * 
+ *
  * @param  int $attachment_id   ID of attachment.
  * @return string 				returns image file url on success.
  */
@@ -119,9 +124,9 @@ function rt_media_get_video_thumbnail( $attachment_id ) {
 
 /**
  * Give the transcoded video URL of attachment.
- * 
+ *
  * @since 1.0
- * 
+ *
  * @param  int $attachment_id	 ID of attachment.
  * @return string                returns video file url on success.
  */
@@ -153,13 +158,13 @@ add_filter( 'rtmedia_media_thumb', 'rtmedia_transcoded_thumb', 11, 3 );
 
 /**
  * Give the thumbnail URL for rtMedia gallery shortcode.
- * 
+ *
  * @since 1.0
- * 
+ *
  * @param  string $src			thumbnail URL.
  * @param  number $media_id		ID of attachment.
  * @param  string $media_type	media type i.e video, audio etc.
- * 
+ *
  * @return string				thumbnail URL
  */
 function rtmedia_transcoded_thumb( $src, $media_id, $media_type ) {
