@@ -1,7 +1,7 @@
 <?php
 /**
  * RTMedia Transcoder admin settings.
- * 
+ *
  * @since      1.0
  *
  * @package    rtmedia-transcoder

@@ -302,10 +302,10 @@ class RTMedia_Transcoder_Admin {
 
 	/**
 	 * Parse the short codes in the activity content.
-	 * 
+	 *
 	 * @param  text   $content   activity body content.
 	 * @param  object $activity  activity object.
-	 * 
+	 *
 	 * @return text
 	 */
 	public function rtmedia_transcoder_activity_content_body( $content, $activity ) {
