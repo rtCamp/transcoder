@@ -21,22 +21,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 class RTMedia_Transcoder_Handler {
 
 	/**
-	 * The URL of the api.
+	 * The transcoder API URL.
 	 *
 	 * @since    1.0
 	 * @access   protected
-	 * @var      string    $api_url    The URL of the api.
+	 * @var      string    $transcoding_api_url    The URL of the api.
 	 */
-	protected $api_url = 'http://api-rtmedia.rtcamp.info/api/v1/';
+	protected $transcoding_api_url = 'http://api-rtmedia.rtcamp.info/api/v1/';
 
 	/**
-	 * The URL of the transcoder api.
+	 * The URL of the EDD store.
 	 *
 	 * @since    1.0
 	 * @access   protected
-	 * @var      string    $edd_api_url    The URL of the transcoder api.
+	 * @var      string    $store_url    The URL of the transcoder api.
 	 */
-	protected $edd_api_url = 'http://edd.rtcamp.info/';
+	protected $store_url = 'http://edd.rtcamp.info/';
 
 	/**
 	 * Contain uploaded media information.
@@ -72,7 +72,7 @@ class RTMedia_Transcoder_Handler {
 	 * @access   public
 	 * @var      string    $video_extensions    Video extensions with comma separated.
 	 */
-	public $video_extensions = ',mov,m4v,m2v,avi,mpg,flv,wmv,mkv,webm,ogv,mxf,asf,vob,mts,qt,mpeg,x-msvideo';
+	public $video_extensions = ',mov,m4v,m2v,avi,mpg,flv,wmv,mkv,webm,ogv,mxf,asf,vob,mts,qt,mpeg,x-msvideo,3gp';
 
 	/**
 	 * Audio extensions with comma separated.
@@ -221,7 +221,7 @@ class RTMedia_Transcoder_Handler {
 					),
 				);
 
-				$transcoding_url = $this->api_url . 'job/';
+				$transcoding_url = $this->transcoding_api_url . 'job/';
 
 				$upload_page = wp_remote_post( $transcoding_url, $args );
 
@@ -300,7 +300,7 @@ class RTMedia_Transcoder_Handler {
 				),
 			);
 
-			$transcoding_url = $this->api_url . 'job/';
+			$transcoding_url = $this->transcoding_api_url . 'job/';
 
 			$upload_page = wp_remote_post( $transcoding_url, $args );
 
@@ -373,7 +373,7 @@ class RTMedia_Transcoder_Handler {
 	 * @return boolean $status  If true then key is valid else key is not valid.
 	 */
 	public function is_valid_key( $key ) {
-		$validate_url    = trailingslashit( $this->edd_api_url ) . 'rt-eddsl-api/?rt-eddsl-license-key=' . $key;
+		$validate_url    = trailingslashit( $this->store_url ) . 'rt-eddsl-api/?rt-eddsl-license-key=' . $key;
 		if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
 			$validation_page = vip_safe_wp_remote_get( $validate_url );
 		} else {
@@ -399,7 +399,7 @@ class RTMedia_Transcoder_Handler {
 	 * @return array $usage_info  An array containing usage information.
 	 */
 	public function update_usage( $key ) {
-		$usage_url  = trailingslashit( $this->api_url ) . 'usage/' . $key;
+		$usage_url  = trailingslashit( $this->transcoding_api_url ) . 'usage/' . $key;
 		if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
 			$usage_page = vip_safe_wp_remote_get( $usage_url );
 		} else {
@@ -487,7 +487,7 @@ class RTMedia_Transcoder_Handler {
 
 		if ( ! empty( $apikey ) && is_admin() && ! empty( $page ) && ( 'rtmedia-transcoder' === $page ) && $this->is_valid_key( $apikey ) ) {
 			if ( $this->api_key && ! ( isset( $is_update ) && $is_update ) ) {
-				$unsubscribe_url = trailingslashit( $this->edd_api_url );
+				$unsubscribe_url = trailingslashit( $this->store_url );
 
 				$args = array(
 				        'method' 	=> 'POST',
@@ -623,7 +623,7 @@ class RTMedia_Transcoder_Handler {
 			}
 
 			$content .= $usage->progress_ui( $usage->progress( $usage_details[ $this->api_key ]->used, $usage_details[ $this->api_key ]->total ), false );
-			if ( ( 0 <= $usage_details[ $this->api_key ]->remaining ) && ( -1 !== $usage_details[ $this->api_key ]->remaining ) ) {
+			if ( ( 0 >= $usage_details[ $this->api_key ]->remaining ) && ( -1 !== $usage_details[ $this->api_key ]->remaining ) ) {
 				$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your usage limit has been reached. Upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
 			}
 		} else {
