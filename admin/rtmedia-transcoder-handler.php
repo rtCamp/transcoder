@@ -171,9 +171,9 @@ class RTMedia_Transcoder_Handler {
 	 * @param bool  $autoformat     If true then genrating thumbs only else also trancode video.
 	 */
 	function transcoding( $media_ids, $file_object, $uploaded, $autoformat = true ) {
+
 		remove_action( 'add_attachment', array( $this, 'wp_transcoding' ) );
 		foreach ( $file_object as $key => $single ) {
-
 			$attachment_id = rtmedia_media_id( $media_ids[ $key ] );
 			$type_arry        = explode( '.', $single['url'] );
 			$type             = strtolower( $type_arry[ count( $type_arry ) - 1 ] );
@@ -220,7 +220,6 @@ class RTMedia_Transcoder_Handler {
 						'thumb_count'	=> $options_video_thumb,
 					),
 				);
-
 				$transcoding_url = $this->transcoding_api_url . 'job/';
 
 				$upload_page = wp_remote_post( $transcoding_url, $args );

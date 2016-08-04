@@ -75,6 +75,7 @@ class RTMedia_Transcoder_Admin {
 		if ( is_admin() ) {
 			add_action( 'admin_menu', array( $this, 'menu' ) );
 			add_action( 'admin_init', array( $this, 'register_rtmedia_transcoder_settings' ) );
+			add_action( 'admin_init', array( $this, 'disable_encoding' ) );
 		}
 	}
 
@@ -112,6 +113,17 @@ class RTMedia_Transcoder_Admin {
 	 */
 	public function load_translation() {
 		load_plugin_textdomain( 'rtmedia-transcoder', false, basename( RTMEDIA_TRANSCODER_PATH ) . '/languages/' );
+	}
+
+	/**
+	 * Remove actions and filters from old rtMedia (v4.0.2) plugin
+	 *
+	 */
+	public function disable_encoding() {
+		remove_action( 'rtmedia_after_add_media', array( 'RTMediaEncoding', 'encoding' ) );
+		remove_filter( 'media_row_actions', array( 'RTMediaAdmin', 'add_reencode_link' ) );
+		remove_action( 'admin_head-upload.php', array( 'RTMediaAdmin', 'add_bulk_actions_regenerate' ) );
+		remove_action( 'rtmedia_before_default_admin_widgets', array( 'RTMediaEncoding', 'usage_widget' ) );
 	}
 
 	/**
