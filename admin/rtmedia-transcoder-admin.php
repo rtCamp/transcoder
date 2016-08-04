@@ -75,7 +75,9 @@ class RTMedia_Transcoder_Admin {
 		if ( is_admin() ) {
 			add_action( 'admin_menu', array( $this, 'menu' ) );
 			add_action( 'admin_init', array( $this, 'register_rtmedia_transcoder_settings' ) );
-			add_action( 'admin_init', array( $this, 'disable_encoding' ) );
+			if ( class_exists( 'RTMediaEncoding' ) ) {
+				add_action( 'admin_init', array( $this, 'disable_encoding' ) );
+			}
 		}
 	}
 
