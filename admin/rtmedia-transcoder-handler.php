@@ -790,14 +790,8 @@ class RTMedia_Transcoder_Handler {
 		$format		= filter_input( INPUT_POST, 'format', FILTER_SANITIZE_STRING );
 
 		if ( ! empty( $job_id )  && ! empty( $status ) && ( 'error' === $status ) ) {
-			$subject = esc_html__( 'rtMedia Transcoding: Something went wrong.', 'rtmedia-transcoder' );
-			$id = $this->get_post_id_by_meta_key_and_value( '_rtmedia_transcoding_job_id', $job_id );
-			if ( ! empty( $error_msg ) ) {
-				$message = '<p>' . esc_html( $error_msg ) . '</p>';
-			} else {
-				$message = '<p><a href="' . esc_url( get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
-	                esc_html__( ' there was unexpected error occurred while transcoding this media.', 'rtmedia-transcoder' ) . '</p><p>';
-			}
+			$send_alert = $this->nofity_transcoding_failed( $job_id, $error_msg );
+			return;
 		}
 
 		// @codingStandardsIgnoreStart
@@ -1032,28 +1026,73 @@ class RTMedia_Transcoder_Handler {
 		return $upload_dir;
 	}
 
-	public function send_notification( $email_ids, $subject, $message ) {
-		$subject = esc_html__( 'rtMedia Encoding: Nearing quota limit.', 'rtmedia-transcoder' );
-		$message = '<p>' . esc_html__( 'You are nearing the quota limit for your rtMedia encoding service.', 'rtmedia-transcoder' ) . '</p><p>'
-		           . esc_html__( 'Following are the details:', 'rtmedia-transcoder' ) . '</p><p><strong>Used:</strong> %s</p><p><strong>'
-		           . esc_html__( 'Remaining', 'rtmedia-transcoder' ) . '</strong>: %s</p><p><strong>' . esc_html__( 'Total:', 'rtmedia-transcoder' ) . '</strong> %s</p>';
-		$users   = get_users( array( 'role' => 'administrator' ) );
-		if ( $users ) {
-			$admin_email_ids = array();
-			foreach ( $users as $user ) {
-				$admin_email_ids[] = $user->user_email;
-			}
-			add_filter( 'wp_mail_content_type', function(){ return 'text/html';
-			} );
-			wp_mail( $admin_email_ids, $subject, sprintf( $message, size_format( $usage_details[ $this->api_key ]->used, 2 ), size_format( $usage_details[ $this->api_key ]->remaining, 2 ), size_format( $usage_details[ $this->api_key ]->total, 2 ) ) );
+	/**
+	 * Send's the email. It's the wrapper function for wp_mail
+	 *
+	 * @since 1.0
+	 *
+	 * @param  array   $email_ids
+	 * @param  string  $subject
+	 * @param  string  $message
+	 * @param  boolean $include_admin
+	 */
+	public function send_notification( $email_ids = array(), $subject, $message, $include_admin = true ) {
+		if ( empty( $subject ) || empty( $message ) ) {
+			return true;
 		}
-		update_site_option( 'rtmedia-encoding-usage-limit-mail', 1 );
+
+		if ( $include_admin ) {
+			$users   = get_users( array( 'role' => 'administrator' ) );
+			if ( $users ) {
+				foreach ( $users as $user ) {
+					$email_ids[] = $user->user_email;
+				}
+			}
+		}
+		add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
+		wp_mail( $email_ids, $subject, sprintf( $message, size_format( $usage_details[ $this->api_key ]->used, 2 ), size_format( $usage_details[ $this->api_key ]->remaining, 2 ), size_format( $usage_details[ $this->api_key ]->total, 2 ) ) );
 	}
 
-	public function nofity_transcoding_failed( $attachment_id, $response ) {
-		if ( empty( $attachment_id ) ) {
+	/**
+	 * Sets the content type of mail to text/html
+	 *
+	 * @since  1.0
+	 *
+	 * @return string
+	 */
+	public function rtt_wp_mail_content_type() {
+		return 'text/html';
+	}
+
+	/**
+	 * Send notification about failed transcoding job
+	 *
+	 * @since 1.0
+	 *
+	 * @param  string $job_id
+	 * @param  string $error_msg
+	 */
+	public function nofity_transcoding_failed( $job_id, $error_msg ) {
+		if ( empty( $job_id ) ) {
 			return false;
 		}
+		$subject = esc_html__( 'rtMedia Transcoding: Something went wrong.', 'rtmedia-transcoder' );
+		$attachment_id = $this->get_post_id_by_meta_key_and_value( '_rtmedia_transcoding_job_id', $job_id );
+		if ( ! empty( $error_msg ) ) {
+			$message = '<p><a href="' . esc_url( get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
+				esc_html( $error_msg ) . '</p>';
+		} else {
+			$message = '<p><a href="' . esc_url( get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
+				esc_html__( ' there was unexpected error occurred while transcoding this media.', 'rtmedia-transcoder' ) . '</p>';
+		}
+
+		$email_ids = array();
+		if ( ! empty( $attachment_id ) ) {
+			$author_id 		= get_post_field( 'post_author', $attachment_id );
+			$email_ids[] 	= get_the_author_meta( 'user_email', $author_id );
+		}
+
+		$this->send_notification( $email_ids, $subject, $message, $include_admin = true );
 	}
 
 }
