@@ -87,7 +87,7 @@ class RTMedia_Transcoder_Admin {
 	 * @since    1.0
 	 */
 	public function menu() {
-		add_menu_page( 'rtMedia Transcoder', 'rtMedia Transcoder', 'manage_options', 'rtmedia-transcoder', array( $this, 'settings_page' ), '', '40.2222' );
+		add_menu_page( 'rtMedia Transcoder', 'Transcoder', 'manage_options', 'rtmedia-transcoder', array( $this, 'settings_page' ), RTMEDIA_TRANSCODER_URL . 'admin/images/menu-icon.png', '40.2222' );
 	}
 
 	/**
