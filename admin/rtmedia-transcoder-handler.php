@@ -98,7 +98,7 @@ class RTMedia_Transcoder_Handler {
 		if ( $no_init ) {
 			return;
 		}
-		if ( is_admin() && $this->api_key ) {
+		if ( is_admin() ) {
 			add_action( 'rtmedia_transcoder_before_widgets', array( $this, 'usage_widget' ) );
 		}
 		add_action( 'admin_init', array( $this, 'save_api_key' ), 1 );
@@ -583,50 +583,58 @@ class RTMedia_Transcoder_Handler {
 	public function usage_widget() {
 		$usage_details = get_site_option( 'rtmedia-transcoding-usage' );
 		$content       = '';
-		if ( $usage_details && isset( $usage_details[ $this->api_key ]->status ) && $usage_details[ $this->api_key ]->status ) {
-			if ( isset( $usage_details[ $this->api_key ]->plan->name ) ) {
-				$content .= '<p><strong>' . esc_html__( 'Current Plan', 'rtmedia-transcoder' ) . ':</strong> ' . esc_html( $usage_details[ $this->api_key ]->plan->name ) . ( $usage_details[ $this->api_key ]->sub_status ? '' : ' (' . esc_html__( 'Unsubscribed', 'rtmedia-transcoder' ) . ')' ) . '</p>';
-			}
-			if ( isset( $usage_details[ $this->api_key ]->used ) ) {
-				$content .= '<p><span class="transcoding-used"></span><strong>' . esc_html__( 'Used', 'rtmedia-transcoder' ) . ':</strong> ' . ( ( $used_size = size_format( $usage_details[ $this->api_key ]->used, 2 ) ) ? esc_html( $used_size ) : '0MB' ) . '</p>';
-			}
-			if ( isset( $usage_details[ $this->api_key ]->remaining ) ) {
-				$content .= '<p><span class="transcoding-remaining"></span><strong>' . esc_html__( 'Remaining', 'rtmedia-transcoder' ) . ':</strong> ';
-				if ( $usage_details[ $this->api_key ]->remaining >= 0 ) {
-					$content .= size_format( $usage_details[ $this->api_key ]->remaining, 2 );
-				} elseif ( $usage_details[ $this->api_key ]->remaining <= -1 ) {
-					$content .= 'Unlimited';
-				} else {
-					$content .= '0MB';
+		if ( ! empty( $this->api_key ) ) {
+			if ( $usage_details && isset( $usage_details[ $this->api_key ]->status ) && $usage_details[ $this->api_key ]->status ) {
+				if ( isset( $usage_details[ $this->api_key ]->plan->name ) ) {
+					$content .= '<p><strong>' . esc_html__( 'Current Plan', 'rtmedia-transcoder' ) . ':</strong> ' . esc_html( $usage_details[ $this->api_key ]->plan->name ) . ( $usage_details[ $this->api_key ]->sub_status ? '' : ' (' . esc_html__( 'Unsubscribed', 'rtmedia-transcoder' ) . ')' ) . '</p>';
 				}
-			}
-			if ( isset( $usage_details[ $this->api_key ]->total ) ) {
-				$content .= '<p><strong>' . esc_html__( 'Total', 'rtmedia-transcoder' ) . ':</strong> ';
-				if ( $usage_details[ $this->api_key ]->total >= 0 ) {
-					$content .= size_format( $usage_details[ $this->api_key ]->total, 2 );
-				} elseif ( $usage_details[ $this->api_key ]->total <= -1 ) {
-					$content .= 'Unlimited';
-				} else {
-					$content .= '';
+				if ( isset( $usage_details[ $this->api_key ]->used ) ) {
+					$content .= '<p><span class="transcoding-used"></span><strong>' . esc_html__( 'Used', 'rtmedia-transcoder' ) . ':</strong> ' . ( ( $used_size = size_format( $usage_details[ $this->api_key ]->used, 2 ) ) ? esc_html( $used_size ) : '0MB' ) . '</p>';
 				}
-			}
-			$usage = new rtProgress();
+				if ( isset( $usage_details[ $this->api_key ]->remaining ) ) {
+					$content .= '<p><span class="transcoding-remaining"></span><strong>' . esc_html__( 'Remaining', 'rtmedia-transcoder' ) . ':</strong> ';
+					if ( $usage_details[ $this->api_key ]->remaining >= 0 ) {
+						$content .= size_format( $usage_details[ $this->api_key ]->remaining, 2 );
+					} elseif ( $usage_details[ $this->api_key ]->remaining <= -1 ) {
+						$content .= 'Unlimited';
+					} else {
+						$content .= '0MB';
+					}
+				}
+				if ( isset( $usage_details[ $this->api_key ]->total ) ) {
+					$content .= '<p><strong>' . esc_html__( 'Total', 'rtmedia-transcoder' ) . ':</strong> ';
+					if ( $usage_details[ $this->api_key ]->total >= 0 ) {
+						$content .= size_format( $usage_details[ $this->api_key ]->total, 2 );
+					} elseif ( $usage_details[ $this->api_key ]->total <= -1 ) {
+						$content .= 'Unlimited';
+					} else {
+						$content .= '';
+					}
+				}
+				$usage = new rtProgress();
 
-			/**
-			 * If plan is deluxe/unlimited show progress bar gray all the time, to do
-			 * this override `used` and `total` variable manually
-			 */
-			if ( ! empty( $usage_details[ $this->api_key ]->plan->name ) && ( 'deluxe' === strtolower( $usage_details[ $this->api_key ]->plan->name ) ) ) {
-				$usage_details[ $this->api_key ]->used = 0;
-				$usage_details[ $this->api_key ]->total = 1;
-			}
+				/**
+				 * If plan is deluxe/unlimited show progress bar gray all the time, to do
+				 * this override `used` and `total` variable manually
+				 */
+				if ( ! empty( $usage_details[ $this->api_key ]->plan->name ) && ( 'deluxe' === strtolower( $usage_details[ $this->api_key ]->plan->name ) ) ) {
+					$usage_details[ $this->api_key ]->used = 0;
+					$usage_details[ $this->api_key ]->total = 1;
+				}
 
-			$content .= $usage->progress_ui( $usage->progress( $usage_details[ $this->api_key ]->used, $usage_details[ $this->api_key ]->total ), false );
-			if ( ( 0 >= $usage_details[ $this->api_key ]->remaining ) && ( -1 !== $usage_details[ $this->api_key ]->remaining ) ) {
-				$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your usage limit has been reached. Upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
+				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $this->api_key ]->used, $usage_details[ $this->api_key ]->total ), false );
+				if ( ( 0 >= $usage_details[ $this->api_key ]->remaining ) && ( -1 !== $usage_details[ $this->api_key ]->remaining ) ) {
+					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your usage limit has been reached. Upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
+				}
+			} else {
+				$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your API key is not valid or is expired.', 'rtmedia-transcoder' ) . '</p></div>';
 			}
 		} else {
-			$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your API key is not valid or is expired.', 'rtmedia-transcoder' ) . '</p></div>';
+			if ( empty( $this->stored_api_key ) ) {
+				$content .= '<p>' . esc_html__( 'Currently, You are not subscribed to transcoding service. Please subscribe.', 'rtmedia-transcoder' ) . '</p>';
+			} else {
+				$content .= '<p>' . esc_html__( 'You have disabled the transcoding service. Please enable to see the usage.', 'rtmedia-transcoder' ) . '</p>';
+			}
 		}
 		?>
 		<div class="postbox" id="rtmedia-transcoding-usage">
