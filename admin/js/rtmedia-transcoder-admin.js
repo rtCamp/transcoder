@@ -148,48 +148,30 @@ jQuery( document ).ready( function( $ ) {
 		}
 	} );
 
-	jQuery( document ).on( 'click', '#enable-encoding', function ( e ) {
+	jQuery( document ).on( 'click', '#enable-transcoding', function ( e ) {
 		e.preventDefault();
 		if ( confirm( enable_encoding ) ) {
-			var data = {
-				src   : rtmedia_transcoder_admin_url + "images/wpspin_light.gif"
-			};
-
-			//jQuery( this ).after( rtMediaAdmin.templates.rtm_image( data ) );
 
 			var data = {
-				action: 'rtmedia_enable_encoding'
+				action: 'rtmedia_enable_transcoding'
 			};
 
 			jQuery.post( ajaxurl, data, function ( response ) {
 				if ( response ) {
-					jQuery( '.settings-error-encoding-enabled' ).remove();
+					jQuery( '.settings-error-transcoding-enabled' ).remove();
 
-					if ( jQuery( '#settings-encoding-successfully-updated' ).length > 0 ) {
-						jQuery( '#settings-encoding-successfully-updated p' ).html( response );
+					if ( jQuery( '#settings-transcoding-successfully-updated' ).length > 0 ) {
+						jQuery( '#settings-transcoding-successfully-updated p' ).html( response );
 					} else {
-						var data = {
-							id : 'settings-encoding-successfully-updated',
-							msg : response,
-							class : 'updated'
-						};
 
-						//jQuery( 'h2:first' ).after( rtMediaAdmin.templates.rtm_msg_div( data ) );
 					}
 
-					jQuery( '#enable-encoding' ).next( 'img' ).remove();
-					jQuery( '#enable-encoding' ).hide();
-					jQuery( '#disable-encoding' ).show();
+					jQuery( '#enable-transcoding' ).next( 'img' ).remove();
+					jQuery( '#enable-transcoding' ).hide();
+					jQuery( '#disable-transcoding' ).show();
 				} else {
-					jQuery( '#settings-error-encoding-disabled' ).remove();
+					jQuery( '#settings-error-transcoding-disabled' ).remove();
 
-					var data = {
-						id : 'settings-error-encoding-enabled',
-						msg : rtmedia_admin_strings.something_went_wrong,
-						class : 'error'
-					};
-
-					//jQuery( 'h2:first' ).after( rtMediaAdmin.templates.rtm_msg_div( data ) );
 				}
 			} );
 		}
