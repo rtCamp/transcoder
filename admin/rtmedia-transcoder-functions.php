@@ -269,13 +269,13 @@ if ( ! function_exists( 'rtmedia_video_editor_title' ) ) {
 
 add_action( 'rtmedia_add_edit_tab_title', 'rtmedia_video_editor_title', 1000 );
 
-if ( ! function_exists( 'rtmedia_vedio_editor_content' ) ) {
+if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 	/**
 	 * Display the HTML to set the thumbnail for video.
 	 *
 	 * @return string HTML content
 	 */
-	function rtmedia_vedio_editor_content() {
+	function rtt_rtmedia_vedio_editor_content() {
 		global $rtmedia_query;
 		if ( isset( $rtmedia_query->media ) && is_array( $rtmedia_query->media ) && isset( $rtmedia_query->media[0]->media_type ) && 'video' === $rtmedia_query->media[0]->media_type ) {
 			$media_id        = $rtmedia_query->media[0]->media_id;
@@ -382,15 +382,15 @@ if ( ! function_exists( 'rtmedia_vedio_editor_content' ) ) {
 	}
 }
 
-add_action( 'rtmedia_add_edit_tab_content', 'rtmedia_vedio_editor_content', 1000 );
+add_action( 'rtmedia_add_edit_tab_content', 'rtt_rtmedia_vedio_editor_content', 1000 );
 
 /**
  * Set the video thumbnail
  *
  * @param number $id rtMedia activity ID
  */
-if ( ! function_exists( 'set_video_thumbnail' ) ) {
-	function set_video_thumbnail( $id ) {
+if ( ! function_exists( 'rtt_set_video_thumbnail' ) ) {
+	function rtt_set_video_thumbnail( $id ) {
 		$media_type 	= rtmedia_type( $id );
 		$attachment_id 	= rtmedia_media_id( $id );		// Get the wp attachment ID
 		$thumbnail  = filter_input( INPUT_POST, 'rtmedia-thumbnail', FILTER_SANITIZE_URL );
@@ -399,21 +399,21 @@ if ( ! function_exists( 'set_video_thumbnail' ) ) {
 			if ( is_numeric( $thumbnail ) ) {
 				$model = new RTMediaModel();
 		        $model->update( array( 'cover_art' => $thumbnail ), array( 'id' => intval( $id ) ) );
-		        update_activity_after_thumb_set( $id );
+		        rtt_update_activity_after_thumb_set( $id );
 		    }
 		}
 	}
 }
 
-add_action( 'rtmedia_after_update_media', 'set_video_thumbnail', 12 );
+add_action( 'rtmedia_after_update_media', 'rtt_set_video_thumbnail', 12 );
 
-if ( ! function_exists( 'update_activity_after_thumb_set' ) ) {
+if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
 	/**
 	 * Update the activity after thumb is set to the video
 	 *
 	 * @param  number $id media id
 	 */
-	function update_activity_after_thumb_set( $id ) {
+	function rtt_update_activity_after_thumb_set( $id ) {
 		$model       = new RTMediaModel();
 		$media_obj   = new RTMediaMedia();
 		$media       = $model->get( array( 'id' => $id ) );
