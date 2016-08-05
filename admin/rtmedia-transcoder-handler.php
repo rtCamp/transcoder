@@ -132,7 +132,7 @@ class RTMedia_Transcoder_Handler {
 							), 10, 1 );
 							add_filter( 'rtmedia_valid_type_check', array( $this, 'bypass_video_audio' ), 10, 2 );
 						}
-					} elseif ( 'deluxe' == strtolower( $usage_info[ $this->api_key ]->plan->name ) ) {
+					} elseif ( 'silver' == strtolower( $usage_info[ $this->api_key ]->plan->name ) ) {
 						if ( ( ! class_exists( 'RTMediaFFMPEG' ) && ! class_exists( 'RTMediaKaltura' ) ) || class_exists( 'RTMedia' ) ) {
 							add_filter( 'rtmedia_after_add_media', array( $this, 'transcoding' ), 10, 3 );
 						}
@@ -614,10 +614,10 @@ class RTMedia_Transcoder_Handler {
 				$usage = new rtProgress();
 
 				/**
-				 * If plan is deluxe/unlimited show progress bar gray all the time, to do
+				 * If plan is silver show progress bar gray all the time, to do
 				 * this override `used` and `total` variable manually
 				 */
-				if ( ! empty( $usage_details[ $this->api_key ]->plan->name ) && ( 'deluxe' === strtolower( $usage_details[ $this->api_key ]->plan->name ) ) ) {
+				if ( ! empty( $usage_details[ $this->api_key ]->plan->name ) && ( 'silver' === strtolower( $usage_details[ $this->api_key ]->plan->name ) ) ) {
 					$usage_details[ $this->api_key ]->used = 0;
 					$usage_details[ $this->api_key ]->total = 1;
 				}
