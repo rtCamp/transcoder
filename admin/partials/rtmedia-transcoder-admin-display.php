@@ -10,21 +10,17 @@
 
 ?>
 
-<h3 class="rtm-option-title">
-	<?php esc_html_e( 'Audio/Video transcoding service', 'rtmedia-transcoder' ); ?>
-</h3>
+<h1 class="rtm-option-title">
+	<?php esc_html_e( 'rtMedia Transcoder Service Settings', 'rtmedia-transcoder' ); ?>
+</h1>
 <div class="bp-media-settings-boxes-wrapper">
 	<div id="bp-media-settings-boxes" class="bp-media-settings-boxes-container rtm-transcoder-setting-container">
 		<p>
-			<?php esc_html_e( 'rtMedia team has started offering an audio/video transcoding service.', 'rtmedia-transcoder' ); ?>
-		</p>
-
-		<p>
 			<label for="new-api-key">
-				<?php esc_html_e( 'Enter API KEY', 'rtmedia-transcoder' ); ?>
+				<?php esc_html_e( 'Enter License/API Key', 'rtmedia-transcoder' ); ?>
 			</label>
 			<input id="new-api-key" type="text" name="new-api-key" value="<?php echo esc_attr( $this->stored_api_key ); ?>" size="60" />
-			<input type="submit" id="api-key-submit" name="api-key-submit" value="<?php echo esc_attr__( 'Save Key', 'rtmedia-transcoder' ); ?>" class="button-primary" />
+			<input type="submit" id="api-key-submit" name="api-key-submit" value="<?php echo esc_attr__( 'Save', 'rtmedia-transcoder' ); ?>" class="button-primary" />
 		</p>
 
 		<p>
@@ -52,7 +48,7 @@
 					<?php esc_html_e( 'Free', 'rtmedia-transcoder' ); ?>
 				</th>
 				<th>
-					<?php esc_html_e( 'Deluxe', 'rtmedia-transcoder' ); ?>
+					<?php esc_html_e( 'Silver', 'rtmedia-transcoder' ); ?>
 				</th>
 			</tr>
 			</thead>
@@ -63,10 +59,10 @@
 					<?php esc_html_e( 'File Size Limit', 'rtmedia-transcoder' ); ?>
 				</th>
 				<td>
-					200MB (<del>20MB</del>)
+					<?php esc_html_e( '100MB', 'rtmedia-transcoder' ); ?>
 				</td>
 				<td>
-					16GB (<del>2GB</del>)
+					<?php esc_html_e( '16GB', 'rtmedia-transcoder' ); ?>
 				</td>
 			</tr>
 			<tr>
@@ -74,10 +70,10 @@
 					<?php esc_html_e( 'Bandwidth (monthly)', 'rtmedia-transcoder' ); ?>
 				</th>
 				<td>
-					10GB (<del>1GB</del>)
+					<?php esc_html_e( '1GB', 'rtmedia-transcoder' ); ?>
 				</td>
 				<td>
-					100GB
+					<?php esc_html_e( '100GB', 'rtmedia-transcoder' ); ?>
 				</td>
 			</tr>
 			<tr>
@@ -88,7 +84,7 @@
 					<?php esc_html_e( 'Not Available', 'rtmedia-transcoder' ); ?>
 				</td>
 				<td>
-					$0.10 per GB
+					<?php esc_html_e( 'Currently not charged', 'rtmedia-transcoder' ); ?>
 				</td>
 			</tr>
 			<tr>
@@ -166,13 +162,11 @@
 
 						$button = $this->transcoding_subscription_button( 'free', 0 );
 						echo wp_kses( $button, $allowed_tags );
-
 					?>
 				</td>
 				<td>
-					<?php //echo $this->transcoding_subscription_form( 'deluxe', 9.0 ); // @codingStandardsIgnoreLine ?>
 					<?php
-						$button = $this->transcoding_subscription_button( 'deluxe', 9 );
+						$button = $this->transcoding_subscription_button( 'silver', 9 );
 						echo wp_kses( $button, $allowed_tags );
 					?>
 				</td>
@@ -197,10 +191,10 @@
 					</th>
 			        <td>
 						<?php $number_of_thumbnails = get_site_option( 'number_of_thumbs', 5 ); ?>
-						<input type="text" name="number_of_thumbs" value="<?php echo esc_attr( $number_of_thumbnails ); ?>" />
+						<input type="number" name="number_of_thumbs" value="<?php echo esc_attr( $number_of_thumbnails ); ?>" />
 						<p class="description">
 							<?php
-							esc_html_e( 'If you choose more than 1 thumbnail, you will be able to change the thumbnail by going to video edit section. Maximum value is 10' );
+							esc_html_e( 'If you choose more than 1 thumbnail, you will be able to change the thumbnail by going to video edit section. Maximum value is 10.' );
 							?>
 						</p>
 					</td>
