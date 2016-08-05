@@ -632,7 +632,7 @@ class RTMedia_Transcoder_Handler {
 		<div class="postbox" id="rtmedia-transcoding-usage">
 	        <h3 class="hndle">
 				<span>
-					<?php esc_html_e( 'Transcoding Usage', 'buddypress-media' ); ?>
+					<?php esc_html_e( 'Transcoding Usage', 'rtmedia-transcoder' ); ?>
 				</span>
 			</h3>
 	        <div class="inside">
@@ -782,14 +782,32 @@ class RTMedia_Transcoder_Handler {
 	public function handle_callback() {
 		require_once( ABSPATH . 'wp-admin/includes/image.php' );
 
+		$job_id		= filter_input( INPUT_POST, 'job_id', FILTER_SANITIZE_STRING );
+		$status		= filter_input( INPUT_POST, 'status', FILTER_SANITIZE_STRING );
+		$error_msg	= filter_input( INPUT_POST, 'error_msg', FILTER_SANITIZE_STRING );
+		$job_for	= filter_input( INPUT_POST, 'job_for', FILTER_SANITIZE_STRING );
+		$thumbnail	= filter_input( INPUT_POST, 'thumbnail', FILTER_SANITIZE_STRING );
+		$format		= filter_input( INPUT_POST, 'format', FILTER_SANITIZE_STRING );
+
+		if ( ! empty( $job_id )  && ! empty( $status ) && ( 'error' === $status ) ) {
+			$subject = esc_html__( 'rtMedia Transcoding: Something went wrong.', 'rtmedia-transcoder' );
+			$id = $this->get_post_id_by_meta_key_and_value( '_rtmedia_transcoding_job_id', $job_id );
+			if ( ! empty( $error_msg ) ) {
+				$message = '<p>' . esc_html( $error_msg ) . '</p>';
+			} else {
+				$message = '<p><a href="' . esc_url( get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
+	                esc_html__( ' there was unexpected error occurred while transcoding this media.', 'rtmedia-transcoder' ) . '</p><p>';
+			}
+		}
+
 		// @codingStandardsIgnoreStart
-		if ( isset( $_REQUEST['job_for'] ) && ( 'wp-media' == $_REQUEST['job_for'] ) ) {
-			if ( isset( $_REQUEST['job_id'] ) ) {
-				$has_thumbs = isset( $_POST['thumbnail'] ) ? true : false;
+		if ( isset( $job_for ) && ( 'wp-media' == $job_for ) ) {
+			if ( isset( $job_id ) ) {
+				$has_thumbs = isset( $thumbnail ) ? true : false;
 				$flag       = false;
 				global $wpdb;
 
-				$id = $this->get_post_id_by_meta_key_and_value( '_rtmedia_transcoding_job_id', $_REQUEST['job_id'] );
+				$id = $this->get_post_id_by_meta_key_and_value( '_rtmedia_transcoding_job_id', $job_id );
 
 				if ( isset( $id ) && is_numeric( $id ) ) {
 					$attachment_id      	= $id;
@@ -801,7 +819,7 @@ class RTMedia_Transcoder_Handler {
 						$thumbnail = $this->add_media_thumbnails( $post_array );
 					}
 
-					if ( isset( $_POST['format'] ) && 'thumbnail' === sanitize_text_field( wp_unslash( $_POST['format'] ) ) ) {
+					if ( isset( $format ) && 'thumbnail' === sanitize_text_field( wp_unslash( $format ) ) ) {
 						die();
 					}
 					$uploded_files = $this->add_transcoded_files( $_REQUEST['files'], $attachment_id );
@@ -845,13 +863,13 @@ class RTMedia_Transcoder_Handler {
 				die();
 			}
 		} else {
-			if ( isset( $_REQUEST['job_id'] ) ) {
-				$has_thumbs = isset( $_POST['thumbnail'] ) ? true : false;
+			if ( isset( $job_id ) ) {
+				$has_thumbs = isset( $thumbnail ) ? true : false;
 				$flag       = false;
 				global $wpdb;
 				$model        = new RTDBModel( 'rtm_media_meta', false, 10, true );
 				$meta_details = $model->get( array(
-					'meta_value' => sanitize_text_field( wp_unslash( $_REQUEST['job_id'] ) ),
+					'meta_value' => sanitize_text_field( wp_unslash( $job_id ) ),
 					'meta_key'   => 'rtmedia-transcoding-job-id',
 				) );
 				if ( ! isset( $meta_details[0] ) ) {
@@ -872,7 +890,7 @@ class RTMedia_Transcoder_Handler {
 						$cover_art = $this->add_media_thumbnails( $post_array );
 					}
 
-					if ( isset( $_POST['format'] ) && 'thumbnail' === sanitize_text_field( wp_unslash( $_POST['format'] ) ) ) {
+					if ( isset( $format ) && 'thumbnail' === sanitize_text_field( wp_unslash( $format ) ) ) {
 						die();
 					}
 
@@ -1012,6 +1030,30 @@ class RTMedia_Transcoder_Handler {
 		$upload_dir = apply_filters( 'rtmedia_filter_upload_dir', $upload_dir, $this->uploaded );
 
 		return $upload_dir;
+	}
+
+	public function send_notification( $email_ids, $subject, $message ) {
+		$subject = esc_html__( 'rtMedia Encoding: Nearing quota limit.', 'rtmedia-transcoder' );
+		$message = '<p>' . esc_html__( 'You are nearing the quota limit for your rtMedia encoding service.', 'rtmedia-transcoder' ) . '</p><p>'
+		           . esc_html__( 'Following are the details:', 'rtmedia-transcoder' ) . '</p><p><strong>Used:</strong> %s</p><p><strong>'
+		           . esc_html__( 'Remaining', 'rtmedia-transcoder' ) . '</strong>: %s</p><p><strong>' . esc_html__( 'Total:', 'rtmedia-transcoder' ) . '</strong> %s</p>';
+		$users   = get_users( array( 'role' => 'administrator' ) );
+		if ( $users ) {
+			$admin_email_ids = array();
+			foreach ( $users as $user ) {
+				$admin_email_ids[] = $user->user_email;
+			}
+			add_filter( 'wp_mail_content_type', function(){ return 'text/html';
+			} );
+			wp_mail( $admin_email_ids, $subject, sprintf( $message, size_format( $usage_details[ $this->api_key ]->used, 2 ), size_format( $usage_details[ $this->api_key ]->remaining, 2 ), size_format( $usage_details[ $this->api_key ]->total, 2 ) ) );
+		}
+		update_site_option( 'rtmedia-encoding-usage-limit-mail', 1 );
+	}
+
+	public function nofity_transcoding_failed( $attachment_id, $response ) {
+		if ( empty( $attachment_id ) ) {
+			return false;
+		}
 	}
 
 }
