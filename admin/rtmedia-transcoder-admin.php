@@ -69,6 +69,7 @@ class RTMedia_Transcoder_Admin {
 
 		add_filter( 'attachment_fields_to_edit', array( $this, 'edit_video_thumbnail' ), 11, 2 );
 		add_filter( 'attachment_fields_to_save', array( $this, 'save_video_thumbnail' ), 11, 1 );
+		add_action( 'admin_notices', array( $this, 'rtt_add_settings_errors' ) );
 
 		$this->transcoder_handler = new RTMedia_Transcoder_Handler();
 
@@ -79,6 +80,10 @@ class RTMedia_Transcoder_Admin {
 				add_action( 'admin_init', array( $this, 'disable_encoding' ) );
 			}
 		}
+	}
+
+	public function rtt_add_settings_errors() {
+	    settings_errors();
 	}
 
 	/**

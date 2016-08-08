@@ -102,11 +102,6 @@ jQuery( document ).ready( function( $ ) {
 	jQuery( document ).on( 'click', '#disable-transcoding', function ( e ) {
 		e.preventDefault();
 		if ( confirm( disable_encoding ) ) {
-			var data = {
-				src   : rtmedia_transcoder_admin_url + "images/wpspin_light.gif"
-			};
-
-			//jQuery( this ).after( rtMediaAdmin.templates.rtm_image( data ) );
 
 			var data = {
 				action: 'rtmedia_disable_transcoding'
@@ -115,34 +110,18 @@ jQuery( document ).ready( function( $ ) {
 			// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
 			jQuery.post( ajaxurl, data, function ( response ) {
 				if ( response ) {
-					jQuery( '.settings-error-transcoding-disabled' ).remove();
 
-					if ( jQuery( '#settings-transcoding-successfully-updated' ).length > 0 ) {
-						jQuery( '#settings-transcoding-successfully-updated p' ).html( response );
+					if ( jQuery( '#rtt-settings_updated' ).length > 0 ) {
+						jQuery( '#rtt-settings_updated p' ).html( response );
+						jQuery( '#rtt-settings_updated' ).show()
 					} else {
-						var data = {
-							id : 'settings-transcoding-successfully-updated',
-							msg : response,
-							class : 'updated'
-						};
-
-						//jQuery( 'h2:first' ).after( rtMediaAdmin.templates.rtm_msg_div( data ) );
 					}
 
-					jQuery( '#rtmedia-transcoding-usage' ).hide();
+					//jQuery( '#rtmedia-transcoding-usage' ).hide();
 					jQuery( '#disable-transcoding' ).next( 'img' ).remove();
 					jQuery( '#disable-transcoding' ).hide();
 					jQuery( '#enable-transcoding' ).show();
 				} else {
-					jQuery( '#settings-error-transcoding-disabled' ).remove();
-
-					var data = {
-						id : 'settings-error-transcoding-disabled',
-						msg : something_went_wrong,
-						class : 'error'
-					};
-
-					//jQuery( 'h2:first' ).after( rtMediaAdmin.templates.rtm_msg_div( data ) );
 				}
 			} );
 		}
@@ -158,10 +137,10 @@ jQuery( document ).ready( function( $ ) {
 
 			jQuery.post( ajaxurl, data, function ( response ) {
 				if ( response ) {
-					jQuery( '.settings-error-transcoding-enabled' ).remove();
 
-					if ( jQuery( '#settings-transcoding-successfully-updated' ).length > 0 ) {
-						jQuery( '#settings-transcoding-successfully-updated p' ).html( response );
+					if ( jQuery( '#rtt-settings_updated' ).length > 0 ) {
+						jQuery( '#rtt-settings_updated p' ).html( response );
+						jQuery( '#rtt-settings_updated' ).show()
 					} else {
 
 					}

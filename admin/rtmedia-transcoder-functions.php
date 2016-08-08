@@ -68,7 +68,7 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 		$content = do_shortcode( "[video {$video_shortcode_attributes}]" );
 
 		if ( is_file_being_transcoded( $attachment_id ) ) {
-			$content .= '<p class="transcoding-in-progress"> ' . esc_html__( 'The file sent to transcoder', 'rtmedia-transcoder' ) . '</p>';
+			$content .= '<p class="transcoding-in-progress"> ' . esc_html__( 'The file has been sent to transcoder', 'rtmedia-transcoder' ) . '</p>';
 		}
 
 		/**
@@ -96,7 +96,7 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 		$content = do_shortcode( "[audio {$audio_shortcode_attributes}]" );
 
 		if ( is_file_being_transcoded( $attachment_id ) ) {
-			$content .= '<p class="transcoding-in-progress"> ' . esc_html__( 'The file sent to transcoder', 'rtmedia-transcoder' ) . '</p>';
+			$content .= '<p class="transcoding-in-progress"> ' . esc_html__( 'The file sent has been to transcoder', 'rtmedia-transcoder' ) . '</p>';
 		}
 
 		/**
