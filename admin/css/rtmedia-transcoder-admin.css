@@ -4,7 +4,7 @@
 
 .bp-media-settings-boxes-wrapper {
     float: left;
-    width: 72%;
+    width: 75%;
     margin: 10px 0px 0 2px;
 }
 
@@ -50,7 +50,7 @@
 
 .rtm-transcoder-sidebar {
     float: right;
-    margin: 10px 20px 0 2px;
+    margin: 10px 0 0;
     width: 23%;
 }
 
@@ -71,4 +71,36 @@
 
 #trascoder-unsubscribe-dialog {
     display: none;
+}
+.rtm-transcoder-sidebar .button {
+	display: block;
+	opacity: 0.8;
+	position: relative;
+	text-decoration: none;
+}
+.rtm-social-share .dashicons {
+    font-size: 18px;
+    position: absolute;
+    right: 10px;
+    top: 4px;
+}
+.rtm-social-share .twitter .dashicons {
+    color: #45b0e3;
+}
+.rtm-social-share .facebook .dashicons {
+    color: #3b5998;
+}
+.rtm-social-share .wordpress .dashicons {
+    color: #21759b;
+}
+.rtm-social-share .rss .dashicons {
+    color: #ff6600;
+}
+#mce-EMAIL {
+	width: 100%;
+}
+#mc-embedded-subscribe {
+    display: block;
+    margin: 10px auto 0;
+    width: 100%;
 }
