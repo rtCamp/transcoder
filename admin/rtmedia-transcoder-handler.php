@@ -111,6 +111,7 @@ class RTMedia_Transcoder_Handler {
 			}
 			add_filter( 'rtmedia_allowed_types', array( $this, 'allowed_types_admin_settings' ), 10, 1 );
 			$usage_info = get_site_option( 'rtmedia-transcoding-usage' );
+
 			if ( $usage_info ) {
 				if ( isset( $usage_info[ $this->api_key ]->status ) && $usage_info[ $this->api_key ]->status ) {
 					if ( isset( $usage_info[ $this->api_key ]->remaining ) && $usage_info[ $this->api_key ]->remaining > 0 ) {
@@ -119,24 +120,13 @@ class RTMedia_Transcoder_Handler {
 						} elseif ( $usage_info[ $this->api_key ]->remaining > 524288000 && get_site_option( 'rtmedia-transcoding-usage-limit-mail' ) ) {
 							update_site_option( 'rtmedia-transcoding-usage-limit-mail', 0 );
 						}
-						if ( ( ! class_exists( 'RTMediaFFMPEG' ) && ! class_exists( 'RTMediaKaltura' ) ) || class_exists( 'RTMedia' ) ) {
-							add_filter( 'rtmedia_after_add_media', array( $this, 'transcoding' ), 10, 3 );
+						if ( strtotime( $usage_info[ $this->api_key ]->plan->expires ) > time() ) {
+							if ( ( ! class_exists( 'RTMediaFFMPEG' ) && ! class_exists( 'RTMediaKaltura' ) ) || class_exists( 'RTMedia' ) ) {
+								add_filter( 'rtmedia_after_add_media', array( $this, 'transcoding' ), 10, 3 );
+							}
+
+							add_action( 'add_attachment', array( $this, 'wp_transcoding' ), 90 );
 						}
-						add_action( 'add_attachment', array( $this, 'wp_transcoding' ), 90 );
-						$blacklist = array( 'localhosts', '127.0.10.1' );
-						if ( ! in_array( wp_unslash( $_SERVER['HTTP_HOST'] ), $blacklist, true ) ) { // @codingStandardsIgnoreLine
-							add_filter( 'rtmedia_plupload_files_filter', array( $this, 'allowed_types' ), 10, 1 );
-							add_filter( 'rtmedia_allowed_types', array(
-								$this,
-								'allowed_types_admin_settings',
-							), 10, 1 );
-							add_filter( 'rtmedia_valid_type_check', array( $this, 'bypass_video_audio' ), 10, 2 );
-						}
-					} elseif ( 'silver' == strtolower( $usage_info[ $this->api_key ]->plan->name ) ) {
-						if ( ( ! class_exists( 'RTMediaFFMPEG' ) && ! class_exists( 'RTMediaKaltura' ) ) || class_exists( 'RTMedia' ) ) {
-							add_filter( 'rtmedia_after_add_media', array( $this, 'transcoding' ), 10, 3 );
-						}
-						add_action( 'add_attachment', array( $this, 'wp_transcoding' ), 90 );
 						$blacklist = array( 'localhosts', '127.0.10.1' );
 						if ( ! in_array( wp_unslash( $_SERVER['HTTP_HOST'] ), $blacklist, true ) ) { // @codingStandardsIgnoreLine
 							add_filter( 'rtmedia_plupload_files_filter', array( $this, 'allowed_types' ), 10, 1 );
@@ -404,12 +394,12 @@ class RTMedia_Transcoder_Handler {
 		} else {
 			$usage_page = wp_remote_get( $usage_url ); // @codingStandardsIgnoreLine
 		}
-
 		if ( ! is_wp_error( $usage_page ) ) {
 			$usage_info = json_decode( $usage_page['body'] );
 		} else {
 			$usage_info = null;
 		}
+
 		update_site_option( 'rtmedia-transcoding-usage', array( $key => $usage_info ) );
 
 		return $usage_info;
@@ -433,7 +423,7 @@ class RTMedia_Transcoder_Handler {
 			foreach ( $users as $user ) {
 				$admin_email_ids[] = $user->user_email;
 			}
-			add_filter( 'wp_mail_content_type', function() { return 'text/html'; } );
+			add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
 			wp_mail( $admin_email_ids, $subject, sprintf( $message, size_format( $usage_details[ $this->api_key ]->used, 2 ), size_format( $usage_details[ $this->api_key ]->remaining, 2 ), size_format( $usage_details[ $this->api_key ]->total, 2 ) ) );
 		}
 		update_site_option( 'rtmedia-transcoding-usage-limit-mail', 1 );
@@ -456,7 +446,7 @@ class RTMedia_Transcoder_Handler {
 				foreach ( $users as $user ) {
 					$admin_email_ids[] = $user->user_email;
 				}
-				add_filter( 'wp_mail_content_type', function() { return 'text/html'; } );
+				add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
 				wp_mail( $admin_email_ids, $subject, sprintf( $message, size_format( $usage_details[ $this->api_key ]->used, 2 ), 0, size_format( $usage_details[ $this->api_key ]->total, 2 ) ) );
 			}
 			update_site_option( 'rtmedia-transcoding-usage-limit-mail', 1 );
@@ -588,6 +578,9 @@ class RTMedia_Transcoder_Handler {
 				if ( isset( $usage_details[ $this->api_key ]->plan->name ) ) {
 					$content .= '<p><strong>' . esc_html__( 'Current Plan', 'rtmedia-transcoder' ) . ':</strong> ' . esc_html( $usage_details[ $this->api_key ]->plan->name ) . ( $usage_details[ $this->api_key ]->sub_status ? '' : ' (' . esc_html__( 'Unsubscribed', 'rtmedia-transcoder' ) . ')' ) . '</p>';
 				}
+				if ( isset( $usage_details[ $this->api_key ]->plan->expires ) ) {
+					$content .= '<p><strong>' . esc_html__( 'Expires On', 'rtmedia-transcoder' ) . ':</strong> ' . date_i18n( 'F j, Y', strtotime( $usage_details[ $this->api_key ]->plan->expires ) ) . '</p>';
+				}
 				if ( isset( $usage_details[ $this->api_key ]->used ) ) {
 					$content .= '<p><span class="transcoding-used"></span><strong>' . esc_html__( 'Used', 'rtmedia-transcoder' ) . ':</strong> ' . ( ( $used_size = size_format( $usage_details[ $this->api_key ]->used, 2 ) ) ? esc_html( $used_size ) : '0MB' ) . '</p>';
 				}
@@ -595,10 +588,8 @@ class RTMedia_Transcoder_Handler {
 					$content .= '<p><span class="transcoding-remaining"></span><strong>' . esc_html__( 'Remaining', 'rtmedia-transcoder' ) . ':</strong> ';
 					if ( $usage_details[ $this->api_key ]->remaining >= 0 ) {
 						$content .= size_format( $usage_details[ $this->api_key ]->remaining, 2 );
-					} elseif ( $usage_details[ $this->api_key ]->remaining <= -1 ) {
-						$content .= 'Unlimited';
 					} else {
-						$content .= '0MB';
+						$content .= $usage_details[ $this->api_key ]->remaining . '0MB';
 					}
 				}
 				if ( isset( $usage_details[ $this->api_key ]->total ) ) {
@@ -613,18 +604,13 @@ class RTMedia_Transcoder_Handler {
 				}
 				$usage = new rtProgress();
 
-				/**
-				 * If plan is silver show progress bar gray all the time, to do
-				 * this override `used` and `total` variable manually
-				 */
-				if ( ! empty( $usage_details[ $this->api_key ]->plan->name ) && ( 'silver' === strtolower( $usage_details[ $this->api_key ]->plan->name ) ) ) {
-					$usage_details[ $this->api_key ]->used = 0;
-					$usage_details[ $this->api_key ]->total = 1;
+				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $this->api_key ]->used, $usage_details[ $this->api_key ]->total ), false );
+				if ( ( 0 >= $usage_details[ $this->api_key ]->remaining ) ) {
+					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your usage limit has been reached. Upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
 				}
 
-				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $this->api_key ]->used, $usage_details[ $this->api_key ]->total ), false );
-				if ( ( 0 >= $usage_details[ $this->api_key ]->remaining ) && ( -1 !== $usage_details[ $this->api_key ]->remaining ) ) {
-					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your usage limit has been reached. Upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
+				if ( ( isset( $usage_details[ $this->api_key ]->plan->expires ) && strtotime( $usage_details[ $this->api_key ]->plan->expires ) < time() ) ) {
+					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your plan has been expired. Please upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
 				}
 			} else {
 				$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your API key is not valid or is expired.', 'rtmedia-transcoder' ) . '</p></div>';
@@ -853,7 +839,7 @@ class RTMedia_Transcoder_Handler {
 						foreach ( $users as $user ) {
 							$admin_email_ids[] = $user->user_email;
 						}
-						add_filter( 'wp_mail_content_type', function() { return 'text/html'; } );
+						add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
 						wp_mail( $admin_email_ids, $subject, $message );
 					}
 					echo esc_html( $flag );
@@ -925,7 +911,7 @@ class RTMedia_Transcoder_Handler {
 						foreach ( $users as $user ) {
 							$admin_email_ids[] = $user->user_email;
 						}
-						add_filter( 'wp_mail_content_type', function() { return 'text/html'; } );
+						add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
 						wp_mail( $admin_email_ids, $subject, $message );
 					}
 					echo esc_html( $flag );
