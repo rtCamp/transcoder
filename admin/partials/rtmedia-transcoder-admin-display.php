@@ -206,7 +206,67 @@
 			</form>
 		</div>
 	</div>
+	
 	<div class="metabox-holder bp-media-metabox-holder rtm-transcoder-sidebar">
 		<?php do_action( 'rtmedia_transcoder_before_widgets' ); ?>
+		<div class="postbox" id="rt-spread-the-word">
+			<h3 class="hndle">
+				<span>
+					<?php esc_html_e( 'Spread the Word', 'rtmedia-transcoder' ); ?>
+				</span>
+			</h3>
+			<div class="inside">
+				<div id="social" class="rtm-social-share">
+					<?php
+					$message = sprintf( esc_html__( 'I use @rtMediaWP http://rt.cx/rtmedia on %s', 'rtmedia-transcoder' ), home_url() );
+					?>
+					<p>
+						<a href="http://twitter.com/home/?status=<?php echo esc_attr( $message ) ?>" class="button twitter" target= "_blank" title="<?php esc_attr_e( 'Post to Twitter Now', 'rtmedia-transcoder' ); ?>">
+							<?php esc_html_e( 'Post to Twitter', 'rtmedia-transcoder' ); ?>
+							<span class="dashicons dashicons-twitter"></span>
+						</a>
+					</p>
+					<p>
+						<a href="https://www.facebook.com/sharer/sharer.php?u=https://rtmedia.io/" class="button facebook" target="_blank" title="<?php esc_attr_e( 'Share on Facebook Now', 'rtmedia-transcoder' ); ?>">
+							<?php esc_html_e( 'Share on Facebook', 'rtmedia-transcoder' ); ?>
+							<span class="dashicons dashicons-facebook"></span>
+						</a>
+					</p>
+					<p>
+						<a href="http://wordpress.org/support/view/plugin-reviews/rtmedia-transcoder?rate=5#postform" class="button wordpress" target= "_blank" title="<?php esc_attr_e( 'Rate rtMedia on Wordpress.org', 'rtmedia-transcoder' ); ?>">
+							<?php esc_html_e( 'Rate on Wordpress.org', 'rtmedia-transcoder' ); ?>
+							<span class="dashicons dashicons-wordpress"></span>
+						</a>
+					</p>
+					<p>
+						<a href="https://rtmedia.io/feed/" class="button rss" target="_blank" title="<?php esc_attr_e( 'Subscribe to our Feeds', 'rtmedia-transcoder' ); ?>">
+							<?php esc_html_e( 'Subscribe to our Feeds', 'rtmedia-transcoder' ); ?>
+							<span class="dashicons dashicons-rss"></span>
+						</a>
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="postbox" id="rt-subscribe">
+			<h3 class="hndle">
+				<span>
+					<?php esc_html_e( 'Subscribe', 'rtmedia-transcoder' ); ?>
+				</span>
+			</h3>
+			<div class="inside">
+				<?php $current_user = wp_get_current_user(); ?>
+				<form action="http://rtcamp.us1.list-manage1.com/subscribe/post?u=85b65c9c71e2ba3fab8cb1950&amp;id=9e8ded4470" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+					<div class="mc-field-group">
+						<input type="email" value="<?php echo esc_attr( $current_user->user_email ); ?>" name="EMAIL" placeholder="Email" class="required email" id="mce-EMAIL" />
+						<input style="display:none;" type="checkbox" checked="checked" value="1" name="group[1721][1]" id="mce-group[1721]-1721-0" />
+						<input type="submit" value="<?php esc_attr_e( 'Subscribe', 'rtmedia-transcoder' ); ?>" name="subscribe" id="mc-embedded-subscribe" class="button" />
+						<div id="mce-responses" class="clear">
+							<div class="response" id="mce-error-response" style="display:none"></div>
+							<div class="response" id="mce-success-response" style="display:none"></div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
 	</div>
 </div>
