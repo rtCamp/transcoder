@@ -54,7 +54,7 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 	if ( 'video' === $mime_type[0] ) {
 
 		$video_shortcode_attributes = '';
-		$media_url 	= rt_media_get_video_url( $attachment_id );
+		$media_url 	= rtt_get_media_url( $attachment_id );
 
 		$poster 	= rt_media_get_video_thumbnail( $attachment_id );
 
@@ -67,25 +67,9 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 
 		$content = do_shortcode( "[video {$video_shortcode_attributes}]" );
 
-		if ( is_file_being_transcoded( $attachment_id ) ) {
-			$content .= '<p class="transcoding-in-progress"> ' . esc_html__( 'The file has been sent to transcoder', 'rtmedia-transcoder' ) . '</p>';
-		}
-
-		/**
-		 * Allow user to filter [rt_media] short code content.
-		 *
-		 * @since 1.0
-		 *
-		 * @param string $content    	Activity content.
-		 * @param int $attachment_id  	ID of attachment.
-		 * @param string $media_url  	URL of the media.
-		 * @param string $media_type  	Mime type of the media.
-		 */
-		return apply_filters( 'rt_media_shortcode', $content, $attachment_id, $media_url, $mime_type[0] );
-
 	} elseif ( 'audio' === $mime_type[0] ) {
 
-		$media_url 	= wp_get_attachment_url( $attachment_id );
+		$media_url 	= rtt_get_media_url( $attachment_id, 'mp3' );
 
 		$audio_shortcode_attributes = 'src="' . $media_url . '"';
 
@@ -95,23 +79,23 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 
 		$content = do_shortcode( "[audio {$audio_shortcode_attributes}]" );
 
-		if ( is_file_being_transcoded( $attachment_id ) ) {
-			$content .= '<p class="transcoding-in-progress"> ' . esc_html__( 'The file sent has been to transcoder', 'rtmedia-transcoder' ) . '</p>';
-		}
-
-		/**
-		 * Allow user to filter [rt_media] short code content.
-		 *
-		 * @since 1.0
-		 *
-		 * @param string $content    	Activity content.
-		 * @param int $attachment_id  	ID of attachment.
-		 * @param string $media_url  	URL of the media.
-		 * @param string $media_type  	Mime type of the media.
-		 */
-		return apply_filters( 'rt_media_shortcode', $content, $attachment_id, $media_url, $mime_type[0] );
-
 	}
+
+	if ( is_file_being_transcoded( $attachment_id ) ) {
+		$content .= '<p class="transcoding-in-progress"> ' . esc_html__( 'The file has been sent to transcoder', 'rtmedia-transcoder' ) . '</p>';
+	}
+
+	/**
+	 * Allow user to filter [rt_media] short code content.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $content    	Activity content.
+	 * @param int $attachment_id  	ID of attachment.
+	 * @param string $media_url  	URL of the media.
+	 * @param string $media_type  	Mime type of the media.
+	 */
+	return apply_filters( 'rt_media_shortcode', $content, $attachment_id, $media_url, $mime_type[0] );
 }
 
 add_shortcode( 'rt_media', 'rt_media_shortcode' );
@@ -167,23 +151,24 @@ function rt_media_get_video_thumbnail( $attachment_id ) {
 }
 
 /**
- * Give the transcoded video URL of attachment.
+ * Give the transcoded media URL of attachment.
  *
  * @since 1.0
  *
  * @param  int $attachment_id	 ID of attachment.
- * @return string                returns video file url on success.
+ * @param  string $media_type    type of media i.e mp4, mp3. By default it mp4 is passed
+ * @return string                returns audio file url on success.
  */
-function rt_media_get_video_url( $attachment_id ) {
+function rtt_get_media_url( $attachment_id, $media_type = 'mp4' ) {
 
 	if ( empty( $attachment_id ) ) {
 	    return;
 	}
 
-	$videos = get_post_meta( $attachment_id, '_rt_media_transcoded_files', true );
+	$medias = get_post_meta( $attachment_id, '_rt_media_transcoded_files', true );
 
-	if ( isset( $videos['mp4'] ) && is_array( $videos['mp4'] ) && ! empty( $videos['mp4'][0] ) ) {
-		$file_url = $videos['mp4'][0];
+	if ( isset( $medias[ $media_type ] ) && is_array( $medias[ $media_type ] ) && ! empty( $medias[ $media_type ][0] ) ) {
+		$file_url = $medias[ $media_type ][0];
 		$uploads = wp_get_upload_dir();
 		if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
 			$final_file_url = $file_url;
@@ -197,8 +182,6 @@ function rt_media_get_video_url( $attachment_id ) {
 	return $final_file_url;
 
 }
-
-add_filter( 'rtmedia_media_thumb', 'rtmedia_transcoded_thumb', 11, 3 );
 
 /**
  * Give the thumbnail URL for rtMedia gallery shortcode.
@@ -221,6 +204,8 @@ function rtmedia_transcoded_thumb( $src, $media_id, $media_type ) {
 	}
 	return $src;
 }
+
+add_filter( 'rtmedia_media_thumb', 'rtmedia_transcoded_thumb', 11, 3 );
 
 /**
  * Parse the short codes in the activity content.
@@ -448,5 +433,47 @@ if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
 				'content' => $obj_activity->create_activity_html(),
 			), array( 'id' => $activity_id ) );
 		}
+	}
+}
+
+if ( ! function_exists( 'rtt_get_edit_post_link' ) ) {
+	/**
+	 * Retrieve edit posts link for post. Derived from WordPress core
+	 *
+	 * Can be used within the WordPress loop or outside of it. Can be used with
+	 * pages, posts, attachments, and revisions.
+	 *
+	 * @since 1
+	 *
+	 * @param int    $id      Optional. Post ID.
+	 * @param string $context Optional, defaults to display.
+	 * @return string|null The edit post link for the given post. null if the post type is invalid or does
+	 *                     not allow an editing UI.
+	 */
+	function rtt_get_edit_post_link( $id = 0, $context = 'display' ) {
+		if ( ! $post = get_post( $id ) ) {
+			return;
+		}
+
+		if ( 'revision' === $post->post_type ) {
+		    $action = '';
+		} elseif ( 'display' === $context ) {
+		    $action = '&amp;action=edit';
+		} else {
+		    $action = '&action=edit';
+		}
+
+		$post_type_object = get_post_type_object( $post->post_type );
+		if ( ! $post_type_object ) {
+		    return;
+		}
+
+		if ( $post_type_object->_edit_link ) {
+		    $link = admin_url( sprintf( $post_type_object->_edit_link . $action, $post->ID ) );
+		} else {
+		    $link = '';
+		}
+
+		return $link;
 	}
 }
