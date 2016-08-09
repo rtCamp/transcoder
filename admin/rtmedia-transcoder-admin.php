@@ -86,6 +86,9 @@ class RTMedia_Transcoder_Admin {
 		}
 	}
 
+	/**
+	 * Display errors if any while settings are save.
+	 */
 	public function rtt_add_settings_errors() {
 	    settings_errors();
 	}
@@ -128,7 +131,6 @@ class RTMedia_Transcoder_Admin {
 
 	/**
 	 * Remove actions and filters from old rtMedia (v4.0.2) plugin
-	 *
 	 */
 	public function disable_encoding() {
 		global $rtmedia_admin;

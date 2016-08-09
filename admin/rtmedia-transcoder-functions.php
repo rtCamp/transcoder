@@ -103,7 +103,7 @@ add_shortcode( 'rt_media', 'rt_media_shortcode' );
 /**
  * Check whether the file is sent to the transcoder or not.
  *
- * @param  number  $attachment_id
+ * @param  number $attachment_id	ID of attachment.
  * @return boolean
  */
 function is_file_being_transcoded( $attachment_id ) {
@@ -155,9 +155,9 @@ function rt_media_get_video_thumbnail( $attachment_id ) {
  *
  * @since 1.0
  *
- * @param  int $attachment_id	 ID of attachment.
- * @param  string $media_type    type of media i.e mp4, mp3. By default it mp4 is passed
- * @return string                returns audio file url on success.
+ * @param  int    $attachment_id	 ID of attachment.
+ * @param  string $media_type        Type of media i.e mp4, mp3. By default it mp4 is passed.
+ * @return string					 Returns audio file url on success.
  */
 function rtt_get_media_url( $attachment_id, $media_type = 'mp4' ) {
 
@@ -224,8 +224,6 @@ add_filter( 'bp_get_activity_content_body', 'rtmedia_transcoder_parse_shortcode'
 if ( ! function_exists( 'rtmedia_video_editor_title' ) ) {
 	/**
 	 * Add the video thumbnail tab on video edit page.
-	 *
-	 * @return string
 	 */
 	function rtmedia_video_editor_title() {
 		global $rtmedia_query;
@@ -257,8 +255,6 @@ add_action( 'rtmedia_add_edit_tab_title', 'rtmedia_video_editor_title', 1000 );
 if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 	/**
 	 * Display the HTML to set the thumbnail for video.
-	 *
-	 * @return string HTML content
 	 */
 	function rtt_rtmedia_vedio_editor_content() {
 		global $rtmedia_query;
@@ -325,7 +321,7 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 					</ul>
 				</div>
 			<?php
-			} else { // check for array of thumbs stored as attachement ids
+			} else { // check for array of thumbs stored as attachement ids.
 				global $rtmedia_media;
 				$curr_cover_art = $rtmedia_media->cover_art;
 				if ( ! empty( $curr_cover_art ) ) {
@@ -369,15 +365,16 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 
 add_action( 'rtmedia_add_edit_tab_content', 'rtt_rtmedia_vedio_editor_content', 1000 );
 
-/**
- * Set the video thumbnail
- *
- * @param number $id rtMedia activity ID
- */
 if ( ! function_exists( 'rtt_set_video_thumbnail' ) ) {
+
+	/**
+	 * Set the video thumbnail
+	 *
+	 * @param number $id rtMedia activity ID.
+	 */
 	function rtt_set_video_thumbnail( $id ) {
 		$media_type 	= rtmedia_type( $id );
-		$attachment_id 	= rtmedia_media_id( $id );		// Get the wp attachment ID
+		$attachment_id 	= rtmedia_media_id( $id );		// Get the wp attachment ID.
 		$thumbnail  = filter_input( INPUT_POST, 'rtmedia-thumbnail', FILTER_SANITIZE_URL );
 		if ( 'video' === $media_type && ! empty( $thumbnail ) ) {
 			update_post_meta( $attachment_id, '_rt_media_video_thumbnail', $thumbnail );
@@ -396,7 +393,7 @@ if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
 	/**
 	 * Update the activity after thumb is set to the video
 	 *
-	 * @param  number $id media id
+	 * @param  number $id media id.
 	 */
 	function rtt_update_activity_after_thumb_set( $id ) {
 		$model       = new RTMediaModel();
@@ -415,12 +412,12 @@ if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
 			$activity_old_content = bp_activity_get_meta( $activity_id, 'bp_old_activity_content' );
 			$activity_text        = bp_activity_get_meta( $activity_id, 'bp_activity_text' );
 			if ( ! empty( $activity_old_content ) ) {
-				// get old activity content and save in activity meta
+				// get old activity content and save in activity meta.
 				$activity_get  = bp_activity_get_specific( array( 'activity_ids' => $activity_id ) );
 				$activity      = $activity_get['activities'][0];
 				$activity_body = $activity->content;
 				bp_activity_update_meta( $activity_id, 'bp_old_activity_content', $activity_body );
-				//extract activity text from old content
+				// extract activity text from old content.
 				$activity_text = strip_tags( $activity_body, '<span>' );
 				$activity_text = explode( '</span>', $activity_text );
 				$activity_text = strip_tags( $activity_text[0] );
