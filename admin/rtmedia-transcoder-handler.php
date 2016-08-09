@@ -170,7 +170,7 @@ class RTMedia_Transcoder_Handler {
 			$not_allowed_type = array( 'mp3' );
 			preg_match( '/video|audio/i', $single['type'], $type_array );
 
-			if ( preg_match( '/video|audio/i', $single['type'], $type_array ) && ! in_array( $single['type'], array( 'audio/mp3' ) ) && ! in_array( $type, $not_allowed_type ) ) {
+			if ( preg_match( '/video|audio/i', $single['type'], $type_array ) && ! in_array( $single['type'], array( 'audio/mp3' ), true ) && ! in_array( $type, $not_allowed_type, true ) ) {
 				$options_video_thumb = $this->get_thumbnails_required( $media_ids[ $key ] );
 				if ( '' === $options_video_thumb ) {
 					$options_video_thumb = 5;
@@ -602,7 +602,7 @@ class RTMedia_Transcoder_Handler {
 						$content .= '';
 					}
 				}
-				$usage = new rtProgress();
+				$usage = new RT_Progress();
 
 				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $this->api_key ]->used, $usage_details[ $this->api_key ]->total ), false );
 				if ( ( 0 >= $usage_details[ $this->api_key ]->remaining ) ) {

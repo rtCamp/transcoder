@@ -1,16 +1,18 @@
 <?php
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Handle progress calculation and display of progress bar.
+ *
+ * @package    rtMediaTranscoder
+ * @subpackage rtMediaTranscoder/Admin
  */
 
 /**
- * Description of rtProgress
+ * Handle progress calculation and display of progress bar. 
  *
- * @author saurabh
+ * @package    rtMediaTranscoder
+ * @subpackage rtMediaTranscoder/Admin
  */
-class rtProgress {
+class RT_Progress {
 
 	/**
 	 * Constructor
@@ -27,10 +29,10 @@ class rtProgress {
 	 *
 	 * @access public
 	 *
-	 * @param  float $progress
-	 * @param  bool $echo
+	 * @param  float $progress	Progress value.
+	 * @param  bool  $echo		If true then echo the output else return.
 	 *
-	 * @return string $progress_ui
+	 * @return string $progress_ui	Output of progress bar.
 	 */
 	public function progress_ui( $progress, $echo = true ) {
 		$progress_ui = '
@@ -51,8 +53,8 @@ class rtProgress {
 	 *
 	 * @access public
 	 *
-	 * @param  float $progress
-	 * @param  float $total
+	 * @param  float $progress	Progress value.
+	 * @param  float $total		Total value.
 	 *
 	 * @return float
 	 */
