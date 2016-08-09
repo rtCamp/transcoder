@@ -21,6 +21,10 @@
 			</a>
 		</span>
 	</h1>
+	<div id="rtt-settings_updated" class="updated settings-error notice is-dismissible hide">
+		<p></p>
+		<button type="button" class="notice-dismiss"><span class="screen-reader-text"><?php echo esc_attr__( 'Dismiss this notice', 'rtmedia-transcoder' ); ?>.</span></button>
+	</div>
 	<div class="bp-media-settings-boxes-wrapper">
 		<div id="bp-media-settings-boxes" class="bp-media-settings-boxes-container rtm-transcoder-setting-container">
 			<p>
@@ -190,7 +194,12 @@
 							<?php esc_html_e( 'Number of thumbnails that are generated on video upload', 'rtmedia-transcoder' ); ?>
 						</th>
 						<td>
-							<?php $number_of_thumbnails = get_site_option( 'number_of_thumbs', 5 ); ?>
+							<?php
+							$number_of_thumbnails = get_site_option( 'number_of_thumbs', 5 );
+							if ( empty( $number_of_thumbnails ) ) {
+								$number_of_thumbnails = 5;
+							}
+							?>
 							<input type="number" name="number_of_thumbs" value="<?php echo esc_attr( $number_of_thumbnails ); ?>" min="1" max="10" />
 							<p class="description">
 								<?php

@@ -111,6 +111,7 @@ class RTMedia_Transcoder_Handler {
 			}
 			add_filter( 'rtmedia_allowed_types', array( $this, 'allowed_types_admin_settings' ), 10, 1 );
 			$usage_info = get_site_option( 'rtmedia-transcoding-usage' );
+
 			if ( $usage_info ) {
 				if ( isset( $usage_info[ $this->api_key ]->status ) && $usage_info[ $this->api_key ]->status ) {
 					if ( isset( $usage_info[ $this->api_key ]->remaining ) && $usage_info[ $this->api_key ]->remaining > 0 ) {
@@ -119,24 +120,13 @@ class RTMedia_Transcoder_Handler {
 						} elseif ( $usage_info[ $this->api_key ]->remaining > 524288000 && get_site_option( 'rtmedia-transcoding-usage-limit-mail' ) ) {
 							update_site_option( 'rtmedia-transcoding-usage-limit-mail', 0 );
 						}
-						if ( ( ! class_exists( 'RTMediaFFMPEG' ) && ! class_exists( 'RTMediaKaltura' ) ) || class_exists( 'RTMedia' ) ) {
-							add_filter( 'rtmedia_after_add_media', array( $this, 'transcoding' ), 10, 3 );
+						if ( strtotime( $usage_info[ $this->api_key ]->plan->expires ) > time() ) {
+							if ( ( ! class_exists( 'RTMediaFFMPEG' ) && ! class_exists( 'RTMediaKaltura' ) ) || class_exists( 'RTMedia' ) ) {
+								add_filter( 'rtmedia_after_add_media', array( $this, 'transcoding' ), 10, 3 );
+							}
+
+							add_action( 'add_attachment', array( $this, 'wp_transcoding' ), 90 );
 						}
-						add_action( 'add_attachment', array( $this, 'wp_transcoding' ), 90 );
-						$blacklist = array( 'localhosts', '127.0.10.1' );
-						if ( ! in_array( wp_unslash( $_SERVER['HTTP_HOST'] ), $blacklist, true ) ) { // @codingStandardsIgnoreLine
-							add_filter( 'rtmedia_plupload_files_filter', array( $this, 'allowed_types' ), 10, 1 );
-							add_filter( 'rtmedia_allowed_types', array(
-								$this,
-								'allowed_types_admin_settings',
-							), 10, 1 );
-							add_filter( 'rtmedia_valid_type_check', array( $this, 'bypass_video_audio' ), 10, 2 );
-						}
-					} elseif ( 'silver' === strtolower( $usage_info[ $this->api_key ]->plan->name ) ) {
-						if ( ( ! class_exists( 'RTMediaFFMPEG' ) && ! class_exists( 'RTMediaKaltura' ) ) || class_exists( 'RTMedia' ) ) {
-							add_filter( 'rtmedia_after_add_media', array( $this, 'transcoding' ), 10, 3 );
-						}
-						add_action( 'add_attachment', array( $this, 'wp_transcoding' ), 90 );
 						$blacklist = array( 'localhosts', '127.0.10.1' );
 						if ( ! in_array( wp_unslash( $_SERVER['HTTP_HOST'] ), $blacklist, true ) ) { // @codingStandardsIgnoreLine
 							add_filter( 'rtmedia_plupload_files_filter', array( $this, 'allowed_types' ), 10, 1 );
@@ -404,12 +394,12 @@ class RTMedia_Transcoder_Handler {
 		} else {
 			$usage_page = wp_remote_get( $usage_url ); // @codingStandardsIgnoreLine
 		}
-
 		if ( ! is_wp_error( $usage_page ) ) {
 			$usage_info = json_decode( $usage_page['body'] );
 		} else {
 			$usage_info = null;
 		}
+
 		update_site_option( 'rtmedia-transcoding-usage', array( $key => $usage_info ) );
 
 		return $usage_info;
@@ -433,7 +423,7 @@ class RTMedia_Transcoder_Handler {
 			foreach ( $users as $user ) {
 				$admin_email_ids[] = $user->user_email;
 			}
-			add_filter( 'wp_mail_content_type', function() { return 'text/html'; } );
+			add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
 			wp_mail( $admin_email_ids, $subject, sprintf( $message, size_format( $usage_details[ $this->api_key ]->used, 2 ), size_format( $usage_details[ $this->api_key ]->remaining, 2 ), size_format( $usage_details[ $this->api_key ]->total, 2 ) ) );
 		}
 		update_site_option( 'rtmedia-transcoding-usage-limit-mail', 1 );
@@ -456,7 +446,7 @@ class RTMedia_Transcoder_Handler {
 				foreach ( $users as $user ) {
 					$admin_email_ids[] = $user->user_email;
 				}
-				add_filter( 'wp_mail_content_type', function() { return 'text/html'; } );
+				add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
 				wp_mail( $admin_email_ids, $subject, sprintf( $message, size_format( $usage_details[ $this->api_key ]->used, 2 ), 0, size_format( $usage_details[ $this->api_key ]->total, 2 ) ) );
 			}
 			update_site_option( 'rtmedia-transcoding-usage-limit-mail', 1 );
@@ -588,6 +578,9 @@ class RTMedia_Transcoder_Handler {
 				if ( isset( $usage_details[ $this->api_key ]->plan->name ) ) {
 					$content .= '<p><strong>' . esc_html__( 'Current Plan', 'rtmedia-transcoder' ) . ':</strong> ' . esc_html( $usage_details[ $this->api_key ]->plan->name ) . ( $usage_details[ $this->api_key ]->sub_status ? '' : ' (' . esc_html__( 'Unsubscribed', 'rtmedia-transcoder' ) . ')' ) . '</p>';
 				}
+				if ( isset( $usage_details[ $this->api_key ]->plan->expires ) ) {
+					$content .= '<p><strong>' . esc_html__( 'Expires On', 'rtmedia-transcoder' ) . ':</strong> ' . date_i18n( 'F j, Y', strtotime( $usage_details[ $this->api_key ]->plan->expires ) ) . '</p>';
+				}
 				if ( isset( $usage_details[ $this->api_key ]->used ) ) {
 					$content .= '<p><span class="transcoding-used"></span><strong>' . esc_html__( 'Used', 'rtmedia-transcoder' ) . ':</strong> ' . ( ( $used_size = size_format( $usage_details[ $this->api_key ]->used, 2 ) ) ? esc_html( $used_size ) : '0MB' ) . '</p>';
 				}
@@ -595,10 +588,8 @@ class RTMedia_Transcoder_Handler {
 					$content .= '<p><span class="transcoding-remaining"></span><strong>' . esc_html__( 'Remaining', 'rtmedia-transcoder' ) . ':</strong> ';
 					if ( $usage_details[ $this->api_key ]->remaining >= 0 ) {
 						$content .= size_format( $usage_details[ $this->api_key ]->remaining, 2 );
-					} elseif ( $usage_details[ $this->api_key ]->remaining <= -1 ) {
-						$content .= 'Unlimited';
 					} else {
-						$content .= '0MB';
+						$content .= $usage_details[ $this->api_key ]->remaining . '0MB';
 					}
 				}
 				if ( isset( $usage_details[ $this->api_key ]->total ) ) {
@@ -613,18 +604,13 @@ class RTMedia_Transcoder_Handler {
 				}
 				$usage = new RT_Progress();
 
-				/**
-				 * If plan is silver show progress bar gray all the time, to do
-				 * this override `used` and `total` variable manually
-				 */
-				if ( ! empty( $usage_details[ $this->api_key ]->plan->name ) && ( 'silver' === strtolower( $usage_details[ $this->api_key ]->plan->name ) ) ) {
-					$usage_details[ $this->api_key ]->used = 0;
-					$usage_details[ $this->api_key ]->total = 1;
+				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $this->api_key ]->used, $usage_details[ $this->api_key ]->total ), false );
+				if ( ( 0 >= $usage_details[ $this->api_key ]->remaining ) ) {
+					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your usage limit has been reached. Upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
 				}
 
-				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $this->api_key ]->used, $usage_details[ $this->api_key ]->total ), false );
-				if ( ( 0 >= $usage_details[ $this->api_key ]->remaining ) && ( -1 !== $usage_details[ $this->api_key ]->remaining ) ) {
-					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your usage limit has been reached. Upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
+				if ( ( isset( $usage_details[ $this->api_key ]->plan->expires ) && strtotime( $usage_details[ $this->api_key ]->plan->expires ) < time() ) ) {
+					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your plan has been expired. Please upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
 				}
 			} else {
 				$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your API key is not valid or is expired.', 'rtmedia-transcoder' ) . '</p></div>';
@@ -720,7 +706,7 @@ class RTMedia_Transcoder_Handler {
 	 * @param array $file_post_array	Transcoded files.
 	 * @param int   $attachment_id		ID of attachment.
 	 */
-	public function add_transcoded_files( $file_post_array, $attachment_id ) {
+	public function add_transcoded_files( $file_post_array, $attachment_id, $job_for = '' ) {
 		$transcoded_files = false;
 		if ( isset( $file_post_array ) && is_array( $file_post_array ) && ( count( $file_post_array > 0 ) ) ) {
 			foreach ( $file_post_array as $key => $format ) {
@@ -737,8 +723,15 @@ class RTMedia_Transcoder_Handler {
 							}
 							if ( $file_bits ) {
 
-								/* add_filter( 'upload_dir', array( $this, 'upload_dir' ) ); */
+								if ( 'wp-media' !== $job_for ) {
+									add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
+								}
+
 								$upload_info = wp_upload_bits( $new_wp_attached_file_pathinfo['basename'], null, $file_bits );
+
+								if ( 'wp-media' !== $job_for ) {
+									rremove_filter( 'upload_dir', array( $this, 'upload_dir' ) );
+								}
 
 								$uploaded_file = _wp_relative_upload_path( $upload_info['file'] );
 
@@ -790,20 +783,22 @@ class RTMedia_Transcoder_Handler {
 	public function handle_callback() {
 		require_once( ABSPATH . 'wp-admin/includes/image.php' );
 
-		$job_id		= filter_input( INPUT_POST, 'job_id', FILTER_SANITIZE_STRING );
-		$status		= filter_input( INPUT_POST, 'status', FILTER_SANITIZE_STRING );
-		$error_msg	= filter_input( INPUT_POST, 'error_msg', FILTER_SANITIZE_STRING );
-		$job_for	= filter_input( INPUT_POST, 'job_for', FILTER_SANITIZE_STRING );
-		$thumbnail	= filter_input( INPUT_POST, 'thumbnail', FILTER_SANITIZE_STRING );
-		$format		= filter_input( INPUT_POST, 'format', FILTER_SANITIZE_STRING );
+		$job_id			= filter_input( INPUT_POST, 'job_id', FILTER_SANITIZE_STRING );
+		$status			= filter_input( INPUT_POST, 'status', FILTER_SANITIZE_STRING );
+		$file_status 	= filter_input( INPUT_POST, 'file_status', FILTER_SANITIZE_STRING );
+		$error_msg		= filter_input( INPUT_POST, 'error_msg', FILTER_SANITIZE_STRING );
+		$error_code		= filter_input( INPUT_POST, 'error_code', FILTER_SANITIZE_STRING );
+		$job_for		= filter_input( INPUT_POST, 'job_for', FILTER_SANITIZE_STRING );
+		$thumbnail		= filter_input( INPUT_POST, 'thumbnail', FILTER_SANITIZE_STRING );
+		$format			= filter_input( INPUT_POST, 'format', FILTER_SANITIZE_STRING );
 
-		if ( ! empty( $job_id )  && ! empty( $status ) && ( 'error' === $status ) ) {
+		if ( ! empty( $job_id )  && ! empty( $file_status ) && ( 'error' === $file_status ) ) {
 			$send_alert = $this->nofity_transcoding_failed( $job_id, $error_msg );
-			return;
+			die();
 		}
 
 		// @codingStandardsIgnoreStart
-		if ( isset( $job_for ) && ( 'wp-media' == $job_for ) ) {
+		if ( isset( $job_for ) && ( 'wp-media' === $job_for ) ) {
 			if ( isset( $job_id ) ) {
 				$has_thumbs = isset( $thumbnail ) ? true : false;
 				$flag       = false;
@@ -824,7 +819,11 @@ class RTMedia_Transcoder_Handler {
 					if ( isset( $format ) && 'thumbnail' === sanitize_text_field( wp_unslash( $format ) ) ) {
 						die();
 					}
-					$uploded_files = $this->add_transcoded_files( $_REQUEST['files'], $attachment_id );
+
+					if ( ! empty( $_REQUEST['files'] ) ) {
+						$uploded_files = $this->add_transcoded_files( $_REQUEST['files'], $attachment_id, $job_for );
+					}
+
 
 				} else {
 					$flag = esc_html__( 'Something went wrong. The required attachment id does not exists. It must have been deleted.', 'rtmedia-transcoder' );
@@ -844,7 +843,7 @@ class RTMedia_Transcoder_Handler {
 						'download_url' => esc_url( $_GET['download_url'] ), // @codingStandardsIgnoreLine
 					), home_url() ) );
 					$subject       = esc_html__( 'rtMedia Transcoding: Download Failed', 'rtmedia-transcoder' );
-					$message       = '<p><a href="' . esc_url( get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
+					$message       = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
 					                 esc_html__( ' was successfully encoded but there was an error while downloading:', 'rtmedia-transcoder' ) . '</p><p><code>' .
 					                 esc_html( $flag ) . '</code></p><p>' . esc_html__( 'You can ', 'rtmedia-transcoder' ) . '<a href="' . esc_url( $download_link ) . '">'
 									. esc_html__( 'retry the download', 'rtmedia-transcoder' ) . '</a>.</p>';
@@ -853,7 +852,7 @@ class RTMedia_Transcoder_Handler {
 						foreach ( $users as $user ) {
 							$admin_email_ids[] = $user->user_email;
 						}
-						add_filter( 'wp_mail_content_type', function() { return 'text/html'; } );
+						add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
 						wp_mail( $admin_email_ids, $subject, $message );
 					}
 					echo esc_html( $flag );
@@ -896,7 +895,9 @@ class RTMedia_Transcoder_Handler {
 						die();
 					}
 
-					$uploded_files = $this->add_transcoded_files( $_REQUEST['files'], $attachment_id );
+					if ( ! empty( $_REQUEST['files'] ) ) {
+						$uploded_files = $this->add_transcoded_files( $_REQUEST['files'], $attachment_id, $job_for );
+					}
 
 				} else {
 					$flag = esc_html__( 'Something went wrong. The required attachment id does not exists. It must have been deleted.', 'rtmedia-transcoder' );
@@ -916,7 +917,7 @@ class RTMedia_Transcoder_Handler {
 						'download_url' => esc_url( $_GET['download_url'] ), // @codingStandardsIgnoreLine
 					), home_url() ) );
 					$subject       = esc_html__( 'rtMedia Transcoding: Download Failed', 'rtmedia-transcoder' );
-					$message       = '<p><a href="' . esc_url( get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
+					$message       = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
 					                 esc_html__( ' was successfully encoded but there was an error while downloading:', 'rtmedia-transcoder' ) . '</p><p><code>' .
 					                 esc_html( $flag ) . '</code></p><p>' . esc_html__( 'You can ', 'rtmedia-transcoder' ) . '<a href="' . esc_url( $download_link ) . '">'
 									. esc_html__( 'retry the download', 'rtmedia-transcoder' ) . '</a>.</p>';
@@ -925,7 +926,7 @@ class RTMedia_Transcoder_Handler {
 						foreach ( $users as $user ) {
 							$admin_email_ids[] = $user->user_email;
 						}
-						add_filter( 'wp_mail_content_type', function() { return 'text/html'; } );
+						add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
 						wp_mail( $admin_email_ids, $subject, $message );
 					}
 					echo esc_html( $flag );
@@ -1057,8 +1058,9 @@ class RTMedia_Transcoder_Handler {
 				}
 			}
 		}
+
 		add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
-		wp_mail( $email_ids, $subject, sprintf( $message, size_format( $usage_details[ $this->api_key ]->used, 2 ), size_format( $usage_details[ $this->api_key ]->remaining, 2 ), size_format( $usage_details[ $this->api_key ]->total, 2 ) ) );
+		wp_mail( $email_ids, $subject, $message );
 	}
 
 	/**
@@ -1087,10 +1089,11 @@ class RTMedia_Transcoder_Handler {
 		$subject = esc_html__( 'rtMedia Transcoding: Something went wrong.', 'rtmedia-transcoder' );
 		$attachment_id = $this->get_post_id_by_meta_key_and_value( '_rtmedia_transcoding_job_id', $job_id );
 		if ( ! empty( $error_msg ) ) {
-			$message = '<p><a href="' . esc_url( get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
-				esc_html( $error_msg ) . '</p>';
+			$message = '<p>' . esc_html__( ' There was unexpected error occurred while transcoding this following media.', 'rtmedia-transcoder' ) . '</p>';
+			$message .= '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a></p>';
+			$message .= '<p>Error message: ' . esc_html( $error_msg ) . '</p>';
 		} else {
-			$message = '<p><a href="' . esc_url( get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
+			$message = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
 				esc_html__( ' there was unexpected error occurred while transcoding this media.', 'rtmedia-transcoder' ) . '</p>';
 		}
 
@@ -1099,7 +1102,6 @@ class RTMedia_Transcoder_Handler {
 			$author_id 		= get_post_field( 'post_author', $attachment_id );
 			$email_ids[] 	= get_the_author_meta( 'user_email', $author_id );
 		}
-
 		$this->send_notification( $email_ids, $subject, $message, $include_admin = true );
 	}
 
