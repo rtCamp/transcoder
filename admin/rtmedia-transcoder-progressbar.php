@@ -7,7 +7,7 @@
  */
 
 /**
- * Handle progress calculation and display of progress bar. 
+ * Handle progress calculation and display of progress bar.
  *
  * @package    rtMediaTranscoder
  * @subpackage rtMediaTranscoder/Admin
