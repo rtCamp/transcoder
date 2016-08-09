@@ -157,7 +157,7 @@ class RTMedia_Transcoder_Handler {
 	 *
 	 * @param array	$media_ids		Array of multiple attachment ids.
 	 * @param array $file_object	Array of file objects.
-	 * @param type  $uploaded
+	 * @param type  $uploaded		
 	 * @param bool  $autoformat     If true then genrating thumbs only else also trancode video.
 	 */
 	function transcoding( $media_ids, $file_object, $uploaded, $autoformat = true ) {
@@ -703,8 +703,9 @@ class RTMedia_Transcoder_Handler {
 	 * Save transcoded media files.
 	 *
 	 * @since 1.0
-	 * @param array $file_post_array	Transcoded files.
-	 * @param int   $attachment_id		ID of attachment.
+	 * @param array  $file_post_array	Transcoded files.
+	 * @param int    $attachment_id		ID of attachment.
+	 * @param string $job_for			Whether media uplaoded through rtmedia plugin or WordPress media.
 	 */
 	public function add_transcoded_files( $file_post_array, $attachment_id, $job_for = '' ) {
 		$transcoded_files = false;
@@ -1040,10 +1041,10 @@ class RTMedia_Transcoder_Handler {
 	 *
 	 * @since 1.0
 	 *
-	 * @param  array   $email_ids
-	 * @param  string  $subject
-	 * @param  string  $message
-	 * @param  boolean $include_admin
+	 * @param  array   $email_ids		Email id's to send an email.
+	 * @param  string  $subject			Email subject.
+	 * @param  string  $message			Email message.
+	 * @param  boolean $include_admin	If true then send an email to admin also else not.
 	 */
 	public function send_notification( $email_ids = array(), $subject, $message, $include_admin = true ) {
 		if ( empty( $subject ) || empty( $message ) ) {
@@ -1079,8 +1080,8 @@ class RTMedia_Transcoder_Handler {
 	 *
 	 * @since 1.0
 	 *
-	 * @param  string $job_id
-	 * @param  string $error_msg
+	 * @param  string $job_id		Transcoding job id.
+	 * @param  string $error_msg	Error message for why transcoding of media failed.
 	 */
 	public function nofity_transcoding_failed( $job_id, $error_msg ) {
 		if ( empty( $job_id ) ) {

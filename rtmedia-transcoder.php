@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Plugin Name: rtMedia Transcoder
  * Plugin URI: https://rtmedia.io/products/rtmedia-transcoder/
@@ -10,6 +9,8 @@
  * Author URI: http://rtcamp.com/?utm_source=dashboard&utm_medium=plugin&utm_campaign=rtmedia-transcoder
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * @package rtMediaTranscoder
  */
 
 if ( ! defined( 'RTMEDIA_TRANSCODER_PATH' ) ) {
@@ -41,12 +42,12 @@ if ( ! defined( 'RTMEDIA_TRANSCODER_VERSION' ) ) {
 }
 
 if ( ! defined( 'EDD_RTMEDIA_TRANSCODER_STORE_URL' ) ) {
-	// this is the URL our updater / license checker pings. This should be the URL of the site with EDD installed
+	// this is the URL our updater / license checker pings. This should be the URL of the site with EDD installed.
 	define( 'EDD_RTMEDIA_TRANSCODER_STORE_URL', 'https://rtmedia.io/' );
 }
 
 if ( ! defined( 'EDD_RTMEDIA_TRANSCODER_ITEM_NAME' ) ) {
-	// the name of your product. This should match the download name in EDD exactly
+	// the name of your product. This should match the download name in EDD exactly.
 	define( 'EDD_RTMEDIA_TRANSCODER_ITEM_NAME', 'rtMedia Transcoder' );
 }
 
