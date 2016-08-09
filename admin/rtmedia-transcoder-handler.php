@@ -706,7 +706,7 @@ class RTMedia_Transcoder_Handler {
 	 * @param array $file_post_array	Transcoded files.
 	 * @param int   $attachment_id		ID of attachment.
 	 */
-	public function add_transcoded_files( $file_post_array, $attachment_id ) {
+	public function add_transcoded_files( $file_post_array, $attachment_id, $job_for = '' ) {
 		$transcoded_files = false;
 		if ( isset( $file_post_array ) && is_array( $file_post_array ) && ( count( $file_post_array > 0 ) ) ) {
 			foreach ( $file_post_array as $key => $format ) {
@@ -723,8 +723,15 @@ class RTMedia_Transcoder_Handler {
 							}
 							if ( $file_bits ) {
 
-								/* add_filter( 'upload_dir', array( $this, 'upload_dir' ) ); */
+								if ( 'wp-media' !== $job_for ) {
+									add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
+								}
+
 								$upload_info = wp_upload_bits( $new_wp_attached_file_pathinfo['basename'], null, $file_bits );
+
+								if ( 'wp-media' !== $job_for ) {
+									rremove_filter( 'upload_dir', array( $this, 'upload_dir' ) );
+								}
 
 								$uploaded_file = _wp_relative_upload_path( $upload_info['file'] );
 
@@ -776,20 +783,22 @@ class RTMedia_Transcoder_Handler {
 	public function handle_callback() {
 		require_once( ABSPATH . 'wp-admin/includes/image.php' );
 
-		$job_id		= filter_input( INPUT_POST, 'job_id', FILTER_SANITIZE_STRING );
-		$status		= filter_input( INPUT_POST, 'status', FILTER_SANITIZE_STRING );
-		$error_msg	= filter_input( INPUT_POST, 'error_msg', FILTER_SANITIZE_STRING );
-		$job_for	= filter_input( INPUT_POST, 'job_for', FILTER_SANITIZE_STRING );
-		$thumbnail	= filter_input( INPUT_POST, 'thumbnail', FILTER_SANITIZE_STRING );
-		$format		= filter_input( INPUT_POST, 'format', FILTER_SANITIZE_STRING );
+		$job_id			= filter_input( INPUT_POST, 'job_id', FILTER_SANITIZE_STRING );
+		$status			= filter_input( INPUT_POST, 'status', FILTER_SANITIZE_STRING );
+		$file_status 	= filter_input( INPUT_POST, 'file_status', FILTER_SANITIZE_STRING );
+		$error_msg		= filter_input( INPUT_POST, 'error_msg', FILTER_SANITIZE_STRING );
+		$error_code		= filter_input( INPUT_POST, 'error_code', FILTER_SANITIZE_STRING );
+		$job_for		= filter_input( INPUT_POST, 'job_for', FILTER_SANITIZE_STRING );
+		$thumbnail		= filter_input( INPUT_POST, 'thumbnail', FILTER_SANITIZE_STRING );
+		$format			= filter_input( INPUT_POST, 'format', FILTER_SANITIZE_STRING );
 
-		if ( ! empty( $job_id )  && ! empty( $status ) && ( 'error' === $status ) ) {
+		if ( ! empty( $job_id )  && ! empty( $file_status ) && ( 'error' === $file_status ) ) {
 			$send_alert = $this->nofity_transcoding_failed( $job_id, $error_msg );
-			return;
+			die();
 		}
 
 		// @codingStandardsIgnoreStart
-		if ( isset( $job_for ) && ( 'wp-media' == $job_for ) ) {
+		if ( isset( $job_for ) && ( 'wp-media' === $job_for ) ) {
 			if ( isset( $job_id ) ) {
 				$has_thumbs = isset( $thumbnail ) ? true : false;
 				$flag       = false;
@@ -810,7 +819,11 @@ class RTMedia_Transcoder_Handler {
 					if ( isset( $format ) && 'thumbnail' === sanitize_text_field( wp_unslash( $format ) ) ) {
 						die();
 					}
-					$uploded_files = $this->add_transcoded_files( $_REQUEST['files'], $attachment_id );
+
+					if ( ! empty( $_REQUEST['files'] ) ) {
+						$uploded_files = $this->add_transcoded_files( $_REQUEST['files'], $attachment_id, $job_for );
+					}
+
 
 				} else {
 					$flag = esc_html__( 'Something went wrong. The required attachment id does not exists. It must have been deleted.', 'rtmedia-transcoder' );
@@ -830,7 +843,7 @@ class RTMedia_Transcoder_Handler {
 						'download_url' => esc_url( $_GET['download_url'] ), // @codingStandardsIgnoreLine
 					), home_url() ) );
 					$subject       = esc_html__( 'rtMedia Transcoding: Download Failed', 'rtmedia-transcoder' );
-					$message       = '<p><a href="' . esc_url( get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
+					$message       = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
 					                 esc_html__( ' was successfully encoded but there was an error while downloading:', 'rtmedia-transcoder' ) . '</p><p><code>' .
 					                 esc_html( $flag ) . '</code></p><p>' . esc_html__( 'You can ', 'rtmedia-transcoder' ) . '<a href="' . esc_url( $download_link ) . '">'
 									. esc_html__( 'retry the download', 'rtmedia-transcoder' ) . '</a>.</p>';
@@ -882,7 +895,9 @@ class RTMedia_Transcoder_Handler {
 						die();
 					}
 
-					$uploded_files = $this->add_transcoded_files( $_REQUEST['files'], $attachment_id );
+					if ( ! empty( $_REQUEST['files'] ) ) {
+						$uploded_files = $this->add_transcoded_files( $_REQUEST['files'], $attachment_id, $job_for );
+					}
 
 				} else {
 					$flag = esc_html__( 'Something went wrong. The required attachment id does not exists. It must have been deleted.', 'rtmedia-transcoder' );
@@ -902,7 +917,7 @@ class RTMedia_Transcoder_Handler {
 						'download_url' => esc_url( $_GET['download_url'] ), // @codingStandardsIgnoreLine
 					), home_url() ) );
 					$subject       = esc_html__( 'rtMedia Transcoding: Download Failed', 'rtmedia-transcoder' );
-					$message       = '<p><a href="' . esc_url( get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
+					$message       = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
 					                 esc_html__( ' was successfully encoded but there was an error while downloading:', 'rtmedia-transcoder' ) . '</p><p><code>' .
 					                 esc_html( $flag ) . '</code></p><p>' . esc_html__( 'You can ', 'rtmedia-transcoder' ) . '<a href="' . esc_url( $download_link ) . '">'
 									. esc_html__( 'retry the download', 'rtmedia-transcoder' ) . '</a>.</p>';
@@ -1043,8 +1058,9 @@ class RTMedia_Transcoder_Handler {
 				}
 			}
 		}
+
 		add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
-		wp_mail( $email_ids, $subject, sprintf( $message, size_format( $usage_details[ $this->api_key ]->used, 2 ), size_format( $usage_details[ $this->api_key ]->remaining, 2 ), size_format( $usage_details[ $this->api_key ]->total, 2 ) ) );
+		wp_mail( $email_ids, $subject, $message );
 	}
 
 	/**
@@ -1073,10 +1089,11 @@ class RTMedia_Transcoder_Handler {
 		$subject = esc_html__( 'rtMedia Transcoding: Something went wrong.', 'rtmedia-transcoder' );
 		$attachment_id = $this->get_post_id_by_meta_key_and_value( '_rtmedia_transcoding_job_id', $job_id );
 		if ( ! empty( $error_msg ) ) {
-			$message = '<p><a href="' . esc_url( get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
-				esc_html( $error_msg ) . '</p>';
+			$message = '<p>' . esc_html__( ' There was unexpected error occurred while transcoding this following media.', 'rtmedia-transcoder' ) . '</p>';
+			$message .= '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a></p>';
+			$message .= '<p>Error message: ' . esc_html( $error_msg ) . '</p>';
 		} else {
-			$message = '<p><a href="' . esc_url( get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
+			$message = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
 				esc_html__( ' there was unexpected error occurred while transcoding this media.', 'rtmedia-transcoder' ) . '</p>';
 		}
 
@@ -1085,7 +1102,6 @@ class RTMedia_Transcoder_Handler {
 			$author_id 		= get_post_field( 'post_author', $attachment_id );
 			$email_ids[] 	= get_the_author_meta( 'user_email', $author_id );
 		}
-
 		$this->send_notification( $email_ids, $subject, $message, $include_admin = true );
 	}
 
