@@ -132,7 +132,7 @@ class RTMedia_Transcoder_Handler {
 							), 10, 1 );
 							add_filter( 'rtmedia_valid_type_check', array( $this, 'bypass_video_audio' ), 10, 2 );
 						}
-					} elseif ( 'silver' == strtolower( $usage_info[ $this->api_key ]->plan->name ) ) {
+					} elseif ( 'silver' === strtolower( $usage_info[ $this->api_key ]->plan->name ) ) {
 						if ( ( ! class_exists( 'RTMediaFFMPEG' ) && ! class_exists( 'RTMediaKaltura' ) ) || class_exists( 'RTMedia' ) ) {
 							add_filter( 'rtmedia_after_add_media', array( $this, 'transcoding' ), 10, 3 );
 						}
@@ -180,7 +180,7 @@ class RTMedia_Transcoder_Handler {
 			$not_allowed_type = array( 'mp3' );
 			preg_match( '/video|audio/i', $single['type'], $type_array );
 
-			if ( preg_match( '/video|audio/i', $single['type'], $type_array ) && ! in_array( $single['type'], array( 'audio/mp3' ) ) && ! in_array( $type, $not_allowed_type ) ) {
+			if ( preg_match( '/video|audio/i', $single['type'], $type_array ) && ! in_array( $single['type'], array( 'audio/mp3' ), true ) && ! in_array( $type, $not_allowed_type, true ) ) {
 				$options_video_thumb = $this->get_thumbnails_required( $media_ids[ $key ] );
 				if ( '' === $options_video_thumb ) {
 					$options_video_thumb = 5;
@@ -611,7 +611,7 @@ class RTMedia_Transcoder_Handler {
 						$content .= '';
 					}
 				}
-				$usage = new rtProgress();
+				$usage = new RT_Progress();
 
 				/**
 				 * If plan is silver show progress bar gray all the time, to do

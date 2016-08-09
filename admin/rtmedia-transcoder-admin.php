@@ -59,7 +59,7 @@ class RTMedia_Transcoder_Admin {
 
 		$this->load_translation();
 
-		if ( ! class_exists( 'rtProgress' ) ) {
+		if ( ! class_exists( 'RT_Progress' ) ) {
 			include_once( RTMEDIA_TRANSCODER_PATH . 'admin/rtmedia-transcoder-progressbar.php' );
 		}
 
