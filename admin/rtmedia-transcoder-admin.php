@@ -77,7 +77,11 @@ class RTMedia_Transcoder_Admin {
 			add_action( 'admin_menu', array( $this, 'menu' ) );
 			add_action( 'admin_init', array( $this, 'register_rtmedia_transcoder_settings' ) );
 			if ( class_exists( 'RTMediaEncoding' ) ) {
-				add_action( 'admin_init', array( $this, 'disable_encoding' ) );
+				$old_rtmedia_encoding_key = get_site_option( 'rtmedia-encoding-api-key' );
+				if ( ! empty( $old_rtmedia_encoding_key ) ) {
+					update_site_option( 'rtmedia-encoding-api-key', '' );
+				}
+				add_action( 'init', array( $this, 'disable_encoding' ) );
 			}
 		}
 	}
@@ -127,10 +131,18 @@ class RTMedia_Transcoder_Admin {
 	 *
 	 */
 	public function disable_encoding() {
-		remove_action( 'rtmedia_after_add_media', array( 'RTMediaEncoding', 'encoding' ) );
-		remove_filter( 'media_row_actions', array( 'RTMediaAdmin', 'add_reencode_link' ) );
-		remove_action( 'admin_head-upload.php', array( 'RTMediaAdmin', 'add_bulk_actions_regenerate' ) );
-		remove_action( 'rtmedia_before_default_admin_widgets', array( 'RTMediaEncoding', 'usage_widget' ) );
+		global $rtmedia_admin;
+		$rtmedia_encoding = $rtmedia_admin->rtmedia_encoding;
+		if ( ! empty( $rtmedia_admin ) ) {
+			remove_filter( 'media_row_actions', array( $rtmedia_admin, 'add_reencode_link' ) );
+			remove_action( 'admin_head-upload.php', array( $rtmedia_admin, 'add_bulk_actions_regenerate' ) );
+		}
+		if ( isset( $rtmedia_admin->rtmedia_encoding ) ) {
+			$rtmedia_encoding = $rtmedia_admin->rtmedia_encoding;
+			remove_action( 'rtmedia_after_add_media', array( $rtmedia_encoding, 'encoding' ) );
+			remove_action( 'rtmedia_before_default_admin_widgets', array( $rtmedia_encoding, 'usage_widget' ) );
+			remove_action( 'admin_init', array( $rtmedia_encoding, 'save_api_key' ), 1 );
+		}
 	}
 
 	/**
