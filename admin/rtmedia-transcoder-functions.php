@@ -440,7 +440,7 @@ if ( ! function_exists( 'rtt_get_edit_post_link' ) ) {
 	 * Can be used within the WordPress loop or outside of it. Can be used with
 	 * pages, posts, attachments, and revisions.
 	 *
-	 * @since 1
+	 * @since 1.0
 	 *
 	 * @param int    $id      Optional. Post ID.
 	 * @param string $context Optional, defaults to display.
@@ -472,5 +472,25 @@ if ( ! function_exists( 'rtt_get_edit_post_link' ) ) {
 		}
 
 		return $link;
+	}
+}
+
+if ( ! function_exists( 'rtt_get_job_id_by_attachment_id' ) ) {
+	/**
+	 * Get the job id of attachment
+	 *
+	 * @since 1.0
+	 *
+	 * @param  number $attachment_id Attachment id
+	 * @return number                On success it returns the job id otherwise it returns the false.
+	 */
+	function rtt_get_job_id_by_attachment_id( $attachment_id ) {
+		if ( empty( $attachment_id ) ) {
+			return false;
+		}
+
+		$job_id = get_post_meta( $attachment_id, '_rtmedia_transcoding_job_id', true );
+
+		return $job_id ? $job_id : false;
 	}
 }
