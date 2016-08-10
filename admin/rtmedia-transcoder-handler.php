@@ -101,7 +101,7 @@ class RTMedia_Transcoder_Handler {
 		if ( is_admin() ) {
 			add_action( 'rtmedia_transcoder_before_widgets', array( $this, 'rtt_usage_widget' ) );
 		}
-		add_action( 'admin_init', array( $this, 'rtt_save_api_key' ), 0, 1 );
+		add_action( 'admin_init', array( $this, 'rtt_save_api_key' ), 10, 1 );
 
 		if ( $this->api_key ) {
 			// Store api key as different db key if user disable transcoding service.
@@ -142,8 +142,6 @@ class RTMedia_Transcoder_Handler {
 		}
 
 		add_action( 'init', array( $this, 'handle_callback' ), 20 );
-		add_action( 'wp_ajax_rtmedia_free_transcoding_subscribe', array( $this, 'free_transcoding_subscribe' ) );
-		add_action( 'wp_ajax_rtmedia_unsubscribe_transcoding_service', array( $this, 'unsubscribe_transcoding' ) );
 		add_action( 'wp_ajax_rtmedia_hide_transcoding_notice', array( $this, 'hide_transcoding_notice' ), 1 );
 		add_action( 'wp_ajax_rtmedia_enter_api_key', array( $this, 'enter_api_key' ), 1 );
 		add_action( 'wp_ajax_rtmedia_disable_transcoding', array( $this, 'disable_transcoding' ), 1 );
@@ -369,8 +367,8 @@ class RTMedia_Transcoder_Handler {
 			$validation_page = wp_remote_get( $validate_url ); // @codingStandardsIgnoreLine
 		}
 		if ( ! is_wp_error( $validation_page ) ) {
+			$validation_info = json_decode( $validation_page['body'] );
 			if ( isset( $validation_info->status ) ) {
-				$validation_info = json_decode( $validation_page['body'] );
 				$status          = $validation_info->status;
 			}
 		} else {
@@ -461,7 +459,8 @@ class RTMedia_Transcoder_Handler {
 	 * @since 1.0
 	 */
 	public function rtt_save_api_key() {
-		$is_api_key_updated = filter_input( INPUT_GET, 'api_key_updated', FILTER_SANITIZE_STRING );
+		$is_api_key_updated		= filter_input( INPUT_GET, 'api_key_updated', FILTER_SANITIZE_STRING );
+		$is_invalid_license_key = filter_input( INPUT_GET, 'invalid-license-key', FILTER_SANITIZE_STRING );
 
 		if ( $is_api_key_updated ) {
 			if ( is_multisite() ) {
@@ -469,39 +468,52 @@ class RTMedia_Transcoder_Handler {
 			}
 
 			add_action( 'admin_notices', array( $this, 'rtt_successfully_subscribed_notice' ) );
+		} elseif ( $is_invalid_license_key ) {
+			if ( is_multisite() ) {
+				add_action( 'network_admin_notices', array( $this, 'rtt_invalid_license_notice' ) );
+			}
+
+			add_action( 'admin_notices', array( $this, 'rtt_invalid_license_notice' ) );
 		}
 
 		$apikey		= filter_input( INPUT_GET, 'apikey', FILTER_SANITIZE_STRING );
 		$page		= filter_input( INPUT_GET, 'page',	 FILTER_SANITIZE_STRING );
 		$is_update	= filter_input( INPUT_GET, 'update', FILTER_SANITIZE_STRING );
 
-		if ( ! empty( $apikey ) && is_admin() && ! empty( $page ) && ( 'rtmedia-transcoder' === $page ) && $this->is_valid_key( $apikey ) ) {
-			if ( $this->api_key && ! ( isset( $is_update ) && $is_update ) ) {
-				$unsubscribe_url = trailingslashit( $this->store_url );
+		if ( ! empty( $apikey ) && is_admin() && ! empty( $page ) && ( 'rtmedia-transcoder' === $page ) ) {
+			if ( $this->is_valid_key( $apikey ) ) {
+				if ( $this->api_key && ! ( isset( $is_update ) && $is_update ) ) {
+					$unsubscribe_url = trailingslashit( $this->store_url );
 
-				$args = array(
-				        'method' 	=> 'POST',
-				        'sslverify' => false,
-				        'timeout'	=> 5,
-				        'body' 		=> array(
-			                'trans_type'    => 'cancel-license',
-			                'license-key' 	=> $this->api_key,
-				        ),
-				);
-				$unsubscribe = wp_remote_post( $unsubscribe_url, $args );
+					$args = array(
+							'method' 	=> 'POST',
+							'sslverify' => false,
+							'timeout'	=> 5,
+							'body' 		=> array(
+								'trans_type'    => 'cancel-license',
+								'license-key' 	=> $this->api_key,
+							),
+					);
+					$unsubscribe = wp_remote_post( $unsubscribe_url, $args );
+				}
+
+				update_site_option( 'rtmedia-transcoding-api-key', $apikey );
+				update_site_option( 'rtmedia-transcoding-api-key-stored', $apikey );
+
+				$usage_info  = $this->update_usage( $apikey );
+				$return_page = add_query_arg( array(
+					'page'            => 'rtmedia-transcoder',
+					'api_key_updated' => $usage_info->plan->name ? ucfirst( strtolower( $usage_info->plan->name ) ) : 'Free',
+				), admin_url( 'admin.php' ) );
+				wp_safe_redirect( esc_url_raw( $return_page ) );
+				die();
+			} else {
+				$return_page = add_query_arg( array(
+					'page'					=> 'rtmedia-transcoder',
+					'invalid-license-key'	=> '1',
+				), admin_url( 'admin.php' ) );
+				wp_safe_redirect( esc_url_raw( $return_page ) );
 			}
-
-			update_site_option( 'rtmedia-transcoding-api-key', $apikey );
-			update_site_option( 'rtmedia-transcoding-api-key-stored', $apikey );
-
-			$usage_info  = $this->update_usage( $apikey );
-			$return_page = add_query_arg( array(
-				'page'            => 'rtmedia-transcoder',
-				'api_key_updated' => $usage_info->plan->name ? $usage_info->plan->name : 'free',
-			), admin_url( 'admin.php' ) );
-			wp_safe_redirect( esc_url_raw( $return_page ) );
-
-			die();
 		}
 	}
 
@@ -555,13 +567,34 @@ class RTMedia_Transcoder_Handler {
 	public function rtt_successfully_subscribed_notice() {
 	?>
 		<div class="updated">
-		<p>
-			<?php esc_html_e( 'You have successfully subscribed for the ', 'rtmedia-transcoder' ) ?>
-			<strong>
-				<?php printf( '%s', esc_html( sanitize_text_field( wp_unslash( $_GET['api_key_updated'] ) ) ) ); // @codingStandardsIgnoreLine ?>
-			</strong>
-			<?php esc_html_e( ' plan', 'rtmedia-transcoder' ) ?>
-		</p>
+			<p>
+				<?php
+				printf(
+					wp_kses(
+						__( 'You have successfully subscribed for the <strong>%s</strong> plan.', 'rtmedia-transcoder' ),
+						array(
+							'strong' => array(),
+						)
+					),
+					esc_html( sanitize_text_field( wp_unslash( $_GET['api_key_updated'] ) ) ) // @codingStandardsIgnoreLine
+				);
+				?>
+			</p>
+		</div>
+	<?php
+	}
+
+	/**
+	 * Display message when license key is not valid.
+	 *
+	 * @since 1.0
+	 */
+	public function rtt_invalid_license_notice() {
+	?>
+		<div class="error">
+			<p>
+				<?php esc_html_e( 'This license key is invalid.', 'rtmedia-transcoder' ); ?>
+			</p>
 		</div>
 	<?php
 	}
@@ -572,32 +605,40 @@ class RTMedia_Transcoder_Handler {
 	 * @since 1.0
 	 */
 	public function rtt_usage_widget() {
-		$usage_details = get_site_option( 'rtmedia-transcoding-usage' );
-		$content       = '';
+		$usage_details	= get_site_option( 'rtmedia-transcoding-usage' );
+		$content		= '';
+		$api_key		= '';
+
 		if ( ! empty( $this->api_key ) ) {
-			if ( $usage_details && isset( $usage_details[ $this->api_key ]->status ) && $usage_details[ $this->api_key ]->status ) {
-				if ( isset( $usage_details[ $this->api_key ]->plan->name ) ) {
-					$content .= '<p><strong>' . esc_html__( 'Current Plan', 'rtmedia-transcoder' ) . ':</strong> ' . esc_html( $usage_details[ $this->api_key ]->plan->name ) . ( $usage_details[ $this->api_key ]->sub_status ? '' : ' (' . esc_html__( 'Unsubscribed', 'rtmedia-transcoder' ) . ')' ) . '</p>';
+			$api_key = $this->api_key;
+		} elseif ( ! empty( $this->stored_api_key ) ) {
+			$api_key = $this->stored_api_key;
+		}
+
+		if ( ! empty( $api_key ) ) {
+			if ( $usage_details && isset( $usage_details[ $api_key ]->status ) && $usage_details[ $api_key ]->status ) {
+				if ( isset( $usage_details[ $api_key ]->plan->name ) ) {
+					$content .= '<p><strong>' . esc_html__( 'Current Plan', 'rtmedia-transcoder' ) . ':</strong> ' . esc_html( ucfirst( strtolower( $usage_details[ $api_key ]->plan->name ) ) ) . ( $usage_details[ $api_key ]->sub_status ? '' : ' (' . esc_html__( 'Unsubscribed', 'rtmedia-transcoder' ) . ')' ) . '</p>';
 				}
-				if ( isset( $usage_details[ $this->api_key ]->plan->expires ) ) {
-					$content .= '<p><strong>' . esc_html__( 'Expires On', 'rtmedia-transcoder' ) . ':</strong> ' . date_i18n( 'F j, Y', strtotime( $usage_details[ $this->api_key ]->plan->expires ) ) . '</p>';
+				if ( isset( $usage_details[ $api_key ]->plan->expires ) ) {
+					$content .= '<p><strong>' . esc_html__( 'Expires On', 'rtmedia-transcoder' ) . ':</strong> ' . date_i18n( 'F j, Y', strtotime( $usage_details[ $api_key ]->plan->expires ) ) . '</p>';
 				}
-				if ( isset( $usage_details[ $this->api_key ]->used ) ) {
-					$content .= '<p><span class="transcoding-used"></span><strong>' . esc_html__( 'Used', 'rtmedia-transcoder' ) . ':</strong> ' . ( ( $used_size = size_format( $usage_details[ $this->api_key ]->used, 2 ) ) ? esc_html( $used_size ) : '0MB' ) . '</p>';
+				if ( isset( $usage_details[ $api_key ]->used ) ) {
+					$content .= '<p><span class="transcoding-used"></span><strong>' . esc_html__( 'Used', 'rtmedia-transcoder' ) . ':</strong> ' . ( ( $used_size = size_format( $usage_details[ $api_key ]->used, 2 ) ) ? esc_html( $used_size ) : '0MB' ) . '</p>';
 				}
-				if ( isset( $usage_details[ $this->api_key ]->remaining ) ) {
+				if ( isset( $usage_details[ $api_key ]->remaining ) ) {
 					$content .= '<p><span class="transcoding-remaining"></span><strong>' . esc_html__( 'Remaining', 'rtmedia-transcoder' ) . ':</strong> ';
-					if ( $usage_details[ $this->api_key ]->remaining >= 0 ) {
-						$content .= size_format( $usage_details[ $this->api_key ]->remaining, 2 );
+					if ( $usage_details[ $api_key ]->remaining >= 0 ) {
+						$content .= size_format( $usage_details[ $api_key ]->remaining, 2 );
 					} else {
-						$content .= $usage_details[ $this->api_key ]->remaining . '0MB';
+						$content .= $usage_details[ $api_key ]->remaining . '0MB';
 					}
 				}
-				if ( isset( $usage_details[ $this->api_key ]->total ) ) {
+				if ( isset( $usage_details[ $api_key ]->total ) ) {
 					$content .= '<p><strong>' . esc_html__( 'Total', 'rtmedia-transcoder' ) . ':</strong> ';
-					if ( $usage_details[ $this->api_key ]->total >= 0 ) {
-						$content .= size_format( $usage_details[ $this->api_key ]->total, 2 );
-					} elseif ( $usage_details[ $this->api_key ]->total <= -1 ) {
+					if ( $usage_details[ $api_key ]->total >= 0 ) {
+						$content .= size_format( $usage_details[ $api_key ]->total, 2 );
+					} elseif ( $usage_details[ $api_key ]->total <= -1 ) {
 						$content .= 'Unlimited';
 					} else {
 						$content .= '';
@@ -605,23 +646,19 @@ class RTMedia_Transcoder_Handler {
 				}
 				$usage = new RT_Progress();
 
-				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $this->api_key ]->used, $usage_details[ $this->api_key ]->total ), false );
-				if ( ( 0 >= $usage_details[ $this->api_key ]->remaining ) ) {
+				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $api_key ]->used, $usage_details[ $api_key ]->total ), false );
+				if ( ( 0 >= $usage_details[ $api_key ]->remaining ) ) {
 					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your usage limit has been reached. Upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
 				}
 
-				if ( ( isset( $usage_details[ $this->api_key ]->plan->expires ) && strtotime( $usage_details[ $this->api_key ]->plan->expires ) < time() ) ) {
+				if ( ( isset( $usage_details[ $api_key ]->plan->expires ) && strtotime( $usage_details[ $api_key ]->plan->expires ) < time() ) ) {
 					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your plan has been expired. Please upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
 				}
 			} else {
 				$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your API key is not valid or is expired.', 'rtmedia-transcoder' ) . '</p></div>';
 			}
 		} else {
-			if ( empty( $this->stored_api_key ) ) {
-				$content .= '<p>' . esc_html__( 'Currently, You are not subscribed to transcoding service. Please subscribe.', 'rtmedia-transcoder' ) . '</p>';
-			} else {
-				$content .= '<p>' . esc_html__( 'You have disabled the transcoding service. Please enable to see the usage.', 'rtmedia-transcoder' ) . '</p>';
-			}
+			$content .= '<p>' . esc_html__( 'Currently, You are not subscribed to transcoding service. Please subscribe.', 'rtmedia-transcoder' ) . '</p>';
 		}
 		?>
 		<div class="postbox" id="rtmedia-transcoding-usage">
@@ -994,7 +1031,7 @@ class RTMedia_Transcoder_Handler {
 		if ( ! empty( $apikey ) ) {
 			echo wp_json_encode( array( 'apikey' => $apikey ) );
 		} else {
-			echo wp_json_encode( array( 'error' => esc_html__( 'Please enter the api key.', 'rtmedia-transcoder' ) ) );
+			echo wp_json_encode( array( 'error' => esc_html__( 'Please enter the license key.', 'rtmedia-transcoder' ) ) );
 		}
 		die();
 	}

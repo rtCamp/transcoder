@@ -156,11 +156,16 @@ class RTMedia_Transcoder_Admin {
 
 		wp_enqueue_style( 'rtmedia-transcoder-admin-css', RTMEDIA_TRANSCODER_URL . 'admin/css/rtmedia-transcoder-admin.css', array(), RTMEDIA_TRANSCODER_VERSION );
 		wp_register_script( 'rtmedia-transcoder-main', RTMEDIA_TRANSCODER_URL . 'admin/js/rtmedia-transcoder-admin.js', array( 'jquery' ), RTMEDIA_TRANSCODER_VERSION, true );
-		wp_localize_script( 'rtmedia-transcoder-main', 'rtmedia_transcoder_admin_url', admin_url() );
-		wp_localize_script( 'rtmedia-transcoder-main', 'rtmedia_transcoder_admin_url', admin_url() );
-		wp_localize_script( 'rtmedia-transcoder-main', 'disable_encoding', esc_html__( 'Are you sure you want to disable the transcoding service?', 'rtmedia-transcoder' ) );
-		wp_localize_script( 'rtmedia-transcoder-main', 'enable_encoding', esc_html__( 'Are you sure you want to enable the transcoding service?', 'rtmedia-transcoder' ) );
-		wp_localize_script( 'rtmedia-transcoder-main', 'something_went_wrong', esc_html__( 'Something went wrong. Please ', 'rtmedia-transcoder' ) . '<a href onclick="location.reload();">' . esc_html__( 'refresh', 'rtmedia-transcoder' ) . '</a>' . esc_html__( ' page.', 'rtmedia-transcoder' ) );
+
+		$localize_script_data = array(
+			'admin_url'		 => esc_url( admin_url() ),
+			'loader_image'	 => esc_url( admin_url( 'images/loading.gif' ) ),
+			'disable_encoding'					 => esc_html__( 'Are you sure you want to disable the transcoding service?', 'rtmedia-transcoder' ),
+			'enable_encoding'					 => esc_html__( 'Are you sure you want to enable the transcoding service?', 'rtmedia-transcoder' ),
+			'something_went_wrong'				 => esc_html__( 'Something went wrong. Please ', 'rtmedia-transcoder' ) . '<a href onclick="location.reload();">' . esc_html__( 'refresh', 'rtmedia-transcoder' ) . '</a>' . esc_html__( ' page.', 'rtmedia-transcoder' ),
+		);
+
+		wp_localize_script( 'rtmedia-transcoder-main', 'rtmedia_transcoder_script', $localize_script_data );
 
 		wp_enqueue_script( 'rtmedia-transcoder-main' );
 	}

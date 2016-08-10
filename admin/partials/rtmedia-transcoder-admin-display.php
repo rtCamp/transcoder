@@ -40,9 +40,9 @@
 				$enable_btn_style  = 'display:none;';
 				$disable_btn_style = 'display:none;';
 				if ( $this->api_key ) {
-					$enable_btn_style = 'display:block;';
+					$enable_btn_style = 'display:inline;';
 				} elseif ( $this->stored_api_key ) {
-					$disable_btn_style = 'display:block;';
+					$disable_btn_style = 'display:inline;';
 				}
 				?>
 				<input type="submit" id="disable-transcoding" name="disable-transcoding" value="Disable Transcoding" class="button-secondary" style="<?php echo esc_attr( $enable_btn_style ); ?>" />

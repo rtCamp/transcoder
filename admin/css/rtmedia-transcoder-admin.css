@@ -204,3 +204,6 @@
 	opacity: 1;
 	visibility: visible;
 }
+.rtt-loader {
+	margin-left: 5px;
+}
