@@ -213,7 +213,7 @@
 							<a href="http://twitter.com/rtMediaWP" class="twitter" target="_blank">
 								<span class="dashicons dashicons-twitter"></span>
 							</a>
-							<a href="https://www.facebook.com/rtCamp.solutions" class="facebook" target="_blank">
+							<a href="https://www.facebook.com/rtmediawp/" class="facebook" target="_blank">
 								<span class="dashicons dashicons-facebook"></span>
 							</a>
 							<a href="http://profiles.wordpress.org/rtcamp" class="wordpress" target="_blank">
