@@ -157,10 +157,9 @@ class RTMedia_Transcoder_Handler {
 	 *
 	 * @param array	$media_ids		Array of multiple attachment ids.
 	 * @param array $file_object	Array of file objects.
-	 * @param type  $uploaded
 	 * @param bool  $autoformat     If true then genrating thumbs only else also trancode video.
 	 */
-	function transcoding( $media_ids, $file_object, $uploaded, $autoformat = true ) {
+	function transcoding( $media_ids, $file_object, $autoformat = true ) {
 
 		remove_action( 'add_attachment', array( $this, 'wp_transcoding' ) );
 		foreach ( $file_object as $key => $single ) {
