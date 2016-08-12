@@ -157,9 +157,10 @@ class RTMedia_Transcoder_Handler {
 	 *
 	 * @param array	$media_ids		Array of multiple attachment ids.
 	 * @param array $file_object	Array of file objects.
+	 * @param array $uploaded
 	 * @param bool  $autoformat     If true then genrating thumbs only else also trancode video.
 	 */
-	function transcoding( $media_ids, $file_object, $autoformat = true ) {
+	function transcoding( $media_ids, $file_object, $uploaded, $autoformat = true ) {
 
 		remove_action( 'add_attachment', array( $this, 'wp_transcoding' ) );
 		foreach ( $file_object as $key => $single ) {
@@ -186,14 +187,6 @@ class RTMedia_Transcoder_Handler {
 					$job_type = 'audio';
 				}
 
-				$query_args   = array(
-					'file_url'    => urlencode( $single['url'] ),
-					'callbackurl' => urlencode( trailingslashit( home_url() ) . 'index.php' ),
-					'force'       => 0,
-					'formats'     => ( true === $autoformat ) ? ( ( 'video' === $type_array[0] ) ? 'mp4' : 'mp3' ) : $autoformat,
-					'thumb_count' => $options_video_thumb,
-					'rt_id'       => $media_ids[ $key ],
-				);
 				$args = array(
 					'method' 	=> 'POST',
 					'sslverify' => false,
@@ -209,6 +202,7 @@ class RTMedia_Transcoder_Handler {
 						'thumb_count'	=> $options_video_thumb,
 					),
 				);
+
 				$transcoding_url = $this->transcoding_api_url . 'job/';
 
 				$upload_page = wp_remote_post( $transcoding_url, $args );
@@ -715,7 +709,7 @@ class RTMedia_Transcoder_Handler {
 	 * @since 1.0
 	 * @param array  $file_post_array	Transcoded files.
 	 * @param int    $attachment_id		ID of attachment.
-	 * @param string $job_for			Whether media uplaoded through rtmedia plugin or WordPress media.
+	 * @param string $job_for			Whether media uploaded through rtmedia plugin or WordPress media.
 	 */
 	public function add_transcoded_files( $file_post_array, $attachment_id, $job_for = '' ) {
 		$transcoded_files = false;
