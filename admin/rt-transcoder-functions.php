@@ -1,21 +1,23 @@
 <?php
 /**
- * RTMedia Transcoder functions.
+ * Transcoder functions.
  *
- * @since      1.0
+ * @since      1.0.0
  *
- * @package    rtMediaTranscoder
- * @subpackage rtMediaTranscoder/Functions
+ * @package    Transcoder
+ * @subpackage Transcoder/Functions
  */
 
 /**
- * Return instance of rtMedia_Transcoder_Admin Class.
+ * Return instance of RT_Transcoder_Admin Class.
+ *
+ * @since	1.0.0
  *
  * @return object
  */
 function rta() {
-	global $rtmedia_transcoder_admin;
-	return $rtmedia_transcoder_admin;
+	global $rt_transcoder_admin;
+	return $rt_transcoder_admin;
 }
 
 /**
@@ -25,7 +27,7 @@ function rta() {
  *
  * If media type is audio then display transcoded audio (mp3 format) if any else original audio.
  *
- * @since 1.0
+ * @since 1.0.0
  *
  * @param array  $attrs {
  *     Attributes of the shortcode.
@@ -82,13 +84,13 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 	}
 
 	if ( is_file_being_transcoded( $attachment_id ) ) {
-		$content .= '<p class="transcoding-in-progress"> ' . esc_html__( 'The file has been sent to transcoder', 'rtmedia-transcoder' ) . '</p>';
+		$content .= '<p class="transcoding-in-progress"> ' . esc_html__( 'The file has been sent to transcoder', 'transcoder' ) . '</p>';
 	}
 
 	/**
 	 * Allow user to filter [rt_media] short code content.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @param string $content    	Activity content.
 	 * @param int $attachment_id  	ID of attachment.
@@ -103,11 +105,13 @@ add_shortcode( 'rt_media', 'rt_media_shortcode' );
 /**
  * Check whether the file is sent to the transcoder or not.
  *
+ * @since	1.0.0
+ *
  * @param  number $attachment_id	ID of attachment.
  * @return boolean
  */
 function is_file_being_transcoded( $attachment_id ) {
-	$job_id = get_post_meta( $attachment_id, '_rtmedia_transcoding_job_id', true );
+	$job_id = get_post_meta( $attachment_id, '_rt_transcoding_job_id', true );
 	if ( ! empty( $job_id ) ) {
 		$transcoded_files = get_post_meta( $attachment_id, '_rt_media_transcoded_files', true );
 		if ( empty( $transcoded_files ) ) {
@@ -120,7 +124,7 @@ function is_file_being_transcoded( $attachment_id ) {
 /**
  * Give the transcoded video's thumbnail stored in videos meta.
  *
- * @since 1.0
+ * @since 1.0.0
  *
  * @param  int $attachment_id   ID of attachment.
  * @return string 				returns image file url on success.
@@ -153,7 +157,7 @@ function rt_media_get_video_thumbnail( $attachment_id ) {
 /**
  * Give the transcoded media URL of attachment.
  *
- * @since 1.0
+ * @since 1.0.0
  *
  * @param  int    $attachment_id	 ID of attachment.
  * @param  string $media_type        Type of media i.e mp4, mp3. By default it mp4 is passed.
@@ -186,7 +190,7 @@ function rtt_get_media_url( $attachment_id, $media_type = 'mp4' ) {
 /**
  * Give the thumbnail URL for rtMedia gallery shortcode.
  *
- * @since 1.0
+ * @since	1.0.0
  *
  * @param  string $src			thumbnail URL.
  * @param  number $media_id		ID of attachment.
@@ -194,7 +198,7 @@ function rtt_get_media_url( $attachment_id, $media_type = 'mp4' ) {
  *
  * @return string				thumbnail URL
  */
-function rtmedia_transcoded_thumb( $src, $media_id, $media_type ) {
+function rtt_transcoded_thumb( $src, $media_id, $media_type ) {
 	if ( 'video' === $media_type ) {
 		$attachment_id = rtmedia_media_id( $media_id );
 		$thumb_src = rt_media_get_video_thumbnail( $attachment_id );
@@ -205,27 +209,31 @@ function rtmedia_transcoded_thumb( $src, $media_id, $media_type ) {
 	return $src;
 }
 
-add_filter( 'rtmedia_media_thumb', 'rtmedia_transcoded_thumb', 11, 3 );
+add_filter( 'rtmedia_media_thumb', 'rtt_transcoded_thumb', 11, 3 );
 
 /**
  * Parse the short codes in the activity content.
+ *
+ * @since	1.0.0
  *
  * @param  text   $content   activity body content.
  * @param  object $activity  activity object.
  *
  * @return text
  */
-function rtmedia_transcoder_parse_shortcode( $content, $activity ) {
+function rtt_transcoder_parse_shortcode( $content, $activity ) {
 	return do_shortcode( $content );
 }
 
-add_filter( 'bp_get_activity_content_body', 'rtmedia_transcoder_parse_shortcode', 1, 2 );
+add_filter( 'bp_get_activity_content_body', 'rtt_transcoder_parse_shortcode', 1, 2 );
 
-if ( ! function_exists( 'rtmedia_video_editor_title' ) ) {
+if ( ! function_exists( 'rtt_video_editor_title' ) ) {
 	/**
 	 * Add the video thumbnail tab on video edit page.
+	 *
+	 * @since	1.0.0
 	 */
-	function rtmedia_video_editor_title() {
+	function rtt_video_editor_title() {
 		global $rtmedia_query;
 		if ( isset( $rtmedia_query->media[0]->media_type ) && 'video' === $rtmedia_query->media[0]->media_type ) {
 			$flag            = false;
@@ -244,17 +252,19 @@ if ( ! function_exists( 'rtmedia_video_editor_title' ) ) {
 				}
 			}
 			if ( $flag ) {
-				echo '<li><a href="#panel2"><i class="dashicons dashicons-format-image rtmicon"></i>' . esc_html__( 'Video Thumbnail', 'rtmedia-transcoder' ) . '</a></li>';
+				echo '<li><a href="#panel2"><i class="dashicons dashicons-format-image rtmicon"></i>' . esc_html__( 'Video Thumbnail', 'transcoder' ) . '</a></li>';
 			}
 		}
 	}
 }
 
-add_action( 'rtmedia_add_edit_tab_title', 'rtmedia_video_editor_title', 1000 );
+add_action( 'rtmedia_add_edit_tab_title', 'rtt_video_editor_title', 1000 );
 
 if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 	/**
 	 * Display the HTML to set the thumbnail for video.
+	 *
+	 * @since	1.0.0
 	 */
 	function rtt_rtmedia_vedio_editor_content() {
 		global $rtmedia_query;
@@ -269,7 +279,7 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 			if ( is_array( $rtmedia_transcoded_video_thumbs ) ) {
 				?>
 				<div class="rtmedia-change-cover-arts">
-					<p><?php esc_html_e( 'Video Thumbnail:', 'rtmedia-transcoder' ); ?></p>
+					<p><?php esc_html_e( 'Video Thumbnail:', 'transcoder' ); ?></p>
 					<ul>
 						<?php
 						$uploads 	= wp_get_upload_dir();
@@ -329,7 +339,7 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 					if ( is_array( $rtmedia_video_thumbs ) ) {
 						?>
 						<div class="rtmedia-change-cover-arts">
-							<p><?php esc_html_e( 'Video Thumbnail:', 'rtmedia-transcoder' ); ?></p>
+							<p><?php esc_html_e( 'Video Thumbnail:', 'transcoder' ); ?></p>
 							<ul>
 								<?php
 								foreach ( $rtmedia_video_thumbs as $key => $attachment_id ) {
@@ -370,6 +380,8 @@ if ( ! function_exists( 'rtt_set_video_thumbnail' ) ) {
 	/**
 	 * Set the video thumbnail
 	 *
+	 * @since	1.0.0
+	 *
 	 * @param number $id rtMedia activity ID.
 	 */
 	function rtt_set_video_thumbnail( $id ) {
@@ -391,7 +403,9 @@ add_action( 'rtmedia_after_update_media', 'rtt_set_video_thumbnail', 12 );
 
 if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
 	/**
-	 * Update the activity after thumb is set to the video
+	 * Update the activity after thumb is set to the video.
+	 *
+	 * @since	1.0.0
 	 *
 	 * @param  number $id media id.
 	 */
@@ -440,7 +454,7 @@ if ( ! function_exists( 'rtt_get_edit_post_link' ) ) {
 	 * Can be used within the WordPress loop or outside of it. Can be used with
 	 * pages, posts, attachments, and revisions.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @param int    $id      Optional. Post ID.
 	 * @param string $context Optional, defaults to display.
@@ -479,7 +493,7 @@ if ( ! function_exists( 'rtt_get_job_id_by_attachment_id' ) ) {
 	/**
 	 * Get the job id of attachment
 	 *
-	 * @since 1.0
+	 * @since	1.0.0
 	 *
 	 * @param  number $attachment_id Attachment id
 	 * @return number                On success it returns the job id otherwise it returns the false.
@@ -489,7 +503,7 @@ if ( ! function_exists( 'rtt_get_job_id_by_attachment_id' ) ) {
 			return false;
 		}
 
-		$job_id = get_post_meta( $attachment_id, '_rtmedia_transcoding_job_id', true );
+		$job_id = get_post_meta( $attachment_id, '_rt_transcoding_job_id', true );
 
 		return $job_id ? $job_id : false;
 	}

@@ -5,11 +5,11 @@
 			e.preventDefault();
 
 			if ( $( this ).next( 'img' ).length === 0 ) {
-				$( this ).after( $( '<img />' ).attr( 'src', rtmedia_transcoder_script.loader_image ).addClass( 'rtt-loader' ) );
+				$( this ).after( $( '<img />' ).attr( 'src', rt_transcoder_script.loader_image ).addClass( 'rtt-loader' ) );
 			}
 
 			var data = {
-				action: 'rtmedia_enter_api_key',
+				action: 'rt_enter_api_key',
 				apikey: $( '#new-api-key' ).val()
 			};
 
@@ -39,14 +39,14 @@
 
 		$( document ).on( 'click', '#disable-transcoding', function ( e ) {
 			e.preventDefault();
-			if ( confirm( rtmedia_transcoder_script.disable_encoding ) ) {
+			if ( confirm( rt_transcoder_script.disable_encoding ) ) {
 
 				var data = {
-					action: 'rtmedia_disable_transcoding'
+					action: 'rt_disable_transcoding'
 				};
 				
 				if ( $( this ).next( 'img' ).length === 0 ) {
-					$( this ).after( $( '<img />' ).attr( 'src', rtmedia_transcoder_script.loader_image ).addClass( 'rtt-loader' ) );
+					$( this ).after( $( '<img />' ).attr( 'src', rt_transcoder_script.loader_image ).addClass( 'rtt-loader' ) );
 				}
 
 				// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
@@ -71,14 +71,14 @@
 
 		$( document ).on( 'click', '#enable-transcoding', function ( e ) {
 			e.preventDefault();
-			if ( confirm( rtmedia_transcoder_script.enable_encoding ) ) {
+			if ( confirm( rt_transcoder_script.enable_encoding ) ) {
 
 				var data = {
-					action: 'rtmedia_enable_transcoding'
+					action: 'rt_enable_transcoding'
 				};
 				
 				if ( $( this ).next( 'img' ).length === 0 ) {
-					$( this ).after( $( '<img />' ).attr( 'src', rtmedia_transcoder_script.loader_image ).addClass( 'rtt-loader' ) );
+					$( this ).after( $( '<img />' ).attr( 'src', rt_transcoder_script.loader_image ).addClass( 'rtt-loader' ) );
 				}
 
 				$.post( ajaxurl, data, function ( response ) {

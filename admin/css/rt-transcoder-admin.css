@@ -2,18 +2,18 @@
     display: none;
 }
 
-.bp-media-settings-boxes-wrapper {
+.transcoder-settings-boxes-wrapper {
     float: left;
     width: 75%;
     margin: 10px 0px 0 2px;
 }
 
-#rtmedia-transcoding-usage strong {
+#transcoder-usage strong {
     display: inline-block;
     min-width: 120px;
 }
 
-#rtmedia-transcoding-usage p {
+#transcoder-usage p {
     overflow: hidden;
 }
 
@@ -42,31 +42,31 @@
     position: absolute;
 }
 
-.rtm-transcoder-setting-container {
+.transcoder-setting-container {
     background-color: #fff;
     margin-top: 10px;
     padding: 10px 20px 0;
 	border: 1px solid #e7e7e7;
 }
 
-.rtm-transcoder-sidebar {
+.transcoder-sidebar {
     float: right;
     margin: 10px 0 0;
     width: 23%;
 }
 
-.rtm-transcoder-setting-container .rtm-transcoder-plan-table {
+.transcoder-setting-container .transcoder-plan-table {
     border-collapse: collapse;
     clear: none;
 	box-shadow: none;
 }
 
-.rtm-transcoder-plan-table th,
-.rtm-transcoder-plan-table td {
+.transcoder-plan-table th,
+.transcoder-plan-table td {
     border: 1px solid #e7e7e7;
 }
 
-.rtm-transcoder-plan-table th {
+.transcoder-plan-table th {
     font-size: 13px;
     font-weight: 600;
 }
@@ -74,7 +74,7 @@
 #trascoder-unsubscribe-dialog {
     display: none;
 }
-.rtm-transcoder-sidebar .button {
+.transcoder-sidebar .button {
 	display: block;
 	opacity: 0.8;
 	position: relative;
@@ -106,10 +106,10 @@
     margin: 10px auto 0;
     width: 100%;
 }
-.rtm-transcoder-setting-form {
+.transcoder-setting-form {
 	margin-top: 30px;
 }
-.rtm-transcoder-setting-form .form-table th {
+.transcoder-setting-form .form-table th {
     color: #444;
     font-size: 13px;
     font-weight: 400;
@@ -117,7 +117,7 @@
     vertical-align: top;
     width: 48%;
 }
-.rtm-transcoder-setting-form .form-table td {
+.transcoder-setting-form .form-table td {
     font-size: 13px;
     padding: 0 0 5px;
     vertical-align: top;
@@ -145,7 +145,7 @@
 	position: relative;
 	z-index: 9999;
 }
-.rtm-transcoder-setting-form .dashicons-info {
+.transcoder-setting-form .dashicons-info {
 	color: #aaa;
 	font-size: 14px;
 	height: 26px;
@@ -165,6 +165,7 @@
 	padding: 6px 12px;
 	position: absolute;
 	top: -7px;
+	-webkit-transition: all 0.4s ease-in-out 0s;
 	transition: all 0.4s ease-in-out 0s;
 	visibility: hidden;
 	width: 210px;

@@ -2,20 +2,26 @@
 /**
  * Handle progress calculation and display of progress bar.
  *
- * @package    rtMediaTranscoder
- * @subpackage rtMediaTranscoder/Admin
+ * @since	1.0.0
+ *
+ * @package    Transcoder
+ * @subpackage Transcoder/Admin
  */
 
 /**
  * Handle progress calculation and display of progress bar.
  *
- * @package    rtMediaTranscoder
- * @subpackage rtMediaTranscoder/Admin
+ * @since	1.0.0
+ *
+ * @package    Transcoder
+ * @subpackage Transcoder/Admin
  */
 class RT_Progress {
 
 	/**
 	 * Constructor
+	 *
+	 * @since	1.0.0
 	 *
 	 * @access public
 	 * @return void
@@ -28,6 +34,8 @@ class RT_Progress {
 	 * Show progress_ui.
 	 *
 	 * @access public
+	 *
+	 * @since	1.0.0
 	 *
 	 * @param  float $progress	Progress value.
 	 * @param  bool  $echo		If true then echo the output else return.
@@ -52,6 +60,8 @@ class RT_Progress {
 	 * Calculate progress %.
 	 *
 	 * @access public
+	 *
+	 * @since	1.0.0
 	 *
 	 * @param  float $progress	Progress value.
 	 * @param  float $total		Total value.
