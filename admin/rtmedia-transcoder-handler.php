@@ -157,7 +157,7 @@ class RTMedia_Transcoder_Handler {
 	 *
 	 * @param array	$media_ids		Array of multiple attachment ids.
 	 * @param array $file_object	Array of file objects.
-	 * @param array $uploaded
+	 * @param array $uploaded 		Array contains the information about the uploaded media.
 	 * @param bool  $autoformat     If true then genrating thumbs only else also trancode video.
 	 */
 	function transcoding( $media_ids, $file_object, $uploaded, $autoformat = true ) {
