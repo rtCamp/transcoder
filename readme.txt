@@ -46,8 +46,16 @@ Please visit [rtMedia's FAQ page](https://rtmedia.io/faq/).
 
 == Screenshots ==
 
+1. Transcoder Settings
+
 == Changelog ==
 
-= 1.0.0 [Aug 12, 2016] =
+= 1.0.0 =
+
+Initial release
+
+== Upgrade Notice ==
+
+= 1.0.0 =
 
 Initial release
