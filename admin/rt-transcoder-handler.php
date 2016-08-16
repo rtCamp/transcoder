@@ -2,10 +2,10 @@
 /**
  * The transcoder-specific functionality of the plugin.
  *
- * @since      1.0
+ * @since	1.0.0
  *
- * @package    rtMediaTranscoder
- * @subpackage rtMediaTranscoder/TranscoderHandler
+ * @package    Transcoder
+ * @subpackage Transcoder/TranscoderHandler
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,33 +15,35 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Handle request/response with trancoder api.
  *
- * @package    rtMediaTranscoder
- * @subpackage rtMediaTranscoder/TranscoderHandler
+ * @since	1.0.0
+ *
+ * @package    Transcoder
+ * @subpackage Transcoder/TranscoderHandler
  */
-class RTMedia_Transcoder_Handler {
+class RT_Transcoder_Handler {
 
 	/**
 	 * The transcoder API URL.
 	 *
-	 * @since    1.0
+	 * @since    1.0.0
 	 * @access   protected
 	 * @var      string    $transcoding_api_url    The URL of the api.
 	 */
-	protected $transcoding_api_url = 'http://api-rtmedia.rtcamp.info/api/v1/';
+	protected $transcoding_api_url = 'http://api.rtmedia.io/api/v1/';
 
 	/**
 	 * The URL of the EDD store.
 	 *
-	 * @since    1.0
+	 * @since    1.0.0
 	 * @access   protected
 	 * @var      string    $store_url    The URL of the transcoder api.
 	 */
-	protected $store_url = 'http://edd.rtcamp.info/';
+	protected $store_url = 'https://rtmedia.io/';
 
 	/**
 	 * Contain uploaded media information.
 	 *
-	 * @since    1.0
+	 * @since    1.0.0
 	 * @access   public
 	 * @var      array    $uploaded   Contain uploaded media information.
 	 */
@@ -50,7 +52,7 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * The api key of transcoding service subscription.
 	 *
-	 * @since    1.0
+	 * @since    1.0.0
 	 * @access   public
 	 * @var      string    $api_key    The api key of transcoding service subscription.
 	 */
@@ -59,7 +61,7 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * The api key of transcoding service subscription.
 	 *
-	 * @since    1.0
+	 * @since    1.0.0
 	 * @access   public
 	 * @var      string    $stored_api_key    The api key of transcoding service subscription.
 	 */
@@ -68,7 +70,7 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Video extensions with comma separated.
 	 *
-	 * @since    1.0
+	 * @since    1.0.0
 	 * @access   public
 	 * @var      string    $video_extensions    Video extensions with comma separated.
 	 */
@@ -77,7 +79,7 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Audio extensions with comma separated.
 	 *
-	 * @since    1.0
+	 * @since    1.0.0
 	 * @access   public
 	 * @var      string    $audio_extensions    Audio extensions with comma separated.
 	 */
@@ -86,46 +88,46 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since    1.0
+	 * @since    1.0.0
 	 *
 	 * @param bool $no_init  If true then do nothing else continue.
 	 */
 	public function __construct( $no_init = false ) {
 
-		$this->api_key        		= get_site_option( 'rtmedia-transcoding-api-key' );
-		$this->stored_api_key 		= get_site_option( 'rtmedia-transcoding-api-key-stored' );
+		$this->api_key        		= get_site_option( 'rt-transcoding-api-key' );
+		$this->stored_api_key 		= get_site_option( 'rt-transcoding-api-key-stored' );
 
 		if ( $no_init ) {
 			return;
 		}
 		if ( is_admin() ) {
-			add_action( 'rtmedia_transcoder_before_widgets', array( $this, 'rtt_usage_widget' ) );
+			add_action( 'rt_transcoder_before_widgets', array( $this, 'usage_widget' ) );
 		}
-		add_action( 'admin_init', array( $this, 'rtt_save_api_key' ), 0, 1 );
+		add_action( 'admin_init', array( $this, 'save_api_key' ), 10, 1 );
 
 		if ( $this->api_key ) {
 			// Store api key as different db key if user disable transcoding service.
 			if ( ! $this->stored_api_key ) {
 				$this->stored_api_key = $this->api_key;
-				update_site_option( 'rtmedia-transcoding-api-key-stored', $this->stored_api_key );
+				update_site_option( 'rt-transcoding-api-key-stored', $this->stored_api_key );
 			}
 			add_filter( 'rtmedia_allowed_types', array( $this, 'allowed_types_admin_settings' ), 10, 1 );
-			$usage_info = get_site_option( 'rtmedia-transcoding-usage' );
+			$usage_info = get_site_option( 'rt-transcoding-usage' );
 
 			if ( $usage_info ) {
 				if ( isset( $usage_info[ $this->api_key ]->status ) && $usage_info[ $this->api_key ]->status ) {
 					if ( isset( $usage_info[ $this->api_key ]->remaining ) && $usage_info[ $this->api_key ]->remaining > 0 ) {
-						if ( $usage_info[ $this->api_key ]->remaining < 524288000 && ! get_site_option( 'rtmedia-transcoding-usage-limit-mail' ) ) {
+						if ( $usage_info[ $this->api_key ]->remaining < 524288000 && ! get_site_option( 'rt-transcoding-usage-limit-mail' ) ) {
 							$this->nearing_usage_limit( $usage_info );
-						} elseif ( $usage_info[ $this->api_key ]->remaining > 524288000 && get_site_option( 'rtmedia-transcoding-usage-limit-mail' ) ) {
-							update_site_option( 'rtmedia-transcoding-usage-limit-mail', 0 );
+						} elseif ( $usage_info[ $this->api_key ]->remaining > 524288000 && get_site_option( 'rt-transcoding-usage-limit-mail' ) ) {
+							update_site_option( 'rt-transcoding-usage-limit-mail', 0 );
 						}
 						if ( strtotime( $usage_info[ $this->api_key ]->plan->expires ) > time() ) {
 							if ( ( ! class_exists( 'RTMediaFFMPEG' ) && ! class_exists( 'RTMediaKaltura' ) ) || class_exists( 'RTMedia' ) ) {
-								add_filter( 'rtmedia_after_add_media', array( $this, 'transcoding' ), 10, 3 );
+								add_action( 'rtmedia_after_add_media', array( $this, 'rtmedia_transcoding' ), 10, 3 );
 							}
 
-							add_action( 'add_attachment', array( $this, 'wp_transcoding' ), 90 );
+							add_action( 'add_attachment', array( $this, 'wp_media_transcoding' ), 90 );
 						}
 						$blacklist = array( 'localhosts', '127.0.10.1' );
 						if ( ! in_array( wp_unslash( $_SERVER['HTTP_HOST'] ), $blacklist, true ) ) { // @codingStandardsIgnoreLine
@@ -142,27 +144,25 @@ class RTMedia_Transcoder_Handler {
 		}
 
 		add_action( 'init', array( $this, 'handle_callback' ), 20 );
-		add_action( 'wp_ajax_rtmedia_free_transcoding_subscribe', array( $this, 'free_transcoding_subscribe' ) );
-		add_action( 'wp_ajax_rtmedia_unsubscribe_transcoding_service', array( $this, 'unsubscribe_transcoding' ) );
-		add_action( 'wp_ajax_rtmedia_hide_transcoding_notice', array( $this, 'hide_transcoding_notice' ), 1 );
-		add_action( 'wp_ajax_rtmedia_enter_api_key', array( $this, 'enter_api_key' ), 1 );
-		add_action( 'wp_ajax_rtmedia_disable_transcoding', array( $this, 'disable_transcoding' ), 1 );
-		add_action( 'wp_ajax_rtmedia_enable_transcoding', array( $this, 'enable_transcoding' ), 1 );
+		add_action( 'wp_ajax_rt_hide_transcoding_notice', array( $this, 'hide_transcoding_notice' ), 1 );
+		add_action( 'wp_ajax_rt_enter_api_key', array( $this, 'enter_api_key' ), 1 );
+		add_action( 'wp_ajax_rt_disable_transcoding', array( $this, 'disable_transcoding' ), 1 );
+		add_action( 'wp_ajax_rt_enable_transcoding', array( $this, 'enable_transcoding' ), 1 );
 	}
 
 	/**
 	 * Send transcoding request and save transcoding job id get in response for uploaded media in buddypress activity.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @param array	$media_ids		Array of multiple attachment ids.
 	 * @param array $file_object	Array of file objects.
 	 * @param array $uploaded 		Array contains the information about the uploaded media.
 	 * @param bool  $autoformat     If true then genrating thumbs only else also trancode video.
 	 */
-	function transcoding( $media_ids, $file_object, $uploaded, $autoformat = true ) {
+	function rtmedia_transcoding( $media_ids, $file_object, $uploaded, $autoformat = true ) {
 
-		remove_action( 'add_attachment', array( $this, 'wp_transcoding' ) );
+		remove_action( 'add_attachment', array( $this, 'wp_media_transcoding' ) );
 		foreach ( $file_object as $key => $single ) {
 			$attachment_id = rtmedia_media_id( $media_ids[ $key ] );
 			$type_arry        = explode( '.', $single['url'] );
@@ -212,7 +212,7 @@ class RTMedia_Transcoder_Handler {
 					if ( isset( $upload_info->status ) && $upload_info->status && isset( $upload_info->job_id ) && $upload_info->job_id ) {
 						$job_id = $upload_info->job_id;
 						update_rtmedia_meta( $media_ids[ $key ], 'rtmedia-transcoding-job-id', $job_id );
-						update_post_meta( $attachment_id, '_rtmedia_transcoding_job_id', $job_id );
+						update_post_meta( $attachment_id, '_rt_transcoding_job_id', $job_id );
 						$model = new RTMediaModel();
 						$model->update( array( 'cover_art' => '0' ), array( 'id' => $media_ids[ $key ] ) );
 					}
@@ -225,12 +225,12 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Send transcoding request and save transcoding job id get in response for uploaded media in WordPress media library.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @param int    $attachment_id		ID of attachment.
 	 * @param string $autoformat		If true then genrating thumbs only else also trancode video.
 	 */
-	function wp_transcoding( $attachment_id, $autoformat = true ) {
+	function wp_media_transcoding( $attachment_id, $autoformat = true ) {
 
 		$post_parent = wp_get_post_parent_id( $attachment_id );
 		if ( 0 !== $post_parent ) {
@@ -290,7 +290,7 @@ class RTMedia_Transcoder_Handler {
 				$upload_info = json_decode( $upload_page['body'] );
 				if ( isset( $upload_info->status ) && $upload_info->status && isset( $upload_info->job_id ) && $upload_info->job_id ) {
 					$job_id = $upload_info->job_id;
-					update_post_meta( $attachment_id, '_rtmedia_transcoding_job_id', $job_id );
+					update_post_meta( $attachment_id, '_rt_transcoding_job_id', $job_id );
 				}
 			}
 			$this->update_usage( $this->api_key );
@@ -300,7 +300,7 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Get number of thumbnails required to generate for video.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @param int $attachment_id	ID of attachment.
 	 *
@@ -313,7 +313,7 @@ class RTMedia_Transcoder_Handler {
 		/**
 		 * Allow user to filter number of thumbnails required to generate for video.
 		 *
-		 * @since 1.0
+		 * @since 1.0.0
 		 *
 		 * @param int $thumb_count    Number of thumbnails set in setting.
 		 * @param int $attachment_id  ID of attachment.
@@ -327,7 +327,7 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Check whether uploaded file is valid audio/video file or not.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @param boolean $flag		File valid or not.
 	 * @param array   $file		Media file.
@@ -348,7 +348,7 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Check api key is valid or not.
 	 *
-	 * @since 1.0
+	 * @since	1.0.0
 	 *
 	 * @param string $key    Api Key.
 	 *
@@ -362,8 +362,8 @@ class RTMedia_Transcoder_Handler {
 			$validation_page = wp_remote_get( $validate_url ); // @codingStandardsIgnoreLine
 		}
 		if ( ! is_wp_error( $validation_page ) ) {
+			$validation_info = json_decode( $validation_page['body'] );
 			if ( isset( $validation_info->status ) ) {
-				$validation_info = json_decode( $validation_page['body'] );
 				$status          = $validation_info->status;
 			}
 		} else {
@@ -376,7 +376,7 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Save usage information.
 	 *
-	 * @since 1.0
+	 * @since	1.0.0
 	 *
 	 * @param string $key  Api key.
 	 *
@@ -395,7 +395,7 @@ class RTMedia_Transcoder_Handler {
 			$usage_info = null;
 		}
 
-		update_site_option( 'rtmedia-transcoding-usage', array( $key => $usage_info ) );
+		update_site_option( 'rt-transcoding-usage', array( $key => $usage_info ) );
 
 		return $usage_info;
 	}
@@ -403,105 +403,106 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Send email to admin when trancoding quota near to limit.
 	 *
-	 * @since 1.0
+	 * @since	1.0.0
 	 *
 	 * @param array $usage_details Usage informataion.
 	 */
 	public function nearing_usage_limit( $usage_details ) {
-		$subject = esc_html__( 'rtMedia Transcoding: Nearing quota limit.', 'rtmedia-transcoder' );
-		$message = '<p>' . esc_html__( 'You are nearing the quota limit for your rtMedia transcoding service.', 'rtmedia-transcoder' ) . '</p><p>'
-		           . esc_html__( 'Following are the details:', 'rtmedia-transcoder' ) . '</p><p><strong>Used:</strong> %s</p><p><strong>'
-		           . esc_html__( 'Remaining', 'rtmedia-transcoder' ) . '</strong>: %s</p><p><strong>' . esc_html__( 'Total:', 'rtmedia-transcoder' ) . '</strong> %s</p>';
+		$subject = esc_html__( 'Transcoding: Nearing quota limit.', 'transcoder' );
+		$message = '<p>' . esc_html__( 'You are nearing the quota limit for your transcoding service.', 'transcoder' ) . '</p><p>'
+		           . esc_html__( 'Following are the details:', 'transcoder' ) . '</p><p><strong>Used:</strong> %s</p><p><strong>'
+		           . esc_html__( 'Remaining', 'transcoder' ) . '</strong>: %s</p><p><strong>' . esc_html__( 'Total:', 'transcoder' ) . '</strong> %s</p>';
 		$users   = get_users( array( 'role' => 'administrator' ) );
 		if ( $users ) {
 			$admin_email_ids = array();
 			foreach ( $users as $user ) {
 				$admin_email_ids[] = $user->user_email;
 			}
-			add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
+			add_filter( 'wp_mail_content_type', array( $this, 'wp_mail_content_type' ) );
 			wp_mail( $admin_email_ids, $subject, sprintf( $message, size_format( $usage_details[ $this->api_key ]->used, 2 ), size_format( $usage_details[ $this->api_key ]->remaining, 2 ), size_format( $usage_details[ $this->api_key ]->total, 2 ) ) );
+			remove_filter( 'wp_mail_content_type', array( $this, 'wp_mail_content_type' ) );
 		}
-		update_site_option( 'rtmedia-transcoding-usage-limit-mail', 1 );
+		update_site_option( 'rt-transcoding-usage-limit-mail', 1 );
 	}
 
 	/**
 	 * Send email to admin when trancoding quota is over.
 	 *
-	 * @since 1.0
+	 * @since	1.0.0
 	 */
 	public function usage_quota_over() {
-		$usage_details = get_site_option( 'rtmedia-transcoding-usage' );
+		$usage_details = get_site_option( 'rt-transcoding-usage' );
 		if ( ! $usage_details[ $this->api_key ]->remaining ) {
-			$subject = esc_html__( 'rtMedia Transcoding: Usage quota over.', 'rtmedia-transcoder' );
-			$message = '<p>' . esc_html__( 'Your usage quota is over. Upgrade your plan' , 'rtmedia-transcoder' ) . '</p><p>' .
-			           esc_html__( 'Following are the details:', 'rtmedia-transcoder' ) . '</p><p><strong>' . esc_html__( 'Used:' , 'rtmedia-transcoder' ) .
-			           '</strong> %s</p><p><strong>' . esc_html__( 'Remaining' , 'rtmedia-transcoder' ) . '</strong>: %s</p><p><strong>' . esc_html__( 'Total:', 'rtmedia-transcoder' ) . '</strong> %s</p>';
+			$subject = esc_html__( 'Transcoding: Usage quota over.', 'transcoder' );
+			$message = '<p>' . esc_html__( 'Your usage quota is over. Upgrade your plan' , 'transcoder' ) . '</p><p>' .
+			           esc_html__( 'Following are the details:', 'transcoder' ) . '</p><p><strong>' . esc_html__( 'Used:' , 'transcoder' ) .
+			           '</strong> %s</p><p><strong>' . esc_html__( 'Remaining' , 'transcoder' ) . '</strong>: %s</p><p><strong>' . esc_html__( 'Total:', 'transcoder' ) . '</strong> %s</p>';
 			$users   = get_users( array( 'role' => 'administrator' ) );
 			if ( $users ) {
 				foreach ( $users as $user ) {
 					$admin_email_ids[] = $user->user_email;
 				}
-				add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
+				add_filter( 'wp_mail_content_type', array( $this, 'wp_mail_content_type' ) );
 				wp_mail( $admin_email_ids, $subject, sprintf( $message, size_format( $usage_details[ $this->api_key ]->used, 2 ), 0, size_format( $usage_details[ $this->api_key ]->total, 2 ) ) );
+				remove_filter( 'wp_mail_content_type', array( $this, 'wp_mail_content_type' ) );
 			}
-			update_site_option( 'rtmedia-transcoding-usage-limit-mail', 1 );
+			update_site_option( 'rt-transcoding-usage-limit-mail', 1 );
 		}
 	}
 
 	/**
 	 * Check whether key is valid or not and save api key.
 	 *
-	 * @since 1.0
+	 * @since	1.0.0
 	 */
-	public function rtt_save_api_key() {
-		$is_api_key_updated = filter_input( INPUT_GET, 'api_key_updated', FILTER_SANITIZE_STRING );
+	public function save_api_key() {
+		$is_api_key_updated		= filter_input( INPUT_GET, 'api_key_updated', FILTER_SANITIZE_STRING );
+		$is_invalid_license_key = filter_input( INPUT_GET, 'invalid-license-key', FILTER_SANITIZE_STRING );
 
 		if ( $is_api_key_updated ) {
 			if ( is_multisite() ) {
-				add_action( 'network_admin_notices', array( $this, 'rtt_successfully_subscribed_notice' ) );
+				add_action( 'network_admin_notices', array( $this, 'successfully_subscribed_notice' ) );
 			}
 
-			add_action( 'admin_notices', array( $this, 'rtt_successfully_subscribed_notice' ) );
+			add_action( 'admin_notices', array( $this, 'successfully_subscribed_notice' ) );
+		} elseif ( $is_invalid_license_key ) {
+			if ( is_multisite() ) {
+				add_action( 'network_admin_notices', array( $this, 'invalid_license_notice' ) );
+			}
+
+			add_action( 'admin_notices', array( $this, 'invalid_license_notice' ) );
 		}
 
-		$apikey		= filter_input( INPUT_GET, 'apikey', FILTER_SANITIZE_STRING );
+		$apikey		= trim( filter_input( INPUT_GET, 'apikey', FILTER_SANITIZE_STRING ) );
 		$page		= filter_input( INPUT_GET, 'page',	 FILTER_SANITIZE_STRING );
 		$is_update	= filter_input( INPUT_GET, 'update', FILTER_SANITIZE_STRING );
 
-		if ( ! empty( $apikey ) && is_admin() && ! empty( $page ) && ( 'rtmedia-transcoder' === $page ) && $this->is_valid_key( $apikey ) ) {
-			if ( $this->api_key && ! ( isset( $is_update ) && $is_update ) ) {
-				$unsubscribe_url = trailingslashit( $this->store_url );
+		if ( ! empty( $apikey ) && is_admin() && ! empty( $page ) && ( 'rt-transcoder' === $page ) ) {
+			if ( $this->is_valid_key( $apikey ) ) {
+				update_site_option( 'rt-transcoding-api-key', $apikey );
+				update_site_option( 'rt-transcoding-api-key-stored', $apikey );
 
-				$args = array(
-				        'method' 	=> 'POST',
-				        'sslverify' => false,
-				        'timeout'	=> 5,
-				        'body' 		=> array(
-			                'trans_type'    => 'cancel-license',
-			                'license-key' 	=> $this->api_key,
-				        ),
-				);
-				$unsubscribe = wp_remote_post( $unsubscribe_url, $args );
+				$usage_info  = $this->update_usage( $apikey );
+				$return_page = add_query_arg( array(
+					'page'            => 'rt-transcoder',
+					'api_key_updated' => $usage_info->plan->name ? ucfirst( strtolower( $usage_info->plan->name ) ) : 'Free',
+				), admin_url( 'admin.php' ) );
+				wp_safe_redirect( esc_url_raw( $return_page ) );
+				die();
+			} else {
+				$return_page = add_query_arg( array(
+					'page'					=> 'rt-transcoder',
+					'invalid-license-key'	=> '1',
+				), admin_url( 'admin.php' ) );
+				wp_safe_redirect( esc_url_raw( $return_page ) );
 			}
-
-			update_site_option( 'rtmedia-transcoding-api-key', $apikey );
-			update_site_option( 'rtmedia-transcoding-api-key-stored', $apikey );
-
-			$usage_info  = $this->update_usage( $apikey );
-			$return_page = add_query_arg( array(
-				'page'            => 'rtmedia-transcoder',
-				'api_key_updated' => $usage_info->plan->name ? $usage_info->plan->name : 'free',
-			), admin_url( 'admin.php' ) );
-			wp_safe_redirect( esc_url_raw( $return_page ) );
-
-			die();
 		}
 	}
 
 	/**
 	 * Allow user to upload other types media files.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @param array $types	Mime types.
 	 *
@@ -523,7 +524,7 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Allow user to upload other types media files.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @param array $types Mime types.
 	 *
@@ -543,18 +544,39 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Display message when user subscribed successfully.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
-	public function rtt_successfully_subscribed_notice() {
+	public function successfully_subscribed_notice() {
 	?>
 		<div class="updated">
-		<p>
-			<?php esc_html_e( 'You have successfully subscribed for the ', 'rtmedia-transcoder' ) ?>
-			<strong>
-				<?php printf( '%s', esc_html( sanitize_text_field( wp_unslash( $_GET['api_key_updated'] ) ) ) ); // @codingStandardsIgnoreLine ?>
-			</strong>
-			<?php esc_html_e( ' plan', 'rtmedia-transcoder' ) ?>
-		</p>
+			<p>
+				<?php
+				printf(
+					wp_kses(
+						__( 'You have successfully subscribed for the <strong>%s</strong> plan.', 'transcoder' ),
+						array(
+							'strong' => array(),
+						)
+					),
+					esc_html( sanitize_text_field( wp_unslash( $_GET['api_key_updated'] ) ) ) // @codingStandardsIgnoreLine
+				);
+				?>
+			</p>
+		</div>
+	<?php
+	}
+
+	/**
+	 * Display message when license key is not valid.
+	 *
+	 * @since 1.0.0
+	 */
+	public function invalid_license_notice() {
+	?>
+		<div class="error">
+			<p>
+				<?php esc_html_e( 'This license key is invalid.', 'transcoder' ); ?>
+			</p>
 		</div>
 	<?php
 	}
@@ -562,35 +584,43 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Display usage widget in sidebar on rtmedia transcoder settings page.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
-	public function rtt_usage_widget() {
-		$usage_details = get_site_option( 'rtmedia-transcoding-usage' );
-		$content       = '';
+	public function usage_widget() {
+		$usage_details	= get_site_option( 'rt-transcoding-usage' );
+		$content		= '';
+		$api_key		= '';
+
 		if ( ! empty( $this->api_key ) ) {
-			if ( $usage_details && isset( $usage_details[ $this->api_key ]->status ) && $usage_details[ $this->api_key ]->status ) {
-				if ( isset( $usage_details[ $this->api_key ]->plan->name ) ) {
-					$content .= '<p><strong>' . esc_html__( 'Current Plan', 'rtmedia-transcoder' ) . ':</strong> ' . esc_html( $usage_details[ $this->api_key ]->plan->name ) . ( $usage_details[ $this->api_key ]->sub_status ? '' : ' (' . esc_html__( 'Unsubscribed', 'rtmedia-transcoder' ) . ')' ) . '</p>';
+			$api_key = $this->api_key;
+		} elseif ( ! empty( $this->stored_api_key ) ) {
+			$api_key = $this->stored_api_key;
+		}
+
+		if ( ! empty( $api_key ) ) {
+			if ( $usage_details && isset( $usage_details[ $api_key ]->status ) && $usage_details[ $api_key ]->status ) {
+				if ( isset( $usage_details[ $api_key ]->plan->name ) ) {
+					$content .= '<p><strong>' . esc_html__( 'Current Plan', 'transcoder' ) . ':</strong> ' . esc_html( ucfirst( strtolower( $usage_details[ $api_key ]->plan->name ) ) ) . ( $usage_details[ $api_key ]->sub_status ? '' : ' (' . esc_html__( 'Unsubscribed', 'transcoder' ) . ')' ) . '</p>';
 				}
-				if ( isset( $usage_details[ $this->api_key ]->plan->expires ) ) {
-					$content .= '<p><strong>' . esc_html__( 'Expires On', 'rtmedia-transcoder' ) . ':</strong> ' . date_i18n( 'F j, Y', strtotime( $usage_details[ $this->api_key ]->plan->expires ) ) . '</p>';
+				if ( isset( $usage_details[ $api_key ]->plan->expires ) ) {
+					$content .= '<p><strong>' . esc_html__( 'Expires On', 'transcoder' ) . ':</strong> ' . date_i18n( 'F j, Y', strtotime( $usage_details[ $api_key ]->plan->expires ) ) . '</p>';
 				}
-				if ( isset( $usage_details[ $this->api_key ]->used ) ) {
-					$content .= '<p><span class="transcoding-used"></span><strong>' . esc_html__( 'Used', 'rtmedia-transcoder' ) . ':</strong> ' . ( ( $used_size = size_format( $usage_details[ $this->api_key ]->used, 2 ) ) ? esc_html( $used_size ) : '0MB' ) . '</p>';
+				if ( isset( $usage_details[ $api_key ]->used ) ) {
+					$content .= '<p><span class="transcoding-used"></span><strong>' . esc_html__( 'Used', 'transcoder' ) . ':</strong> ' . ( ( $used_size = size_format( $usage_details[ $api_key ]->used, 2 ) ) ? esc_html( $used_size ) : '0MB' ) . '</p>';
 				}
-				if ( isset( $usage_details[ $this->api_key ]->remaining ) ) {
-					$content .= '<p><span class="transcoding-remaining"></span><strong>' . esc_html__( 'Remaining', 'rtmedia-transcoder' ) . ':</strong> ';
-					if ( $usage_details[ $this->api_key ]->remaining >= 0 ) {
-						$content .= size_format( $usage_details[ $this->api_key ]->remaining, 2 );
+				if ( isset( $usage_details[ $api_key ]->remaining ) ) {
+					$content .= '<p><span class="transcoding-remaining"></span><strong>' . esc_html__( 'Remaining', 'transcoder' ) . ':</strong> ';
+					if ( $usage_details[ $api_key ]->remaining >= 0 ) {
+						$content .= size_format( $usage_details[ $api_key ]->remaining, 2 );
 					} else {
-						$content .= $usage_details[ $this->api_key ]->remaining . '0MB';
+						$content .= $usage_details[ $api_key ]->remaining . '0MB';
 					}
 				}
-				if ( isset( $usage_details[ $this->api_key ]->total ) ) {
-					$content .= '<p><strong>' . esc_html__( 'Total', 'rtmedia-transcoder' ) . ':</strong> ';
-					if ( $usage_details[ $this->api_key ]->total >= 0 ) {
-						$content .= size_format( $usage_details[ $this->api_key ]->total, 2 );
-					} elseif ( $usage_details[ $this->api_key ]->total <= -1 ) {
+				if ( isset( $usage_details[ $api_key ]->total ) ) {
+					$content .= '<p><strong>' . esc_html__( 'Total', 'transcoder' ) . ':</strong> ';
+					if ( $usage_details[ $api_key ]->total >= 0 ) {
+						$content .= size_format( $usage_details[ $api_key ]->total, 2 );
+					} elseif ( $usage_details[ $api_key ]->total <= -1 ) {
 						$content .= 'Unlimited';
 					} else {
 						$content .= '';
@@ -598,29 +628,25 @@ class RTMedia_Transcoder_Handler {
 				}
 				$usage = new RT_Progress();
 
-				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $this->api_key ]->used, $usage_details[ $this->api_key ]->total ), false );
-				if ( ( 0 >= $usage_details[ $this->api_key ]->remaining ) ) {
-					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your usage limit has been reached. Upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
+				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $api_key ]->used, $usage_details[ $api_key ]->total ), false );
+				if ( ( 0 >= $usage_details[ $api_key ]->remaining ) ) {
+					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your usage limit has been reached. Upgrade your plan.', 'transcoder' ) . '</p></div>';
 				}
 
-				if ( ( isset( $usage_details[ $this->api_key ]->plan->expires ) && strtotime( $usage_details[ $this->api_key ]->plan->expires ) < time() ) ) {
-					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your plan has been expired. Please upgrade your plan.', 'rtmedia-transcoder' ) . '</p></div>';
+				if ( ( isset( $usage_details[ $api_key ]->plan->expires ) && strtotime( $usage_details[ $api_key ]->plan->expires ) < time() ) ) {
+					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your plan has been expired. Please upgrade your plan.', 'transcoder' ) . '</p></div>';
 				}
 			} else {
-				$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your API key is not valid or is expired.', 'rtmedia-transcoder' ) . '</p></div>';
+				$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your API key is not valid or is expired.', 'transcoder' ) . '</p></div>';
 			}
 		} else {
-			if ( empty( $this->stored_api_key ) ) {
-				$content .= '<p>' . esc_html__( 'Currently, You are not subscribed to transcoding service. Please subscribe.', 'rtmedia-transcoder' ) . '</p>';
-			} else {
-				$content .= '<p>' . esc_html__( 'You have disabled the transcoding service. Please enable to see the usage.', 'rtmedia-transcoder' ) . '</p>';
-			}
+			$content .= '<p>' . esc_html__( 'Currently, You are not subscribed to transcoding service. Please subscribe.', 'transcoder' ) . '</p>';
 		}
 		?>
-		<div class="postbox" id="rtmedia-transcoding-usage">
+		<div class="postbox" id="transcoder-usage">
 	        <h3 class="hndle">
 				<span>
-					<?php esc_html_e( 'Transcoding Usage', 'rtmedia-transcoder' ); ?>
+					<?php esc_html_e( 'Transcoding Usage', 'transcoder' ); ?>
 				</span>
 			</h3>
 	        <div class="inside">
@@ -633,7 +659,7 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Save thumbnails for transcoded video.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @param array $post_array  Attachment data.
 	 *
@@ -706,7 +732,8 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Save transcoded media files.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
+	 *
 	 * @param array  $file_post_array	Transcoded files.
 	 * @param int    $attachment_id		ID of attachment.
 	 * @param string $job_for			Whether media uploaded through rtmedia plugin or WordPress media.
@@ -747,7 +774,7 @@ class RTMedia_Transcoder_Handler {
 									$transcoded_files[ $key ][] = $uploaded_file;
 								}
 							} else {
-								$flag = esc_html__( 'Could not read file.', 'rtmedia-transcoder' );
+								$flag = esc_html__( 'Could not read file.', 'transcoder' );
 
 								if ( $flag && $mail ) {
 									$download_link = esc_url( add_query_arg( array(
@@ -755,22 +782,23 @@ class RTMedia_Transcoder_Handler {
 										'job_for'    			=> $job_for,
 										'files['.$key.'][0]' 	=> esc_url( $download_url ), // @codingStandardsIgnoreLine
 									), home_url() ) );
-									$subject       = esc_html__( 'rtMedia Transcoding: Download Failed', 'rtmedia-transcoder' );
-									$message       = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
-									                 esc_html__( ' was successfully encoded but there was an error while downloading:', 'rtmedia-transcoder' ) . '</p><p><code>' .
-									                 esc_html( $flag ) . '</code></p><p>' . esc_html__( 'You can ', 'rtmedia-transcoder' ) . '<a href="' . esc_url( $download_link ) . '">'
-													. esc_html__( 'retry the download', 'rtmedia-transcoder' ) . '</a>.</p>';
+									$subject       = esc_html__( 'Transcoding: Download Failed', 'transcoder' );
+									$message       = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'transcoder' ) . '</a> ' .
+									                 esc_html__( ' was successfully encoded but there was an error while downloading:', 'transcoder' ) . '</p><p><code>' .
+									                 esc_html( $flag ) . '</code></p><p>' . esc_html__( 'You can ', 'transcoder' ) . '<a href="' . esc_url( $download_link ) . '">'
+													. esc_html__( 'retry the download', 'transcoder' ) . '</a>.</p>';
 									$users         = get_users( array( 'role' => 'administrator' ) );
 									if ( $users ) {
 										foreach ( $users as $user ) {
 											$admin_email_ids[] = $user->user_email;
 										}
-										add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
+										add_filter( 'wp_mail_content_type', array( $this, 'wp_mail_content_type' ) );
 										wp_mail( $admin_email_ids, $subject, $message );
+										remove_filter( 'wp_mail_content_type', array( $this, 'wp_mail_content_type' ) );
 									}
 									echo esc_html( $flag );
 								} else {
-									esc_html_e( 'Done', 'rtmedia-transcoder' );
+									esc_html_e( 'Done', 'transcoder' );
 								}
 							}
 						}
@@ -786,7 +814,7 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Get post id from meta key and value.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @param string $key	Meta key.
 	 * @param mixed  $value	Meta value.
@@ -810,7 +838,7 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Function to handle the callback request by the FFMPEG transcoding server.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public function handle_callback() {
 		require_once( ABSPATH . 'wp-admin/includes/image.php' );
@@ -836,7 +864,7 @@ class RTMedia_Transcoder_Handler {
 				$flag       = false;
 				global $wpdb;
 
-				$id = $this->get_post_id_by_meta_key_and_value( '_rtmedia_transcoding_job_id', $job_id );
+				$id = $this->get_post_id_by_meta_key_and_value( '_rt_transcoding_job_id', $job_id );
 
 				if ( isset( $id ) && is_numeric( $id ) ) {
 					$attachment_id      	= $id;
@@ -858,27 +886,28 @@ class RTMedia_Transcoder_Handler {
 
 
 				} else {
-					$flag = esc_html__( 'Something went wrong. The required attachment id does not exists. It must have been deleted.', 'rtmedia-transcoder' );
+					$flag = esc_html__( 'Something went wrong. The required attachment id does not exists. It must have been deleted.', 'transcoder' );
 				}
 
 				$this->update_usage( $this->api_key );
 
 				if ( $flag ) {
-					$subject       = esc_html__( 'rtMedia Transcoding: Download Failed', 'rtmedia-transcoder' );
-					$message       = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
-					                 esc_html__( ' was successfully encoded but there was an error while downloading:', 'rtmedia-transcoder' ) . '</p><p><code>' .
+					$subject       = esc_html__( 'Transcoding: Download Failed', 'transcoder' );
+					$message       = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'transcoder' ) . '</a> ' .
+					                 esc_html__( ' was successfully encoded but there was an error while downloading:', 'transcoder' ) . '</p><p><code>' .
 					                 esc_html( $flag ) . '</code></p>';
 					$users         = get_users( array( 'role' => 'administrator' ) );
 					if ( $users ) {
 						foreach ( $users as $user ) {
 							$admin_email_ids[] = $user->user_email;
 						}
-						add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
+						add_filter( 'wp_mail_content_type', array( $this, 'wp_mail_content_type' ) );
 						wp_mail( $admin_email_ids, $subject, $message );
+						remove_filter( 'wp_mail_content_type', array( $this, 'wp_mail_content_type' ) );
 					}
 					echo esc_html( $flag );
 				} else {
-					esc_html_e( 'Done', 'rtmedia-transcoder' );
+					esc_html_e( 'Done', 'transcoder' );
 				}
 				die();
 			}
@@ -919,27 +948,28 @@ class RTMedia_Transcoder_Handler {
 					}
 
 				} else {
-					$flag = esc_html__( 'Something went wrong. The required attachment id does not exists. It must have been deleted.', 'rtmedia-transcoder' );
+					$flag = esc_html__( 'Something went wrong. The required attachment id does not exists. It must have been deleted.', 'transcoder' );
 				}
 
 				$this->update_usage( $this->api_key );
 
 				if ( $flag && $mail ) {
-					$subject       = esc_html__( 'rtMedia Transcoding: Download Failed', 'rtmedia-transcoder' );
-					$message       = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
-					                 esc_html__( ' was successfully transcoded but there was an error while downloading:', 'rtmedia-transcoder' ) . '</p><p><code>' .
+					$subject       = esc_html__( 'Transcoding: Download Failed', 'transcoder' );
+					$message       = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'transcoder' ) . '</a> ' .
+					                 esc_html__( ' was successfully transcoded but there was an error while downloading:', 'transcoder' ) . '</p><p><code>' .
 					                 esc_html( $flag ) . '</code></p><p>';
 					$users         = get_users( array( 'role' => 'administrator' ) );
 					if ( $users ) {
 						foreach ( $users as $user ) {
 							$admin_email_ids[] = $user->user_email;
 						}
-						add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
+						add_filter( 'wp_mail_content_type', array( $this, 'wp_mail_content_type' ) );
 						wp_mail( $admin_email_ids, $subject, $message );
+						remove_filter( 'wp_mail_content_type', array( $this, 'wp_mail_content_type' ) );
 					}
 					echo esc_html( $flag );
 				} else {
-					esc_html_e( 'Done', 'rtmedia-transcoder' );
+					esc_html_e( 'Done', 'transcoder' );
 				}
 				die();
 			}
@@ -950,11 +980,11 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Hide notices.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public function hide_transcoding_notice() {
-		update_site_option( 'rtmedia-transcoding-service-notice', true );
-		update_site_option( 'rtmedia-transcoding-expansion-notice', true );
+		update_site_option( 'rt-transcoding-service-notice', true );
+		update_site_option( 'rt-transcoding-expansion-notice', true );
 		echo true;
 		die();
 	}
@@ -969,7 +999,7 @@ class RTMedia_Transcoder_Handler {
 		if ( ! empty( $apikey ) ) {
 			echo wp_json_encode( array( 'apikey' => $apikey ) );
 		} else {
-			echo wp_json_encode( array( 'error' => esc_html__( 'Please enter the api key.', 'rtmedia-transcoder' ) ) );
+			echo wp_json_encode( array( 'error' => esc_html__( 'Please enter the license key.', 'transcoder' ) ) );
 		}
 		die();
 	}
@@ -977,29 +1007,29 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Disable transcoding.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	public function disable_transcoding() {
-		update_site_option( 'rtmedia-transcoding-api-key', '' );
-		esc_html_e( 'Transcoding disabled successfully.', 'rtmedia-transcoder' );
+		update_site_option( 'rt-transcoding-api-key', '' );
+		esc_html_e( 'Transcoding disabled successfully.', 'transcoder' );
 		die();
 	}
 
 	/**
 	 * Enable transcoding.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 */
 	function enable_transcoding() {
-		update_site_option( 'rtmedia-transcoding-api-key', $this->stored_api_key );
-		esc_html_e( 'Transcoding enabled successfully.', 'rtmedia-transcoder' );
+		update_site_option( 'rt-transcoding-api-key', $this->stored_api_key );
+		esc_html_e( 'Transcoding enabled successfully.', 'transcoder' );
 		die();
 	}
 
 	/**
 	 * Return upload path of media uploaded through rtMedia plugin.
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @global mixed $rtmedia_interaction
 	 *
@@ -1044,7 +1074,7 @@ class RTMedia_Transcoder_Handler {
 	/**
 	 * Send's the email. It's the wrapper function for wp_mail
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @param  array   $email_ids		Email id's to send an email.
 	 * @param  string  $subject			Email subject.
@@ -1065,25 +1095,26 @@ class RTMedia_Transcoder_Handler {
 			}
 		}
 
-		add_filter( 'wp_mail_content_type', array( $this, 'rtt_wp_mail_content_type' ) );
+		add_filter( 'wp_mail_content_type', array( $this, 'wp_mail_content_type' ) );
 		wp_mail( $email_ids, $subject, $message );
+		remove_filter( 'wp_mail_content_type', array( $this, 'wp_mail_content_type' ) );
 	}
 
 	/**
 	 * Sets the content type of mail to text/html
 	 *
-	 * @since  1.0
+	 * @since  1.0.0
 	 *
 	 * @return string
 	 */
-	public function rtt_wp_mail_content_type() {
+	public function wp_mail_content_type() {
 		return 'text/html';
 	}
 
 	/**
 	 * Send notification about failed transcoding job
 	 *
-	 * @since 1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $job_id		Transcoding job id.
 	 * @param  string $error_msg	Error message for why transcoding of media failed.
@@ -1092,15 +1123,15 @@ class RTMedia_Transcoder_Handler {
 		if ( empty( $job_id ) ) {
 			return false;
 		}
-		$subject = esc_html__( 'rtMedia Transcoding: Something went wrong.', 'rtmedia-transcoder' );
-		$attachment_id = $this->get_post_id_by_meta_key_and_value( '_rtmedia_transcoding_job_id', $job_id );
+		$subject = esc_html__( 'Transcoding: Something went wrong.', 'transcoder' );
+		$attachment_id = $this->get_post_id_by_meta_key_and_value( '_rt_transcoding_job_id', $job_id );
 		if ( ! empty( $error_msg ) ) {
-			$message = '<p>' . esc_html__( ' There was unexpected error occurred while transcoding this following media.', 'rtmedia-transcoder' ) . '</p>';
-			$message .= '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a></p>';
+			$message = '<p>' . esc_html__( ' There was unexpected error occurred while transcoding this following media.', 'transcoder' ) . '</p>';
+			$message .= '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'transcoder' ) . '</a></p>';
 			$message .= '<p>Error message: ' . esc_html( $error_msg ) . '</p>';
 		} else {
-			$message = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'rtmedia-transcoder' ) . '</a> ' .
-				esc_html__( ' there was unexpected error occurred while transcoding this media.', 'rtmedia-transcoder' ) . '</p>';
+			$message = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'transcoder' ) . '</a> ' .
+				esc_html__( ' there was unexpected error occurred while transcoding this media.', 'transcoder' ) . '</p>';
 		}
 
 		$email_ids = array();
