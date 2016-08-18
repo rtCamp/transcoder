@@ -86,6 +86,23 @@ class RT_Transcoder_Admin {
 				add_action( 'init', array( $this, 'disable_encoding' ) );
 			}
 		}
+
+		// Show admin notice when Transcoder pluign active and user using rtMedia version 4.0.7.
+		if ( class_exists( 'RTMedia' ) ) {
+			if ( ! function_exists( 'get_plugin_data' ) ) {
+				include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+			}
+			$rtmedia_plugin_info = get_plugin_data( RTMEDIA_PATH . 'index.php' );
+
+			if ( version_compare( $rtmedia_plugin_info['Version'], '4.0.7', '<=' ) ) {
+				if ( is_multisite() ) {
+					add_action( 'network_admin_notices', array( $this, 'transcoder_admin_notice' ) );
+				}
+				add_action( 'admin_notices', array( $this, 'transcoder_admin_notice' ) );
+				add_action( 'wp_ajax_transcoder_hide_admin_notice', array( $this, 'transcoder_hide_admin_notice' ) );
+			}
+			add_action( 'admin_head', array( $this, 'rtmedia_hide_encoding_tab' ) );
+		}
 	}
 
 	/**
@@ -203,7 +220,7 @@ class RT_Transcoder_Admin {
 			$form = '<button disabled="disabled" type="submit" class="button button-primary bpm-unsubscribe">' . esc_html__( 'Current Plan', 'transcoder' ) . '</button>';
 		} else {
 			$plan_name = 'free' === $name ? 'Try Now' : 'Subscribe';
-			$form = '<a href="https://rtmedia.io/?transcoding-plan=' . $name . '" target="_blank" class="button button-primary">
+			$form = '<a href="http://dev.rtmedia.io/?transcoding-plan=' . $name . '" target="_blank" class="button button-primary">
 						' . esc_html( $plan_name, 'transcoder' ) . '
 					</a>';
 		}
@@ -354,5 +371,60 @@ class RT_Transcoder_Admin {
 		}
 
 		return $post;
+	}
+
+	/**
+	 * Display admin notice.
+	 *
+	 * @since	1.0.0
+	 */
+	function transcoder_admin_notice() {
+		$show_notice = get_site_option( 'transcoder_admin_notice', 1 );
+
+		if ( '1' === $show_notice || 1 === $show_notice ) :
+	?>		
+		<div class="notice notice-info transcoder-notice is-dismissible">
+			<?php wp_nonce_field( '_transcoder_hide_notice_', 'transcoder_hide_notice_nonce' ); ?>
+			<p>
+				<?php esc_html_e( 'rtMedia encoding service has been disabled becuase you are using Transcoder plugin.', 'transcoder' ); ?>
+			</p>
+		</div>
+		<script type="text/javascript">
+			jQuery( document ).ready( function() {
+				jQuery( '.transcoder-notice.is-dismissible' ).on( 'click', '.notice-dismiss', function() {
+					var data = {
+						action: 'transcoder_hide_admin_notice',
+						transcoder_notice_nonce: jQuery('#transcoder_hide_notice_nonce').val()
+					};
+					jQuery.post( ajaxurl, data, function ( response ) {
+						jQuery('.transcoder-notice').remove();
+					});
+				});
+			});	
+		</script>
+	<?php
+		endif;
+	}
+
+	/**
+	 * Set option to hide admin notice when user click on dismiss button.
+	 *
+	 * @since	1.0.0
+	 */
+	function transcoder_hide_admin_notice() {
+		if ( check_ajax_referer( '_transcoder_hide_notice_', 'transcoder_notice_nonce' ) ) {
+			update_site_option( 'transcoder_admin_notice', '0' );
+		}
+		die();
+	}
+
+	function rtmedia_hide_encoding_tab() {
+	?>
+		<style>
+			.rtmedia-tab-title.audiovideo-encoding {
+				display: none;
+			}
+		</style>
+	<?php
 	}
 }
