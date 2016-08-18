@@ -38,7 +38,7 @@ class RT_Transcoder_Handler {
 	 * @access   protected
 	 * @var      string    $store_url    The URL of the transcoder api.
 	 */
-	protected $store_url = 'https://rtmedia.io/';
+	protected $store_url = 'http://dev.rtmedia.io/';
 
 	/**
 	 * Contain uploaded media information.
@@ -598,10 +598,15 @@ class RT_Transcoder_Handler {
 
 		if ( ! empty( $api_key ) ) {
 			if ( $usage_details && isset( $usage_details[ $api_key ]->status ) && $usage_details[ $api_key ]->status ) {
+
 				if ( isset( $usage_details[ $api_key ]->plan->name ) ) {
-					$content .= '<p><strong>' . esc_html__( 'Current Plan', 'transcoder' ) . ':</strong> ' . esc_html( ucfirst( strtolower( $usage_details[ $api_key ]->plan->name ) ) ) . ( $usage_details[ $api_key ]->sub_status ? '' : ' (' . esc_html__( 'Unsubscribed', 'transcoder' ) . ')' ) . '</p>';
+					$plan_name = strtolower( $usage_details[ $api_key ]->plan->name );
+					$content .= '<p><strong>' . esc_html__( 'Current Plan', 'transcoder' ) . ':</strong> ' . esc_html( ucfirst( $plan_name ) ) . ( $usage_details[ $api_key ]->sub_status ? '' : ' (' . esc_html__( 'Unsubscribed', 'transcoder' ) . ')' ) . '</p>';
+				} else {
+					$plan_name = '';
 				}
-				if ( isset( $usage_details[ $api_key ]->plan->expires ) ) {
+
+				if ( isset( $usage_details[ $api_key ]->plan->expires ) && 'free' !== $plan_name ) {
 					$content .= '<p><strong>' . esc_html__( 'Expires On', 'transcoder' ) . ':</strong> ' . date_i18n( 'F j, Y', strtotime( $usage_details[ $api_key ]->plan->expires ) ) . '</p>';
 				}
 				if ( isset( $usage_details[ $api_key ]->used ) ) {
@@ -628,6 +633,13 @@ class RT_Transcoder_Handler {
 				$usage = new RT_Progress();
 
 				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $api_key ]->used, $usage_details[ $api_key ]->total ), false );
+
+				$content .= '<p>' . esc_html__( 'Usage will reset automatically every month.', 'transcoder' ) . '</p>';
+
+				if ( 'free' === $plan_name ) {
+					$content .= '<p>' . esc_html__( 'Upgrade for more bandwidth.', 'transcoder' ) . '</p>';
+				}
+
 				if ( ( 0 >= $usage_details[ $api_key ]->remaining ) ) {
 					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your usage limit has been reached. Upgrade your plan.', 'transcoder' ) . '</p></div>';
 				}
@@ -645,7 +657,7 @@ class RT_Transcoder_Handler {
 		<div class="postbox" id="transcoder-usage">
 	        <h3 class="hndle">
 				<span>
-					<?php esc_html_e( 'Transcoding Usage', 'transcoder' ); ?>
+					<?php esc_html_e( 'Transcoding usage this month', 'transcoder' ); ?>
 				</span>
 			</h3>
 	        <div class="inside">
