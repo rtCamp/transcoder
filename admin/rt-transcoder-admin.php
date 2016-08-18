@@ -145,7 +145,7 @@ class RT_Transcoder_Admin {
 	 * @since    1.0.0
 	 */
 	public function load_translation() {
-		load_plugin_textdomain( 'transcoder', false, basename( RT_TRANSCODER_PATH ) . '/languages/' );
+		load_plugin_textdomain( 'transcoder', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
 	/**

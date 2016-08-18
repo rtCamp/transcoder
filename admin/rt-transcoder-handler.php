@@ -38,7 +38,7 @@ class RT_Transcoder_Handler {
 	 * @access   protected
 	 * @var      string    $store_url    The URL of the transcoder api.
 	 */
-	protected $store_url = 'http://dev.rtmedia.io/';
+	protected $store_url = 'https://rtmedia.io/';
 
 	/**
 	 * Contain uploaded media information.
