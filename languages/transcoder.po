@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://community.rtcamp.com/c/rt/\n"
-"POT-Creation-Date: 2016-08-12 10:39:40+00:00\n"
+"POT-Creation-Date: 2016-08-18 10:55:36+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -170,117 +170,131 @@ msgstr ""
 msgid "Subscribe"
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:165
+#: admin/rt-transcoder-admin.php:192
 msgid "Are you sure you want to disable the transcoding service?"
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:166
+#: admin/rt-transcoder-admin.php:193
 msgid "Are you sure you want to enable the transcoding service?"
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:167
+#: admin/rt-transcoder-admin.php:194
 msgid "Something went wrong. Please "
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:167
+#: admin/rt-transcoder-admin.php:194
 msgid "refresh"
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:167
+#: admin/rt-transcoder-admin.php:194
 msgid " page."
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:192 admin/rt-transcoder-handler.php:615
+#: admin/rt-transcoder-admin.php:220 admin/rt-transcoder-handler.php:604
 msgid "Current Plan"
 msgstr ""
 
-#: admin/rt-transcoder-functions.php:85
-msgid "The file has been sent to transcoder"
+#: admin/rt-transcoder-admin.php:389
+msgid ""
+"rtMedia encoding service has been disabled becuase you are using Transcoder "
+"plugin."
 msgstr ""
 
-#: admin/rt-transcoder-functions.php:247
+#: admin/rt-transcoder-functions.php:87
+msgid "This file is being transcoded. Please wait."
+msgstr ""
+
+#: admin/rt-transcoder-functions.php:255
 msgid "Video Thumbnail"
 msgstr ""
 
-#: admin/rt-transcoder-functions.php:272 admin/rt-transcoder-functions.php:332
+#: admin/rt-transcoder-functions.php:282 admin/rt-transcoder-functions.php:342
 msgid "Video Thumbnail:"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:408
+#: admin/rt-transcoder-handler.php:410
 msgid "Transcoding: Nearing quota limit."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:409
+#: admin/rt-transcoder-handler.php:411
 msgid "You are nearing the quota limit for your transcoding service."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:410 admin/rt-transcoder-handler.php:435
+#: admin/rt-transcoder-handler.php:412 admin/rt-transcoder-handler.php:437
 msgid "Following are the details:"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:411 admin/rt-transcoder-handler.php:436
-#: admin/rt-transcoder-handler.php:624
+#: admin/rt-transcoder-handler.php:413 admin/rt-transcoder-handler.php:438
+#: admin/rt-transcoder-handler.php:616
 msgid "Remaining"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:411 admin/rt-transcoder-handler.php:436
+#: admin/rt-transcoder-handler.php:413 admin/rt-transcoder-handler.php:438
 msgid "Total:"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:433
+#: admin/rt-transcoder-handler.php:435
 msgid "Transcoding: Usage quota over."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:434
+#: admin/rt-transcoder-handler.php:436
 msgid "Your usage quota is over. Upgrade your plan"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:435
+#: admin/rt-transcoder-handler.php:437
 msgid "Used:"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:568
+#: admin/rt-transcoder-handler.php:555
 msgid "You have successfully subscribed for the <strong>%s</strong> plan."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:590
+#: admin/rt-transcoder-handler.php:577
 msgid "This license key is invalid."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:615
+#: admin/rt-transcoder-handler.php:604
 msgid "Unsubscribed"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:618
+#: admin/rt-transcoder-handler.php:610
 msgid "Expires On"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:621
+#: admin/rt-transcoder-handler.php:613
 msgid "Used"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:632
+#: admin/rt-transcoder-handler.php:624
 msgid "Total"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:645
+#: admin/rt-transcoder-handler.php:637
+msgid "Usage will reset automatically every month."
+msgstr ""
+
+#: admin/rt-transcoder-handler.php:640
+msgid "Upgrade for more bandwidth."
+msgstr ""
+
+#: admin/rt-transcoder-handler.php:644
 msgid "Your usage limit has been reached. Upgrade your plan."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:649
+#: admin/rt-transcoder-handler.php:648
 msgid "Your plan has been expired. Please upgrade your plan."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:652
+#: admin/rt-transcoder-handler.php:651
 msgid "Your API key is not valid or is expired."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:655
+#: admin/rt-transcoder-handler.php:654
 msgid "Currently, You are not subscribed to transcoding service. Please subscribe."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:661
-msgid "Transcoding Usage"
+#: admin/rt-transcoder-handler.php:660
+msgid "Transcoding usage this month"
 msgstr ""
 
 #: admin/rt-transcoder-handler.php:788
