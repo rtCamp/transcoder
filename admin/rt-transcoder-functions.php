@@ -84,7 +84,7 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 	}
 
 	if ( is_file_being_transcoded( $attachment_id ) ) {
-		$content .= '<p class="transcoding-in-progress"> ' . esc_html__( 'The file has been sent to transcoder', 'transcoder' ) . '</p>';
+		$content .= '<p class="transcoding-in-progress"> ' . esc_html__( 'This file is being transcoded. Please wait.', 'transcoder' ) . '</p>';
 	}
 
 	/**
