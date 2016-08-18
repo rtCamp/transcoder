@@ -220,7 +220,7 @@ class RT_Transcoder_Admin {
 			$form = '<button disabled="disabled" type="submit" class="button button-primary bpm-unsubscribe">' . esc_html__( 'Current Plan', 'transcoder' ) . '</button>';
 		} else {
 			$plan_name = 'free' === $name ? 'Try Now' : 'Subscribe';
-			$form = '<a href="http://dev.rtmedia.io/?transcoding-plan=' . $name . '" target="_blank" class="button button-primary">
+			$form = '<a href="https://rtmedia.io/?transcoding-plan=' . $name . '" target="_blank" class="button button-primary">
 						' . esc_html( $plan_name, 'transcoder' ) . '
 					</a>';
 		}
