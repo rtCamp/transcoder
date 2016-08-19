@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://community.rtcamp.com/c/rt/\n"
-"POT-Creation-Date: 2016-08-18 10:55:36+00:00\n"
+"POT-Creation-Date: 2016-08-19 10:58:08+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -170,31 +170,31 @@ msgstr ""
 msgid "Subscribe"
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:192
+#: admin/rt-transcoder-admin.php:194
 msgid "Are you sure you want to disable the transcoding service?"
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:193
+#: admin/rt-transcoder-admin.php:195
 msgid "Are you sure you want to enable the transcoding service?"
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:194
+#: admin/rt-transcoder-admin.php:196
 msgid "Something went wrong. Please "
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:194
+#: admin/rt-transcoder-admin.php:196
 msgid "refresh"
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:194
+#: admin/rt-transcoder-admin.php:196
 msgid " page."
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:220 admin/rt-transcoder-handler.php:604
+#: admin/rt-transcoder-admin.php:222 admin/rt-transcoder-handler.php:604
 msgid "Current Plan"
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:389
+#: admin/rt-transcoder-admin.php:391
 msgid ""
 "rtMedia encoding service has been disabled becuase you are using Transcoder "
 "plugin."
