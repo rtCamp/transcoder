@@ -87,13 +87,13 @@ class RT_Transcoder_Admin {
 			}
 		}
 
-		// Show admin notice when Transcoder pluign active and user using rtMedia version 4.0.7.
 		if ( class_exists( 'RTMedia' ) ) {
 			if ( ! function_exists( 'get_plugin_data' ) ) {
 				include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 			}
 			$rtmedia_plugin_info = get_plugin_data( RTMEDIA_PATH . 'index.php' );
 
+			// Show admin notice when Transcoder pluign active and user using rtMedia version 4.0.7.
 			if ( version_compare( $rtmedia_plugin_info['Version'], '4.0.7', '<=' ) ) {
 				if ( is_multisite() ) {
 					add_action( 'network_admin_notices', array( $this, 'transcoder_admin_notice' ) );
@@ -102,6 +102,8 @@ class RT_Transcoder_Admin {
 				add_action( 'wp_ajax_transcoder_hide_admin_notice', array( $this, 'transcoder_hide_admin_notice' ) );
 			}
 			add_action( 'admin_head', array( $this, 'rtmedia_hide_encoding_tab' ) );
+
+			add_filter( 'wp_mediaelement_fallback', array( $this, 'mediaelement_add_class' ), 20, 2 );
 		}
 	}
 
@@ -418,6 +420,11 @@ class RT_Transcoder_Admin {
 		die();
 	}
 
+	/**
+	 * Hide encoding tab in old rtMedia plugin.
+	 *
+	 * @since	1.0.0
+	 */
 	function rtmedia_hide_encoding_tab() {
 	?>
 		<style>
@@ -426,5 +433,19 @@ class RT_Transcoder_Admin {
 			}
 		</style>
 	<?php
+	}
+
+	/**
+	 * Filters the Mediaelement fallback output to add class.
+	 *
+	 * @since	1.0.0
+	 *
+	 * @param type $output	Fallback output for no-JS.
+	 * @param type $url		Media file URL.
+	 *
+	 * @return string return fallback output.
+	 */
+	function mediaelement_add_class( $output, $url ) {
+		return sprintf( '<a class="no-popup" href="%1$s">%1$s</a>', esc_url( $url ) );
 	}
 }
