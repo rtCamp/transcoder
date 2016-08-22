@@ -355,4 +355,78 @@ class RT_Transcoder_Admin {
 
 		return $post;
 	}
+
+	/**
+	 * Display admin notice.
+	 *
+	 * @since	1.0.0
+	 */
+	function transcoder_admin_notice() {
+		$show_notice = get_site_option( 'transcoder_admin_notice', 1 );
+
+		if ( '1' === $show_notice || 1 === $show_notice ) :
+	?>
+		<div class="notice notice-info transcoder-notice is-dismissible">
+			<?php wp_nonce_field( '_transcoder_hide_notice_', 'transcoder_hide_notice_nonce' ); ?>
+			<p>
+				<?php esc_html_e( 'rtMedia encoding service has been disabled becuase you are using Transcoder plugin.', 'transcoder' ); ?>
+			</p>
+		</div>
+		<script type="text/javascript">
+			jQuery( document ).ready( function() {
+				jQuery( '.transcoder-notice.is-dismissible' ).on( 'click', '.notice-dismiss', function() {
+					var data = {
+						action: 'transcoder_hide_admin_notice',
+						transcoder_notice_nonce: jQuery('#transcoder_hide_notice_nonce').val()
+					};
+					jQuery.post( ajaxurl, data, function ( response ) {
+						jQuery('.transcoder-notice').remove();
+					});
+				});
+			});
+		</script>
+	<?php
+		endif;
+	}
+
+	/**
+	 * Set option to hide admin notice when user click on dismiss button.
+	 *
+	 * @since	1.0.0
+	 */
+	function transcoder_hide_admin_notice() {
+		if ( check_ajax_referer( '_transcoder_hide_notice_', 'transcoder_notice_nonce' ) ) {
+			update_site_option( 'transcoder_admin_notice', '0' );
+		}
+		die();
+	}
+
+	/**
+	 * Hide encoding tab in old rtMedia plugin.
+	 *
+	 * @since	1.0.0
+	 */
+	function rtmedia_hide_encoding_tab() {
+	?>
+		<style>
+			.rtmedia-tab-title.audiovideo-encoding {
+				display: none;
+			}
+		</style>
+	<?php
+	}
+
+	/**
+	 * Filters the Mediaelement fallback output to add class.
+	 *
+	 * @since	1.0.0
+	 *
+	 * @param type $output	Fallback output for no-JS.
+	 * @param type $url		Media file URL.
+	 *
+	 * @return string return fallback output.
+	 */
+	function mediaelement_add_class( $output, $url ) {
+		return sprintf( '<a class="no-popup" href="%1$s">%1$s</a>', esc_url( $url ) );
+	}
 }
