@@ -86,6 +86,25 @@ class RT_Transcoder_Admin {
 				add_action( 'init', array( $this, 'disable_encoding' ) );
 			}
 		}
+
+		if ( class_exists( 'RTMedia' ) ) {
+			if ( ! function_exists( 'get_plugin_data' ) ) {
+				include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+			}
+			$rtmedia_plugin_info = get_plugin_data( RTMEDIA_PATH . 'index.php' );
+
+			// Show admin notice when Transcoder pluign active and user using rtMedia version 4.0.7.
+			if ( version_compare( $rtmedia_plugin_info['Version'], '4.0.7', '<=' ) ) {
+				if ( is_multisite() ) {
+					add_action( 'network_admin_notices', array( $this, 'transcoder_admin_notice' ) );
+				}
+				add_action( 'admin_notices', array( $this, 'transcoder_admin_notice' ) );
+				add_action( 'wp_ajax_transcoder_hide_admin_notice', array( $this, 'transcoder_hide_admin_notice' ) );
+			}
+			add_action( 'admin_head', array( $this, 'rtmedia_hide_encoding_tab' ) );
+
+			add_filter( 'wp_mediaelement_fallback', array( $this, 'mediaelement_add_class' ), 20, 2 );
+		}
 	}
 
 	/**
@@ -128,7 +147,7 @@ class RT_Transcoder_Admin {
 	 * @since    1.0.0
 	 */
 	public function load_translation() {
-		load_plugin_textdomain( 'transcoder', false, basename( RT_TRANSCODER_PATH ) . '/languages/' );
+		load_plugin_textdomain( 'transcoder', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
 	/**
@@ -331,7 +350,7 @@ class RT_Transcoder_Admin {
 
 	/**
 	 * Save selected video thumbnail in attachment meta.
-	 * Selected thumbnail use as cover art for buddypress activity if video was upload in activity.
+	 * Selected thumbnail use as cover art for buddypress activity if video was uploaded in activity.
 	 *
 	 * @since	1.0.0
 	 *
@@ -343,13 +362,20 @@ class RT_Transcoder_Admin {
 		$id = $post['post_ID'];
 		if ( isset( $rtmedia_thumbnail ) ) {
 			if ( class_exists( 'rtMedia' ) ) {
+				$file_url = $rtmedia_thumbnail;
+				$uploads = wp_get_upload_dir();
+				if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
+					$final_file_url = $file_url;
+			    } else {
+			    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
+			    }
+
 				$rtmedia_model = new RTMediaModel();
 				$media         = $rtmedia_model->get( array( 'media_id' => $id ) );
 				$media_id      = $media[0]->id;
-				$rtmedia_model->update( array( 'cover_art' => $rtmedia_thumbnail ), array( 'media_id' => $id ) );
+				$rtmedia_model->update( array( 'cover_art' => $final_file_url ), array( 'media_id' => $id ) );
 				rtt_update_activity_after_thumb_set( $media_id );
 			}
-
 			update_post_meta( $id, '_rt_media_video_thumbnail', $rtmedia_thumbnail );
 		}
 

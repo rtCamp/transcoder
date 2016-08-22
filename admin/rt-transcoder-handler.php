@@ -164,10 +164,10 @@ class RT_Transcoder_Handler {
 
 		remove_action( 'add_attachment', array( $this, 'wp_media_transcoding' ) );
 		foreach ( $file_object as $key => $single ) {
-			$attachment_id = rtmedia_media_id( $media_ids[ $key ] );
-			$type_arry        = explode( '.', $single['url'] );
-			$type             = strtolower( $type_arry[ count( $type_arry ) - 1 ] );
-			$not_allowed_type = array( 'mp3' );
+			$attachment_id 		= rtmedia_media_id( $media_ids[ $key ] );
+			$type_arry        	= explode( '.', $single['url'] );
+			$type             	= strtolower( $type_arry[ count( $type_arry ) - 1 ] );
+			$not_allowed_type 	= array( 'mp3' );
 			preg_match( '/video|audio/i', $single['type'], $type_array );
 
 			if ( preg_match( '/video|audio/i', $single['type'], $type_array ) && ! in_array( $single['type'], array( 'audio/mp3' ), true ) && ! in_array( $type, $not_allowed_type, true ) ) {
@@ -599,10 +599,15 @@ class RT_Transcoder_Handler {
 
 		if ( ! empty( $api_key ) ) {
 			if ( $usage_details && isset( $usage_details[ $api_key ]->status ) && $usage_details[ $api_key ]->status ) {
+
 				if ( isset( $usage_details[ $api_key ]->plan->name ) ) {
-					$content .= '<p><strong>' . esc_html__( 'Current Plan', 'transcoder' ) . ':</strong> ' . esc_html( ucfirst( strtolower( $usage_details[ $api_key ]->plan->name ) ) ) . ( $usage_details[ $api_key ]->sub_status ? '' : ' (' . esc_html__( 'Unsubscribed', 'transcoder' ) . ')' ) . '</p>';
+					$plan_name = strtolower( $usage_details[ $api_key ]->plan->name );
+					$content .= '<p><strong>' . esc_html__( 'Current Plan', 'transcoder' ) . ':</strong> ' . esc_html( ucfirst( $plan_name ) ) . ( $usage_details[ $api_key ]->sub_status ? '' : ' (' . esc_html__( 'Unsubscribed', 'transcoder' ) . ')' ) . '</p>';
+				} else {
+					$plan_name = '';
 				}
-				if ( isset( $usage_details[ $api_key ]->plan->expires ) ) {
+
+				if ( isset( $usage_details[ $api_key ]->plan->expires ) && 'free' !== $plan_name ) {
 					$content .= '<p><strong>' . esc_html__( 'Expires On', 'transcoder' ) . ':</strong> ' . date_i18n( 'F j, Y', strtotime( $usage_details[ $api_key ]->plan->expires ) ) . '</p>';
 				}
 				if ( isset( $usage_details[ $api_key ]->used ) ) {
@@ -629,6 +634,13 @@ class RT_Transcoder_Handler {
 				$usage = new RT_Progress();
 
 				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $api_key ]->used, $usage_details[ $api_key ]->total ), false );
+
+				$content .= '<p>' . esc_html__( 'Usage will reset automatically every month.', 'transcoder' ) . '</p>';
+
+				if ( 'free' === $plan_name ) {
+					$content .= '<p>' . esc_html__( 'Upgrade for more bandwidth.', 'transcoder' ) . '</p>';
+				}
+
 				if ( ( 0 >= $usage_details[ $api_key ]->remaining ) ) {
 					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your usage limit has been reached. Upgrade your plan.', 'transcoder' ) . '</p></div>';
 				}
@@ -646,7 +658,7 @@ class RT_Transcoder_Handler {
 		<div class="postbox" id="transcoder-usage">
 	        <h3 class="hndle">
 				<span>
-					<?php esc_html_e( 'Transcoding Usage', 'transcoder' ); ?>
+					<?php esc_html_e( 'Transcoding usage this month', 'transcoder' ); ?>
 				</span>
 			</h3>
 	        <div class="inside">
@@ -696,15 +708,16 @@ class RT_Transcoder_Handler {
 		$upload_thumbnail_array = array();
 
 		foreach ( $post_thumbs_array['thumbnail'] as $thumbs => $thumbnail ) {
-			$thumbresource            = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $thumbnail ) : wp_remote_get( $thumbnail ); // @codingStandardsIgnoreLine
-			$thumbinfo                = pathinfo( $thumbnail );
-			$temp_name                = $thumbinfo['basename'];
-			$temp_name                = urldecode( $temp_name );
-			$temp_name_array          = explode( '/', $temp_name );
-			$temp_name                = $temp_name_array[ count( $temp_name_array ) - 1 ];
-			$thumbinfo['basename']    = $temp_name;
-			$thumb_upload_info        = wp_upload_bits( $thumbinfo['basename'], null, $thumbresource['body'] );
-			$file 					  = _wp_relative_upload_path( $thumb_upload_info['file'] );
+			$thumbresource            	= function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $thumbnail ) : wp_remote_get( $thumbnail ); // @codingStandardsIgnoreLine
+			$thumbinfo                	= pathinfo( $thumbnail );
+			$temp_name                	= $thumbinfo['basename'];
+			$temp_name                	= urldecode( $temp_name );
+			$temp_name_array          	= explode( '/', $temp_name );
+			$temp_name                	= $temp_name_array[ count( $temp_name_array ) - 1 ];
+			$thumbinfo['basename']    	= $temp_name;
+			$thumb_upload_info        	= wp_upload_bits( $thumbinfo['basename'], null, $thumbresource['body'] );
+			$file 					  	= _wp_relative_upload_path( $thumb_upload_info['file'] );
+			$thumbnails_abs_url_array[] = $thumb_upload_info['url'];
 
 			if ( $file ) {
 				$upload_thumbnail_array[] = $file;
@@ -714,8 +727,8 @@ class RT_Transcoder_Handler {
 
 			if ( $current_thumb_size >= $largest_thumb_size ) {
 				$largest_thumb_size = $current_thumb_size;
-				$largest_thumb      = $thumb_upload_info['url'];
-				$largest_thumb_url	= $file ? $file : '';
+				$largest_thumb      = $thumb_upload_info['url']; 			// Absolute URL of the thumb
+				$largest_thumb_url	= $file ? $file : ''; 					// Relative URL of the thumb
 			}
 		}
 
@@ -724,9 +737,14 @@ class RT_Transcoder_Handler {
 
 		if ( $largest_thumb_url ) {
 			update_post_meta( $post_id, '_rt_media_video_thumbnail', $largest_thumb_url );
+
+			if ( 'rtmedia' === $post_thumbs_array['job_for'] ) {
+				$model->update( array( 'cover_art' => $largest_thumb ), array( 'media_id' => $post_id ) );
+				update_activity_after_thumb_set( $media_id );
+			}
 		}
 
-		return $largest_thumb;
+		return $largest_thumb_url;
 	}
 
 	/**
@@ -741,6 +759,7 @@ class RT_Transcoder_Handler {
 	public function add_transcoded_files( $file_post_array, $attachment_id, $job_for = '' ) {
 		$transcoded_files = false;
 		$mail = true;
+		global $wpdb;
 
 		if ( isset( $file_post_array ) && is_array( $file_post_array ) && ( count( $file_post_array > 0 ) ) ) {
 			foreach ( $file_post_array as $key => $format ) {
@@ -748,6 +767,16 @@ class RT_Transcoder_Handler {
 					foreach ( $format as $each => $file ) {
 						$flag = false;
 						if ( isset( $file ) ) {
+
+							if ( 'rtmedia' === $job_for ) {
+								$model              = new RTMediaModel();
+								$media              = $model->get_media( array( 'media_id' => $attachment_id ), 0, 1 );
+								$this->media_author = $media[0]->media_author;
+								//print_r($media);
+								$this->uploaded['context']      = $media[0]->context;
+								$this->uploaded['context_id']   = $media[0]->context_id;
+								$this->uploaded['media_author'] = $media[0]->media_author;
+							}
 							$download_url                   = urldecode( urldecode( $file ) );
 							$new_wp_attached_file_pathinfo 	= pathinfo( $download_url );
 							$post_mime_type                	= 'mp4' === $new_wp_attached_file_pathinfo['extension'] ? 'video/mp4' : 'audio/mp3';
@@ -801,6 +830,16 @@ class RT_Transcoder_Handler {
 									esc_html_e( 'Done', 'transcoder' );
 								}
 							}
+						}
+					}
+					if ( 'rtmedia' === $job_for ) {
+						$activity_id = $media[0]->activity_id;
+						if ( $activity_id ) {
+							$attachemnt_post  	= get_post( $attachment_id );
+							$content          	= $wpdb->get_var( $wpdb->prepare( "SELECT content FROM {$wpdb->base_prefix}bp_activity WHERE id = %d", $activity_id ) );
+							$uploads 			= wp_get_upload_dir();
+							$activity_content = str_replace( $attachemnt_post->guid, $uploads['baseurl'] . '/' . $transcoded_files['mp4'][0], $content );
+							$update = $wpdb->update( $wpdb->base_prefix . 'bp_activity', array( 'content' => $activity_content ), array( 'id' => $activity_id ) );
 						}
 					}
 				}

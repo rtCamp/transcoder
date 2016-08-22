@@ -1,10 +1,10 @@
 === Transcoder ===
 Contributors: rtcamp, chandrapatel, mangeshp
 Donate link: https://rtcamp.com/donate/
-Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder
+Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Requires at least: WordPress 3.6
+Requires at least: WordPress 4.0
 Tested up to: 4.6
 Stable tag: 1.0.0
 
@@ -15,11 +15,13 @@ Audio and video transcoding services for ANY WordPress website. This plugin allo
 Transcoder easily converts all audio and video files uploaded to your website to a web-friendly format. 
 Transcoder's services are available for all WordPress websites through this free plugin.
 
+You just need to subscribe free plan to get API key from plugin's settings or from [Transcoder](https://rtmedia.io/products/transcoder).
+
 Transcoder is the creation of a VIP Service Partner.
 
 Supported input media types:
 Audio: mp3, m4a, wav, ogg, wma
-Video: 3g2, 3gp, asf, avi, flv, m4v, mkv, mov, mp4, mpg, ogv, webm, wmv
+Video: 3g2, 3gp, avi, flv, m4v, mp4, mpg, ogv, webm, wmv
 
 Supported output media types:
 Audio: mp3
@@ -32,7 +34,14 @@ Create the ultimate niche community by combining Transcoder with our [rtMedia](h
 1. **Works with ANY WordPress website** - Transcoder plugs into your current website seamlessly, instantly improving user audio/video experience.
 2. **rtMedia integration** - Works perfectly with our own [rtMedia](https://rtmedia.io), for a complete social media platform.
 3. **Thumbnail generation** - Automatically generate up to 10 thumbnails for every video, from which the user can choose any one.
-4. **[rt_media] shortcode** - You can use shortocode to display transcoded audio/video file.
+4. **[rt_media] shortcode** - You can use shortocode to display transcoded audio/video file. Use attachment_id as an parameter. For example [rt_media attachment_id=xx]
+
+= Important Links =
+
+* [Project Homepage](https://rtmedia.io/transcoder/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder "Visit Transcoder's Homepage")
+* [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder "Visit Transcoder's Documentation page")
+* [FAQ](https://rtmedia.io/transcoder/#frequently-asked-questions/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder "Visit FAQ page")
+* [GitHub](https://github.com/rtCamp/transcoder/) - Please mention your wordpress.org username when sending pull requests.
 
 == Installation ==
 
@@ -42,7 +51,8 @@ Create the ultimate niche community by combining Transcoder with our [rtMedia](h
 
 == Frequently Asked Questions ==
 
-Please visit [rtMedia's FAQ page](https://rtmedia.io/faq/).
+Please visit [FAQ page](https://rtmedia.io/transcoder#frequently-asked-questions/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder "Visit FAQ page").
+Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder "Visit Transcoder's Documentation page")
 
 == Screenshots ==
 

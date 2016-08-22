@@ -208,3 +208,6 @@
 .rtt-loader {
 	margin-left: 5px;
 }
+#adminmenu li.menu-top.current .wp-menu-image img {
+	opacity: 1;
+}
