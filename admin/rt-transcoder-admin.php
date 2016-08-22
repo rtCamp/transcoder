@@ -350,7 +350,7 @@ class RT_Transcoder_Admin {
 
 	/**
 	 * Save selected video thumbnail in attachment meta.
-	 * Selected thumbnail use as cover art for buddypress activity if video was upload in activity.
+	 * Selected thumbnail use as cover art for buddypress activity if video was uploaded in activity.
 	 *
 	 * @since	1.0.0
 	 *
@@ -362,13 +362,20 @@ class RT_Transcoder_Admin {
 		$id = $post['post_ID'];
 		if ( isset( $rtmedia_thumbnail ) ) {
 			if ( class_exists( 'rtMedia' ) ) {
+				$file_url = $rtmedia_thumbnail;
+				$uploads = wp_get_upload_dir();
+				if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
+					$final_file_url = $file_url;
+			    } else {
+			    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
+			    }
+
 				$rtmedia_model = new RTMediaModel();
 				$media         = $rtmedia_model->get( array( 'media_id' => $id ) );
 				$media_id      = $media[0]->id;
-				$rtmedia_model->update( array( 'cover_art' => $rtmedia_thumbnail ), array( 'media_id' => $id ) );
+				$rtmedia_model->update( array( 'cover_art' => $final_file_url ), array( 'media_id' => $id ) );
 				rtt_update_activity_after_thumb_set( $media_id );
 			}
-
 			update_post_meta( $id, '_rt_media_video_thumbnail', $rtmedia_thumbnail );
 		}
 
@@ -384,7 +391,7 @@ class RT_Transcoder_Admin {
 		$show_notice = get_site_option( 'transcoder_admin_notice', 1 );
 
 		if ( '1' === $show_notice || 1 === $show_notice ) :
-	?>		
+	?>
 		<div class="notice notice-info transcoder-notice is-dismissible">
 			<?php wp_nonce_field( '_transcoder_hide_notice_', 'transcoder_hide_notice_nonce' ); ?>
 			<p>
@@ -402,7 +409,7 @@ class RT_Transcoder_Admin {
 						jQuery('.transcoder-notice').remove();
 					});
 				});
-			});	
+			});
 		</script>
 	<?php
 		endif;
