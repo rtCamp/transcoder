@@ -570,6 +570,15 @@ function rtt_generate_video_shortcode( $html, $send_id, $attachment ) {
 		$html = '[audio src="' . $transcoded_file_url . '"]';
 	}
 
+	if ( ! empty( $mime_type ) && 0 === strpos( $post_mime_type, 'audio' ) ) {
+		$transcoded_file_url = rtt_get_media_url( $attachment['id'] );
+		if ( empty( $transcoded_file_url ) ) {
+			return $html;
+		}
+
+		$html = '[audio src="' . $transcoded_file_url . '"]';
+	}
+
 	return $html;
 }
 
