@@ -531,16 +531,23 @@ if ( ! function_exists( 'rtt_get_job_id_by_attachment_id' ) ) {
  * @return text
  */
 function rtt_generate_video_shortcode( $html, $send_id, $attachment ) {
-	$type_arry        	= explode( '.', $attachment['url'] );
-	$type             	= strtolower( $type_arry[ count( $type_arry ) - 1 ] );
+	$type_arry  = explode( '.', $attachment['url'] );
+	$type       = strtolower( $type_arry[ count( $type_arry ) - 1 ] );
 
-	$medias = get_post_meta( $attachment['id'], '_rt_media_transcoded_files', true );
+	$post_mime_type = get_post_mime_type( $attachment['id'] );
+	$mime_type 		= explode( '/',  $post_mime_type );
+
+	$medias 				= get_post_meta( $attachment['id'], '_rt_media_transcoded_files', true );
+
+	if ( 0 === strpos( $post_mime_type, '[audio' ) || 0 === strpos( $post_mime_type, '[video' ) ) {
+		return $html;
+	}
 
 	if ( empty( $medias ) ) {
 		return $html;
 	}
 
-	if ( 'mp4' !== $type ) {
+	if ( ! empty( $mime_type ) && 0 === strpos( $post_mime_type, 'video' ) ) {
 		$transcoded_file_url = rtt_get_media_url( $attachment['id'] );
 		if ( empty( $transcoded_file_url ) ) {
 			return $html;
@@ -548,11 +555,19 @@ function rtt_generate_video_shortcode( $html, $send_id, $attachment ) {
 
 		$transcoded_thumb_url = rt_media_get_video_thumbnail( $attachment['id'] );
 
+		$poster = '';
 		if ( ! empty( $transcoded_thumb_url ) ) {
 			$poster = 'poster="' . $transcoded_thumb_url . '"';
 		}
 
 		$html = '[video src="' . $transcoded_file_url . '" ' . $poster . ' ]';
+	} elseif ( ! empty( $mime_type ) && 0 === strpos( $post_mime_type, 'audio' ) ) {
+		$transcoded_file_url = rtt_get_media_url( $attachment['id'] );
+		if ( empty( $transcoded_file_url ) ) {
+			return $html;
+		}
+
+		$html = '[audio src="' . $transcoded_file_url . '"]';
 	}
 
 	return $html;
