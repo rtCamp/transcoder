@@ -211,22 +211,6 @@ function rtt_transcoded_thumb( $src, $media_id, $media_type ) {
 
 add_filter( 'rtmedia_media_thumb', 'rtt_transcoded_thumb', 11, 3 );
 
-/**
- * Parse the short codes in the activity content.
- *
- * @since	1.0.0
- *
- * @param  text   $content   activity body content.
- * @param  object $activity  activity object.
- *
- * @return text
- */
-function rtt_transcoder_parse_shortcode( $content, $activity ) {
-	return do_shortcode( $content );
-}
-
-add_filter( 'bp_get_activity_content_body', 'rtt_transcoder_parse_shortcode', 1, 2 );
-
 if ( ! function_exists( 'rtt_video_editor_title' ) ) {
 	/**
 	 * Add the video thumbnail tab on video edit page.
@@ -403,7 +387,7 @@ if ( ! function_exists( 'rtt_set_video_thumbnail' ) ) {
 			}
 
 			$model = new RTMediaModel();
-	        $model->update( array( 'cover_art' => $file_url ), array( 'id' => intval( $id ) ) );
+	        $model->update( array( 'cover_art' => $final_file_url ), array( 'id' => intval( $id ) ) );
 	        rtt_update_activity_after_thumb_set( $id );
 
 		}

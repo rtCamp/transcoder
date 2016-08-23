@@ -127,7 +127,7 @@ class RT_Transcoder_Handler {
 								add_action( 'rtmedia_after_add_media', array( $this, 'rtmedia_transcoding' ), 10, 3 );
 							}
 
-							add_action( 'add_attachment', array( $this, 'wp_media_transcoding' ), 90 );
+							add_action( 'add_attachment', array( $this, 'wp_media_transcoding' ), 10 );
 						}
 						$blacklist = array( 'localhosts', '127.0.10.1' );
 						if ( ! in_array( wp_unslash( $_SERVER['HTTP_HOST'] ), $blacklist, true ) ) { // @codingStandardsIgnoreLine
@@ -161,7 +161,6 @@ class RT_Transcoder_Handler {
 	 * @param bool  $autoformat     If true then genrating thumbs only else also trancode video.
 	 */
 	function rtmedia_transcoding( $media_ids, $file_object, $uploaded, $autoformat = true ) {
-
 		remove_action( 'add_attachment', array( $this, 'wp_media_transcoding' ) );
 		foreach ( $file_object as $key => $single ) {
 			$attachment_id 		= rtmedia_media_id( $media_ids[ $key ] );
@@ -169,6 +168,12 @@ class RT_Transcoder_Handler {
 			$type             	= strtolower( $type_arry[ count( $type_arry ) - 1 ] );
 			$not_allowed_type 	= array( 'mp3' );
 			preg_match( '/video|audio/i', $single['type'], $type_array );
+
+			$already_sent = get_post_meta( $attachment_id, '_rt_transcoding_job_id', true );
+
+			if ( ! empty( $already_sent ) ) {
+				return;
+			}
 
 			if ( preg_match( '/video|audio/i', $single['type'], $type_array ) && ! in_array( $single['type'], array( 'audio/mp3' ), true ) && ! in_array( $type, $not_allowed_type, true ) ) {
 				$options_video_thumb = $this->get_thumbnails_required( $media_ids[ $key ] );
@@ -231,7 +236,6 @@ class RT_Transcoder_Handler {
 	 * @param string $autoformat		If true then genrating thumbs only else also trancode video.
 	 */
 	function wp_media_transcoding( $attachment_id, $autoformat = true ) {
-
 		$post_parent = wp_get_post_parent_id( $attachment_id );
 		if ( 0 !== $post_parent ) {
 			$post_type 	= get_post_type( $post_parent );
@@ -242,6 +246,12 @@ class RT_Transcoder_Handler {
 
 		$path 		= get_attached_file( $attachment_id );
 		$url 		= wp_get_attachment_url( $attachment_id );
+
+		/**
+		 * FIX WORDPRESS 3.6 METADATA
+		 */
+		require_once( ABSPATH . 'wp-admin/includes/media.php' );
+
 		$metadata 	= wp_read_video_metadata( $path );
 
 		$type_arry        = explode( '.', $url );
