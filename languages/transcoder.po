@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://community.rtcamp.com/c/rt/\n"
-"POT-Creation-Date: 2016-08-19 10:58:08+00:00\n"
+"POT-Creation-Date: 2016-08-24 08:48:05+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -128,45 +128,57 @@ msgid ""
 "video is first uploaded. Maximum value is 10."
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:238
+#: admin/partials/rt-transcoder-admin-display.php:211
+msgid "Visit"
+msgstr ""
+
+#: admin/partials/rt-transcoder-admin-display.php:211
+msgid "document page"
+msgstr ""
+
+#: admin/partials/rt-transcoder-admin-display.php:211
+msgid "for more details"
+msgstr ""
+
+#: admin/partials/rt-transcoder-admin-display.php:239
 msgid "Spread the Word"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:244
+#: admin/partials/rt-transcoder-admin-display.php:245
 msgid "I use @rtMediaWP http://rt.cx/rtmedia on %s"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:247
+#: admin/partials/rt-transcoder-admin-display.php:248
 msgid "Post to Twitter Now"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:248
+#: admin/partials/rt-transcoder-admin-display.php:249
 msgid "Post to Twitter"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:253
+#: admin/partials/rt-transcoder-admin-display.php:254
 msgid "Share on Facebook Now"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:254
+#: admin/partials/rt-transcoder-admin-display.php:255
 msgid "Share on Facebook"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:259
+#: admin/partials/rt-transcoder-admin-display.php:260
 msgid "Rate rtMedia on Wordpress.org"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:260
+#: admin/partials/rt-transcoder-admin-display.php:261
 msgid "Rate on Wordpress.org"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:265
 #: admin/partials/rt-transcoder-admin-display.php:266
+#: admin/partials/rt-transcoder-admin-display.php:267
 msgid "Subscribe to our Feeds"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:276
-#: admin/partials/rt-transcoder-admin-display.php:285
+#: admin/partials/rt-transcoder-admin-display.php:277
+#: admin/partials/rt-transcoder-admin-display.php:286
 msgid "Subscribe"
 msgstr ""
 
@@ -190,11 +202,11 @@ msgstr ""
 msgid " page."
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:222 admin/rt-transcoder-handler.php:604
+#: admin/rt-transcoder-admin.php:222 admin/rt-transcoder-handler.php:615
 msgid "Current Plan"
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:391
+#: admin/rt-transcoder-admin.php:398
 msgid ""
 "rtMedia encoding service has been disabled becuase you are using Transcoder "
 "plugin."
@@ -204,161 +216,161 @@ msgstr ""
 msgid "This file is being transcoded. Please wait."
 msgstr ""
 
-#: admin/rt-transcoder-functions.php:255
+#: admin/rt-transcoder-functions.php:239
 msgid "Video Thumbnail"
 msgstr ""
 
-#: admin/rt-transcoder-functions.php:282 admin/rt-transcoder-functions.php:342
+#: admin/rt-transcoder-functions.php:266 admin/rt-transcoder-functions.php:326
 msgid "Video Thumbnail:"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:410
+#: admin/rt-transcoder-handler.php:421
 msgid "Transcoding: Nearing quota limit."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:411
+#: admin/rt-transcoder-handler.php:422
 msgid "You are nearing the quota limit for your transcoding service."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:412 admin/rt-transcoder-handler.php:437
+#: admin/rt-transcoder-handler.php:423 admin/rt-transcoder-handler.php:448
 msgid "Following are the details:"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:413 admin/rt-transcoder-handler.php:438
-#: admin/rt-transcoder-handler.php:616
+#: admin/rt-transcoder-handler.php:424 admin/rt-transcoder-handler.php:449
+#: admin/rt-transcoder-handler.php:627
 msgid "Remaining"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:413 admin/rt-transcoder-handler.php:438
+#: admin/rt-transcoder-handler.php:424 admin/rt-transcoder-handler.php:449
 msgid "Total:"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:435
+#: admin/rt-transcoder-handler.php:446
 msgid "Transcoding: Usage quota over."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:436
+#: admin/rt-transcoder-handler.php:447
 msgid "Your usage quota is over. Upgrade your plan"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:437
+#: admin/rt-transcoder-handler.php:448
 msgid "Used:"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:555
+#: admin/rt-transcoder-handler.php:566
 msgid "You have successfully subscribed for the <strong>%s</strong> plan."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:577
+#: admin/rt-transcoder-handler.php:588
 msgid "This license key is invalid."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:604
+#: admin/rt-transcoder-handler.php:615
 msgid "Unsubscribed"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:610
+#: admin/rt-transcoder-handler.php:621
 msgid "Expires On"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:613
+#: admin/rt-transcoder-handler.php:624
 msgid "Used"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:624
+#: admin/rt-transcoder-handler.php:635
 msgid "Total"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:637
+#: admin/rt-transcoder-handler.php:648
 msgid "Usage will reset automatically every month."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:640
+#: admin/rt-transcoder-handler.php:651
 msgid "Upgrade for more bandwidth."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:644
+#: admin/rt-transcoder-handler.php:655
 msgid "Your usage limit has been reached. Upgrade your plan."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:648
+#: admin/rt-transcoder-handler.php:659
 msgid "Your plan has been expired. Please upgrade your plan."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:651
+#: admin/rt-transcoder-handler.php:662
 msgid "Your API key is not valid or is expired."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:654
+#: admin/rt-transcoder-handler.php:665
 msgid "Currently, You are not subscribed to transcoding service. Please subscribe."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:660
+#: admin/rt-transcoder-handler.php:671
 msgid "Transcoding usage this month"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:788
+#: admin/rt-transcoder-handler.php:816
 msgid "Could not read file."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:796 admin/rt-transcoder-handler.php:906
-#: admin/rt-transcoder-handler.php:968
+#: admin/rt-transcoder-handler.php:824 admin/rt-transcoder-handler.php:944
+#: admin/rt-transcoder-handler.php:1006
 msgid "Transcoding: Download Failed"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:797 admin/rt-transcoder-handler.php:907
-#: admin/rt-transcoder-handler.php:969 admin/rt-transcoder-handler.php:1141
-#: admin/rt-transcoder-handler.php:1144
+#: admin/rt-transcoder-handler.php:825 admin/rt-transcoder-handler.php:945
+#: admin/rt-transcoder-handler.php:1007 admin/rt-transcoder-handler.php:1179
+#: admin/rt-transcoder-handler.php:1182
 msgid "Media"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:798 admin/rt-transcoder-handler.php:908
+#: admin/rt-transcoder-handler.php:826 admin/rt-transcoder-handler.php:946
 msgid " was successfully encoded but there was an error while downloading:"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:799
+#: admin/rt-transcoder-handler.php:827
 msgid "You can "
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:800
+#: admin/rt-transcoder-handler.php:828
 msgid "retry the download"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:812 admin/rt-transcoder-handler.php:921
-#: admin/rt-transcoder-handler.php:983
+#: admin/rt-transcoder-handler.php:840 admin/rt-transcoder-handler.php:959
+#: admin/rt-transcoder-handler.php:1021
 msgid "Done"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:900 admin/rt-transcoder-handler.php:962
+#: admin/rt-transcoder-handler.php:938 admin/rt-transcoder-handler.php:1000
 msgid ""
 "Something went wrong. The required attachment id does not exists. It must "
 "have been deleted."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:970
+#: admin/rt-transcoder-handler.php:1008
 msgid " was successfully transcoded but there was an error while downloading:"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1013
+#: admin/rt-transcoder-handler.php:1051
 msgid "Please enter the license key."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1025
+#: admin/rt-transcoder-handler.php:1063
 msgid "Transcoding disabled successfully."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1036
+#: admin/rt-transcoder-handler.php:1074
 msgid "Transcoding enabled successfully."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1137
+#: admin/rt-transcoder-handler.php:1175
 msgid "Transcoding: Something went wrong."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1140
+#: admin/rt-transcoder-handler.php:1178
 msgid " There was unexpected error occurred while transcoding this following media."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1145
+#: admin/rt-transcoder-handler.php:1183
 msgid " there was unexpected error occurred while transcoding this media."
 msgstr ""
