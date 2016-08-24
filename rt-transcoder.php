@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Transcoder
- * Plugin URI: https://rtmedia.io/
+ * Plugin URI: https://rtmedia.io/transcoder/
  * Description: Audio and video transcoding services for ANY WordPress website. This plugin allows you to convert audio and video files of any format to a web-friendly format (mp3 & mp4).
  * Version: 1.0.0
  * Text Domain: transcoder
