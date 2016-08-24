@@ -140,7 +140,13 @@ function rt_media_get_video_thumbnail( $attachment_id ) {
 	if ( ! empty( $thumbnails ) ) {
 
 		$file_url = $thumbnails;
-		$uploads = wp_get_upload_dir();
+		/* for WordPress backward compatibility */
+		if ( function_exists( 'wp_get_upload_dir' ) ) {
+			$uploads = wp_get_upload_dir();
+		} else {
+			$uploads = wp_upload_dir();
+		}
+
 		if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
 			$final_file_url = $file_url;
 	    } else {
@@ -173,7 +179,12 @@ function rtt_get_media_url( $attachment_id, $media_type = 'mp4' ) {
 
 	if ( isset( $medias[ $media_type ] ) && is_array( $medias[ $media_type ] ) && ! empty( $medias[ $media_type ][0] ) ) {
 		$file_url = $medias[ $media_type ][0];
-		$uploads = wp_get_upload_dir();
+		/* for WordPress backward compatibility */
+		if ( function_exists( 'wp_get_upload_dir' ) ) {
+			$uploads = wp_get_upload_dir();
+		} else {
+			$uploads = wp_upload_dir();
+		}
 		if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
 			$final_file_url = $file_url;
 	    } else {
@@ -266,7 +277,12 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 					<p><?php esc_html_e( 'Video Thumbnail:', 'transcoder' ); ?></p>
 					<ul>
 						<?php
-						$uploads 	= wp_get_upload_dir();
+						/* for WordPress backward compatibility */
+						if ( function_exists( 'wp_get_upload_dir' ) ) {
+							$uploads = wp_get_upload_dir();
+						} else {
+							$uploads = wp_upload_dir();
+						}
 						$base_url 	= $uploads['baseurl'];
 						$media_id 	= $rtmedia_query->media[0]->media_id;
 						foreach ( $rtmedia_transcoded_video_thumbs as $key => $thumbnail_src ) {
@@ -376,7 +392,12 @@ if ( ! function_exists( 'rtt_set_video_thumbnail' ) ) {
 
 			if ( ! is_numeric( $thumbnail ) ) {
 				$file_url = $thumbnail;
-				$uploads = wp_get_upload_dir();
+				/* for WordPress backward compatibility */
+				if ( function_exists( 'wp_get_upload_dir' ) ) {
+					$uploads = wp_get_upload_dir();
+				} else {
+					$uploads = wp_upload_dir();
+				}
 				if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
 					$final_file_url = $file_url;
 			    } else {
