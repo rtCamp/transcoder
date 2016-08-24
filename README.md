@@ -8,11 +8,11 @@
 
 * **Donate Link:** https://rtcamp.com/donate/
 
-Audio and video transcoding services for ANY WordPress website. This plugin allows you to convert audio and video files of any format to a web-friendly format (mp3 & mp4).
+Audio & video transcoding services for ANY WordPress website. Allows you to convert audio/video files of any format to a web-friendly format (mp3/mp4).
 
 ## Description ##
 
-Transcoder easily converts all audio and video files uploaded to your website to a web-friendly format. 
+Transcoder easily converts all audio and video files uploaded to your website to a web-friendly format.
 Transcoder's services are available for all WordPress websites through this free plugin.
 
 You just need to subscribe free plan to get API key from plugin's settings or from [Transcoder](https://rtmedia.io/products/transcoder).
@@ -26,7 +26,7 @@ Video: 3g2, 3gp, avi, flv, m4v, mp4, mpg, ogv, webm, wmv
 Supported output media types:
 Audio: mp3
 Video: mp4
- 
+
 Create the ultimate niche community by combining Transcoder with our [rtMedia](https://wordpress.org/plugins/buddypress-media/) plugin. Transcoder works perfectly with rtMedia to create a social experience that is accessible across all desktop and mobile devices.
 
 #### Transcoder Features ####
@@ -51,7 +51,8 @@ Create the ultimate niche community by combining Transcoder with our [rtMedia](h
 
 ## Frequently Asked Questions ##
 
-Please visit [FAQ page](https://rtmedia.io/transcoder/#frequently-asked-questions?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder "Visit FAQ page").
+Please visit [FAQ page](https://rtmedia.io/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder#frequently-asked-questions "Visit FAQ page").
+
 Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder "Visit Transcoder's Documentation page")
 
 ## Screenshots ##
@@ -60,10 +61,14 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 
 ## Changelog ##
 
+#### 1.0.1 [Aug 24, 2016] ####
+
+* Add backward compatibility
+
 #### 1.0.0 ####
 
 Initial release
 
-#### 1.0.0 ####
+#### 1.0.1 ####
 
-Initial release
+Add backward compatibility
