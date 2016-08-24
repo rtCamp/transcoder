@@ -256,8 +256,12 @@ class RT_Transcoder_Admin {
 				$video_thumb_html = '';
 				if ( is_array( $thumbnail_array ) ) {
 					$video_thumb_html .= '<ul> ';
-
-					$uploads 	= wp_get_upload_dir();
+					/* for WordPress backward compatibility */
+					if ( function_exists( 'wp_get_upload_dir' ) ) {
+						$uploads = wp_get_upload_dir();
+					} else {
+						$uploads = wp_upload_dir();
+					}
 		        	$base_url 	= $uploads['baseurl'];
 
 					foreach ( $thumbnail_array as $key => $thumbnail_src ) {
@@ -320,7 +324,12 @@ class RT_Transcoder_Admin {
 				$video_thumb_html = '';
 				if ( is_array( $thumbnail_array ) ) {
 
-					$uploads 	= wp_get_upload_dir();
+					/* for WordPress backward compatibility */
+					if ( function_exists( 'wp_get_upload_dir' ) ) {
+						$uploads = wp_get_upload_dir();
+					} else {
+						$uploads = wp_upload_dir();
+					}
 		        	$base_url 	= $uploads['baseurl'];
 
 					$video_thumb_html .= '<ul> ';
@@ -363,7 +372,12 @@ class RT_Transcoder_Admin {
 		if ( isset( $rtmedia_thumbnail ) ) {
 			if ( class_exists( 'rtMedia' ) ) {
 				$file_url = $rtmedia_thumbnail;
-				$uploads = wp_get_upload_dir();
+				/* for WordPress backward compatibility */
+				if ( function_exists( 'wp_get_upload_dir' ) ) {
+					$uploads = wp_get_upload_dir();
+				} else {
+					$uploads = wp_upload_dir();
+				}
 				if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
 					$final_file_url = $file_url;
 			    } else {

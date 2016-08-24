@@ -847,7 +847,12 @@ class RT_Transcoder_Handler {
 						if ( $activity_id ) {
 							$attachemnt_post  	= get_post( $attachment_id );
 							$content          	= $wpdb->get_var( $wpdb->prepare( "SELECT content FROM {$wpdb->base_prefix}bp_activity WHERE id = %d", $activity_id ) );
-							$uploads 			= wp_get_upload_dir();
+							/* for WordPress backward compatibility */
+							if ( function_exists( 'wp_get_upload_dir' ) ) {
+								$uploads = wp_get_upload_dir();
+							} else {
+								$uploads = wp_upload_dir();
+							}
 							$activity_content = str_replace( $attachemnt_post->guid, $uploads['baseurl'] . '/' . $transcoded_files['mp4'][0], $content );
 							$update = $wpdb->update( $wpdb->base_prefix . 'bp_activity', array( 'content' => $activity_content ), array( 'id' => $activity_id ) );
 						}
