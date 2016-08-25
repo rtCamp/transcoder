@@ -643,6 +643,18 @@ class RT_Transcoder_Handler {
 				}
 				$usage = new RT_Progress();
 
+				if ( empty( $usage_details[ $api_key ]->used ) ) {
+					$usage_details[ $api_key ]->used = 0;
+				}
+
+				if ( empty( $usage_details[ $api_key ]->total ) ) {
+					$usage_details[ $api_key ]->total = 0;
+				}
+
+				if ( ! isset( $usage_details[ $api_key ]->remaining ) ) {
+					$usage_details[ $api_key ]->remaining = 0;
+				}
+
 				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $api_key ]->used, $usage_details[ $api_key ]->total ), false );
 
 				$content .= '<p>' . esc_html__( 'Usage will reset automatically every month.', 'transcoder' ) . '</p>';
@@ -782,7 +794,6 @@ class RT_Transcoder_Handler {
 								$model              = new RTMediaModel();
 								$media              = $model->get_media( array( 'media_id' => $attachment_id ), 0, 1 );
 								$this->media_author = $media[0]->media_author;
-								//print_r($media);
 								$this->uploaded['context']      = $media[0]->context;
 								$this->uploaded['context_id']   = $media[0]->context_id;
 								$this->uploaded['media_author'] = $media[0]->media_author;
