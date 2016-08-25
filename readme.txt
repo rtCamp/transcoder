@@ -40,7 +40,7 @@ Create the ultimate niche community by combining Transcoder with our [rtMedia](h
 
 * [Project Homepage](https://rtmedia.io/transcoder/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder "Visit Transcoder's Homepage")
 * [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder "Visit Transcoder's Documentation page")
-* [FAQ](https://rtmedia.io/transcoder/#frequently-asked-questions/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder "Visit FAQ page")
+* [FAQ](https://rtmedia.io/transcoder/#frequently-asked-questions?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder "Visit FAQ page")
 * [GitHub](https://github.com/rtCamp/transcoder/) - Please mention your wordpress.org username when sending pull requests.
 
 == Installation ==
@@ -52,6 +52,7 @@ Create the ultimate niche community by combining Transcoder with our [rtMedia](h
 == Frequently Asked Questions ==
 
 Please visit [FAQ page](https://rtmedia.io/transcoder/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder#frequently-asked-questions "Visit FAQ page").
+
 Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder "Visit Transcoder's Documentation page")
 
 == Screenshots ==
