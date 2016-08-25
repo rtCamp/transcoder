@@ -14,7 +14,7 @@ Requires at least: WordPress 4.0
 
 Tested up to: 4.6
 
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 
 
 Transcoding services for ANY WordPress website. Convert audio/video files of any format to a web-friendly format (mp3/mp4).
@@ -115,6 +115,13 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 == Changelog ==
 
 
+= 1.0.2 [Aug 24, 2016] =
+
+
+* Show message in rtMedia buddypress activity when media is sent to the transcoder
+* Remove notices and warnings
+* Update transcoded audio file URL in rtMedia activity
+
 = 1.0.1 [Aug 24, 2016] =
 
 
@@ -133,7 +140,7 @@ Initial release
 == Upgrade Notice ==
 
 
-= 1.0.1 =
+= 1.0.2 =
 
 
-Add backward compatibility
+Show message in rtMedia buddypress activity when media is sent to the transcoder and Update transcoded audio file URL in rtMedia activity
