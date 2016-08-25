@@ -853,7 +853,12 @@ class RT_Transcoder_Handler {
 							} else {
 								$uploads = wp_upload_dir();
 							}
-							$activity_content = str_replace( $attachemnt_post->guid, $uploads['baseurl'] . '/' . $transcoded_files['mp4'][0], $content );
+							if ( 'video/mp4' === $post_mime_type ) {
+								$media_type = 'mp4';
+							} elseif ( 'audio/mp3' === $post_mime_type ) {
+								$media_type = 'mp3';
+							}
+							$activity_content = str_replace( $attachemnt_post->guid, $uploads['baseurl'] . '/' . $transcoded_files[ $media_type ][0], $content );
 							$update = $wpdb->update( $wpdb->base_prefix . 'bp_activity', array( 'content' => $activity_content ), array( 'id' => $activity_id ) );
 						}
 					}
