@@ -409,7 +409,7 @@ class RT_Transcoder_Admin {
 		<div class="notice notice-info transcoder-notice is-dismissible">
 			<?php wp_nonce_field( '_transcoder_hide_notice_', 'transcoder_hide_notice_nonce' ); ?>
 			<p>
-				<?php esc_html_e( 'rtMedia encoding service has been disabled becuase you are using Transcoder plugin.', 'transcoder' ); ?>
+				<?php esc_html_e( 'rtMedia encoding service has been disabled because you are using Transcoder plugin.', 'transcoder' ); ?>
 			</p>
 		</div>
 		<script type="text/javascript">
