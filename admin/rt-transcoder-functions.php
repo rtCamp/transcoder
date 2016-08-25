@@ -579,3 +579,23 @@ function rtt_generate_video_shortcode( $html, $send_id, $attachment ) {
 }
 
 add_filter( 'media_send_to_editor', 'rtt_generate_video_shortcode', 100, 3 );
+
+function rtt_bp_get_activity_content( $content, $activity ) {
+	$rt_model  = new RTMediaModel();
+	$all_media = $rt_model->get( array( 'activity_id' => $activity->id ) );
+	$attachement_url = wp_get_attachment_url( $all_media[0]->media_id );
+	echo $file_extension = pathinfo( parse_url($attachement_url)['path'], PATHINFO_EXTENSION );
+
+	if( in_array( $file_extension, array( 'mp3', 'mp4') ) ){
+		return $content;
+	}
+
+	if ( is_file_being_transcoded( $all_media[0]->media_id ) ) {
+		$message = '<p class="transcoding-in-progress"> ' . esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) . '</p>';
+		$message = apply_filters( 'rtt_transcoding_in_progress_message', $message, $activity );
+	}
+	$message .= '</div>';
+
+	return $content = str_replace( '</a></div>', '</a>' . $message, $content );
+}
+add_filter( 'bp_get_activity_content_body', 'rtt_bp_get_activity_content', 99, 2 );
