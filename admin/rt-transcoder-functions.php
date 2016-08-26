@@ -220,7 +220,7 @@ function rtt_transcoded_thumb( $src, $media_id, $media_type ) {
 	return $src;
 }
 
-add_filter( 'rtmedia_media_thumb', 'rtt_transcoded_thumb', 11, 3 );
+//add_filter( 'rtmedia_media_thumb', 'rtt_transcoded_thumb', 11, 3 );
 
 if ( ! function_exists( 'rtt_video_editor_title' ) ) {
 	/**
@@ -234,6 +234,9 @@ if ( ! function_exists( 'rtt_video_editor_title' ) ) {
 			$flag            = false;
 			$media_id        = $rtmedia_query->media[0]->media_id;
 			$thumbnail_array = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
+			if ( ! is_array( $thumbnail_array ) ) {
+				$thumbnail_array = get_post_meta( $media_id, '_rt_media_thumbnails', true );
+			}
 			if ( is_array( $thumbnail_array ) ) {
 				$flag = true;
 			} else {
@@ -580,22 +583,67 @@ function rtt_generate_video_shortcode( $html, $send_id, $attachment ) {
 
 add_filter( 'media_send_to_editor', 'rtt_generate_video_shortcode', 100, 3 );
 
+/**
+ * Add the notice when file is sent for the transcoding and adds the poster thumbnail if poster tag is empty
+ *
+ * @since 1.0.1
+ *
+ * @param  string $content  HTML contents of the activity
+ * @param  object $activity Activity object
+ *
+ * @return string
+ */
 function rtt_bp_get_activity_content( $content, $activity ) {
-	$rt_model  = new RTMediaModel();
-	$all_media = $rt_model->get( array( 'activity_id' => $activity->id ) );
-	$attachement_url = wp_get_attachment_url( $all_media[0]->media_id );
-	$file_extension = pathinfo( parse_url($attachement_url)['path'], PATHINFO_EXTENSION );
+	if ( class_exists( 'RTMediaModel' ) ) {
+		$rt_model  = new RTMediaModel();
+		$all_media = $rt_model->get( array( 'activity_id' => $activity->id ) );
+		$attachement_url = wp_get_attachment_url( $all_media[0]->media_id );
+		$file_extension = pathinfo( wp_parse_url( $attachement_url )['path'], PATHINFO_EXTENSION );
+		$message = '';
 
-	if( in_array( $file_extension, array( 'mp3', 'mp4') ) ){
+		/* Get default video thumbnail stored in attachment meta */
+		$wp_video_thumbnail = get_post_meta( $all_media[0]->media_id, '_rt_media_video_thumbnail', true );
+
+		/* Set the poster thumbnail if its empty */
+		if ( ! empty( $wp_video_thumbnail ) ) {
+			$file_url = $wp_video_thumbnail;
+			if ( function_exists( 'wp_get_upload_dir' ) ) {
+				$uploads = wp_get_upload_dir();
+			} else {
+				$uploads = wp_upload_dir();
+			}
+			if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
+				$final_file_url = $file_url;
+		    } else {
+		    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
+		    }
+			$content = str_replace( 'poster=""', 'poster="' . $final_file_url . '"', $content );
+		}
+
+		/* If media is mp4 or mp3 then no need to show the message */
+		if ( in_array( $file_extension, array( 'mp3', 'mp4' ), true ) ) {
+			return $content;
+		}
+
+		/* If media is sent to the transcoder then show the message */
+		if ( is_file_being_transcoded( $all_media[0]->media_id ) ) {
+			$message = '<p class="transcoding-in-progress"> ' . esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) . '</p>';
+
+			/**
+			 * Allow user to filter the message text.
+			 *
+			 * @since 1.0.2
+			 *
+			 * @param string $message   Message to be displayed.
+			 * @param object $activity  Activity object.
+			 */
+			$message = apply_filters( 'rtt_transcoding_in_progress_message', $message, $activity );
+		}
+		$message .= '</div>';
+
+		return $content = str_replace( '</a></div>', '</a>' . $message, $content );
+	} else {
 		return $content;
 	}
-
-	if ( is_file_being_transcoded( $all_media[0]->media_id ) ) {
-		$message = '<p class="transcoding-in-progress"> ' . esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) . '</p>';
-		$message = apply_filters( 'rtt_transcoding_in_progress_message', $message, $activity );
-	}
-	$message .= '</div>';
-
-	return $content = str_replace( '</a></div>', '</a>' . $message, $content );
 }
 add_filter( 'bp_get_activity_content_body', 'rtt_bp_get_activity_content', 99, 2 );
