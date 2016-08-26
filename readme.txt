@@ -115,7 +115,7 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 == Changelog ==
 
 
-= 1.0.2 [Aug 24, 2016] =
+= 1.0.2 [Aug 25, 2016] =
 
 
 * Show message in rtMedia buddypress activity when media is sent to the transcoder
