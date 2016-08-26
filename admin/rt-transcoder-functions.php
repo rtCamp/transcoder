@@ -584,7 +584,7 @@ function rtt_bp_get_activity_content( $content, $activity ) {
 	$rt_model  = new RTMediaModel();
 	$all_media = $rt_model->get( array( 'activity_id' => $activity->id ) );
 	$attachement_url = wp_get_attachment_url( $all_media[0]->media_id );
-	echo $file_extension = pathinfo( parse_url($attachement_url)['path'], PATHINFO_EXTENSION );
+	$file_extension = pathinfo( parse_url($attachement_url)['path'], PATHINFO_EXTENSION );
 
 	if( in_array( $file_extension, array( 'mp3', 'mp4') ) ){
 		return $content;
