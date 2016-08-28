@@ -16,7 +16,7 @@
 
 if ( ! defined( 'RT_TRANSCODER_PATH' ) ) {
 	/**
-	 *  The server file system path to the plugin directory
+	 * The server file system path to the plugin directory
 	 */
 	define( 'RT_TRANSCODER_PATH', plugin_dir_path( __FILE__ ) );
 }
