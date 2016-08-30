@@ -14,7 +14,7 @@ Transcoder easily converts all audio and video files uploaded to your website to
 Transcoder eliminates the need for a dedicated media node- no fiddling with installation, managing dependancies or renting servers! Transcoder also works on shared hosting- just install, subscribe and go!
 
 All transcoding services are available via a subscription plan through this plugin.
-Subscribe to our free plan from the plugin\'s settings or from our [product page](https://rtmedia.io/products/transcoder). Note that Transcoder will not provide any services without a subscription plan.
+Subscribe to our free plan from the plugin's settings or from our [product page](https://rtmedia.io/products/transcoder). Note that Transcoder will not provide any services without a subscription plan.
 
 #### Supported input media types: ####
 * Audio: mp3, m4a, wav, ogg, wma
@@ -32,30 +32,38 @@ Create the ultimate niche community by combining Transcoder with our [rtMedia](h
 3. **Thumbnail generation** - Automatically generate up to 10 thumbnails for every video, from which your users can choose one.
 4. **[rt_media] shortcode** - Use our shortcode to display transcoded audio/video file on any post or page. For example, [rt_media attachment_id####xx] the attachment_id parameter specifies the file to be displayed.
 
+#### Privacy Warning ####
+In order for us to transcode your media files, we need to copy it over to our server. 
+After transcoding is completed, the media can reside on our server for a maximum of 24 hours, before it is permanently and irreversibly removed by a Cron job.
+
 #### Future Roadmap ####
 * Additional output formats for video- ogg, webm
 * Downsampling capabilities for output video resolution
 * RESTful API
 
 #### Important Links ####
-* [Project Homepage](https://rtmedia.io/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder \"Visit Transcoder\'s Homepage\")
-* [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder \"Visit Transcoder\'s Documentation page\")
-* [FAQ](https://rtmedia.io/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder#frequently-asked-questions \"Visit FAQ page\")
+* [Project Homepage](https://rtmedia.io/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder "Visit Transcoder's Homepage")
+* [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder "Visit Transcoder's Documentation page")
+* [FAQ](https://rtmedia.io/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder#frequently-asked-questions "Visit FAQ page")
 * [GitHub](https://github.com/rtCamp/transcoder/) - Please mention your wordpress.org username when sending pull requests.
 
 ## Installation ##
-* Install the plugin from the \'Plugins\' section in your dashboard (Go to `Plugins > Add New > Search` and search for \"Transcoder\").
-* Alternatively, you can download the plugin from this [plugin directory](http://downloads.wordpress.org/plugin/transcoder.zip \"Download Transcoder\"). After downloading, unzip and upload it to the plugins folder of your WordPress installation (`wp-content/plugins/` directory of your WordPress installation).
-* Activate it through the \'Plugins\' section.
+* Install the plugin from the 'Plugins' section in your dashboard (Go to `Plugins > Add New > Search` and search for "Transcoder").
+* Alternatively, you can download the plugin from this [plugin directory](http://downloads.wordpress.org/plugin/transcoder.zip "Download Transcoder"). After downloading, unzip and upload it to the plugins folder of your WordPress installation (`wp-content/plugins/` directory of your WordPress installation).
+* Activate it through the 'Plugins' section.
 
 ## Frequently Asked Questions ##
-Please visit [FAQ page](https://rtmedia.io/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder#frequently-asked-questions \"Visit FAQ page\").
-Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder \"Visit Transcoder\'s Documentation page\")
+Please visit [FAQ page](https://rtmedia.io/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder#frequently-asked-questions "Visit FAQ page").
+Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder "Visit Transcoder's Documentation page")
 
 ## Screenshots ##
 1. Transcoder Settings
 
 ## Changelog ##
+#### 1.0.4 [Aug 31, 2016] ####
+* Add rtt_wp_parse_url function to parse URL to add backward compatibility
+* Fix media is transcoding message bug
+
 #### 1.0.3 [Aug 30, 2016] ####
 * Remove warnings and notices related to the activity and media related pages
 * Show default media thumbnail when poster attribute is empty
@@ -71,4 +79,4 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 #### 1.0.0 ####
 Initial release
 
-Show default media thumbnail when poster attribute of video tag is empty
+Add rtt_wp_parse_url function to parse URL to add backward compatibility with WordPress versions lesser than 4.4.0
