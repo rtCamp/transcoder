@@ -539,8 +539,9 @@ if ( ! function_exists( 'rtt_get_job_id_by_attachment_id' ) ) {
  * @return text
  */
 function rtt_generate_video_shortcode( $html, $send_id, $attachment ) {
-	$type_arry  = explode( '.', $attachment['url'] );
-	$type       = strtolower( $type_arry[ count( $type_arry ) - 1 ] );
+	if ( empty( $attachment ) ) {
+		return $html;
+	}
 
 	$post_mime_type = get_post_mime_type( $attachment['id'] );
 	$mime_type 		= explode( '/',  $post_mime_type );
@@ -593,10 +594,16 @@ add_filter( 'media_send_to_editor', 'rtt_generate_video_shortcode', 100, 3 );
  *
  * @return string
  */
-function rtt_bp_get_activity_content( $content, $activity ) {
+function rtt_bp_get_activity_content( $content, $activity = '' ) {
+	if ( empty( $activity ) || empty( $content ) ) {
+		return $content;
+	}
 	if ( class_exists( 'RTMediaModel' ) ) {
 		$rt_model  = new RTMediaModel();
 		$all_media = $rt_model->get( array( 'activity_id' => $activity->id ) );
+		if ( empty( $all_media ) ) {
+			return $content;
+		}
 		$attachement_url = wp_get_attachment_url( $all_media[0]->media_id );
 		$file_extension = pathinfo( wp_parse_url( $attachement_url )['path'], PATHINFO_EXTENSION );
 		$message = '';
