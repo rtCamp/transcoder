@@ -2,7 +2,7 @@
 
 # Transcoder #
 
-* **Contributors:** [rtcamp] (http://profiles.wordpress.org/rtcamp), [chandrapatel] (http://profiles.wordpress.org/chandrapatel), [mangeshp] (http://profiles.wordpress.org/mangeshp),
+* **Contributors:** [rtcamp] (http://profiles.wordpress.org/rtcamp), [mangeshp] (http://profiles.wordpress.org/mangeshp), [chandrapatel] (http://profiles.wordpress.org/chandrapatel), [manishsongirkar36] (http://profiles.wordpress.org/manishsongirkar36)
 
 * **License:** [GPL v2 or later] ( http://www.gnu.org/licenses/gpl-2.0.html)
 
