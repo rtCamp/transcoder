@@ -114,7 +114,8 @@ function is_file_being_transcoded( $attachment_id ) {
 	$job_id = get_post_meta( $attachment_id, '_rt_transcoding_job_id', true );
 	if ( ! empty( $job_id ) ) {
 		$transcoded_files = get_post_meta( $attachment_id, '_rt_media_transcoded_files', true );
-		if ( empty( $transcoded_files ) ) {
+		$transcoded_thumbs = get_post_meta( $attachment_id, '_rt_media_thumbnails', true );
+		if ( empty( $transcoded_files ) && empty( $transcoded_thumbs ) ) {
 			return true;
 		}
 	}
@@ -605,7 +606,7 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 			return $content;
 		}
 		$attachement_url = wp_get_attachment_url( $all_media[0]->media_id );
-		$file_extension = pathinfo( wp_parse_url( $attachement_url )['path'], PATHINFO_EXTENSION );
+		$file_extension = pathinfo( rtt_wp_parse_url( $attachement_url )['path'], PATHINFO_EXTENSION );
 		$message = '';
 
 		/* Get default video thumbnail stored in attachment meta */
@@ -654,3 +655,40 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 	}
 }
 add_filter( 'bp_get_activity_content_body', 'rtt_bp_get_activity_content', 99, 2 );
+
+/**
+ * Parse the URL - Derived from the WordPress core
+ * @param  string $url The URL to be parsed
+ * @return array       Array containing the information about the URL
+ */
+function rtt_wp_parse_url( $url ) {
+	if ( function_exists( 'wp_parse_url' ) ) {
+		return wp_parse_url( $url );
+	}
+    $parts = @parse_url( $url );
+    if ( ! $parts ) {
+	    // < PHP 5.4.7 compat, trouble with relative paths including a scheme break in the path
+	    if ( '/' == $url[0] && false !== strpos( $url, '://' ) ) {
+            // Since we know it's a relative path, prefix with a scheme/host placeholder and try again
+            if ( ! $parts = @parse_url( 'placeholder://placeholder' . $url ) ) {
+                return $parts;
+            }
+            // Remove the placeholder values
+	        unset( $parts['scheme'], $parts['host'] );
+	    } else {
+            return $parts;
+        }
+    }
+
+    // < PHP 5.4.7 compat, doesn't detect schemeless URL's host field
+    if ( '//' == substr( $url, 0, 2 ) && ! isset( $parts['host'] ) ) {
+        $path_parts = explode( '/', substr( $parts['path'], 2 ), 2 );
+        $parts['host'] = $path_parts[0];
+        if ( isset( $path_parts[1] ) ) {
+                $parts['path'] = '/' . $path_parts[1];
+        } else {
+                unset( $parts['path'] );
+        }
+	}
+    return $parts;
+}
