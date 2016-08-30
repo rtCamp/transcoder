@@ -4,7 +4,7 @@ Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.0
 Tested up to: 4.6
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,10 @@ Create the ultimate niche community by combining Transcoder with our [rtMedia](h
 3. **Thumbnail generation** - Automatically generate up to 10 thumbnails for every video, from which your users can choose one.
 4. **[rt_media] shortcode** - Use our shortcode to display transcoded audio/video file on any post or page. For example, [rt_media attachment_id=xx] the attachment_id parameter specifies the file to be displayed.
 
+= Privacy Warning =
+In order for us to transcode your media files, we need to copy it over to our server. 
+After transcoding is completed, the media can reside on our server for a maximum of 24 hours, before it is permanently and irreversibly removed by a Cron job.
+
 = Future Roadmap =
 * Additional output formats for video- ogg, webm
 * Downsampling capabilities for output video resolution
@@ -58,6 +62,10 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.0.4 [Aug 31, 2016] =
+* Add rtt_wp_parse_url function to parse URL to add backward compatibility
+* Fix media is transcoding message bug
+
 = 1.0.3 [Aug 30, 2016] =
 * Remove warnings and notices related to the activity and media related pages
 * Show default media thumbnail when poster attribute is empty
@@ -74,5 +82,5 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
-= 1.0.3 =
-Show default media thumbnail when poster attribute of video tag is empty
+= 1.0.4 =
+Add rtt_wp_parse_url function to parse URL to add backward compatibility with WordPress versions lesser than 4.4.0
