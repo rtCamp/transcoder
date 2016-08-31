@@ -658,6 +658,9 @@ add_filter( 'bp_get_activity_content_body', 'rtt_bp_get_activity_content', 99, 2
 
 /**
  * Parse the URL - Derived from the WordPress core
+ *
+ * @since 1.0.4
+ * 
  * @param  string $url The URL to be parsed
  * @return array       Array containing the information about the URL
  */
@@ -691,4 +694,81 @@ function rtt_wp_parse_url( $url ) {
 		}
 	}
 	return $parts;
+}
+
+/**
+ * Deletes the transcoded files related to the attachment
+ *
+ * @since 1.0.5
+ *
+ * @param  int $post_id Attachment ID
+ */
+function rtt_delete_related_transcoded_files( $post_id ) {
+	if ( empty( $post_id ) ) {
+		return false;
+	}
+
+	$transcoded_files = get_post_meta( $post_id, '_rt_media_transcoded_files', true );
+
+	if ( ! empty( $transcoded_files ) && is_array( $transcoded_files )  ) {
+		foreach ( $transcoded_files as $type => $files ) {
+			if ( ! empty( $files ) && is_array( $files ) ) {
+				$delete = rtt_delete_transcoded_files( $files );
+			}
+		}
+	}
+	$delete_meta = delete_post_meta( $post_id, '_rt_media_transcoded_files' );
+
+	$thumbnails = get_post_meta( $post_id, '_rt_media_thumbnails', true );
+	if ( ! empty( $thumbnails ) && is_array( $thumbnails )  ) {
+		$delete = rtt_delete_transcoded_files( $thumbnails );
+	}
+	$delete_meta = delete_post_meta( $post_id, '_rt_media_thumbnails' );
+}
+
+add_action( 'delete_attachment', 'rtt_delete_related_transcoded_files', 99, 1 );
+
+/**
+ * Deletes/Unlinks the files given in the array
+ *
+ * @since 1.0.5
+ * 
+ * @param  mixed $files 	Files array or file path string
+ */
+function rtt_delete_transcoded_files( $files ) {
+	if ( ! is_array( $files ) ) {
+		$files = array( $files );
+	}
+	$uploadpath = rtt_get_upload_dir();
+	foreach ( $files as $key => $file ) {
+		if ( ! empty( $file ) ) {
+			@unlink( path_join($uploadpath['basedir'], $file) );
+		}
+	}
+}
+
+/**
+ * Gets the information about the upload directory
+ *
+ * On success, the returned array will have many indices:
+ * 'path' - base directory and sub directory or full path to upload directory.
+ * 'url' - base url and sub directory or absolute URL to upload directory.
+ * 'subdir' - sub directory if uploads use year/month folders option is on.
+ * 'basedir' - path without subdir.
+ * 'baseurl' - URL path without subdir.
+ * 'error' - false or error message.
+ *
+ * @since 1.0.5
+ * 
+ * @return array See above for description.
+ */
+function rtt_get_upload_dir() {
+	/* for WordPress backward compatibility */
+	if ( function_exists( 'wp_get_upload_dir' ) ) {
+		$uploads = wp_get_upload_dir();
+	} else {
+		$uploads = wp_upload_dir();
+	}
+
+	return $uploads;
 }
