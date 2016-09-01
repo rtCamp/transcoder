@@ -2,9 +2,9 @@
 Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
-Requires at least: 4.0
+Requires at least: 4.1
 Tested up to: 4.6
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,7 +16,7 @@ Transcoder easily converts all audio and video files uploaded to your website to
 Transcoder eliminates the need for a dedicated media node- no fiddling with installation, managing dependancies or renting servers! Transcoder also works on shared hosting- just install, subscribe and go!
 
 All transcoding services are available via a subscription plan through this plugin.
-Subscribe to our free plan from the plugin's settings or from our [product page](https://rtmedia.io/products/transcoder). Note that Transcoder will not provide any services without a subscription plan.
+Subscribe to our free plan from the plugin's settings or from our [product page](https://rtmedia.io/products/transcoder/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder). Note that Transcoder will not provide any services without a subscription plan.
 
 = Supported input media types: =
 * Audio: mp3, m4a, wav, ogg, wma
@@ -30,7 +30,7 @@ Create the ultimate niche community by combining Transcoder with our [rtMedia](h
 
 = Transcoder Features =
 1. **Works with ANY WordPress website** - Transcoder plugs into your current website seamlessly, instantly improving user audio/video experience.
-2. **rtMedia integration** - Works perfectly with our own [rtMedia](https://rtmedia.io), for a complete social media platform.
+2. **rtMedia integration** - Works perfectly with our own [rtMedia](https://rtmedia.io/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder), for a complete social media platform.
 3. **Thumbnail generation** - Automatically generate up to 10 thumbnails for every video, from which your users can choose one.
 4. **[rt_media] shortcode** - Use our shortcode to display transcoded audio/video file on any post or page. For example, [rt_media attachment_id=xx] the attachment_id parameter specifies the file to be displayed.
 
@@ -62,6 +62,11 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.0.5 [Sep 01, 2016] =
+* Fix backward compatibility for PHP v5.3
+* Delete transcoded files when attachment is deleted
+* Display notice message to subscribe the transcoding service
+
 = 1.0.4 [Aug 31, 2016] =
 * Add rtt_wp_parse_url function to parse URL to add backward compatibility
 * Fix media is transcoding message bug
@@ -82,5 +87,5 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
-= 1.0.4 =
-Add rtt_wp_parse_url function to parse URL to add backward compatibility with WordPress versions lesser than 4.4.0
+= 1.0.5 =
+Fix backward compatibility for PHP v5.3 and Delete transcoded files when attachment is deleted
