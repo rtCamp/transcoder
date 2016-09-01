@@ -606,7 +606,8 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 			return $content;
 		}
 		$attachement_url = wp_get_attachment_url( $all_media[0]->media_id );
-		$file_extension = pathinfo( rtt_wp_parse_url( $attachement_url )['path'], PATHINFO_EXTENSION );
+		$pathinfo = rtt_wp_parse_url( $attachement_url );
+		$file_extension = pathinfo( $pathinfo['path'], PATHINFO_EXTENSION );
 		$message = '';
 
 		/* Get default video thumbnail stored in attachment meta */
@@ -732,7 +733,7 @@ add_action( 'delete_attachment', 'rtt_delete_related_transcoded_files', 99, 1 );
  * Deletes/Unlinks the files given in the array
  *
  * @since 1.0.5
- * 
+ *
  * @param  mixed $files 	Files array or file path string
  */
 function rtt_delete_transcoded_files( $files ) {
@@ -742,7 +743,7 @@ function rtt_delete_transcoded_files( $files ) {
 	$uploadpath = rtt_get_upload_dir();
 	foreach ( $files as $key => $file ) {
 		if ( ! empty( $file ) ) {
-			@unlink( path_join($uploadpath['basedir'], $file) );
+			@unlink( path_join( $uploadpath['basedir'], $file ) );
 		}
 	}
 }
