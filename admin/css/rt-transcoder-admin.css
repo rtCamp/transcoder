@@ -33,13 +33,13 @@
 	background: #dedede;
 }
 
-#rtprogressbar {
+#rttprogressbar {
 	background: #dedede;
 	height: 10px;
 	position: relative;
 }
 
-#rtprogressbar div {
+#rttprogressbar div {
 	background: #7AD03A;
 	height: 10px;
 	left: 0;
