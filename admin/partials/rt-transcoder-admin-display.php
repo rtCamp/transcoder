@@ -178,6 +178,19 @@
 				</tbody>
 			</table>
 
+			<div class="transcoder-notice">
+				<p>
+					<?php
+						$allowed_tags = array(
+							'i' => array(),
+							'strong' => array(),
+						);
+						printf( wp_kses( __( '<strong>Note</strong>: The Transcoder service works with publicly accessible websites only. If you are using Transcoder on a <strong>locally hosted website</strong> (i.e. <strong>localhost</strong>), we will be unable to identify the source of your audio/video transcoding requests.', 'transcoder' ), $allowed_tags ) );
+					?>
+					
+				</p>
+			</div>
+
 			<div class="transcoder-setting-form">
 				<form method="post" action="options.php">
 					<?php
