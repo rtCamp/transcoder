@@ -282,7 +282,7 @@ class RT_Transcoder_Admin {
 					    } else {
 					    	$thumbnail_src = $uploads['baseurl'] . '/' . $file_url;
 					    }
-
+						$thumbnail_src = apply_filters( 'transcoded_file_url', $thumbnail_src, $media_id );
 						$count   = $key + 1;
 						$video_thumb_html .= '<li style="width: 150px;display: inline-block;"> ' .
 							'<label for="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '"> ' .
@@ -341,10 +341,12 @@ class RT_Transcoder_Admin {
 					foreach ( $thumbnail_array as $key => $thumbnail_src ) {
 						$checked = checked( $thumbnail_src, $rtmedia_media[0]->cover_art, false );
 						$count   = $key + 1;
+						$final_file_url = $base_url . '/' . $thumbnail_src;
+						$final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $media_id );
 						$video_thumb_html .= '<li style="width: 150px;display: inline-block;">
 								<label for="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '">
 								<input type="radio" ' . esc_attr( $checked ) . ' id="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '" value="' . esc_attr( $thumbnail_src ) . '" name="rtmedia-thumbnail" />
-								<img src=" ' . esc_url( $base_url . '/' . $thumbnail_src ) . '" style="max-height: 120px;max-width: 120px; vertical-align: middle;" />
+								<img src=" ' . esc_url( $final_file_url ) . '" style="max-height: 120px;max-width: 120px; vertical-align: middle;" />
 								</label></li> ';
 					}
 

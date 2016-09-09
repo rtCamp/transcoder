@@ -154,6 +154,8 @@ function rt_media_get_video_thumbnail( $attachment_id ) {
 	    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
 	    }
 
+	    $final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $attachment_id );
+
 		return $final_file_url;
 	}
 
@@ -191,6 +193,7 @@ function rtt_get_media_url( $attachment_id, $media_type = 'mp4' ) {
 	    } else {
 	    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
 	    }
+	    $final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $attachment_id );
 	} else {
 		$final_file_url = wp_get_attachment_url( $attachment_id );
 	}
@@ -314,7 +317,7 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 						    } else {
 						    	$thumbnail_src = $uploads['baseurl'] . '/' . $file_url;
 						    }
-
+						    $thumbnail_src = apply_filters( 'transcoded_file_url', $thumbnail_src, $media_id );
 							?>
 							<li<?php echo $checked ? ' class="selected"' : ''; ?>
 								style="width: 150px;display: inline-block;">
@@ -407,6 +410,8 @@ if ( ! function_exists( 'rtt_set_video_thumbnail' ) ) {
 			    } else {
 			    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
 			    }
+
+			    $final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $attachment_id );
 
 				update_post_meta( $attachment_id, '_rt_media_video_thumbnail', $thumbnail );
 			}
@@ -626,6 +631,7 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 		    } else {
 		    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
 		    }
+		    $final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $all_media[0]->media_id );
 			$content = str_replace( 'poster=""', 'poster="' . $final_file_url . '"', $content );
 		}
 
@@ -743,7 +749,9 @@ function rtt_delete_transcoded_files( $files ) {
 	$uploadpath = rtt_get_upload_dir();
 	foreach ( $files as $key => $file ) {
 		if ( ! empty( $file ) ) {
-			@unlink( path_join( $uploadpath['basedir'], $file ) );
+			if ( ! file_exists( $file ) ) {
+				@unlink( path_join( $uploadpath['basedir'], $file ) );
+			}
 		}
 	}
 }
