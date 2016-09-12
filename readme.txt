@@ -4,7 +4,7 @@ Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
 Tested up to: 4.6
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,12 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.0.6 [Sep 12, 2016] =
+* Fix usage bar style issue
+* Display notice message when user trie to activate the transcoding service on local host 
+* Add filters for transcoded media URLs
+* Transcoded thumbnails for videos uploaded from rtMedia plugin will get stored in respective members upload folder
+
 = 1.0.5 [Sep 01, 2016] =
 * Fix backward compatibility for PHP v5.3
 * Delete transcoded files when attachment is deleted
@@ -87,5 +93,5 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
-= 1.0.5 =
-Fix backward compatibility for PHP v5.3 and Delete transcoded files when attachment is deleted
+= 1.0.6 =
+Added filters for transcoded media URLs to manipulate the transcoded files, also transcoded thumbnails for videos uploaded from rtMedia plugin will get stored in respective members upload folder.
