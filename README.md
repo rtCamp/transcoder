@@ -60,6 +60,12 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 1. Transcoder Settings
 
 ## Changelog ##
+#### 1.0.6 [Sep 12, 2016] ####
+* Fix usage bar style issue
+* Display notice message when user trie to activate the transcoding service on local host 
+* Add filters for transcoded media URLs
+* Transcoded thumbnails for videos uploaded from rtMedia plugin will get stored in respective members upload folder
+
 #### 1.0.5 [Sep 01, 2016] ####
 * Fix backward compatibility for PHP v5.3
 * Delete transcoded files when attachment is deleted
@@ -84,4 +90,4 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 #### 1.0.0 ####
 Initial release
 
-Fix backward compatibility for PHP v5.3 and Delete transcoded files when attachment is deleted
+Added filters for transcoded media URLs to manipulate the transcoded files, also transcoded thumbnails for videos uploaded from rtMedia plugin will get stored in respective members upload folder.
