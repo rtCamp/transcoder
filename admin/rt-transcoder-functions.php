@@ -223,7 +223,10 @@ function rtt_transcoded_thumb( $src, $media_id, $media_type ) {
 	}
 	return $src;
 }
-
+/**
+ * This filter has been commented because it was conflicting  with the
+ * set-custom-thumbnail addon.
+ */
 //add_filter( 'rtmedia_media_thumb', 'rtt_transcoded_thumb', 11, 3 );
 
 if ( ! function_exists( 'rtt_video_editor_title' ) ) {
