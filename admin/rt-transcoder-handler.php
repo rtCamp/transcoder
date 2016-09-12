@@ -123,16 +123,12 @@ class RT_Transcoder_Handler {
 							update_site_option( 'rt-transcoding-usage-limit-mail', 0 );
 						}
 						if ( strtotime( $usage_info[ $this->api_key ]->plan->expires ) > time() ) {
-							if ( ( ! class_exists( 'RTMediaFFMPEG' ) && ! class_exists( 'RTMediaKaltura' ) ) || class_exists( 'RTMedia' ) ) {
-								//add_action( 'rtmedia_after_add_media', array( $this, 'rtmedia_transcoding' ), 10, 3 );
-							}
-
 							add_filter( 'wp_generate_attachment_metadata', array( $this, 'wp_media_transcoding' ), 21, 2 );
 						}
 						$blacklist = array( 'localhost', '127.0.0.1' );
 						if ( ! in_array( wp_unslash( $_SERVER['HTTP_HOST'] ), $blacklist, true ) ) { // @codingStandardsIgnoreLine
 							add_filter( 'rtmedia_plupload_files_filter', array( $this, 'allowed_types' ), 10, 1 );
-							add_filter( 'rtmedia_allowed_types', array( $this, 'allowed_types_admin_settings', ), 10, 1 );
+							add_filter( 'rtmedia_allowed_types', array( $this, 'allowed_types_admin_settings' ), 10, 1 );
 							add_filter( 'rtmedia_valid_type_check', array( $this, 'bypass_video_audio' ), 10, 2 );
 						}
 					}
@@ -148,83 +144,6 @@ class RT_Transcoder_Handler {
 	}
 
 	/**
-	 * Send transcoding request and save transcoding job id get in response for uploaded media in buddypress activity.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array	$media_ids		Array of multiple attachment ids.
-	 * @param array $file_object	Array of file objects.
-	 * @param array $uploaded 		Array contains the information about the uploaded media.
-	 * @param bool  $autoformat     If true then genrating thumbs only else also trancode video.
-	 */
-	function rtmedia_transcoding( $media_ids, $file_object, $uploaded, $autoformat = true ) {
-		remove_action( 'add_attachment', array( $this, 'wp_media_transcoding' ) );
-		foreach ( $file_object as $key => $single ) {
-			$attachment_id 		= rtmedia_media_id( $media_ids[ $key ] );
-			$type_arry        	= explode( '.', $single['url'] );
-			$type             	= strtolower( $type_arry[ count( $type_arry ) - 1 ] );
-			$not_allowed_type 	= array( 'mp3' );
-			preg_match( '/video|audio/i', $single['type'], $type_array );
-
-			$already_sent = get_post_meta( $attachment_id, '_rt_transcoding_job_id', true );
-
-			if ( ! empty( $already_sent ) ) {
-				return;
-			}
-
-			if ( preg_match( '/video|audio/i', $single['type'], $type_array ) && ! in_array( $single['type'], array( 'audio/mp3' ), true ) && ! in_array( $type, $not_allowed_type, true ) ) {
-				$options_video_thumb = $this->get_thumbnails_required( $attachment_id );
-				if ( empty( $options_video_thumb ) ) {
-					$options_video_thumb = 5;
-				}
-
-				$job_type = 'video';
-
-				if ( 'video/mp4' === $single['type'] || 'mp4' === $type ) {
-					$autoformat = 'thumbnails';
-					$job_type = 'thumbnail';
-				}
-
-				if ( 'audio' === $type_array[0] ) {
-					$job_type = 'audio';
-				}
-
-				$args = array(
-					'method' 	=> 'POST',
-					'sslverify' => false,
-					'timeout' 	=> 60,
-					'body' 		=> array(
-						'api_token' 	=> $this->api_key,
-						'job_type' 		=> $job_type,
-						'job_for' 		=> 'rtmedia',
-						'file_url'		=> urlencode( $single['url'] ),
-						'callback_url'	=> urlencode( trailingslashit( home_url() ) . 'index.php' ),
-						'force'			=> 0,
-						'formats'		=> ( true === $autoformat ) ? ( ( 'video' === $type_array[0] ) ? 'mp4' : 'mp3' ) : $autoformat,
-						'thumb_count'	=> $options_video_thumb,
-					),
-				);
-
-				$transcoding_url = $this->transcoding_api_url . 'job/';
-
-				$upload_page = wp_remote_post( $transcoding_url, $args );
-
-				if ( ! is_wp_error( $upload_page ) && ( ( isset( $upload_page['response']['code'] ) && ( 200 === intval( $upload_page['response']['code'] ) ) ) ) ) {
-					$upload_info = json_decode( $upload_page['body'] );
-					if ( isset( $upload_info->status ) && $upload_info->status && isset( $upload_info->job_id ) && $upload_info->job_id ) {
-						$job_id = $upload_info->job_id;
-						update_rtmedia_meta( $media_ids[ $key ], 'rtmedia-transcoding-job-id', $job_id );
-						update_post_meta( $attachment_id, '_rt_transcoding_job_id', $job_id );
-						$model = new RTMediaModel();
-						$model->update( array( 'cover_art' => '0' ), array( 'id' => $media_ids[ $key ] ) );
-					}
-				}
-				$this->update_usage( $this->api_key );
-			}
-		}
-	}
-
-	/**
 	 * Send transcoding request and save transcoding job id get in response for uploaded media in WordPress media library.
 	 *
 	 * @since 1.0.0
@@ -234,6 +153,10 @@ class RT_Transcoder_Handler {
 	 * @param string $autoformat		If true then genrating thumbs only else also trancode video.
 	 */
 	function wp_media_transcoding( $wp_metadata, $attachment_id, $autoformat = true ) {
+		if ( empty( $wp_metadata['mime_type'] ) ) {
+			return $wp_metadata;
+		}
+
 		$already_sent = get_post_meta( $attachment_id, '_rt_transcoding_job_id', true );
 		if ( ! empty( $already_sent ) ) {
 			return $wp_metadata;
@@ -247,7 +170,6 @@ class RT_Transcoder_Handler {
 		 */
 		require_once( ABSPATH . 'wp-admin/includes/media.php' );
 
-		//$metadata 	= wp_read_video_metadata( $path );
 		$metadata = $wp_metadata;
 
 		$type_arry        = explode( '.', $url );
@@ -779,9 +701,18 @@ class RT_Transcoder_Handler {
 			$temp_name_array          	= explode( '/', $temp_name );
 			$temp_name                	= $temp_name_array[ count( $temp_name_array ) - 1 ];
 			$thumbinfo['basename']    	= $temp_name;
+
+			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
+				add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
+			}
+
 			$thumb_upload_info        	= wp_upload_bits( $thumbinfo['basename'], null, $thumbresource['body'] );
 
 			$thumb_upload_info        	= apply_filters( 'transcoded_file_stored', $thumb_upload_info, $post_id );
+
+			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
+				remove_filter( 'upload_dir', array( $this, 'upload_dir' ) );
+			}
 
 			$file 					  	= _wp_relative_upload_path( $thumb_upload_info['file'] );
 
