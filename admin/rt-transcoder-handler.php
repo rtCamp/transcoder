@@ -94,8 +94,8 @@ class RT_Transcoder_Handler {
 	 */
 	public function __construct( $no_init = false ) {
 
-		$this->api_key        		= get_site_option( 'rt-transcoding-api-key' );
-		$this->stored_api_key 		= get_site_option( 'rt-transcoding-api-key-stored' );
+		$this->api_key        = get_site_option( 'rt-transcoding-api-key' );
+		$this->stored_api_key = get_site_option( 'rt-transcoding-api-key-stored' );
 
 		if ( $no_init ) {
 			return;
@@ -125,8 +125,10 @@ class RT_Transcoder_Handler {
 						if ( strtotime( $usage_info[ $this->api_key ]->plan->expires ) > time() ) {
 							add_filter( 'wp_generate_attachment_metadata', array( $this, 'wp_media_transcoding' ), 21, 2 );
 						}
-						$blacklist = array( 'localhost', '127.0.0.1' );
-						if ( ! in_array( wp_unslash( $_SERVER['HTTP_HOST'] ), $blacklist, true ) ) { // @codingStandardsIgnoreLine
+
+						/* Do not let the user to upload non supported media types on localhost */
+						$blacklist = array( '127.0.0.1', '::1' );
+						if ( ! in_array( wp_unslash( $_SERVER['REMOTE_ADDR'] ), $blacklist, true ) ) { // @codingStandardsIgnoreLine
 							add_filter( 'rtmedia_plupload_files_filter', array( $this, 'allowed_types' ), 10, 1 );
 							add_filter( 'rtmedia_allowed_types', array( $this, 'allowed_types_admin_settings' ), 10, 1 );
 							add_filter( 'rtmedia_valid_type_check', array( $this, 'bypass_video_audio' ), 10, 2 );
@@ -427,8 +429,9 @@ class RT_Transcoder_Handler {
 		$is_update	= filter_input( INPUT_GET, 'update', FILTER_SANITIZE_STRING );
 
 		if ( ! empty( $apikey ) && is_admin() && ! empty( $page ) && ( 'rt-transcoder' === $page ) ) {
-			$blacklist = array( 'localhost', '127.0.0.1' );
-			if ( in_array( wp_unslash( $_SERVER['HTTP_HOST'] ), $blacklist, true ) ) {
+			/* Do not activate transcoding service on localhost */
+			$blacklist = array( '127.0.0.1', '::1' );
+			if ( in_array( wp_unslash( $_SERVER['REMOTE_ADDR'] ), $blacklist, true ) ) {
 				$return_page = add_query_arg( array(
 					'page'            => 'rt-transcoder',
 					'need-public-host' => '1',
