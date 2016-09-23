@@ -667,28 +667,27 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 				$final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $media->media_id );
 				/* Replace the first poster (assuming activity has multiple medias in it) */
 				$content = preg_replace( '/' . str_replace( '/', '\/', $poster_url[1][ $key ] ) . '/', 'poster="' . $final_file_url . '"', $content, 1 );
+			}
+			/* If media is sent to the transcoder then show the message */
+			if ( is_file_being_transcoded( $media->media_id ) ) {
+				$message = '<p class="transcoding-in-progress"> ' . esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) . '</p>';
 
-				/* If media is sent to the transcoder then show the message */
-				if ( is_file_being_transcoded( $media->media_id ) ) {
-					$message = '<p class="transcoding-in-progress"> ' . esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) . '</p>';
-
-					/**
-					 * Allow user to filter the message text.
-					 *
-					 * @since 1.0.2
-					 *
-					 * @param string $message   Message to be displayed.
-					 * @param object $activity  Activity object.
-					 */
-					$message = apply_filters( 'rtt_transcoding_in_progress_message', $message, $activity );
-					$message .= '</div>';
-					/* Add this message to the particular media (there can be multiple medias in the activity) */
-					$search = "/(rt_media_video_" . $media->id . "(.*?)(<\/a><\/div>))/s";
-					preg_match( $search , $content, $text_found );
-					if ( ! empty( $text_found[0] ) ) {
-						$text_found[0] 	= str_replace( $text_found[0], '</a></div>', $text_found[0] );
-						$content 		= str_replace( $text_found[0], '</a>' . $message, $content );
-					}
+				/**
+				 * Allow user to filter the message text.
+				 *
+				 * @since 1.0.2
+				 *
+				 * @param string $message   Message to be displayed.
+				 * @param object $activity  Activity object.
+				 */
+				$message = apply_filters( 'rtt_transcoding_in_progress_message', $message, $activity );
+				$message .= '</div>';
+				/* Add this message to the particular media (there can be multiple medias in the activity) */
+				$search = "/(rt_media_video_" . $media->id . "(.*?)(<\/a><\/div>))/s";
+				preg_match( $search , $content, $text_found );
+				if ( ! empty( $text_found[0] ) ) {
+					$text_found[0] 	= str_replace( $text_found[0], '</a></div>', $text_found[0] );
+					$content 		= str_replace( $text_found[0], '</a>' . $message, $content );
 				}
 			}
 		}
