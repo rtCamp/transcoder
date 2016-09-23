@@ -152,7 +152,7 @@ class RT_Transcoder_Handler {
 	 *
 	 * @param array  $metadata 			Metadata of the attachment.
 	 * @param int    $attachment_id		ID of attachment.
-	 * @param string $autoformat		If true then genrating thumbs only else also trancode video.
+	 * @param string $autoformat		If true then generating thumbs only else also trancode video.
 	 */
 	function wp_media_transcoding( $wp_metadata, $attachment_id, $autoformat = true ) {
 		if ( empty( $wp_metadata['mime_type'] ) ) {
@@ -308,7 +308,7 @@ class RT_Transcoder_Handler {
 		if ( ! is_wp_error( $validation_page ) ) {
 			$validation_info = json_decode( $validation_page['body'] );
 			if ( isset( $validation_info->status ) ) {
-				$status          = $validation_info->status;
+				$status = $validation_info->status;
 			}
 		} else {
 			$status = false;
@@ -711,6 +711,16 @@ class RT_Transcoder_Handler {
 
 			$thumb_upload_info        	= wp_upload_bits( $thumbinfo['basename'], null, $thumbresource['body'] );
 
+			/**
+			 * Allow users to filter/perform action on uploaded transcoded file.
+			 *
+			 * @since 1.0.5
+			 *
+			 * @param array $thumb_upload_info	Array contains the uploaded file url and Path
+			 *                                 	i.e $thumb_upload_info['url'] contains the file URL
+			 *                                 	and $thumb_upload_info['file'] contains the file physical path
+			 * @param int  $post_id 			Contains the attachment ID for which transcoded file is uploaded
+			 */
 			$thumb_upload_info        	= apply_filters( 'transcoded_file_stored', $thumb_upload_info, $post_id );
 
 			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
@@ -719,6 +729,14 @@ class RT_Transcoder_Handler {
 
 			$file 					  	= _wp_relative_upload_path( $thumb_upload_info['file'] );
 
+			/**
+			 * Allows users/plugins to filter the file URL
+			 *
+			 * @since 1.0.5
+			 *
+			 * @param string $thumb_upload_info['url'] 	Contains the file public URL
+			 * @param int $post_id 						Contains the attachment ID for which transcoded file has been uploaded
+			 */
 			$thumb_upload_info['url'] = apply_filters( 'transcoded_file_url', $thumb_upload_info['url'], $post_id );
 
 			$thumbnails_abs_url_array[] = $thumb_upload_info['url'];
@@ -797,6 +815,17 @@ class RT_Transcoder_Handler {
 								}
 
 								$upload_info = wp_upload_bits( $new_wp_attached_file_pathinfo['basename'], null, $file_bits );
+
+								/**
+								 * Allow users to filter/perform action on uploaded transcoded file.
+								 *
+								 * @since 1.0.5
+								 *
+								 * @param array $upload_info	Array contains the uploaded file url and Path
+								 *                              i.e $upload_info['url'] contains the file URL
+								 *                              and $upload_info['file'] contains the file physical path
+								 * @param int  $attachment_id 	Contains the attachment ID for which transcoded file is uploaded
+								 */
 								$upload_info = apply_filters( 'transcoded_file_stored', $upload_info, $attachment_id );
 
 								if ( 'wp-media' !== $job_for ) {
@@ -857,6 +886,14 @@ class RT_Transcoder_Handler {
 							}
 
 							$transcoded_file_url = $uploads['baseurl'] . '/' . $transcoded_files[ $media_type ][0];
+							/**
+							 * Allows users/plugins to filter the file URL
+							 *
+							 * @since 1.0.5
+							 *
+							 * @param string $transcoded_file_url 	Contains the file public URL
+							 * @param int $attachment_id 			Contains the attachment ID for which transcoded file has been uploaded
+							 */
 							$transcoded_file_url = apply_filters( 'transcoded_file_url', $transcoded_file_url, $attachment_id );
 
 							$activity_content = str_replace( $attachemnt_url, $transcoded_file_url, $content );
