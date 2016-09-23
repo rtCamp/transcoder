@@ -613,53 +613,86 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 		if ( empty( $all_media ) ) {
 			return $content;
 		}
-		$attachement_url = wp_get_attachment_url( $all_media[0]->media_id );
-		$pathinfo = rtt_wp_parse_url( $attachement_url );
-		$file_extension = pathinfo( $pathinfo['path'], PATHINFO_EXTENSION );
-		$message = '';
 
-		/* Get default video thumbnail stored in attachment meta */
-		$wp_video_thumbnail = get_post_meta( $all_media[0]->media_id, '_rt_media_video_thumbnail', true );
-
-		/* Set the poster thumbnail if its empty */
-		if ( ! empty( $wp_video_thumbnail ) ) {
-			$file_url = $wp_video_thumbnail;
-			if ( function_exists( 'wp_get_upload_dir' ) ) {
-				$uploads = wp_get_upload_dir();
-			} else {
-				$uploads = wp_upload_dir();
+		/* Filter all video objects. So we only get video objects in $all_media array */
+		foreach ( $all_media as $key => $media ) {
+			if ( 'video' !== $media->media_type ) {
+				unset( $all_media[ $key ] );
 			}
-			if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
-				$final_file_url = $file_url;
-		    } else {
-		    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
-		    }
-		    $final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $all_media[0]->media_id );
-			$content = str_replace( 'poster=""', 'poster="' . $final_file_url . '"', $content );
 		}
+		/* Reset the array keys */
+		array_multisort($all_media, SORT_ASC);
 
-		/* If media is mp4 or mp3 then no need to show the message */
-		if ( in_array( $file_extension, array( 'mp3', 'mp4' ), true ) ) {
-			return $content;
+		/* Get all the video src */
+		$search_video_url 	= "/<video.+(src=[\"]([^\"]*)[\"])/";
+		preg_match_all( $search_video_url , $content, $video_src_url );
+
+		/* Get all the poster src */
+		$search_poster_url 	= "/<video.+(poster=[\"]([^\"]*)[\"])/";
+		preg_match_all( $search_poster_url , $content, $poster_url );
+
+		$uploads = wp_upload_dir();
+
+		/* Iterate through each media */
+		foreach ( $all_media as $key => $media ) {
+			/* Get default video thumbnail stored for this particular video in post meta */
+			$wp_video_thumbnail = get_post_meta( $media->media_id, '_rt_media_video_thumbnail', true );
+
+			if ( ! empty( $video_src_url[2] ) ) {
+				$video_url =  $video_src_url[2][$key];
+
+				$baseurl = $uploads['baseurl'];
+
+				$search 	= "/^(http|https)(.*)([wp\-content])(\/uploads\/)/i";
+				$replace 	= $baseurl . '/';
+
+				/* We got clean WP attachment URL */
+				$video_url = preg_replace( $search, $replace, $video_url );
+
+				$video_url = apply_filters( 'transcoded_file_url', $video_url, $media->media_id );
+
+				$content = preg_replace( '/' . str_replace( '/', '\/', $video_src_url[2][ $key ] ) . '/', $video_url, $content, 1 );
+			}
+
+			/* Make the URL absolute */
+			if ( ! empty( $wp_video_thumbnail ) ) {
+				$file_url = $wp_video_thumbnail;
+	
+				if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
+					$final_file_url = $file_url;
+				} else {
+					$final_file_url = $uploads['baseurl'] . '/' . $file_url;
+				}
+				/* Thumbnail/poster URL */
+				$final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $media->media_id );
+				/* Replace the first poster (assuming activity has multiple medias in it) */
+				$content = preg_replace( '/' . str_replace( '/', '\/', $poster_url[1][ $key ] ) . '/', 'poster="' . $final_file_url . '"', $content, 1 );
+
+				/* If media is sent to the transcoder then show the message */
+				if ( is_file_being_transcoded( $media->media_id ) ) {
+					$message = '<p class="transcoding-in-progress"> ' . esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) . '</p>';
+
+					/**
+					 * Allow user to filter the message text.
+					 *
+					 * @since 1.0.2
+					 *
+					 * @param string $message   Message to be displayed.
+					 * @param object $activity  Activity object.
+					 */
+					$message = apply_filters( 'rtt_transcoding_in_progress_message', $message, $activity );
+					$message .= '</div>';
+					/* Add this message to the particular media (there can be multiple medias in the activity) */
+					$search = "/(rt_media_video_" . $media->id . "(.*?)(<\/a><\/div>))/s";
+					preg_match( $search , $content, $text_found );
+					if ( ! empty( $text_found[0] ) ) {
+						$text_found[0] 	= str_replace( $text_found[0], '</a></div>', $text_found[0] );
+						$content 		= str_replace( $text_found[0], '</a>' . $message, $content );
+					}
+				}
+			}
 		}
-
-		/* If media is sent to the transcoder then show the message */
-		if ( is_file_being_transcoded( $all_media[0]->media_id ) ) {
-			$message = '<p class="transcoding-in-progress"> ' . esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) . '</p>';
-
-			/**
-			 * Allow user to filter the message text.
-			 *
-			 * @since 1.0.2
-			 *
-			 * @param string $message   Message to be displayed.
-			 * @param object $activity  Activity object.
-			 */
-			$message = apply_filters( 'rtt_transcoding_in_progress_message', $message, $activity );
-		}
-		$message .= '</div>';
-
-		return $content = str_replace( '</a></div>', '</a>' . $message, $content );
+		return $content;
 	} else {
 		return $content;
 	}
