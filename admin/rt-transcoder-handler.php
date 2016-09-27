@@ -94,8 +94,8 @@ class RT_Transcoder_Handler {
 	 */
 	public function __construct( $no_init = false ) {
 
-		$this->api_key        		= get_site_option( 'rt-transcoding-api-key' );
-		$this->stored_api_key 		= get_site_option( 'rt-transcoding-api-key-stored' );
+		$this->api_key        = get_site_option( 'rt-transcoding-api-key' );
+		$this->stored_api_key = get_site_option( 'rt-transcoding-api-key-stored' );
 
 		if ( $no_init ) {
 			return;
@@ -115,6 +115,10 @@ class RT_Transcoder_Handler {
 			$usage_info = get_site_option( 'rt-transcoding-usage' );
 
 			if ( $usage_info ) {
+				if ( isset( $usage_info[ $this->api_key ]->plan->expires )
+					&& strtotime( $usage_info[ $this->api_key ]->plan->expires ) < time() ) {
+					$usage_info  = $this->update_usage( $this->api_key );
+				}
 				if ( isset( $usage_info[ $this->api_key ]->status ) && $usage_info[ $this->api_key ]->status ) {
 					if ( isset( $usage_info[ $this->api_key ]->remaining ) && $usage_info[ $this->api_key ]->remaining > 0 ) {
 						if ( $usage_info[ $this->api_key ]->remaining < 524288000 && ! get_site_option( 'rt-transcoding-usage-limit-mail' ) ) {
@@ -125,8 +129,10 @@ class RT_Transcoder_Handler {
 						if ( strtotime( $usage_info[ $this->api_key ]->plan->expires ) > time() ) {
 							add_filter( 'wp_generate_attachment_metadata', array( $this, 'wp_media_transcoding' ), 21, 2 );
 						}
-						$blacklist = array( 'localhost', '127.0.0.1' );
-						if ( ! in_array( wp_unslash( $_SERVER['HTTP_HOST'] ), $blacklist, true ) ) { // @codingStandardsIgnoreLine
+
+						/* Do not let the user to upload non supported media types on localhost */
+						$blacklist = array( '127.0.0.1', '::1' );
+						if ( ! in_array( wp_unslash( $_SERVER['REMOTE_ADDR'] ), $blacklist, true ) ) { // @codingStandardsIgnoreLine
 							add_filter( 'rtmedia_plupload_files_filter', array( $this, 'allowed_types' ), 10, 1 );
 							add_filter( 'rtmedia_allowed_types', array( $this, 'allowed_types_admin_settings' ), 10, 1 );
 							add_filter( 'rtmedia_valid_type_check', array( $this, 'bypass_video_audio' ), 10, 2 );
@@ -150,7 +156,7 @@ class RT_Transcoder_Handler {
 	 *
 	 * @param array  $metadata 			Metadata of the attachment.
 	 * @param int    $attachment_id		ID of attachment.
-	 * @param string $autoformat		If true then genrating thumbs only else also trancode video.
+	 * @param string $autoformat		If true then generating thumbs only else also trancode video.
 	 */
 	function wp_media_transcoding( $wp_metadata, $attachment_id, $autoformat = true ) {
 		if ( empty( $wp_metadata['mime_type'] ) ) {
@@ -306,7 +312,7 @@ class RT_Transcoder_Handler {
 		if ( ! is_wp_error( $validation_page ) ) {
 			$validation_info = json_decode( $validation_page['body'] );
 			if ( isset( $validation_info->status ) ) {
-				$status          = $validation_info->status;
+				$status = $validation_info->status;
 			}
 		} else {
 			$status = false;
@@ -427,8 +433,9 @@ class RT_Transcoder_Handler {
 		$is_update	= filter_input( INPUT_GET, 'update', FILTER_SANITIZE_STRING );
 
 		if ( ! empty( $apikey ) && is_admin() && ! empty( $page ) && ( 'rt-transcoder' === $page ) ) {
-			$blacklist = array( 'localhost', '127.0.0.1' );
-			if ( in_array( wp_unslash( $_SERVER['HTTP_HOST'] ), $blacklist, true ) ) {
+			/* Do not activate transcoding service on localhost */
+			$blacklist = array( '127.0.0.1', '::1' );
+			if ( in_array( wp_unslash( $_SERVER['REMOTE_ADDR'] ), $blacklist, true ) ) {
 				$return_page = add_query_arg( array(
 					'page'            => 'rt-transcoder',
 					'need-public-host' => '1',
@@ -684,9 +691,9 @@ class RT_Transcoder_Handler {
 		$largest_thumb_size     = 0;
 
 		if ( 'rtmedia' === $post_thumbs_array['job_for'] ) {
-			$model                  = new RTMediaModel();
-			$media                  = $model->get( array( 'media_id' => $post_id ) );
-			$media_id               = $media[0]->id;
+			$model           	= new RTMediaModel();
+			$media             	= $model->get( array( 'media_id' => $post_id ) );
+			$media_id          	= $media[0]->id;
 		}
 
 		$largest_thumb          = false;
@@ -695,27 +702,45 @@ class RT_Transcoder_Handler {
 
 		foreach ( $post_thumbs_array['thumbnail'] as $thumbs => $thumbnail ) {
 			$thumbresource            	= function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $thumbnail ) : wp_remote_get( $thumbnail ); // @codingStandardsIgnoreLine
-			$thumbinfo                	= pathinfo( $thumbnail );
-			$temp_name                	= $thumbinfo['basename'];
-			$temp_name                	= urldecode( $temp_name );
-			$temp_name_array          	= explode( '/', $temp_name );
-			$temp_name                	= $temp_name_array[ count( $temp_name_array ) - 1 ];
-			$thumbinfo['basename']    	= $temp_name;
+			$thumbinfo             	= pathinfo( $thumbnail );
+			$temp_name             	= $thumbinfo['basename'];
+			$temp_name             	= urldecode( $temp_name );
+			$temp_name_array       	= explode( '/', $temp_name );
+			$temp_name             	= $temp_name_array[ count( $temp_name_array ) - 1 ];
+			$thumbinfo['basename'] 	= $temp_name;
 
 			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
 				add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
 			}
 
-			$thumb_upload_info        	= wp_upload_bits( $thumbinfo['basename'], null, $thumbresource['body'] );
+			$thumb_upload_info = wp_upload_bits( $thumbinfo['basename'], null, $thumbresource['body'] );
 
-			$thumb_upload_info        	= apply_filters( 'transcoded_file_stored', $thumb_upload_info, $post_id );
+			/**
+			 * Allow users to filter/perform action on uploaded transcoded file.
+			 *
+			 * @since 1.0.5
+			 *
+			 * @param array $thumb_upload_info	Array contains the uploaded file url and Path
+			 *                                 	i.e $thumb_upload_info['url'] contains the file URL
+			 *                                 	and $thumb_upload_info['file'] contains the file physical path
+			 * @param int  $post_id 			Contains the attachment ID for which transcoded file is uploaded
+			 */
+			$thumb_upload_info = apply_filters( 'transcoded_file_stored', $thumb_upload_info, $post_id );
 
 			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
 				remove_filter( 'upload_dir', array( $this, 'upload_dir' ) );
 			}
 
-			$file 					  	= _wp_relative_upload_path( $thumb_upload_info['file'] );
+			$file = _wp_relative_upload_path( $thumb_upload_info['file'] );
 
+			/**
+			 * Allows users/plugins to filter the file URL
+			 *
+			 * @since 1.0.5
+			 *
+			 * @param string $thumb_upload_info['url'] 	Contains the file public URL
+			 * @param int $post_id 						Contains the attachment ID for which transcoded file has been uploaded
+			 */
 			$thumb_upload_info['url'] = apply_filters( 'transcoded_file_url', $thumb_upload_info['url'], $post_id );
 
 			$thumbnails_abs_url_array[] = $thumb_upload_info['url'];
@@ -745,6 +770,16 @@ class RT_Transcoder_Handler {
 				$model->update( array( 'cover_art' => $largest_thumb ), array( 'media_id' => $post_id ) );
 				update_activity_after_thumb_set( $media_id );
 			}
+
+			/**
+			 * Allow users/plugins to access the thumbnail file which is got stored as a thumbnail
+			 *
+			 * @since 1.0.7
+			 *
+			 * @param string 	$largest_thumb 	Absolute URL of the thumbnail
+			 * @param int 		$post_id 		Attachment ID of the video for which thumbnail has been set
+			 */
+			do_action( 'transcoded_thumb_added', $largest_thumb, $post_id );
 		}
 
 		return $largest_thumb_url;
@@ -794,6 +829,17 @@ class RT_Transcoder_Handler {
 								}
 
 								$upload_info = wp_upload_bits( $new_wp_attached_file_pathinfo['basename'], null, $file_bits );
+
+								/**
+								 * Allow users to filter/perform action on uploaded transcoded file.
+								 *
+								 * @since 1.0.5
+								 *
+								 * @param array $upload_info	Array contains the uploaded file url and Path
+								 *                              i.e $upload_info['url'] contains the file URL
+								 *                              and $upload_info['file'] contains the file physical path
+								 * @param int  $attachment_id 	Contains the attachment ID for which transcoded file is uploaded
+								 */
 								$upload_info = apply_filters( 'transcoded_file_stored', $upload_info, $attachment_id );
 
 								if ( 'wp-media' !== $job_for ) {
@@ -854,6 +900,14 @@ class RT_Transcoder_Handler {
 							}
 
 							$transcoded_file_url = $uploads['baseurl'] . '/' . $transcoded_files[ $media_type ][0];
+							/**
+							 * Allows users/plugins to filter the file URL
+							 *
+							 * @since 1.0.5
+							 *
+							 * @param string $transcoded_file_url 	Contains the file public URL
+							 * @param int $attachment_id 			Contains the attachment ID for which transcoded file has been uploaded
+							 */
 							$transcoded_file_url = apply_filters( 'transcoded_file_url', $transcoded_file_url, $attachment_id );
 
 							$activity_content = str_replace( $attachemnt_url, $transcoded_file_url, $content );

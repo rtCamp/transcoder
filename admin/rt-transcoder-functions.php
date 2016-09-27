@@ -223,211 +223,7 @@ function rtt_transcoded_thumb( $src, $media_id, $media_type ) {
 	}
 	return $src;
 }
-/**
- * This filter has been commented because it was conflicting  with the
- * set-custom-thumbnail addon.
- */
 //add_filter( 'rtmedia_media_thumb', 'rtt_transcoded_thumb', 11, 3 );
-
-if ( ! function_exists( 'rtt_video_editor_title' ) ) {
-	/**
-	 * Add the video thumbnail tab on video edit page.
-	 *
-	 * @since	1.0.0
-	 */
-	function rtt_video_editor_title() {
-		global $rtmedia_query;
-		if ( isset( $rtmedia_query->media[0]->media_type ) && 'video' === $rtmedia_query->media[0]->media_type ) {
-			$flag            = false;
-			$media_id        = $rtmedia_query->media[0]->media_id;
-			$thumbnail_array = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
-			if ( ! is_array( $thumbnail_array ) ) {
-				$thumbnail_array = get_post_meta( $media_id, '_rt_media_thumbnails', true );
-			}
-			if ( is_array( $thumbnail_array ) ) {
-				$flag = true;
-			} else {
-				global $rtmedia_media;
-				$curr_cover_art = $rtmedia_media->cover_art;
-				if ( ! empty( $curr_cover_art ) ) {
-					$rtmedia_video_thumbs = get_rtmedia_meta( $rtmedia_query->media[0]->media_id, 'rtmedia-thumbnail-ids' );
-					if ( is_array( $rtmedia_video_thumbs ) ) {
-						$flag = true;
-					}
-				}
-			}
-			if ( $flag ) {
-				echo '<li><a href="#panel2"><i class="dashicons dashicons-format-image rtmicon"></i>' . esc_html__( 'Video Thumbnail', 'transcoder' ) . '</a></li>';
-			}
-		}
-	}
-}
-
-add_action( 'rtmedia_add_edit_tab_title', 'rtt_video_editor_title', 1000 );
-
-if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
-	/**
-	 * Display the HTML to set the thumbnail for video.
-	 *
-	 * @since	1.0.0
-	 */
-	function rtt_rtmedia_vedio_editor_content() {
-		global $rtmedia_query;
-		if ( isset( $rtmedia_query->media ) && is_array( $rtmedia_query->media ) && isset( $rtmedia_query->media[0]->media_type ) && 'video' === $rtmedia_query->media[0]->media_type ) {
-			$media_id        = $rtmedia_query->media[0]->media_id;
-			$rtmedia_transcoded_video_thumbs = get_post_meta( $rtmedia_query->media[0]->media_id, '_rt_media_thumbnails', true );
-			$thumbnail_array = '';
-			if ( ! is_array( $rtmedia_transcoded_video_thumbs ) ) {
-				$thumbnail_array = $rtmedia_transcoded_video_thumbs = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
-			}
-			echo '<div class="content" id="panel2">';
-			if ( is_array( $rtmedia_transcoded_video_thumbs ) ) {
-				?>
-				<div class="rtmedia-change-cover-arts">
-					<p><?php esc_html_e( 'Video Thumbnail:', 'transcoder' ); ?></p>
-					<ul>
-						<?php
-						/* for WordPress backward compatibility */
-						if ( function_exists( 'wp_get_upload_dir' ) ) {
-							$uploads = wp_get_upload_dir();
-						} else {
-							$uploads = wp_upload_dir();
-						}
-						$base_url 	= $uploads['baseurl'];
-						$media_id 	= $rtmedia_query->media[0]->media_id;
-						foreach ( $rtmedia_transcoded_video_thumbs as $key => $thumbnail_src ) {
-							$wp_video_thumbnail = get_post_meta( $media_id, '_rt_media_video_thumbnail', true );
-
-							if ( 0 === strpos( $thumbnail_src, $uploads['baseurl'] ) ) {
-								$thumbnail_src = str_replace( $uploads['baseurl'], '', $thumbnail_src );
-						    }
-
-							if ( empty( $wp_video_thumbnail ) ) {
-								$wp_video_thumbnail = $rtmedia_query->media[0]->cover_art;
-								$wp_video_thumbnail = str_replace( $uploads['baseurl'], '', $wp_video_thumbnail );
-							}
-
-							$checked = false;
-							$thumbnail_src_og = $thumbnail_src;
-							if ( $wp_video_thumbnail === $thumbnail_src ) {
-								$checked = 'checked=checked';
-							}
-
-							$file_url = $thumbnail_src;
-
-							if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
-								$thumbnail_src = $file_url;
-						    } else {
-						    	$thumbnail_src = $uploads['baseurl'] . '/' . $file_url;
-						    }
-						    $thumbnail_src = apply_filters( 'transcoded_file_url', $thumbnail_src, $media_id );
-							?>
-							<li<?php echo $checked ? ' class="selected"' : ''; ?>
-								style="width: 150px;display: inline-block;">
-								<label
-									for="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
-									class="alignleft">
-									<input type="radio"<?php echo esc_attr( $checked ); ?>
-									       id="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
-									       value="<?php echo esc_attr( $thumbnail_src_og ); ?>"
-									       name="rtmedia-thumbnail"/>
-									<img src="<?php echo esc_attr( $thumbnail_src ); ?>"
-									     style="max-height: 120px;max-width: 120px"/>
-								</label>
-							</li>
-							<?php
-						}
-						?>
-					</ul>
-				</div>
-			<?php
-			} else { // check for array of thumbs stored as attachement ids.
-				global $rtmedia_media;
-				$curr_cover_art = $rtmedia_media->cover_art;
-				if ( ! empty( $curr_cover_art ) ) {
-					$rtmedia_video_thumbs = get_rtmedia_meta( $rtmedia_query->media[0]->media_id, 'rtmedia-thumbnail-ids' );
-					if ( is_array( $rtmedia_video_thumbs ) ) {
-						?>
-						<div class="rtmedia-change-cover-arts">
-							<p><?php esc_html_e( 'Video Thumbnail:', 'transcoder' ); ?></p>
-							<ul>
-								<?php
-								foreach ( $rtmedia_video_thumbs as $key => $attachment_id ) {
-									$thumbnail_src = wp_get_attachment_url( $attachment_id );
-									?>
-									<li<?php echo checked( $attachment_id, $curr_cover_art, false ) ? ' class="selected"' : ''; ?>
-										style="width: 150px;display: inline-block;">
-										<label
-											for="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
-											class="alignleft">
-											<input type="radio"<?php checked( $attachment_id, $curr_cover_art ); ?>
-											       id="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
-											       value="<?php echo esc_attr( $attachment_id ); ?>"
-											       name="rtmedia-thumbnail"/>
-											<img src="<?php echo esc_attr( $thumbnail_src ); ?>"
-											     style="max-height: 120px;max-width: 120px"/>
-										</label>
-									</li>
-									<?php
-								}
-								?>
-							</ul>
-						</div>
-
-						<?php
-					}
-				}
-			}
-			echo '</div>';
-		}
-	}
-}
-
-add_action( 'rtmedia_add_edit_tab_content', 'rtt_rtmedia_vedio_editor_content', 1000 );
-
-if ( ! function_exists( 'rtt_set_video_thumbnail' ) ) {
-
-	/**
-	 * Set the video thumbnail
-	 *
-	 * @since	1.0.0
-	 *
-	 * @param number $id rtMedia activity ID.
-	 */
-	function rtt_set_video_thumbnail( $id ) {
-		$media_type 	= rtmedia_type( $id );
-		$attachment_id 	= rtmedia_media_id( $id );		// Get the wp attachment ID.
-		$thumbnail  = filter_input( INPUT_POST, 'rtmedia-thumbnail', FILTER_SANITIZE_URL );
-		if ( 'video' === $media_type && ! empty( $thumbnail ) ) {
-
-			if ( ! is_numeric( $thumbnail ) ) {
-				$file_url = $thumbnail;
-				/* for WordPress backward compatibility */
-				if ( function_exists( 'wp_get_upload_dir' ) ) {
-					$uploads = wp_get_upload_dir();
-				} else {
-					$uploads = wp_upload_dir();
-				}
-				if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
-					$final_file_url = $file_url;
-			    } else {
-			    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
-			    }
-
-			    $final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $attachment_id );
-
-				update_post_meta( $attachment_id, '_rt_media_video_thumbnail', $thumbnail );
-			}
-
-			$model = new RTMediaModel();
-	        $model->update( array( 'cover_art' => $final_file_url ), array( 'id' => intval( $id ) ) );
-	        rtt_update_activity_after_thumb_set( $id );
-
-		}
-	}
-}
-
-add_action( 'rtmedia_after_update_media', 'rtt_set_video_thumbnail', 12 );
 
 if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
 	/**
@@ -613,53 +409,85 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 		if ( empty( $all_media ) ) {
 			return $content;
 		}
-		$attachement_url = wp_get_attachment_url( $all_media[0]->media_id );
-		$pathinfo = rtt_wp_parse_url( $attachement_url );
-		$file_extension = pathinfo( $pathinfo['path'], PATHINFO_EXTENSION );
-		$message = '';
 
-		/* Get default video thumbnail stored in attachment meta */
-		$wp_video_thumbnail = get_post_meta( $all_media[0]->media_id, '_rt_media_video_thumbnail', true );
-
-		/* Set the poster thumbnail if its empty */
-		if ( ! empty( $wp_video_thumbnail ) ) {
-			$file_url = $wp_video_thumbnail;
-			if ( function_exists( 'wp_get_upload_dir' ) ) {
-				$uploads = wp_get_upload_dir();
-			} else {
-				$uploads = wp_upload_dir();
+		/* Filter all video objects. So we only get video objects in $all_media array */
+		foreach ( $all_media as $key => $media ) {
+			if ( 'video' !== $media->media_type ) {
+				unset( $all_media[ $key ] );
 			}
-			if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
-				$final_file_url = $file_url;
-		    } else {
-		    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
-		    }
-		    $final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $all_media[0]->media_id );
-			$content = str_replace( 'poster=""', 'poster="' . $final_file_url . '"', $content );
 		}
+		/* Reset the array keys */
+		array_multisort($all_media, SORT_ASC);
 
-		/* If media is mp4 or mp3 then no need to show the message */
-		if ( in_array( $file_extension, array( 'mp3', 'mp4' ), true ) ) {
-			return $content;
+		/* Get all the video src */
+		$search_video_url 	= "/<video.+(src=[\"]([^\"]*)[\"])/";
+		preg_match_all( $search_video_url , $content, $video_src_url );
+
+		/* Get all the poster src */
+		$search_poster_url 	= "/<video.+(poster=[\"]([^\"]*)[\"])/";
+		preg_match_all( $search_poster_url , $content, $poster_url );
+
+		$uploads = wp_upload_dir();
+
+		/* Iterate through each media */
+		foreach ( $all_media as $key => $media ) {
+			/* Get default video thumbnail stored for this particular video in post meta */
+			$wp_video_thumbnail = get_post_meta( $media->media_id, '_rt_media_video_thumbnail', true );
+
+			if ( ! empty( $video_src_url[2] ) ) {
+				$video_url =  $video_src_url[2][$key];
+
+				$baseurl = $uploads['baseurl'];
+
+				$search 	= "/^(http|https)(.*)([wp\-content])(\/uploads\/)/i";
+				$replace 	= $baseurl . '/';
+
+				/* We got clean WP attachment URL */
+				$video_url = preg_replace( $search, $replace, $video_url );
+
+				$video_url = apply_filters( 'transcoded_file_url', $video_url, $media->media_id );
+
+				$content = preg_replace( '/' . str_replace( '/', '\/', $video_src_url[2][ $key ] ) . '/', $video_url, $content, 1 );
+			}
+
+			/* Make the URL absolute */
+			if ( ! empty( $wp_video_thumbnail ) ) {
+				$file_url = $wp_video_thumbnail;
+
+				if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
+					$final_file_url = $file_url;
+				} else {
+					$final_file_url = $uploads['baseurl'] . '/' . $file_url;
+				}
+				/* Thumbnail/poster URL */
+				$final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $media->media_id );
+				/* Replace the first poster (assuming activity has multiple medias in it) */
+				$content = preg_replace( '/' . str_replace( '/', '\/', $poster_url[1][ $key ] ) . '/', 'poster="' . $final_file_url . '"', $content, 1 );
+			}
+			/* If media is sent to the transcoder then show the message */
+			if ( is_file_being_transcoded( $media->media_id ) ) {
+				$message = '<p class="transcoding-in-progress"> ' . esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) . '</p>';
+
+				/**
+				 * Allow user to filter the message text.
+				 *
+				 * @since 1.0.2
+				 *
+				 * @param string $message   Message to be displayed.
+				 * @param object $activity  Activity object.
+				 */
+				$message = apply_filters( 'rtt_transcoding_in_progress_message', $message, $activity );
+				$message .= '</div>';
+				/* Add this message to the particular media (there can be multiple medias in the activity) */
+				$search = "/(rt_media_video_" . $media->id . "(.*?)(<\/a><\/div>))/s";
+				preg_match( $search , $content, $text_found );
+				if ( ! empty( $text_found[0] ) ) {
+					$text_found[0] 	= str_replace( $text_found[0], '</a></div>', $text_found[0] );
+					$content 		= str_replace( $text_found[0], '</a>' . $message, $content );
+				}
+			}
 		}
-
-		/* If media is sent to the transcoder then show the message */
-		if ( is_file_being_transcoded( $all_media[0]->media_id ) ) {
-			$message = '<p class="transcoding-in-progress"> ' . esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) . '</p>';
-
-			/**
-			 * Allow user to filter the message text.
-			 *
-			 * @since 1.0.2
-			 *
-			 * @param string $message   Message to be displayed.
-			 * @param object $activity  Activity object.
-			 */
-			$message = apply_filters( 'rtt_transcoding_in_progress_message', $message, $activity );
-		}
-		$message .= '</div>';
-
-		return $content = str_replace( '</a></div>', '</a>' . $message, $content );
+		return $content;
 	} else {
 		return $content;
 	}
@@ -670,7 +498,7 @@ add_filter( 'bp_get_activity_content_body', 'rtt_bp_get_activity_content', 99, 2
  * Parse the URL - Derived from the WordPress core
  *
  * @since 1.0.4
- * 
+ *
  * @param  string $url The URL to be parsed
  * @return array       Array containing the information about the URL
  */
@@ -771,7 +599,7 @@ function rtt_delete_transcoded_files( $files ) {
  * 'error' - false or error message.
  *
  * @since 1.0.5
- * 
+ *
  * @return array See above for description.
  */
 function rtt_get_upload_dir() {
