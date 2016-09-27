@@ -3,8 +3,8 @@ Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 4.6
-Stable tag: 1.0.6
+Tested up to: 4.6.1
+Stable tag: 1.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,15 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.0.7 [Sep 27, 2016] =
+* Fix language directory path
+* Fix localhost check bug
+* Update URLs of multiple media present in single activity
+* Fix waiting message for files sent to the transcoder
+* Remove all the actions from function file and moved them to the actions file
+* Add new action when video thumbnail is set for video
+* Add thumbnail automatically for the videos uploaded from the rtmedia shortcode
+
 = 1.0.6 [Sep 12, 2016] =
 * Fix usage bar style issue
 * Display notice message when user trie to activate the transcoding service on local host
@@ -93,5 +102,5 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
-= 1.0.6 =
-Added filters for transcoded media URLs to manipulate the transcoded files, also transcoded thumbnails for videos uploaded from rtMedia plugin will get stored in respective members upload folder.
+= 1.0.7 =
+Add thumbnail automatically for the videos uploaded from the rtmedia shortcode, Update URLs of multiple media present in single activity and fix the language directory path.
