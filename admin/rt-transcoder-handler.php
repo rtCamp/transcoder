@@ -115,6 +115,10 @@ class RT_Transcoder_Handler {
 			$usage_info = get_site_option( 'rt-transcoding-usage' );
 
 			if ( $usage_info ) {
+				if ( isset( $usage_info[ $this->api_key ]->plan->expires )
+					&& strtotime( $usage_info[ $this->api_key ]->plan->expires ) < time() ) {
+					$usage_info  = $this->update_usage( $this->api_key );
+				}
 				if ( isset( $usage_info[ $this->api_key ]->status ) && $usage_info[ $this->api_key ]->status ) {
 					if ( isset( $usage_info[ $this->api_key ]->remaining ) && $usage_info[ $this->api_key ]->remaining > 0 ) {
 						if ( $usage_info[ $this->api_key ]->remaining < 524288000 && ! get_site_option( 'rt-transcoding-usage-limit-mail' ) ) {
@@ -687,9 +691,9 @@ class RT_Transcoder_Handler {
 		$largest_thumb_size     = 0;
 
 		if ( 'rtmedia' === $post_thumbs_array['job_for'] ) {
-			$model                  = new RTMediaModel();
-			$media                  = $model->get( array( 'media_id' => $post_id ) );
-			$media_id               = $media[0]->id;
+			$model           	= new RTMediaModel();
+			$media             	= $model->get( array( 'media_id' => $post_id ) );
+			$media_id          	= $media[0]->id;
 		}
 
 		$largest_thumb          = false;
@@ -698,18 +702,18 @@ class RT_Transcoder_Handler {
 
 		foreach ( $post_thumbs_array['thumbnail'] as $thumbs => $thumbnail ) {
 			$thumbresource            	= function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $thumbnail ) : wp_remote_get( $thumbnail ); // @codingStandardsIgnoreLine
-			$thumbinfo                	= pathinfo( $thumbnail );
-			$temp_name                	= $thumbinfo['basename'];
-			$temp_name                	= urldecode( $temp_name );
-			$temp_name_array          	= explode( '/', $temp_name );
-			$temp_name                	= $temp_name_array[ count( $temp_name_array ) - 1 ];
-			$thumbinfo['basename']    	= $temp_name;
+			$thumbinfo             	= pathinfo( $thumbnail );
+			$temp_name             	= $thumbinfo['basename'];
+			$temp_name             	= urldecode( $temp_name );
+			$temp_name_array       	= explode( '/', $temp_name );
+			$temp_name             	= $temp_name_array[ count( $temp_name_array ) - 1 ];
+			$thumbinfo['basename'] 	= $temp_name;
 
 			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
 				add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
 			}
 
-			$thumb_upload_info        	= wp_upload_bits( $thumbinfo['basename'], null, $thumbresource['body'] );
+			$thumb_upload_info = wp_upload_bits( $thumbinfo['basename'], null, $thumbresource['body'] );
 
 			/**
 			 * Allow users to filter/perform action on uploaded transcoded file.
@@ -721,13 +725,13 @@ class RT_Transcoder_Handler {
 			 *                                 	and $thumb_upload_info['file'] contains the file physical path
 			 * @param int  $post_id 			Contains the attachment ID for which transcoded file is uploaded
 			 */
-			$thumb_upload_info        	= apply_filters( 'transcoded_file_stored', $thumb_upload_info, $post_id );
+			$thumb_upload_info = apply_filters( 'transcoded_file_stored', $thumb_upload_info, $post_id );
 
 			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
 				remove_filter( 'upload_dir', array( $this, 'upload_dir' ) );
 			}
 
-			$file 					  	= _wp_relative_upload_path( $thumb_upload_info['file'] );
+			$file = _wp_relative_upload_path( $thumb_upload_info['file'] );
 
 			/**
 			 * Allows users/plugins to filter the file URL
@@ -766,6 +770,16 @@ class RT_Transcoder_Handler {
 				$model->update( array( 'cover_art' => $largest_thumb ), array( 'media_id' => $post_id ) );
 				update_activity_after_thumb_set( $media_id );
 			}
+
+			/**
+			 * Allow users/plugins to access the thumbnail file which is got stored as a thumbnail
+			 *
+			 * @since 1.0.7
+			 *
+			 * @param string 	$largest_thumb 	Absolute URL of the thumbnail
+			 * @param int 		$post_id 		Attachment ID of the video for which thumbnail has been set
+			 */
+			do_action( 'transcoded_thumb_added', $largest_thumb, $post_id );
 		}
 
 		return $largest_thumb_url;
