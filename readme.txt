@@ -4,7 +4,7 @@ Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
 Tested up to: 4.6.1
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,10 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.0.8 [Oct 05, 2016] =
+* Update the notice messages
+* Fix broken media URL on multisite
+
 = 1.0.7 [Sep 27, 2016] =
 * Fix language directory path
 * Fix localhost check bug
@@ -102,5 +106,5 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
-= 1.0.7 =
-Add thumbnail automatically for the videos uploaded from the rtmedia shortcode, Update URLs of multiple media present in single activity and fix the language directory path.
+= 1.0.8 =
+Fixed broken media URL on multisite and Fixed broken media URL on multisite
