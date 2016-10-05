@@ -639,7 +639,7 @@ class RT_Transcoder_Handler {
 				}
 
 				if ( ( isset( $usage_details[ $api_key ]->plan->expires ) && strtotime( $usage_details[ $api_key ]->plan->expires ) < time() ) ) {
-					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your plan has been expired. Please upgrade your plan.', 'transcoder' ) . '</p></div>';
+					$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your plan has expired. Please consider upgrading if you need more bandwidth.', 'transcoder' ) . '</p></div>';
 				}
 			} else {
 				$content .= '<div class="error below-h2"><p>' . esc_html__( 'Your API key is not valid or is expired.', 'transcoder' ) . '</p></div>';

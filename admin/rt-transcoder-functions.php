@@ -391,6 +391,7 @@ add_filter( 'media_send_to_editor', 'rtt_generate_video_shortcode', 100, 3 );
 
 /**
  * Add the notice when file is sent for the transcoding and adds the poster thumbnail if poster tag is empty
+ * This function also works as a backward compatibility for the rtAmazon S3 plugin
  *
  * @since 1.0.1
  *
@@ -437,17 +438,11 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 			if ( ! empty( $video_src_url[2] ) ) {
 				$video_url =  $video_src_url[2][$key];
 
-				$baseurl = $uploads['baseurl'];
+				$transcoded_media_url = rtt_get_media_url( $media->media_id );
 
-				$search 	= "/^(http|https)(.*)([wp\-content])(\/uploads\/)/i";
-				$replace 	= $baseurl . '/';
-
-				/* We got clean WP attachment URL */
-				$video_url = preg_replace( $search, $replace, $video_url );
-
-				$video_url = apply_filters( 'transcoded_file_url', $video_url, $media->media_id );
-
-				$content = preg_replace( '/' . str_replace( '/', '\/', $video_src_url[2][ $key ] ) . '/', $video_url, $content, 1 );
+				if ( ! empty( $transcoded_media_url ) ) {
+					$content = preg_replace( '/' . str_replace( '/', '\/', $video_src_url[2][ $key ] ) . '/', $transcoded_media_url, $content, 1 );
+				}
 			}
 
 			/* Make the URL absolute */
