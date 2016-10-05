@@ -187,7 +187,7 @@
 						);
 						printf( wp_kses( __( '<strong>Note</strong>: The Transcoder service works with publicly accessible websites only. If you are using Transcoder on a <strong>locally hosted website</strong> (i.e. <strong>localhost</strong>), we will be unable to identify the source of your audio/video transcoding requests.', 'transcoder' ), $allowed_tags ) );
 					?>
-					
+
 				</p>
 			</div>
 
@@ -221,7 +221,7 @@
 							</td>
 						</tr>
 					</table>
-					<p><?php echo esc_html__( 'Visit', 'transcoder' ) . ' <a href="https://rtmedia.io/docs/transcoder/">' . esc_html__( 'document page', 'transcoder' ) . '</a> ' . esc_html__( 'for more details', 'transcoder' ) . '.'; ?></p>
+					<p><?php echo esc_html__( 'Visit our', 'transcoder' ) . ' <a href="https://rtmedia.io/docs/transcoder/">' . esc_html__( 'document page', 'transcoder' ) . '</a> ' . esc_html__( 'for more details', 'transcoder' ) . '.'; ?></p>
 					<div class="rtm-button-container">
 						<div class="rtm-social-links alignleft">
 							<a href="http://twitter.com/rtMediaWP" class="twitter" target="_blank">
