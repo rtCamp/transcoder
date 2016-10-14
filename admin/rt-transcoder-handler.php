@@ -114,7 +114,7 @@ class RT_Transcoder_Handler {
 			add_filter( 'rtmedia_allowed_types', array( $this, 'allowed_types_admin_settings' ), 10, 1 );
 			$usage_info = get_site_option( 'rt-transcoding-usage' );
 
-			if ( $usage_info ) {
+			if ( isset( $usage_info ) && is_array( $usage_info ) ) {
 				if ( isset( $usage_info[ $this->api_key ]->plan->expires )
 					&& strtotime( $usage_info[ $this->api_key ]->plan->expires ) < time() ) {
 					$usage_info  = $this->update_usage( $this->api_key );
