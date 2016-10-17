@@ -2,10 +2,6 @@ language: php
 php:
   - 5.5
 
-before_install:
-  - rm -rf ~/.gnupg
-  - sudo apt-get install xvfb
-
 before_script:
   ## PHP_CodeSniffer
   - pear install pear/PHP_CodeSniffer
