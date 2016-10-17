@@ -1,0 +1,22 @@
+language: php
+php:
+  - 5.5
+
+before_install:
+  - rm -rf ~/.gnupg
+  - sudo apt-get install xvfb
+
+before_script:
+  ## PHP_CodeSniffer
+  - pear install pear/PHP_CodeSniffer
+  - git clone git://github.com/wimg/PHPCompatibility.git $(pear config-get php_dir)/PHP/CodeSniffer/Standards/PHPCompatibility
+  - phpenv rehash
+  - phpcs -i
+  - phpenv rehash
+  - phpcs --config-set error_severity 1
+  - phpcs --config-set warning_severity 0
+
+script:
+  ## PHP_CodeSniffer
+  - phpcs --standard=PHPCompatibility --runtime-set testVersion 5.3-5.5 $(find ./ -name '*.php')
+  - if find . -name "*.php" ! -path "./node_modules/*" -exec php -l {} 2>&1 \; | grep "syntax error, unexpected"; then exit 1; fi
