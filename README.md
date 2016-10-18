@@ -14,7 +14,7 @@ Transcoder easily converts all audio and video files uploaded to your website to
 Transcoder eliminates the need for a dedicated media node- no fiddling with installation, managing dependancies or renting servers! Transcoder also works on shared hosting- just install, subscribe and go!
 
 All transcoding services are available via a subscription plan through this plugin.
-Subscribe to our free plan from the plugin's settings or from our [product page](https://rtmedia.io/products/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder). Note that Transcoder will not provide any services without a subscription plan.
+Subscribe to our free plan from the plugin's settings or from our [product page](https://rtmedia.io/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder). Note that Transcoder will not provide any services without a subscription plan.
 
 #### Supported input media types: ####
 * Audio: mp3, m4a, wav, ogg, wma
@@ -33,7 +33,7 @@ Create the ultimate niche community by combining Transcoder with our [rtMedia](h
 4. **[rt_media] shortcode** - Use our shortcode to display transcoded audio/video file on any post or page. For example, [rt_media attachment_id####xx] the attachment_id parameter specifies the file to be displayed.
 
 #### Privacy Warning ####
-In order for us to transcode your media files, we need to copy it over to our server. 
+In order for us to transcode your media files, we need to copy it over to our server.
 After transcoding is completed, the media can reside on our server for a maximum of 24 hours, before it is permanently and irreversibly removed by a Cron job.
 
 #### Future Roadmap ####
@@ -60,6 +60,21 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 1. Transcoder Settings
 
 ## Changelog ##
+#### 1.0.7 [Sep 27, 2016] ####
+* Fix language directory path
+* Fix localhost check bug
+* Update URLs of multiple media present in single activity
+* Fix waiting message for files sent to the transcoder
+* Remove all the actions from function file and moved them to the actions file
+* Add new action when video thumbnail is set for video
+* Add thumbnail automatically for the videos uploaded from the rtmedia shortcode
+
+#### 1.0.6 [Sep 12, 2016] ####
+* Fix usage bar style issue
+* Display notice message when user trie to activate the transcoding service on local host
+* Add filters for transcoded media URLs
+* Transcoded thumbnails for videos uploaded from rtMedia plugin will get stored in respective members upload folder
+
 #### 1.0.5 [Sep 01, 2016] ####
 * Fix backward compatibility for PHP v5.3
 * Delete transcoded files when attachment is deleted
@@ -84,4 +99,4 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 #### 1.0.0 ####
 Initial release
 
-Fix backward compatibility for PHP v5.3 and Delete transcoded files when attachment is deleted
+Add thumbnail automatically for the videos uploaded from the rtmedia shortcode, Update URLs of multiple media present in single activity and fix the language directory path.
