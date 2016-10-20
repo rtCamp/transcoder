@@ -156,7 +156,7 @@ class RT_Transcoder_Handler {
 	 *
 	 * @param array  $metadata 			Metadata of the attachment.
 	 * @param int    $attachment_id		ID of attachment.
-	 * @param string $autoformat		If true then generating thumbs only else also trancode video.
+	 * @param string $autoformat		If true then generating thumbs only else trancode video.
 	 */
 	function wp_media_transcoding( $wp_metadata, $attachment_id, $autoformat = true ) {
 		if ( empty( $wp_metadata['mime_type'] ) ) {

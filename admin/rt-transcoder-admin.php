@@ -67,6 +67,7 @@ class RT_Transcoder_Admin {
 
 		include_once( RT_TRANSCODER_PATH . 'admin/rt-transcoder-handler.php' );
 		include_once( RT_TRANSCODER_PATH . 'admin/rt-transcoder-actions.php' );
+		include_once( RT_TRANSCODER_PATH . 'admin/rt-retranscode-admin.php' );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
 
