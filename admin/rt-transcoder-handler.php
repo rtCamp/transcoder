@@ -1199,6 +1199,18 @@ class RT_Transcoder_Handler {
 			return true;
 		}
 
+		/**
+		 * Filter to disable the notification sent to the admins/users
+		 *
+		 * @param boolean 		By default it is true. If false is passed the email wont
+		 *                      get sent to the any user
+		 */
+		$send_notification = apply_filters( 'rtt_send_notification', true );
+
+		if ( false === $send_notification ) {
+			return true;
+		}
+
 		if ( $include_admin ) {
 			$users   = get_users( array( 'role' => 'administrator' ) );
 			if ( $users ) {
@@ -1252,6 +1264,15 @@ class RT_Transcoder_Handler {
 			$author_id 		= get_post_field( 'post_author', $attachment_id );
 			$email_ids[] 	= get_the_author_meta( 'user_email', $author_id );
 		}
+
+		/**
+		 * Allows users/plugins to alter the email id of a user
+		 *
+		 * @param array $email_ids 	Email id of the user who owns the media
+		 * @param string $job_id 	Job ID sent by the transcoder
+		 */
+		$email_ids = apply_filters( 'rtt_nofity_transcoding_failed', $email_ids, $job_id );
+
 		$this->send_notification( $email_ids, $subject, $message, $include_admin = true );
 	}
 
