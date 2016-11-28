@@ -680,6 +680,8 @@ class RT_Transcoder_Handler {
 		// Parse incoming $post_array into an array and merge it with $defaults
 		$post_array = wp_parse_args( $post_array, $defaults );
 
+		do_action( 'rtt_before_thumbnail_store', $post_array['post_id'], $post_array );
+
 		$post_id 				= $post_array['post_id'];
 		$post_info              = get_post( $post_id );
 		$post_date_string       = new DateTime( $post_info->post_date );
