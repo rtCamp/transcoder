@@ -692,7 +692,7 @@ class RT_Transcoder_Handler {
 		$post_thumbs_array      = maybe_unserialize( $post_thumbs );
 		$largest_thumb_size     = 0;
 
-		if ( 'rtmedia' === $post_thumbs_array['job_for'] ) {
+		if ( 'rtmedia' === $post_thumbs_array['job_for'] && class_exists( 'RTMediaModel' ) ) {
 			$model           	= new RTMediaModel();
 			$media             	= $model->get( array( 'media_id' => $post_id ) );
 			$media_id          	= $media[0]->id;
