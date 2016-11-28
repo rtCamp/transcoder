@@ -1092,6 +1092,17 @@ class RT_Transcoder_Handler {
 			}
 		}
 		// @codingStandardsIgnoreEnd
+
+		/**
+		 * Allow users/plugins to perform action after response received from the transcoder is
+		 * processed
+		 *
+		 * @since 1.0.9
+		 *
+		 * @param number 	$attachment_id 	Attachment ID for which the callback has sent from the transcoder
+		 * @param number 	$job_id 		The transcoding job ID
+		 */
+		do_action( 'rtt_handle_callback_finished', $attachment_id, $job_id );
 	}
 
 	/**
