@@ -220,6 +220,31 @@
 								</span>
 							</td>
 						</tr>
+						<tr valign="top">
+							<th scope="row">
+								<?php esc_html_e( 'Override the default video thumbnail in re-transcoding', 'transcoder' ); ?>
+							</th>
+							<td>
+								<?php
+								$rtt_override_thumbnail = get_site_option( 'rtt_override_thumbnail', false );
+								$checked = '';
+								if ( empty( $rtt_override_thumbnail ) ) {
+									$rtt_override_thumbnail = false;
+								} else {
+									$checked = 'checked=checked';
+								}
+								?>
+								<input type="checkbox" name="rtt_override_thumbnail" value="1" <?php echo esc_attr( $checked ); ?> />
+								<span class="rtm-tooltip">
+									<i class="dashicons dashicons-info rtmicon"></i>
+									<span class="rtm-tip">
+										<?php
+										esc_html_e( 'If you select this option, the current thumbnail you set for the media will get override with the newly re-transcoded/generated thumbnails. And if this option is not selected then current thumbnail will stay as it is.', 'transcoder' );
+										?>
+									</span>
+								</span>
+							</td>
+						</tr>
 					</table>
 					<p><?php echo esc_html__( 'Visit our', 'transcoder' ) . ' <a href="https://rtmedia.io/docs/transcoder/">' . esc_html__( 'document page', 'transcoder' ) . '</a> ' . esc_html__( 'for more details', 'transcoder' ) . '.'; ?></p>
 					<div class="rtm-button-container">
