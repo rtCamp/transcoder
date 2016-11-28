@@ -607,3 +607,30 @@ function rtt_get_upload_dir() {
 
 	return $uploads;
 }
+
+/**
+ * Check if override media thumbnail setting is ON or OFF.
+ *
+ * @since 1.1.0
+ *
+ * @param int $attachment_id	ID of attachment.
+ *
+ * @return boolean 				TRUE if override is ON, FALSE is OFF
+ */
+function rtt_is_override_thumbnail( $attachment_id = '' ) {
+
+	$rtt_override_thumbnail = get_option( 'rtt_override_thumbnail' );
+
+	/**
+	 * Allow user to override the setting.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param boolean 	$rtt_override_thumbnail    	Number of thumbnails set in setting.
+	 * @param int 		$attachment_id  			ID of attachment.
+	 */
+	$rtt_override_thumbnail = apply_filters( 'rtt_is_override_thumbnail', $rtt_override_thumbnail, $attachment_id );
+
+	return $rtt_override_thumbnail;
+}
+
