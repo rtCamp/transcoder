@@ -19,6 +19,10 @@ class RetranscodeMedia {
 		add_action( 'admin_head-upload.php',              	array( $this, 'add_bulk_actions_via_javascript' ) );
 		add_action( 'admin_action_bulk_retranscode_media', 	array( $this, 'bulk_action_handler' ) ); // Top drowndown
 		add_action( 'admin_action_-1',                     	array( $this, 'bulk_action_handler' ) ); // Bottom dropdown (assumes top dropdown = default value)
+		add_action( 'rtt_before_thumbnail_store', 			array( $this, 'rtt_before_thumbnail_store' ), 10, 2 ); // Delete old thumbs
+		add_action( 'rtt_before_transcoded_media_store', 	array( $this, 'rtt_before_transcoded_media_store' ), 10, 2 ); // Delete old transcoded files
+		add_action( 'transcoded_thumbnails_added', 			array( $this, 'transcoded_thumbnails_added' ), 10, 1 ); // Add the current thumbnail to the newly added thumbnails
+		add_action( 'rtt_handle_callback_finished', 		array( $this, 'rtt_handle_callback_finished' ), 10, 2 ); // Clean the extra meta that has been added while sending retranscoding request
 
 		// Allow people to change what capability is required to use this feature
 		$this->capability = apply_filters( 'retranscode_media_cap', 'manage_options' );
@@ -374,19 +378,44 @@ class RetranscodeMedia {
 
 		$attachment_meta['mime_type'] = $media->post_mime_type;
 
-		// Send media for (Re)transcoding
-		$sent = $transcoder->wp_media_transcoding( $attachment_meta, $media->ID );
+		$transcoded_files = get_post_meta( $media->ID, '_rt_media_transcoded_files', true );
 
-		if ( ! $sent )
+		// No need to ask for the transcoded (mp4) file if we already have it
+		// Only asks for the thumbnails
+
+		if ( ! empty( $transcoded_files ) && is_array( $transcoded_files ) ) {
+			if ( array_key_exists( 'mp4' , $transcoded_files ) && count( $transcoded_files[ 'mp4' ] ) > 0 ) {
+
+				/**
+				 * We can ask for the new fresh transcoded file even if it already present.
+				 * Use: add_filter( 'rtt_force_trancode_media', '__return_true' );
+				 *
+				 * @param bool FALSE by default. Pass TRUE if you want to request for new transcoded file
+				 */
+				$force_transcode = apply_filters( 'rtt_force_trancode_media', false );
+				if ( ! $force_transcode ) {
+					$attachment_meta['mime_type'] = 'video/mp4';
+				}
+			}
+		}
+
+		// Send media for (Re)transcoding
+		$send = $transcoder->wp_media_transcoding( $attachment_meta, $media->ID );
+
+		$is_sent = get_post_meta( $media->ID, '_rt_transcoding_job_id', true );
+
+		if ( ! $is_sent )
 			$this->die_json_error_msg( $media->ID, __( 'Unknown failure reason.', 'transcoder' ) );
 
-		die( json_encode( array( 'success' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) was successfully resized in %3$s seconds.', 'transcoder' ), esc_html( get_the_title( $media->ID ) ), $media->ID, timer_stop() ) ) ) );
+		$mark_media_as_sent = update_post_meta( $media->ID, '_rt_retranscoding_sent', $is_sent );
+
+		die( json_encode( array( 'success' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) was successfully sent in %3$s seconds.', 'transcoder' ), esc_html( get_the_title( $media->ID ) ), $media->ID, timer_stop() ) ) ) );
 	}
 
 
 	// Helper to make a JSON error message
 	public function die_json_error_msg( $id, $message ) {
-		die( json_encode( array( 'error' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) failed to resize. The error message was: %3$s', 'transcoder' ), esc_html( get_the_title( $id ) ), $id, $message ) ) ) );
+		die( json_encode( array( 'error' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) failed to sent. The error message was: %3$s', 'transcoder' ), esc_html( get_the_title( $id ) ), $id, $message ) ) ) );
 	}
 
 
@@ -394,6 +423,107 @@ class RetranscodeMedia {
 	public function esc_quotes( $string ) {
 		return str_replace( '"', '\"', $string );
 	}
+
+	/**
+	 * Delete the previously added media thumbnail files
+	 *
+	 * @param  number 	$media_id     Post ID of the media
+	 * @param  array 	$post_request Post request coming for the transcoder API
+	 */
+	public function rtt_before_thumbnail_store( $media_id = '', $post_request = '' ) {
+		if ( empty( $media_id ) ) return;
+
+		$previous_thumbs = get_post_meta( $media_id, '_rt_media_thumbnails', true );
+
+		if ( ! empty( $previous_thumbs ) && is_array( $previous_thumbs ) ) {
+
+			// Do not delete the current thumbnail of the video
+			if ( ! rtt_is_override_thumbnail() ) {
+
+				$current_thumb = get_post_meta( $media_id, '_rt_media_video_thumbnail', true );
+
+				if ( ($key = array_search( $current_thumb, $previous_thumbs ) ) !== false ) {
+					unset( $previous_thumbs[ $key ] );
+				}
+			}
+
+			$delete = rtt_delete_transcoded_files( $previous_thumbs );
+		}
+		$delete_meta = delete_post_meta( $media_id, '_rt_media_thumbnails' );
+
+	}
+
+	/**
+	 * Delete the previously transcoded media files
+	 *
+	 * @param  number 	$media_id     Post ID of the media
+	 * @param  array 	$post_request Post request coming for the transcoder API
+	 */
+	public function rtt_before_transcoded_media_store( $media_id = '', $transcoded_files = '' ) {
+		if ( empty( $media_id ) ) return;
+
+		$current_files = get_post_meta( $media_id, '_rt_media_transcoded_files', true );
+
+		if ( ! empty( $current_files ) && is_array( $current_files ) ) {
+			foreach ( $current_files as $type => $files ) {
+				if ( ! empty( $files ) && is_array( $files ) ) {
+					$delete = rtt_delete_transcoded_files( $files );
+				}
+			}
+		}
+		$delete_meta = delete_post_meta( $media_id, '_rt_media_transcoded_files' );
+
+	}
+
+	/**
+	 * Add the current thumbnail image in the newly added thumbnails if
+	 * user wants to preserve the thumbnails set to the media
+	 *
+	 * @param  number 	$media_id     Post ID of the media
+	 */
+	public function transcoded_thumbnails_added( $media_id = '' ) {
+		if ( empty( $media_id ) ) return;
+
+		$is_retranscoding_job = get_post_meta( $media_id, '_rt_retranscoding_sent', true );
+
+		if ( $is_retranscoding_job && ! rtt_is_override_thumbnail() ) {
+
+			$new_thumbs = get_post_meta( $media_id, '_rt_media_thumbnails', true );
+
+			if ( ! empty( $new_thumbs ) && is_array( $new_thumbs ) ) {
+
+				$current_thumb = get_post_meta( $media_id, '_rt_media_video_thumbnail', true );
+				if ( $current_thumb ) {
+					$new_thumbs[] = $current_thumb;
+					update_post_meta( $media_id, '_rt_media_thumbnails',$new_thumbs );
+				}
+
+			}
+
+		}
+
+	}
+
+	/**
+	 * Callback request from the transcoder has been processed, so delete the flags
+	 * which are not necessary after processing the callback request
+	 *
+	 * @param  number 	$attachment_id     	Post ID of the media
+	 * @param  string 	$job_id 			Unique job ID of the transcoding request
+	 */
+	public function rtt_handle_callback_finished( $attachment_id = '', $job_id = '' ) {
+		if ( empty( $attachment_id ) ) return;
+
+		$is_retranscoding_job = get_post_meta( $attachment_id, '_rt_retranscoding_sent', true );
+
+		if ( $is_retranscoding_job ) {
+
+			delete_post_meta( $attachment_id, '_rt_retranscoding_sent' );
+
+		}
+
+	}
+
 }
 
 // Start up this plugin
