@@ -767,11 +767,18 @@ class RT_Transcoder_Handler {
 		do_action( 'transcoded_thumbnails_added', $post_id );
 
 		if ( $largest_thumb_url ) {
-			update_post_meta( $post_id, '_rt_media_video_thumbnail', $largest_thumb_url );
 
-			if ( 'rtmedia' === $post_thumbs_array['job_for'] ) {
-				$model->update( array( 'cover_art' => $largest_thumb ), array( 'media_id' => $post_id ) );
-				update_activity_after_thumb_set( $media_id );
+			$is_retranscoding_job = get_post_meta( $post_id, '_rt_retranscoding_sent', true );
+
+			if ( ! $is_retranscoding_job || rtt_is_override_thumbnail() ) {
+
+				update_post_meta( $post_id, '_rt_media_video_thumbnail', $largest_thumb_url );
+
+				if ( 'rtmedia' === $post_thumbs_array['job_for'] && class_exists( 'RTMediaModel' ) ) {
+
+						$model->update( array( 'cover_art' => $largest_thumb ), array( 'media_id' => $post_id ) );
+						update_activity_after_thumb_set( $media_id );
+				}
 			}
 
 			/**
@@ -973,6 +980,8 @@ class RT_Transcoder_Handler {
 			$send_alert = $this->nofity_transcoding_failed( $job_id, $error_msg );
 			die();
 		}
+
+		$attachment_id = '';
 
 		// @codingStandardsIgnoreStart
 		if ( isset( $job_for ) && ( 'wp-media' === $job_for ) ) {
