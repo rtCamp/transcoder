@@ -14,7 +14,7 @@ class RetranscodeMedia {
 
 		add_action( 'admin_menu',                       	array( $this, 'add_admin_menu' ) );
 		add_action( 'admin_enqueue_scripts',               	array( $this, 'admin_enqueues' ) );
-		add_action( 'wp_ajax_regeneratethumbnail',        	array( $this, 'ajax_process_retranscode_request' ) );
+		add_action( 'wp_ajax_retranscodemedia',        	array( $this, 'ajax_process_retranscode_request' ) );
 		add_filter( 'media_row_actions',                   	array( $this, 'add_media_row_action' ), 10, 2 );
 		add_action( 'admin_head-upload.php',              	array( $this, 'add_bulk_actions_via_javascript' ) );
 		add_action( 'admin_action_bulk_retranscode_media', 	array( $this, 'bulk_action_handler' ) ); // Top drowndown
@@ -67,7 +67,7 @@ class RetranscodeMedia {
 
 	// Add a "Retranscode Media" link to the media row actions
 	public function add_media_row_action( $actions, $post ) {
-		if ( ( 'audio/' != substr( $post->post_mime_type, 0, 6 ) && 'video/' != substr( $post->post_mime_type, 0, 6 ) ) || ! current_user_can( $this->capability ) )
+		if ( ( 'audio/' != substr( $post->post_mime_type, 0, 6 ) && 'video/' != substr( $post->post_mime_type, 0, 6 ) ) || 'audio/mpeg' === $post->post_mime_type || ! current_user_can( $this->capability ) )
 			return $actions;
 
 		$url = wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1&ids=' . $post->ID ), 'rt-retranscoder' );
@@ -127,7 +127,7 @@ class RetranscodeMedia {
 	}
 
 
-	// The user interface plus thumbnail regenerator
+	// The user interface
 	public function retranscode_interface() {
 		global $wpdb;
 
@@ -157,25 +157,28 @@ class RetranscodeMedia {
 				// Directly querying the database is normally frowned upon, but all
 				// of the API functions will return the full post objects which will
 				// suck up lots of memory. This is best, just not as future proof.
-				if ( ! $media = $wpdb->get_results( "SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND ( post_mime_type LIKE 'audio/%' OR post_mime_type LIKE 'video/%' ) ORDER BY ID DESC" ) ) {
+				if ( ! $media = $wpdb->get_results( "SELECT ID, post_mime_type FROM $wpdb->posts WHERE post_type = 'attachment' AND ( post_mime_type LIKE 'audio/%' OR post_mime_type LIKE 'video/%' ) ORDER BY ID DESC" ) ) {
 					echo '	<p>' . sprintf( __( "Unable to find any media. Are you sure <a href='%s'>some exist</a>?", 'transcoder' ), admin_url( 'upload.php?post_mime_type=image,video' ) ) . "</p></div>";
 					return;
 				}
 
 				// Generate the list of IDs
 				$ids = array();
-				foreach ( $media as $each )
-					$ids[] = $each->ID;
+				foreach ( $media as $each ) {
+					if ( ! in_array( $each['post_mime_type'], array( 'audio/mp3' ), true ) ) {
+						$ids[] = $each->ID;
+					}
+				}
 				$ids = implode( ',', $ids );
 			}
 
-			echo '	<p>' . __( "Please be patient while the media are getting sent for the retranscoding. This can take a while if your server is slow (inexpensive hosting) or if you have many media files. Do not navigate away from this page until this script is done or the media files wont get sent for the retranscoding. You will be notified via this page when the operation is completed.", 'transcoder' ) . '</p>';
+			echo '	<p>' . __( "Please be patient while the media are getting sent for the transcoding. This can take a while if your server is slow (inexpensive hosting) or if you have many media files. Do not navigate away from this page until this script is done or the media files wont get sent for the transcoding. You will be notified via this page when the operation is completed.", 'transcoder' ) . '</p>';
 
 			$count = count( $media );
 
 			$text_goback = ( ! empty( $_GET['goback'] ) ) ? sprintf( __( 'To go back to the previous page, <a href="%s">click here</a>.', 'transcoder' ), 'javascript:history.go(-1)' ) : '';
-			$text_failures = sprintf( __( 'All done! %1$s media file(s) were successfully sent for retranscoding in %2$s seconds and there were %3$s failure(s). To try retranscoding the failed media again, <a href="%4$s">click here</a>. %5$s', 'transcoder' ), "' + rt_successes + '", "' + rt_totaltime + '", "' + rt_errors + '", esc_url( wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1' ), 'transcoder' ) . '&ids=' ) . "' + rt_failedlist + '", $text_goback );
-			$text_nofailures = sprintf( __( 'All done! %1$s media file(s) were successfully sent for retranscoding in %2$s seconds and there were 0 failures. %3$s', 'transcoder' ), "' + rt_successes + '", "' + rt_totaltime + '", $text_goback );
+			$text_failures = sprintf( __( 'All done! %1$s media file(s) were successfully sent for transcoding in %2$s seconds and there were %3$s failure(s). To try transcoding the failed media again, <a href="%4$s">click here</a>. %5$s', 'transcoder' ), "' + rt_successes + '", "' + rt_totaltime + '", "' + rt_errors + '", esc_url( wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1' ), 'rt-retranscoder' ) . '&ids=' ) . "' + rt_failedlist + '", $text_goback );
+			$text_nofailures = sprintf( __( 'All done! %1$s media file(s) were successfully sent for transcoding in %2$s seconds and there were 0 failures. %3$s', 'transcoder' ), "' + rt_successes + '", "' + rt_totaltime + '", $text_goback );
 ?>
 
 
@@ -270,12 +273,12 @@ class RetranscodeMedia {
 				$.ajax({
 					type: 'POST',
 					url: ajaxurl,
-					data: { action: "regeneratethumbnail", id: id },
+					data: { action: "retranscodemedia", id: id },
 					success: function( response ) {
 						if ( response !== Object( response ) || ( typeof response.success === "undefined" && typeof response.error === "undefined" ) ) {
 							response = new Object;
 							response.success = false;
-							response.error = "<?php printf( esc_js( __( 'The resize request was abnormally terminated (ID %s). This is likely due to the image exceeding available memory or some other type of fatal error.', 'transcoder' ) ), '" + id + "' ); ?>";
+							response.error = "<?php printf( esc_js( __( 'The resize request was abnormally terminated (ID %s). This is likely due to the media exceeding available memory or some other type of fatal error.', 'transcoder' ) ), '" + id + "' ); ?>";
 						}
 
 						if ( response.success ) {
@@ -320,7 +323,7 @@ class RetranscodeMedia {
 
 	<p><?php printf( __( "Use this tool to retranscode media for all media (Audio/Video) files that you have uploaded to your blog. This is useful if you've old media files which are not transcoding. Old thumbnails generated will be kept to avoid any broken images due to hard-coded URLs.", 'transcoder' ) ); ?></p>
 
-	<p><?php printf( __( "You can regenerate specific media (rather than all media) from the <a href='%s'>Media</a> page. Hover over an media row and click the link to send just that one media for retranscoding or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to send multiple media (WordPress 3.1+ only) for retranscode.", 'transcoder' ), admin_url( 'upload.php' ) ); ?></p>
+	<p><?php printf( __( "You can transcode specific media (rather than all media) from the <a href='%s'>Media</a> page. Hover over an media row and click the link to send just that one media for retranscoding or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to send multiple media (WordPress 3.1+ only) for retranscode.", 'transcoder' ), admin_url( 'upload.php' ) ); ?></p>
 
 	<p><?php _e( "Sending media for retranscoding is not reversible, your allowed bandwidth will get utilised for each media that you will be sending for the retranscoding.", 'transcoder' ); ?></p>
 
@@ -350,10 +353,13 @@ class RetranscodeMedia {
 		$media = get_post( $id );
 
 		if ( ! $media || 'attachment' != $media->post_type || ( 'audio/' != substr( $media->post_mime_type, 0, 6 ) && 'video/' != substr( $media->post_mime_type, 0, 6 ) ) )
-			die( json_encode( array( 'error' => sprintf( __( 'Failed resize: %s is an invalid image ID.', 'transcoder' ), esc_html( $_REQUEST['id'] ) ) ) ) );
+			die( json_encode( array( 'error' => sprintf( __( 'Sending Failed: %s is an invalid media ID.', 'transcoder' ), esc_html( $_REQUEST['id'] ) ) ) ) );
+
+		if ( 'audio/mpeg' === $media->post_mime_type )
+			die( json_encode( array( 'error' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) is MP3 file already. No need to send for transcoding', 'transcoder' ), esc_html( get_the_title( $media->ID ) ), $media->ID ) ) ) );
 
 		if ( ! current_user_can( $this->capability ) )
-			$this->die_json_error_msg( $media->ID, __( "Your user account doesn't have permission to resize images", 'transcoder' ) );
+			$this->die_json_error_msg( $media->ID, __( "Your user account doesn't have permission to transcode", 'transcoder' ) );
 
 		// Check if media is already being transcoded
 
