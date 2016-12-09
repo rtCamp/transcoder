@@ -575,7 +575,7 @@ function rtt_delete_transcoded_files( $files ) {
 	$uploadpath = rtt_get_upload_dir();
 	foreach ( $files as $key => $file ) {
 		if ( ! empty( $file ) ) {
-			if ( ! file_exists( $file ) ) {
+			if ( file_exists( $file ) ) {
 				@unlink( path_join( $uploadpath['basedir'], $file ) );
 			}
 		}
