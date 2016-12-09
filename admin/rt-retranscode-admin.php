@@ -9,12 +9,38 @@ Retranscode media
 class RetranscodeMedia {
 	public $menu_id;
 
+	public $api_key;
+
+	public $stored_api_key;
+
+	public $usage_info;
+
 	// Functinallity initialization
 	public function __construct() {
 
+		$this->api_key			= get_site_option( 'rt-transcoding-api-key' );
+		$this->stored_api_key	= get_site_option( 'rt-transcoding-api-key-stored' );
+
+		$this->usage_info 		= get_site_option( 'rt-transcoding-usage' );
+
+		// Do not activate re-transcoding without valid license key
+		// Or usage are fully utilized
+		if ( empty( $this->api_key ) ) {
+			return;
+		}
+		if ( isset( $this->usage_info ) && is_array( $this->usage_info ) && array_key_exists( $this->api_key , $this->usage_info ) ) {
+			if ( is_object( $this->usage_info[ $this->api_key ] ) && isset( $this->usage_info[ $this->api_key ]->status ) && $this->usage_info[ $this->api_key ]->status ) {
+				if ( isset( $this->usage_info[ $this->api_key ]->remaining ) && $this->usage_info[ $this->api_key ]->remaining <= 0 ) {
+					return;
+				}
+			}
+		} else {
+			return;
+		}
+
 		add_action( 'admin_menu',                       	array( $this, 'add_admin_menu' ) );
 		add_action( 'admin_enqueue_scripts',               	array( $this, 'admin_enqueues' ) );
-		add_action( 'wp_ajax_retranscodemedia',        	array( $this, 'ajax_process_retranscode_request' ) );
+		add_action( 'wp_ajax_retranscodemedia',        		array( $this, 'ajax_process_retranscode_request' ) );
 		add_filter( 'media_row_actions',                   	array( $this, 'add_media_row_action' ), 10, 2 );
 		add_action( 'admin_head-upload.php',              	array( $this, 'add_bulk_actions_via_javascript' ) );
 		add_action( 'admin_action_bulk_retranscode_media', 	array( $this, 'bulk_action_handler' ) ); // Top drowndown
