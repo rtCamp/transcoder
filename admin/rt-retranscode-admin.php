@@ -60,10 +60,10 @@ class RetranscodeMedia {
 		add_submenu_page(
 			'rt-transcoder',
 			'Transcoder',
-			'Transcoder',
+			'Settings',
 		    'manage_options',
 		    'rt-transcoder',
-		    array( 'RT_Transcoder_Admin', 'settings_page' )
+		    array( $this, '_transcoder_settings_page' )
 		);
 		$this->menu_id = add_submenu_page(
 			'rt-transcoder',
@@ -75,6 +75,9 @@ class RetranscodeMedia {
 		);
 	}
 
+	public function _transcoder_settings_page(){
+		include_once( RT_TRANSCODER_PATH . 'admin/partials/rt-transcoder-admin-display.php' );
+	}
 
 	// Enqueue the needed Javascript and CSS
 	public function admin_enqueues( $hook_suffix ) {
@@ -170,32 +173,104 @@ class RetranscodeMedia {
 		if ( ! empty( $_POST['rt-retranscoder'] ) || ! empty( $_REQUEST['ids'] ) ) {
 			// Capability check
 			if ( ! current_user_can( $this->capability ) )
-				wp_die( __( 'Cheatin&#8217; uh?' ) );
+				wp_die( __( 'Cheatin&#8217; uh?', 'transcoder' ) );
 
 			// Form nonce check
 			check_admin_referer( 'rt-retranscoder' );
 
+			$file_size = 0;
+			$files = array();
 			// Create the list of image IDs
+			$usage_info = get_site_option( 'rt-transcoding-usage' );
 			if ( ! empty( $_REQUEST['ids'] ) ) {
+				if ( is_array( $_REQUEST['ids'] ) ){
+					$_REQUEST['ids'] = implode( ',', $_REQUEST['ids'] );
+				}
 				$media = array_map( 'intval', explode( ',', trim( $_REQUEST['ids'], ',' ) ) );
 				$ids = implode( ',', $media );
+				foreach ( $media as $key => $each ) {
+					$path = get_attached_file( $each );
+					if ( file_exists( $path ) ) {
+						$current_file_size = filesize( $path );
+						$file_size = $file_size + $current_file_size ;
+						$files[ $each ] = array(
+							'name' => esc_html( get_the_title( $each ) ),
+							'size' => $current_file_size
+						);
+					}
+				}
 			} else {
 				// Directly querying the database is normally frowned upon, but all
 				// of the API functions will return the full post objects which will
 				// suck up lots of memory. This is best, just not as future proof.
 				if ( ! $media = $wpdb->get_results( "SELECT ID, post_mime_type FROM $wpdb->posts WHERE post_type = 'attachment' AND ( post_mime_type LIKE 'audio/%' OR post_mime_type LIKE 'video/%' ) ORDER BY ID DESC" ) ) {
-					echo '	<p>' . sprintf( __( "Unable to find any media. Are you sure <a href='%s'>some exist</a>?", 'transcoder' ), admin_url( 'upload.php?post_mime_type=image,video' ) ) . "</p></div>";
+					echo '	<p>' . sprintf( __( "Unable to find any media. Are you sure <a href='%s'>some exist</a>?", 'transcoder' ), admin_url( 'upload.php' ) ) . "</p></div>";
 					return;
 				}
 
 				// Generate the list of IDs
 				$ids = array();
 				foreach ( $media as $each ) {
-					if ( ! in_array( $each['post_mime_type'], array( 'audio/mp3' ), true ) ) {
+					if ( ! in_array( $each->post_mime_type, array( 'audio/mp3', 'audio/mpeg' ), true ) ) {
 						$ids[] = $each->ID;
+						$path = get_attached_file( $each->ID );
+						if ( file_exists( $path ) ) {
+							$current_file_size = filesize( $path );
+							$file_size = $file_size + $current_file_size ;
+							$files[ $each->ID ] = array(
+								'name' => esc_html( get_the_title( $each->ID ) ),
+								'size' => $current_file_size
+							);
+						}
 					}
 				}
 				$ids = implode( ',', $ids );
+			}
+
+			if ( isset( $usage_info ) && is_array( $usage_info ) && array_key_exists( $this->api_key , $usage_info ) ) {
+				if ( is_object( $usage_info[ $this->api_key ] ) && isset( $usage_info[ $this->api_key ]->status ) && $usage_info[ $this->api_key ]->status ) {
+					if ( isset( $usage_info[ $this->api_key ]->remaining ) && $usage_info[ $this->api_key ]->remaining > 0 ) {
+						if ( $usage_info[ $this->api_key ]->remaining < $file_size ) {
+							$this->retranscode_admin_error_notice();
+							// User doesn't have enough bandwidth remaining for re-transcoding
+							echo '	<p>' . __( "You do not have sufficient bandwidth remaining to perform the transcoding.", 'transcoder' ) . '</p>';
+							echo '	<p><b>' . __( "Your remaining bandwidth is : ", 'transcoder' ) . size_format( $usage_info[ $this->api_key ]->remaining, 2 ) . '</b></p>';
+							echo '	<p><b>' . __( "Required bandwidth is: ", 'transcoder' ) . size_format( $file_size , 2 ) . '</b></p></div>';
+							if ( $usage_info[ $this->api_key ]->remaining > 0 ) {
+								if ( is_array( $files ) && count( $files ) > 0 ) {
+									echo '<div><p>' . sprintf( __( "You can select the files manually and try again.", 'transcoder' ) ) . "</p>";
+									echo '<form method="'. 'POST' . ' action="'. admin_url( 'admin.php' ) .'">';
+									wp_nonce_field('rt-retranscoder');
+									echo '<input type="hidden" name="page" value="rt-retranscoder">';
+									echo '<table border=0>';
+									?>
+										<tr>
+											<td><input type="submit" class="button button-primary button-small" value="Proceed"></td>
+											<td></td>
+										</tr>
+									<?php
+									foreach ( $files as $key => $value ) {
+									?>
+										<tr>
+											<td><label><input type="checkbox" name="ids[]" value="<?php echo $key; ?>" /> <?php echo $value['name']; ?> (ID <?php echo $key; ?>) </label></td>
+											<td><?php echo size_format( $value['size'], 2); ?></td>
+										</tr>
+									<?php
+									}
+									?>
+										<tr>
+											<td><input type="submit" class="button button-primary button-small" value="Proceed"></td>
+											<td></td>
+										</tr>
+									<?php
+									echo '</table>';
+									echo '</form></div>';
+								}
+							}
+							return;
+						}
+					}
+				}
 			}
 
 			echo '	<p>' . __( "Please be patient while the media are getting sent for the transcoding. This can take a while if your server is slow (inexpensive hosting) or if you have many media files. Do not navigate away from this page until this script is done or the media files wont get sent for the transcoding. You will be notified via this page when the operation is completed.", 'transcoder' ) . '</p>';
@@ -454,6 +529,21 @@ class RetranscodeMedia {
 	// Helper function to escape quotes in strings for use in Javascript
 	public function esc_quotes( $string ) {
 		return str_replace( '"', '\"', $string );
+	}
+
+	/**
+	 * Display admin notice.
+	 *
+	 * @since	1.0.0
+	 */
+	function retranscode_admin_error_notice() {
+	?>
+		<div class="error error-info retranscode-notice is-dismissible">
+			<p>
+				<?php esc_html_e( 'Insufficient bandwidth!', 'transcoder' ); ?>
+			</p>
+		</div>
+	<?php
 	}
 
 	/**
