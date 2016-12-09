@@ -119,8 +119,12 @@ class RT_Transcoder_Handler {
 					&& strtotime( $usage_info[ $this->api_key ]->plan->expires ) < time() ) {
 					$usage_info  = $this->update_usage( $this->api_key );
 				}
-				if ( isset( $usage_info[ $this->api_key ]->status ) && $usage_info[ $this->api_key ]->status ) {
+				if ( array_key_exists( $this->api_key , $usage_info ) && is_object( $usage_info[ $this->api_key ] ) && isset( $usage_info[ $this->api_key ]->status ) && $usage_info[ $this->api_key ]->status ) {
 					if ( isset( $usage_info[ $this->api_key ]->remaining ) && $usage_info[ $this->api_key ]->remaining > 0 ) {
+
+						// Enable re-transcoding
+						include_once( RT_TRANSCODER_PATH . 'admin/rt-retranscode-admin.php' );
+
 						if ( $usage_info[ $this->api_key ]->remaining < 524288000 && ! get_site_option( 'rt-transcoding-usage-limit-mail' ) ) {
 							$this->nearing_usage_limit( $usage_info );
 						} elseif ( $usage_info[ $this->api_key ]->remaining > 524288000 && get_site_option( 'rt-transcoding-usage-limit-mail' ) ) {
