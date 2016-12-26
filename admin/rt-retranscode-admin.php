@@ -210,7 +210,7 @@ class RetranscodeMedia {
 
 				// Generate the list of IDs
 				$ids = array();
-				foreach ( $media as $each ) {
+				foreach ( $media as $i => $each ) {
 					if ( ! in_array( $each->post_mime_type, array( 'audio/mp3', 'audio/mpeg' ), true ) ) {
 						$ids[] = $each->ID;
 						$path = get_attached_file( $each->ID );
@@ -222,9 +222,16 @@ class RetranscodeMedia {
 								'size' => $current_file_size
 							);
 						}
+					} else if ( in_array( $each->post_mime_type, array( 'audio/mp3', 'audio/mpeg' ), true ) ) {
+						unset( $media[ $i ] );
 					}
 				}
 				$ids = implode( ',', $ids );
+			}
+
+			if ( empty( $ids ) ) {
+				echo '	<p>' . __( "There are no media available to send for transcoding.", 'transcoder' ) . '</p>';
+				return;
 			}
 
 			if ( isset( $usage_info ) && is_array( $usage_info ) && array_key_exists( $this->api_key , $usage_info ) ) {
