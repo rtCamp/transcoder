@@ -245,7 +245,7 @@ class RetranscodeMedia {
 									echo '<table border=0>';
 									?>
 										<tr>
-											<td><input type="submit" class="button button-primary button-small" value="Proceed"></td>
+											<td><input type="submit" class="button button-primary button-small" value="<?php echo __( 'Proceed with retranscoding', 'transcoder'); ?>"></td>
 											<td></td>
 										</tr>
 									<?php
@@ -259,7 +259,7 @@ class RetranscodeMedia {
 									}
 									?>
 										<tr>
-											<td><input type="submit" class="button button-primary button-small" value="Proceed"></td>
+											<td><input type="submit" class="button button-primary button-small" value="<?php echo __( 'Proceed with retranscoding', 'transcoder'); ?>" ></td>
 											<td></td>
 										</tr>
 									<?php
@@ -273,7 +273,7 @@ class RetranscodeMedia {
 				}
 			}
 
-			echo '	<p>' . __( "Please be patient while the media are getting sent for the transcoding. This can take a while if your server is slow (inexpensive hosting) or if you have many media files. Do not navigate away from this page until this script is done or the media files wont get sent for the transcoding. You will be notified via this page when the operation is completed.", 'transcoder' ) . '</p>';
+			echo '	<p>' . __( "Your files are being re-transcoded. Do not navigate away from this page until the process is completed, as doing so will prematurely abort the script. Retranscoding can take a while, especially for larger files. You can view the progress below.", 'transcoder' ) . '</p>';
 
 			$count = count( $media );
 
@@ -422,15 +422,15 @@ class RetranscodeMedia {
 	<form method="post" action="">
 <?php wp_nonce_field('rt-retranscoder') ?>
 
-	<p><?php printf( __( "Use this tool to retranscode media for all media (Audio/Video) files that you have uploaded to your blog. This is useful if you've old media files which are not transcoding. Old thumbnails generated will be kept to avoid any broken images due to hard-coded URLs.", 'transcoder' ) ); ?></p>
+	<p><?php printf( __( "This tool will retranscode ALL audio/video media uploaded to your website. This can be handy if you need to transcode media files uploaded in the past.", 'transcoder' ) ); ?>
 
-	<p><?php printf( __( "You can transcode specific media (rather than all media) from the <a href='%s'>Media</a> page. Hover over an media row and click the link to send just that one media for retranscoding or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to send multiple media (WordPress 3.1+ only) for retranscode.", 'transcoder' ), admin_url( 'upload.php' ) ); ?></p>
+	<i><?php printf( __( "Sending your entire media library for retranscoding can consume a lot of your bandwidth allowance, so use this tool with care.", 'transcoder' ) ); ?></i></p>
 
-	<p><?php _e( "Sending media for retranscoding is not reversible, your allowed bandwidth will get utilised for each media that you will be sending for the retranscoding.", 'transcoder' ); ?></p>
+	<p><?php printf( __( "You can retranscode specific media files (rather than ALL media) from the <a href='%s'>Media</a> page using Bulk Action via drop down or mouse hover a specific media (audio/video) file.", 'transcoder' ), admin_url( 'upload.php' ) ); ?></p>
 
 	<p><?php _e( 'To begin, just press the button below.', 'transcoder' ); ?></p>
 
-	<p><input type="submit" class="button hide-if-no-js" name="rt-retranscoder" id="rt-retranscoder" value="<?php _e( 'Retranscode All Media', 'transcoder' ) ?>" /></p>
+	<p><input type="submit" class="button hide-if-no-js button button-primary" name="rt-retranscoder" id="rt-retranscoder" value="<?php _e( 'Retranscode All Media', 'transcoder' ) ?>" /></p>
 
 	<noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'transcoder' ) ?></em></p></noscript>
 
@@ -454,7 +454,7 @@ class RetranscodeMedia {
 		$media = get_post( $id );
 
 		if ( ! $media || 'attachment' != $media->post_type || ( 'audio/' != substr( $media->post_mime_type, 0, 6 ) && 'video/' != substr( $media->post_mime_type, 0, 6 ) ) )
-			die( json_encode( array( 'error' => sprintf( __( 'Sending Failed: %s is an invalid media ID.', 'transcoder' ), esc_html( $_REQUEST['id'] ) ) ) ) );
+			die( json_encode( array( 'error' => sprintf( __( 'Sending Failed: %s is an invalid media ID/type.', 'transcoder' ), esc_html( $_REQUEST['id'] ) ) ) ) );
 
 		if ( 'audio/mpeg' === $media->post_mime_type )
 			die( json_encode( array( 'error' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) is MP3 file already. No need to send for transcoding', 'transcoder' ), esc_html( get_the_title( $media->ID ) ), $media->ID ) ) ) );
