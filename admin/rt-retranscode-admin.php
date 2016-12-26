@@ -210,7 +210,7 @@ class RetranscodeMedia {
 
 				// Generate the list of IDs
 				$ids = array();
-				foreach ( $media as $each ) {
+				foreach ( $media as $i => $each ) {
 					if ( ! in_array( $each->post_mime_type, array( 'audio/mp3', 'audio/mpeg' ), true ) ) {
 						$ids[] = $each->ID;
 						$path = get_attached_file( $each->ID );
@@ -222,6 +222,8 @@ class RetranscodeMedia {
 								'size' => $current_file_size
 							);
 						}
+					} else if ( in_array( $each->post_mime_type, array( 'audio/mp3', 'audio/mpeg' ), true ) ) {
+						unset( $media[ $i ] );
 					}
 				}
 				$ids = implode( ',', $ids );
