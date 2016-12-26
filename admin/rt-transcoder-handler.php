@@ -632,7 +632,7 @@ class RT_Transcoder_Handler {
 
 				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $api_key ]->used, $usage_details[ $api_key ]->total ), false );
 
-				$content .= '<p>' . esc_html__( 'Usage will reset automatically every month.', 'transcoder' ) . '</p>';
+				$content .= '<p>' . esc_html__( 'Usage will automatically reset at the end of every month.', 'transcoder' ) . '</p>';
 
 				if ( 'free' === $plan_name ) {
 					$content .= '<p>' . esc_html__( 'Upgrade for more bandwidth.', 'transcoder' ) . '</p>';
