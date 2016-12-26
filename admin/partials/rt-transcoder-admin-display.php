@@ -185,7 +185,7 @@
 							'i' => array(),
 							'strong' => array(),
 						);
-						printf( wp_kses( __( '<strong>Note</strong>: The Transcoder service works with publicly accessible websites only. If you are using Transcoder on a <strong>locally hosted website</strong> (i.e. <strong>localhost</strong>), we will be unable to identify the source of your audio/video transcoding requests.', 'transcoder' ), $allowed_tags ) );
+						printf( wp_kses( __( '<strong>Note</strong>: Transcoder will only work on publicly accessible websites. If you are using Transcoder on a <strong>locally hosted website</strong> (i.e. <strong>localhost</strong>), we will be unable to identify the source of your audio/video transcoding requests.', 'transcoder' ), $allowed_tags ) );
 					?>
 
 				</p>
@@ -199,9 +199,9 @@
 					?>
 					<table class="form-table">
 						<tr valign="top">
-							<th scope="row">
+							<td scope="row">
 								<?php esc_html_e( 'Number of video thumbnails generated', 'transcoder' ); ?>
-							</th>
+							</td>
 							<td>
 								<?php
 								$number_of_thumbnails = get_site_option( 'number_of_thumbs', 5 );
@@ -221,9 +221,9 @@
 							</td>
 						</tr>
 						<tr valign="top">
-							<th scope="row">
-								<?php esc_html_e( 'Override the default video thumbnail in re-transcoding', 'transcoder' ); ?>
-							</th>
+							<td scope="row">
+								<?php esc_html_e( 'Over-write video thumbnails after retranscoding', 'transcoder' ); ?>
+							</td>
 							<td>
 								<?php
 								$rtt_override_thumbnail = get_site_option( 'rtt_override_thumbnail', false );
@@ -239,14 +239,14 @@
 									<i class="dashicons dashicons-info rtmicon"></i>
 									<span class="rtm-tip">
 										<?php
-										esc_html_e( 'If you select this option, the current thumbnail you set for the media will get override with the newly re-transcoded/generated thumbnails. And if this option is not selected then current thumbnail will stay as it is.', 'transcoder' );
+										esc_html_e( 'If enabled, Transcoder will replace existing media thumbnails with regenerated ones after retranscoding. If disabled, media thumbnails will remain untouched.', 'transcoder' );
 										?>
 									</span>
 								</span>
 							</td>
 						</tr>
 					</table>
-					<p><?php echo esc_html__( 'Visit our', 'transcoder' ) . ' <a href="https://rtmedia.io/docs/transcoder/">' . esc_html__( 'document page', 'transcoder' ) . '</a> ' . esc_html__( 'for more details', 'transcoder' ) . '.'; ?></p>
+					<p><?php echo esc_html__( 'Visit our', 'transcoder' ) . ' <a href="https://rtmedia.io/docs/transcoder/">' . esc_html__( 'documentation page', 'transcoder' ) . '</a> ' . esc_html__( 'for more details', 'transcoder' ) . '.'; ?></p>
 					<div class="rtm-button-container">
 						<div class="rtm-social-links alignleft">
 							<a href="http://twitter.com/rtMediaWP" class="twitter" target="_blank">
