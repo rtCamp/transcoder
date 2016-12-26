@@ -227,6 +227,11 @@ class RetranscodeMedia {
 				$ids = implode( ',', $ids );
 			}
 
+			if ( empty( $ids ) ) {
+				echo '	<p>' . __( "There are no media available to send for transcoding.", 'transcoder' ) . '</p>';
+				return;
+			}
+
 			if ( isset( $usage_info ) && is_array( $usage_info ) && array_key_exists( $this->api_key , $usage_info ) ) {
 				if ( is_object( $usage_info[ $this->api_key ] ) && isset( $usage_info[ $this->api_key ]->status ) && $usage_info[ $this->api_key ]->status ) {
 					if ( isset( $usage_info[ $this->api_key ]->remaining ) && $usage_info[ $this->api_key ]->remaining > 0 ) {
