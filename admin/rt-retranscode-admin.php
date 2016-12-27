@@ -4,6 +4,8 @@
 
 Retranscode media
 
+The code and UI is borrowed from the following plugin (Author: Alex Mills).
+https://wordpress.org/plugins/regenerate-thumbnails/
 **************************************************************************/
 
 class RetranscodeMedia {

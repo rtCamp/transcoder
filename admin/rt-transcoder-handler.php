@@ -700,6 +700,11 @@ class RT_Transcoder_Handler {
 			$model           	= new RTMediaModel();
 			$media             	= $model->get( array( 'media_id' => $post_id ) );
 			$media_id          	= $media[0]->id;
+
+			$this->media_author = $media[0]->media_author;
+			$this->uploaded['context']      = $media[0]->context;
+			$this->uploaded['context_id']   = $media[0]->context_id;
+			$this->uploaded['media_author'] = $media[0]->media_author;
 		}
 
 		$largest_thumb          = false;
