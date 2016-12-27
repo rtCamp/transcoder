@@ -3,8 +3,8 @@ Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 4.6.1
-Stable tag: 1.0.8
+Tested up to: 4.7
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,24 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.1 [Dec 27, 2016] =
+* NEW FEATURES
+
+ * Retranscoding service to regenerate media thumbnails and retranscode media
+ * Added option in settings to override the current video thumbnail after retranscoding
+
+* ENHANCEMENTS
+
+ * Added filters to disable the emails getting sent to users and administrators
+ * Added action before the transcoded thumbnails are stored
+ * Added action before transcoded media is stored
+ * Added action after callback response is processed
+
+* FIXED
+
+ * Improved the condition checking and fixed several bugs
+ * Fixed transcoded media not getting deleted bug
+
 = 1.0.8 [Oct 05, 2016] =
 * Update the notice messages
 * Fix broken media URL on multisite
@@ -106,5 +124,5 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
-= 1.0.8 =
-Fixed broken media URL on multisite and Fixed broken media URL on multisite
+= 1.1 =
+Introduced retranscoding service to retranscode the media and the regeneration of the video thumbnails
