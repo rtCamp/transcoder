@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/rtMediaWP/transcoder.svg?branch=master)](https://travis-ci.org/rtMediaWP/transcoder)
-
 ![alt text](https://plugins.svn.wordpress.org/transcoder//assets/banner-772x250.jpg)
 
 # Transcoder #
@@ -62,6 +60,28 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 1. Transcoder Settings
 
 ## Changelog ##
+#### 1.1 [Dec 27, 2016] ####
+* NEW FEATURES
+
+ * Retranscoding service to regenerate media thumbnails and retranscode media
+ * Added option in settings to override the current video thumbnail after retranscoding
+
+* ENHANCEMENTS
+
+ * Added filters to disable the emails getting sent to users and administrators
+ * Added action before the transcoded thumbnails are stored
+ * Added action before transcoded media is stored
+ * Added action after callback response is processed
+
+* FIXED
+
+ * Improved the condition checking and fixed several bugs
+ * Fixed transcoded media not getting deleted bug
+
+#### 1.0.8 [Oct 05, 2016] ####
+* Update the notice messages
+* Fix broken media URL on multisite
+
 #### 1.0.7 [Sep 27, 2016] ####
 * Fix language directory path
 * Fix localhost check bug
@@ -101,4 +121,4 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 #### 1.0.0 ####
 Initial release
 
-Add thumbnail automatically for the videos uploaded from the rtmedia shortcode, Update URLs of multiple media present in single activity and fix the language directory path.
+Introduced retranscoding service to retranscode the media and the regeneration of the video thumbnails
