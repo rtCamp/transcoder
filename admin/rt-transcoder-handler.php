@@ -114,13 +114,17 @@ class RT_Transcoder_Handler {
 			add_filter( 'rtmedia_allowed_types', array( $this, 'allowed_types_admin_settings' ), 10, 1 );
 			$usage_info = get_site_option( 'rt-transcoding-usage' );
 
-			if ( isset( $usage_info ) && is_array( $usage_info ) ) {
+			if ( isset( $usage_info ) && is_array( $usage_info ) && array_key_exists( $this->api_key , $usage_info ) ) {
 				if ( isset( $usage_info[ $this->api_key ]->plan->expires )
 					&& strtotime( $usage_info[ $this->api_key ]->plan->expires ) < time() ) {
 					$usage_info  = $this->update_usage( $this->api_key );
 				}
-				if ( isset( $usage_info[ $this->api_key ]->status ) && $usage_info[ $this->api_key ]->status ) {
+				if ( array_key_exists( $this->api_key , $usage_info ) && is_object( $usage_info[ $this->api_key ] ) && isset( $usage_info[ $this->api_key ]->status ) && $usage_info[ $this->api_key ]->status ) {
 					if ( isset( $usage_info[ $this->api_key ]->remaining ) && $usage_info[ $this->api_key ]->remaining > 0 ) {
+
+						// Enable re-transcoding
+						include_once( RT_TRANSCODER_PATH . 'admin/rt-retranscode-admin.php' );
+
 						if ( $usage_info[ $this->api_key ]->remaining < 524288000 && ! get_site_option( 'rt-transcoding-usage-limit-mail' ) ) {
 							$this->nearing_usage_limit( $usage_info );
 						} elseif ( $usage_info[ $this->api_key ]->remaining > 524288000 && get_site_option( 'rt-transcoding-usage-limit-mail' ) ) {
@@ -156,7 +160,7 @@ class RT_Transcoder_Handler {
 	 *
 	 * @param array  $metadata 			Metadata of the attachment.
 	 * @param int    $attachment_id		ID of attachment.
-	 * @param string $autoformat		If true then generating thumbs only else also trancode video.
+	 * @param string $autoformat		If true then generating thumbs only else trancode video.
 	 */
 	function wp_media_transcoding( $wp_metadata, $attachment_id, $autoformat = true ) {
 		if ( empty( $wp_metadata['mime_type'] ) ) {
@@ -628,7 +632,7 @@ class RT_Transcoder_Handler {
 
 				$content .= $usage->progress_ui( $usage->progress( $usage_details[ $api_key ]->used, $usage_details[ $api_key ]->total ), false );
 
-				$content .= '<p>' . esc_html__( 'Usage will reset automatically every month.', 'transcoder' ) . '</p>';
+				$content .= '<p>' . esc_html__( 'Usage will automatically reset at the end of every month.', 'transcoder' ) . '</p>';
 
 				if ( 'free' === $plan_name ) {
 					$content .= '<p>' . esc_html__( 'Upgrade for more bandwidth.', 'transcoder' ) . '</p>';
@@ -680,6 +684,8 @@ class RT_Transcoder_Handler {
 		// Parse incoming $post_array into an array and merge it with $defaults
 		$post_array = wp_parse_args( $post_array, $defaults );
 
+		do_action( 'rtt_before_thumbnail_store', $post_array['post_id'], $post_array );
+
 		$post_id 				= $post_array['post_id'];
 		$post_info              = get_post( $post_id );
 		$post_date_string       = new DateTime( $post_info->post_date );
@@ -690,7 +696,7 @@ class RT_Transcoder_Handler {
 		$post_thumbs_array      = maybe_unserialize( $post_thumbs );
 		$largest_thumb_size     = 0;
 
-		if ( 'rtmedia' === $post_thumbs_array['job_for'] ) {
+		if ( 'rtmedia' === $post_thumbs_array['job_for'] && class_exists( 'RTMediaModel' ) ) {
 			$model           	= new RTMediaModel();
 			$media             	= $model->get( array( 'media_id' => $post_id ) );
 			$media_id          	= $media[0]->id;
@@ -725,6 +731,7 @@ class RT_Transcoder_Handler {
 			 *                                 	and $thumb_upload_info['file'] contains the file physical path
 			 * @param int  $post_id 			Contains the attachment ID for which transcoded file is uploaded
 			 */
+
 			$thumb_upload_info = apply_filters( 'transcoded_file_stored', $thumb_upload_info, $post_id );
 
 			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
@@ -764,11 +771,18 @@ class RT_Transcoder_Handler {
 		do_action( 'transcoded_thumbnails_added', $post_id );
 
 		if ( $largest_thumb_url ) {
-			update_post_meta( $post_id, '_rt_media_video_thumbnail', $largest_thumb_url );
 
-			if ( 'rtmedia' === $post_thumbs_array['job_for'] ) {
-				$model->update( array( 'cover_art' => $largest_thumb ), array( 'media_id' => $post_id ) );
-				update_activity_after_thumb_set( $media_id );
+			$is_retranscoding_job = get_post_meta( $post_id, '_rt_retranscoding_sent', true );
+
+			if ( ! $is_retranscoding_job || rtt_is_override_thumbnail() ) {
+
+				update_post_meta( $post_id, '_rt_media_video_thumbnail', $largest_thumb_url );
+
+				if ( 'rtmedia' === $post_thumbs_array['job_for'] && class_exists( 'RTMediaModel' ) ) {
+
+						$model->update( array( 'cover_art' => $largest_thumb ), array( 'media_id' => $post_id ) );
+						update_activity_after_thumb_set( $media_id );
+				}
 			}
 
 			/**
@@ -798,6 +812,8 @@ class RT_Transcoder_Handler {
 		$transcoded_files = false;
 		$mail = true;
 		global $wpdb;
+
+		do_action( 'rtt_before_transcoded_media_store', $attachment_id, $file_post_array );
 
 		if ( isset( $file_post_array ) && is_array( $file_post_array ) && ( count( $file_post_array > 0 ) ) ) {
 			foreach ( $file_post_array as $key => $format ) {
@@ -969,6 +985,8 @@ class RT_Transcoder_Handler {
 			die();
 		}
 
+		$attachment_id = '';
+
 		// @codingStandardsIgnoreStart
 		if ( isset( $job_for ) && ( 'wp-media' === $job_for ) ) {
 			if ( isset( $job_id ) ) {
@@ -1087,6 +1105,17 @@ class RT_Transcoder_Handler {
 			}
 		}
 		// @codingStandardsIgnoreEnd
+
+		/**
+		 * Allow users/plugins to perform action after response received from the transcoder is
+		 * processed
+		 *
+		 * @since 1.0.9
+		 *
+		 * @param number 	$attachment_id 	Attachment ID for which the callback has sent from the transcoder
+		 * @param number 	$job_id 		The transcoding job ID
+		 */
+		do_action( 'rtt_handle_callback_finished', $attachment_id, $job_id );
 	}
 
 	/**
@@ -1198,6 +1227,18 @@ class RT_Transcoder_Handler {
 			return true;
 		}
 
+		/**
+		 * Filter to disable the notification sent to the admins/users
+		 *
+		 * @param boolean 		By default it is true. If false is passed the email wont
+		 *                      get sent to the any user
+		 */
+		$send_notification = apply_filters( 'rtt_send_notification', true );
+
+		if ( false === $send_notification ) {
+			return true;
+		}
+
 		if ( $include_admin ) {
 			$users   = get_users( array( 'role' => 'administrator' ) );
 			if ( $users ) {
@@ -1251,6 +1292,15 @@ class RT_Transcoder_Handler {
 			$author_id 		= get_post_field( 'post_author', $attachment_id );
 			$email_ids[] 	= get_the_author_meta( 'user_email', $author_id );
 		}
+
+		/**
+		 * Allows users/plugins to alter the email id of a user
+		 *
+		 * @param array $email_ids 	Email id of the user who owns the media
+		 * @param string $job_id 	Job ID sent by the transcoder
+		 */
+		$email_ids = apply_filters( 'rtt_nofity_transcoding_failed', $email_ids, $job_id );
+
 		$this->send_notification( $email_ids, $subject, $message, $include_admin = true );
 	}
 
