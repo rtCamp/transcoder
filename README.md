@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/rtMediaWP/transcoder.svg?branch=master)](https://travis-ci.org/rtMediaWP/transcoder)
+
 ![alt text](https://plugins.svn.wordpress.org/transcoder//assets/banner-772x250.jpg)
 
 # Transcoder #
