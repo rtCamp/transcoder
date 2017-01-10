@@ -40,7 +40,7 @@ function rta() {
 function rt_media_shortcode( $attrs, $content = '' ) {
 
 	if ( empty( $attrs['attachment_id'] ) ) {
-	    return false;
+		return false;
 	}
 
 	$attachment_id = $attrs['attachment_id'];
@@ -64,7 +64,7 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 		$attrs['poster'] 	= $poster;
 
 		foreach ( $attrs as $key => $value ) {
-		    $video_shortcode_attributes .= ' ' . $key . '="' . $value . '"';
+			$video_shortcode_attributes .= ' ' . $key . '="' . $value . '"';
 		}
 
 		$content = do_shortcode( "[video {$video_shortcode_attributes}]" );
@@ -76,7 +76,7 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 		$audio_shortcode_attributes = 'src="' . $media_url . '"';
 
 		foreach ( $attrs as $key => $value ) {
-		    $audio_shortcode_attributes .= ' ' . $key . '="' . $value . '"';
+			$audio_shortcode_attributes .= ' ' . $key . '="' . $value . '"';
 		}
 
 		$content = do_shortcode( "[audio {$audio_shortcode_attributes}]" );
@@ -133,7 +133,7 @@ function is_file_being_transcoded( $attachment_id ) {
 function rt_media_get_video_thumbnail( $attachment_id ) {
 
 	if ( empty( $attachment_id ) ) {
-	    return;
+		return;
 	}
 
 	$thumbnails = get_post_meta( $attachment_id, '_rt_media_video_thumbnail', true );
@@ -150,11 +150,11 @@ function rt_media_get_video_thumbnail( $attachment_id ) {
 
 		if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
 			$final_file_url = $file_url;
-	    } else {
-	    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
-	    }
+		} else {
+			$final_file_url = $uploads['baseurl'] . '/' . $file_url;
+		}
 
-	    $final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $attachment_id );
+		$final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $attachment_id );
 
 		return $final_file_url;
 	}
@@ -175,7 +175,7 @@ function rt_media_get_video_thumbnail( $attachment_id ) {
 function rtt_get_media_url( $attachment_id, $media_type = 'mp4' ) {
 
 	if ( empty( $attachment_id ) ) {
-	    return;
+		return;
 	}
 
 	$medias = get_post_meta( $attachment_id, '_rt_media_transcoded_files', true );
@@ -190,10 +190,10 @@ function rtt_get_media_url( $attachment_id, $media_type = 'mp4' ) {
 		}
 		if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
 			$final_file_url = $file_url;
-	    } else {
-	    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
-	    }
-	    $final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $attachment_id );
+		} else {
+			$final_file_url = $uploads['baseurl'] . '/' . $file_url;
+		}
+		$final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $attachment_id );
 	} else {
 		$final_file_url = wp_get_attachment_url( $attachment_id );
 	}
@@ -291,22 +291,22 @@ if ( ! function_exists( 'rtt_get_edit_post_link' ) ) {
 		}
 
 		if ( 'revision' === $post->post_type ) {
-		    $action = '';
+			$action = '';
 		} elseif ( 'display' === $context ) {
-		    $action = '&amp;action=edit';
+			$action = '&amp;action=edit';
 		} else {
-		    $action = '&action=edit';
+			$action = '&action=edit';
 		}
 
 		$post_type_object = get_post_type_object( $post->post_type );
 		if ( ! $post_type_object ) {
-		    return;
+			return;
 		}
 
 		if ( $post_type_object->_edit_link ) {
-		    $link = admin_url( sprintf( $post_type_object->_edit_link . $action, $post->ID ) );
+			$link = admin_url( sprintf( $post_type_object->_edit_link . $action, $post->ID ) );
 		} else {
-		    $link = '';
+			$link = '';
 		}
 
 		return $link;
@@ -634,3 +634,15 @@ function rtt_is_override_thumbnail( $attachment_id = '' ) {
 	return $rtt_override_thumbnail;
 }
 
+/**
+ * Get remote IP address
+ * @return string Remote IP address
+ */
+function rtt_get_remote_ip_address() {
+	if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+		return $_SERVER['HTTP_CLIENT_IP'];
+	} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+		return $_SERVER['HTTP_X_FORWARDED_FOR'];
+	}
+	return $_SERVER['REMOTE_ADDR'];
+}
