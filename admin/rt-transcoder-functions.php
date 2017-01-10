@@ -639,9 +639,9 @@ function rtt_is_override_thumbnail( $attachment_id = '' ) {
  * @return string Remote IP address
  */
 function rtt_get_remote_ip_address() {
-	if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+	if ( isset( $_SERVER['HTTP_CLIENT_IP'] ) && ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
 		return $_SERVER['HTTP_CLIENT_IP'];
-	} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+	} elseif ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) && ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
 		return $_SERVER['HTTP_X_FORWARDED_FOR'];
 	}
 	return $_SERVER['REMOTE_ADDR'];
