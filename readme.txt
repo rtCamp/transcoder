@@ -4,7 +4,7 @@ Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
 Tested up to: 4.7
-Stable tag: 1.1
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,11 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.1.1 [Jan 10, 2017] =
+* FIXED
+
+ * False positive result of localhost checking
+
 = 1.1 [Dec 27, 2016] =
 * NEW FEATURES
 
@@ -124,5 +129,5 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
-= 1.1 =
-Introduced retranscoding service to retranscode the media and the regeneration of the video thumbnails
+= 1.1.1 =
+Fix the false positive localhost checking bug.
