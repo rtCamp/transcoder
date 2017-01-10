@@ -638,11 +638,11 @@ function rtt_is_override_thumbnail( $attachment_id = '' ) {
  * Get remote IP address
  * @return string Remote IP address
  */
-function get_remote_ip_address() {
-	if ( ! empty( $_SERVER[ 'HTTP_CLIENT_IP' ] ) ) {
-		return $_SERVER[ 'HTTP_CLIENT_IP' ];
-	} elseif ( ! empty( $_SERVER[ 'HTTP_X_FORWARDED_FOR' ] ) ) {
-		return $_SERVER[ 'HTTP_X_FORWARDED_FOR' ];
+function rtt_get_remote_ip_address() {
+	if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+		return $_SERVER['HTTP_CLIENT_IP'];
+	} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+		return $_SERVER['HTTP_X_FORWARDED_FOR'];
 	}
-	return $_SERVER[ 'REMOTE_ADDR' ];
+	return $_SERVER['REMOTE_ADDR'];
 }
