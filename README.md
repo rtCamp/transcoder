@@ -60,6 +60,11 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 1. Transcoder Settings
 
 ## Changelog ##
+#### 1.1.1 [Jan 10, 2017] ####
+* FIXED
+
+ * False positive result of localhost checking
+
 #### 1.1 [Dec 27, 2016] ####
 * NEW FEATURES
 
@@ -121,4 +126,4 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 #### 1.0.0 ####
 Initial release
 
-Introduced retranscoding service to retranscode the media and the regeneration of the video thumbnails
+Fix the false positive localhost checking bug.
