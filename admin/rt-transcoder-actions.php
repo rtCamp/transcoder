@@ -168,7 +168,6 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 }
 
 add_action( 'rtmedia_add_edit_tab_content', 'rtt_rtmedia_vedio_editor_content', 1000 );
-
 if ( ! function_exists( 'rtt_set_video_thumbnail' ) ) {
 
 	/**
@@ -235,8 +234,54 @@ function rtt_update_wp_media_thumbnail( $thumb_url, $attachment_id ) {
 				$model->update( array( 'cover_art' => $thumb_url ), array( 'media_id' => $attachment_id ) );
 			}
 		}
-
 	}
 }
 
 add_action( 'transcoded_thumb_added', 'rtt_update_wp_media_thumbnail', 10, 2 );
+
+
+
+/**
+ * Check the transcoder media usage if it has being expired.
+ *
+ * @since 1.1.2
+ */
+function rtt_init_callback() {
+
+	if ( is_multisite() ) {
+		$transcoder_usage_check = get_site_transient( 'rtt_transcoder_usage_check' );
+	} else {
+		$transcoder_usage_check = get_transient( 'rtt_transcoder_usage_check' );
+	}
+
+	// check if transcoder usage check transient is expired or not.
+	if ( empty( $transcoder_usage_check ) || false === $transcoder_usage_check ) {
+
+		// will expired after every half an hour.
+		if ( is_multisite() ) {
+			set_site_transient( 'rtt_transcoder_usage_check', true, 30 * MINUTE_IN_SECONDS );
+		} else {
+			set_transient( 'rtt_transcoder_usage_check', true, 30 * MINUTE_IN_SECONDS );
+		}
+
+		$api_key			= get_site_option( 'rt-transcoding-api-key' );
+		$usage_info 		= get_site_option( 'rt-transcoding-usage' );
+
+		if ( isset( $usage_info ) && is_array( $usage_info ) && array_key_exists( $api_key , $usage_info ) ) {
+			if ( is_object( $usage_info[ $api_key ] ) && isset( $usage_info[ $api_key ]->status ) && $usage_info[ $api_key ]->status ) {
+				if ( ( ! isset( $usage_info[ $api_key ]->remaining ) || isset( $usage_info[ $api_key ]->remaining ) && $usage_info[ $api_key ]->remaining <= 0  ) && class_exists( 'RT_Transcoder_Handler' ) ) {
+					$transcoder_handler = new RT_Transcoder_Handler();
+
+					// check is api key is valid or not.
+					if ( $transcoder_handler->is_valid_key( $api_key ) ) {
+
+						// set the data usage limit of the api key.
+						$transcoder_handler->update_usage( $api_key );
+					}
+				}
+			}
+		}
+	}
+
+}
+add_action( 'init', 'rtt_init_callback', 101 );
