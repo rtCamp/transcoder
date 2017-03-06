@@ -74,7 +74,7 @@ class RT_Transcoder_Handler {
 	 * @access   public
 	 * @var      string    $video_extensions    Video extensions with comma separated.
 	 */
-	public $video_extensions = ',mov,m4v,m2v,avi,mpg,flv,wmv,mkv,webm,ogv,mxf,asf,vob,mts,qt,mpeg,3gp';
+	public $video_extensions = ',mov,m4v,m2v,avi,mpg,flv,wmv,mkv,webm,ogv,mxf,asf,vob,mts,qt,mpeg,x-msvideo,3gp';
 
 	/**
 	 * Audio extensions with comma separated.
