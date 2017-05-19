@@ -720,12 +720,13 @@ class RT_Transcoder_Handler {
 			$temp_name             	= urldecode( $temp_name );
 			$temp_name_array       	= explode( '/', $temp_name );
 			$temp_name             	= $temp_name_array[ count( $temp_name_array ) - 1 ];
-			$thumbinfo['basename'] 	= $temp_name;
+			$thumbinfo['basename'] 	= apply_filters( 'transcoded_temp_filename', $temp_name );
 
 			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
 				add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
 			}
 
+			// Create a file in the upload folder with given content.
 			$thumb_upload_info = wp_upload_bits( $thumbinfo['basename'], null, $thumbresource['body'] );
 
 			/**
