@@ -851,7 +851,7 @@ class RT_Transcoder_Handler {
 									add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
 								}
 
-								$upload_info = wp_upload_bits( $new_wp_attached_file_pathinfo['basename'], null, $file_bits );
+								$upload_info = wp_upload_bits( $new_wp_attached_file_pathinfo['basename'], null, $file_bits['body'] );
 
 								/**
 								 * Allow users to filter/perform action on uploaded transcoded file.
