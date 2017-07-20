@@ -720,12 +720,13 @@ class RT_Transcoder_Handler {
 			$temp_name             	= urldecode( $temp_name );
 			$temp_name_array       	= explode( '/', $temp_name );
 			$temp_name             	= $temp_name_array[ count( $temp_name_array ) - 1 ];
-			$thumbinfo['basename'] 	= $temp_name;
+			$thumbinfo['basename'] 	= apply_filters( 'transcoded_temp_filename', $temp_name );
 
 			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
 				add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
 			}
 
+			// Create a file in the upload folder with given content.
 			$thumb_upload_info = wp_upload_bits( $thumbinfo['basename'], null, $thumbresource['body'] );
 
 			/**
@@ -841,17 +842,20 @@ class RT_Transcoder_Handler {
 							$new_wp_attached_file_pathinfo 	= pathinfo( $download_url );
 							$post_mime_type                	= 'mp4' === $new_wp_attached_file_pathinfo['extension'] ? 'video/mp4' : 'audio/mp3';
 							try {
-								$file_bits = function_exists( 'wpcom_vip_file_get_contents' ) ? wpcom_vip_file_get_contents( $download_url ) : file_get_contents( $download_url ); // @codingStandardsIgnoreLine
+								$response = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $download_url ) : wp_remote_get( $download_url ); // @codingStandardsIgnoreLine
 							} catch ( Exception $e ) {
 								$flag = $e->getMessage();
 							}
-							if ( $file_bits ) {
+
+							$file_content = wp_remote_retrieve_body( $response );
+
+							if ( ! empty( $file_content ) ) {
 
 								if ( 'wp-media' !== $job_for ) {
 									add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
 								}
 
-								$upload_info = wp_upload_bits( $new_wp_attached_file_pathinfo['basename'], null, $file_bits );
+								$upload_info = wp_upload_bits( $new_wp_attached_file_pathinfo['basename'], null, $file_content );
 
 								/**
 								 * Allow users to filter/perform action on uploaded transcoded file.
