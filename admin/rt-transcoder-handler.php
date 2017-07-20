@@ -841,12 +841,12 @@ class RT_Transcoder_Handler {
 							$new_wp_attached_file_pathinfo 	= pathinfo( $download_url );
 							$post_mime_type                	= 'mp4' === $new_wp_attached_file_pathinfo['extension'] ? 'video/mp4' : 'audio/mp3';
 							try {
-								$file_bits = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $download_url ) : wp_remote_get( $download_url ); // @codingStandardsIgnoreLine
+								$response = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $download_url ) : wp_remote_get( $download_url ); // @codingStandardsIgnoreLine
 							} catch ( Exception $e ) {
 								$flag = $e->getMessage();
 							}
 
-							$file_content = wp_remote_retrieve_body( $file_bits );
+							$file_content = wp_remote_retrieve_body( $response );
 
 							if ( ! empty( $file_content ) ) {
 
