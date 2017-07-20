@@ -60,6 +60,12 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 1. Transcoder Settings
 
 ## Changelog ##
+### 1.1.2 [July 20, 2017] ###
+* ENHANCEMENTS
+
+ * Added filter to change filename of transcoded file [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#transcodedtempfilename)
+ * Use wp_remote_get instead of file_get_contents for server compatibility
+
 #### 1.1.1 [Jan 10, 2017] ####
 * FIXED
 

@@ -3,7 +3,7 @@ Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 4.7
+Tested up to: 4.8
 Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -62,6 +62,12 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.1.2 [July 20, 2017] =
+* ENHANCEMENTS
+
+ * Added filter to change filename of transcoded file [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#transcodedtempfilename)
+ * Use wp_remote_get instead of file_get_contents for server compatibility
+
 = 1.1.1 [Jan 10, 2017] =
 * FIXED
 
