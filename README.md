@@ -2,7 +2,7 @@
 
 # Transcoder #
 
-* **Contributors:** [rtcamp] (http://profiles.wordpress.org/rtcamp), [mangeshp] (http://profiles.wordpress.org/mangeshp), [chandrapatel] (http://profiles.wordpress.org/chandrapatel), [manishsongirkar36] (http://profiles.wordpress.org/manishsongirkar36),
+* **Contributors:** [rtcamp](http://profiles.wordpress.org/rtcamp), [mangeshp](http://profiles.wordpress.org/mangeshp), [chandrapatel](http://profiles.wordpress.org/chandrapatel), [manishsongirkar36](http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90](https://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode](https://profiles.wordpress.org/kiranpotphode)
 
 * **License:** [GPL v2 or later] ( http://www.gnu.org/licenses/gpl-2.0.html)
 
@@ -60,6 +60,12 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 1. Transcoder Settings
 
 ## Changelog ##
+### 1.1.2 [July 21, 2017] ###
+* ENHANCEMENTS
+
+ * Added: Filter to allow adding a custom filename for the transcoded files [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#transcodedtempfilename)
+ * Replaced file_get_contents() with wp_remote_get() to have better server compatibility
+
 #### 1.1.1 [Jan 10, 2017] ####
 * FIXED
 
@@ -73,7 +79,7 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 
 * ENHANCEMENTS
 
- * Added filters to disable the emails getting sent to users and administrators
+ * Added filters to disable the emails getting sent to users and administrators [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rttsendnotification)
  * Added action before the transcoded thumbnails are stored
  * Added action before transcoded media is stored
  * Added action after callback response is processed
