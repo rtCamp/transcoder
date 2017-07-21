@@ -60,7 +60,7 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 1. Transcoder Settings
 
 ## Changelog ##
-### 1.1.2 [July 20, 2017] ###
+### 1.1.2 [July 21, 2017] ###
 * ENHANCEMENTS
 
  * Added: Filter to allow adding a custom filename for the transcoded files [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#transcodedtempfilename)
