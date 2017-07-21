@@ -1,10 +1,10 @@
 === Transcoder ===
-Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36
+Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 4.7
-Stable tag: 1.1.1
+Tested up to: 4.8
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,12 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.1.2 [July 21, 2017] =
+* ENHANCEMENTS
+
+ * Added: Filter to allow adding a custom filename for the transcoded files [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#transcodedtempfilename)
+ * Replaced file_get_contents() with wp_remote_get() to have better server compatibility
+
 = 1.1.1 [Jan 10, 2017] =
 * FIXED
 
@@ -75,7 +81,7 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 
 * ENHANCEMENTS
 
- * Added filters to disable the emails getting sent to users and administrators
+ * Added filters to disable the emails getting sent to users and administrators [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rttsendnotification)
  * Added action before the transcoded thumbnails are stored
  * Added action before transcoded media is stored
  * Added action after callback response is processed
@@ -129,5 +135,5 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
-= 1.1.1 =
-Fix the false positive localhost checking bug.
+= 1.1.2 =
+Added new filter to allow adding a custom filename for the transcoded files and replaced file_get_contents() with wp_remote_get() to have better server compatibility
