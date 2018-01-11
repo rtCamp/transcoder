@@ -29,7 +29,7 @@
 
 					document.location.href = tempUrl + hash;
 				} else {
-					$( '.error .update' ).remove();
+					$( '.error' ).remove();
 					$( 'h1:first' ).after( $( '<div />' ).addClass( 'error' ).html( $( '<p />' ).text( response.error ) ) );
 				}
 
