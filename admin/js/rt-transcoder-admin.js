@@ -29,8 +29,12 @@
 
 					document.location.href = tempUrl + hash;
 				} else {
-					$( '.error' ).remove();
-					$( 'h1:first' ).after( $( '<div />' ).addClass( 'error' ).html( $( '<p />' ).text( response.error ) ) );
+					$( '#api-key-error' ).remove();
+					var error_div = $( '<div/>', {
+						'id' : 'api-key-error',
+						'class': 'error',
+					});
+					$( 'h1:first' ).after( error_div.html( $( '<p />' ).text( response.error ) ) );
 				}
 
 				$( '#api-key-submit' ).next( 'img' ).remove();
