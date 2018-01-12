@@ -66,9 +66,21 @@ function rtt_action_links( $links, $file ) {
 	}
 
 	// Add a few links to the existing links array.
+	$settings_url = sprintf(
+		'<a href="%1$s">%2$s</a>',
+		esc_url( admin_url( 'admin.php?page=rt-transcoder' ) ),
+		esc_html__( 'Settings', 'transcoder' )
+	);
+
+	$docs_url = sprintf(
+		'<a target="_blank" href="%1$s">%2$s</a>',
+		esc_url( 'https://rtmedia.io/docs/transcoder/' ),
+		esc_html__( 'Docs', 'transcoder' )
+	);
+
 	return array_merge( $links, array(
-		'settings' => '<a href="' . esc_url( admin_url( 'admin.php?page=rt-transcoder' ) ) . '">' . esc_html__( 'Settings', 'transcoder' ) . '</a>',
-		'docs'     => '<a target="_blank" href="' . esc_url( 'https://rtmedia.io/docs/transcoder/' ) . '">' . esc_html__( 'Docs', 'transcoder' ) . '</a>',
+		'settings' => $settings_url,
+		'docs'     => $docs_url,
 	) );
 }
 
