@@ -197,7 +197,7 @@ class RT_Transcoder_Handler {
 			$file_extension = pathinfo($path, PATHINFO_EXTENSION);
 			$job_type = 'video';
 			/**  FORMAT * */
-			if ( 'mp4' == $file_extension || 'mp4' === $type ) {
+			if ( 'mp4' == $file_extension && 'mp4' === $type ) {
 				$autoformat = 'thumbnails';
 				$job_type = 'thumbnail';
 			}
