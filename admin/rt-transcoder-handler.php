@@ -194,10 +194,9 @@ class RT_Transcoder_Handler {
 				$options_video_thumb = 5;
 			}
 
-			$file_extension = pathinfo($path, PATHINFO_EXTENSION);
 			$job_type = 'video';
 			/**  FORMAT * */
-			if ( 'mp4' == $file_extension && 'mp4' === $type ) {
+			if ( 'video/mp4' === $metadata['mime_type'] && 'mp4' === $type ) {
 				$autoformat = 'thumbnails';
 				$job_type = 'thumbnail';
 			}
