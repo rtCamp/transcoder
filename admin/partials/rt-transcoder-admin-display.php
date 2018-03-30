@@ -236,10 +236,35 @@
 								?>
 								<input type="checkbox" name="rtt_override_thumbnail" value="1" <?php echo esc_attr( $checked ); ?> />
 								<span class="rtm-tooltip">
-									<i class="dashicons dashicons-info rtmicon"></i>
+									<i class="dashicons dashicons-info rtmicon" style="padding-top:3px"></i>
 									<span class="rtm-tip">
 										<?php
 										esc_html_e( 'If enabled, Transcoder will replace existing media thumbnails with regenerated ones after retranscoding. If disabled, media thumbnails will remain untouched.', 'transcoder' );
+										?>
+									</span>
+								</span>
+							</td>
+						</tr>
+						<tr valign="top">
+							<td scope="row">
+								<?php esc_html_e( 'Allow admin to track real-time transcoding status on user profile', 'transcoder' ); ?>
+							</td>
+							<td>
+								<?php
+								$rtt_check_status_btn = get_site_option( 'rtt_client_check_status_button', false );
+								$checked              = '';
+								if ( empty( $rtt_check_status_btn ) ) {
+									$rtt_check_status_btn = false;
+								} else {
+									$checked = 'checked=checked';
+								}
+								?>
+								<input type="checkbox" name="rtt_client_check_status_button" value="1" <?php echo esc_attr( $checked ); ?> />
+								<span class="rtm-tooltip">
+									<i class="dashicons dashicons-info rtmicon" style="padding-top:3px"></i>
+									<span class="rtm-tip">
+										<?php
+										esc_html_e( 'If enabled, It will display check status button to know status of transcoding process at client side if that user have administrator rights.', 'transcoder' );
 										?>
 									</span>
 								</span>

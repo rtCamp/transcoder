@@ -27,7 +27,8 @@ module.exports = function( grunt ) {
             },
             target: {
                 files: {
-                    'admin/css/rt-transcoder-admin.min.css': 'admin/css/rt-transcoder-admin.css'
+                    'admin/css/rt-transcoder-admin.min.css': 'admin/css/rt-transcoder-admin.css',
+                    'admin/css/rt-transcoder-client.min.css': 'admin/css/rt-transcoder-client.css'
                 }
             }
         },
@@ -41,7 +42,8 @@ module.exports = function( grunt ) {
                     flatten: true
                 },
                 files: {
-                    'admin/css/rt-transcoder-admin.css': 'admin/css/rt-transcoder-admin.css'
+                    'admin/css/rt-transcoder-admin.css': 'admin/css/rt-transcoder-admin.css',
+                    'admin/css/rt-transcoder-client.css': 'admin/css/rt-transcoder-client.css'
                 }
             }
         },
@@ -56,6 +58,12 @@ module.exports = function( grunt ) {
                     'admin/js/rt-transcoder-admin.js'
                 ],
                 dest: 'admin/js/rt-transcoder-admin.min.js'
+            },
+            footer: {
+                src: [
+                    'admin/js/rt-transcoder.js'
+                ],
+                dest: 'admin/js/rt-transcoder.min.js'
             }
         },
         // Checktextdomain - Checks gettext function calls for missing or incorrect text domain.
