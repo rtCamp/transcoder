@@ -73,8 +73,7 @@ function rtt_action_links( $links, $file ) {
 	);
 
 	$docs_url = sprintf(
-		'<a target="_blank" href="%1$s">%2$s</a>',
-		esc_url( 'https://rtmedia.io/docs/transcoder/' ),
+		'<a target="_blank" href="https://rtmedia.io/docs/transcoder/">%1$s</a>',
 		esc_html__( 'Docs', 'transcoder' )
 	);
 
