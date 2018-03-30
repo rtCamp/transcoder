@@ -431,8 +431,7 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 			}
 		}
 		/* Reset the array keys */
-		/* Changing SORT_DESC from SORT_ASC because $video_src_url is in desc order  */
-		array_multisort( $all_media, SORT_DESC );
+		array_multisort($all_media, SORT_ASC);
 
 		/* Get all the video src */
 		$search_video_url 	= "/<video.+(src=[\"]([^\"]*)[\"])/";
