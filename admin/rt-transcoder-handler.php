@@ -1349,7 +1349,7 @@ class RT_Transcoder_Handler {
 			$response['thumbnail'] = $upload_dir['baseurl'] . '/' . $thumbnail;
 
 			global $wpdb;
-			$results = $wpdb->get_results( "SELECT id FROM {$wpdb->prefix}rt_rtm_media WHERE media_id = '".$post_id."'", OBJECT ); // @codingStandardsIgnoreLine
+			$results              = $wpdb->get_results( "SELECT id FROM {$wpdb->prefix}rt_rtm_media WHERE media_id = '" . $post_id . "'", OBJECT );
 			$response['media_id'] = $results[0]->id;
 
 		} else {
