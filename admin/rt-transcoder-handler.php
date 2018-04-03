@@ -995,22 +995,22 @@ class RT_Transcoder_Handler {
 
 		if ( ! empty( $job_id ) ) {
 
-			// It returns false if cache is not set.
+			// It returns false if transient is not set.
 			$server_addr = get_transient( 'rtt_server_addr' );
-			if ( ( ! empty( $ignore_cache ) && $ignore_cache ) || false === $server_addr ) {
+			if ( ! empty( $ignore_cache ) || false === $server_addr ) {
 
 				$path        = str_replace( 'http://', '', $this->transcoding_api_url );
 				$path_arr    = explode( '/', $path );
 				$server_addr = gethostbyname( $path_arr[0] );
-				set_transient( 'rtt_server_addr', $server_addr, 7 * 24 * 60 * 60 );
+				set_transient( 'rtt_server_addr', $server_addr, WEEK_IN_SECONDS );
 
 			}
 
-			$incomming_addr = $_SERVER['REMOTE_ADDR']; // @codingStandardsIgnoreLine
+			$incomming_addr = filter_input( INPUT_SERVER, 'REMOTE_ADDR' );
 
 			if ( empty( $server_addr ) || empty( $incomming_addr ) || $incomming_addr !== $server_addr ) {
 
-				echo 'Something went wrong. Invalid post request.';
+				echo esc_html__( 'Something went wrong. Invalid post request.', 'transcoder' );
 				die();
 
 			}
