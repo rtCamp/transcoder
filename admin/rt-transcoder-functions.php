@@ -476,11 +476,10 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 					$check_button_text = esc_html__( 'Check Status', 'transcoder' );
 					$check_button_text = apply_filters( 'transcoder_check_status_btn_text', $check_button_text );
 
-					$message  = '<div class="transcoding-in-progress">';
-					$message .= '<button id="btn_check_status' . esc_html( $media->media_id ) . '" class="btn_check_transcode_status" name="check_status_btn" data-value="' . esc_html( $media->media_id ) . '">' . esc_html( $check_button_text ) . '</button> <div class="transcode_status_box" id="span_status' . esc_html( $media->media_id ) . '">' . esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) . '</div></div>';
+					$message = sprintf( '<div class="transcoding-in-progress"><button id="btn_check_status%s" class="btn_check_transcode_status" name="check_status_btn" data-value="%s">%s</button> <div class="transcode_status_box" id="span_status%s">%s</div></div>', esc_attr( $media->media_id ), esc_attr( $media->media_id ), esc_attr( $check_button_text ), esc_attr( $media->media_id ), esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) );
 
 				} else {
-					$message = '<p class="transcoding-in-progress"> ' . esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) . '</p>';
+					$message = sprintf( '<p class="transcoding-in-progress">%s</p>', esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) );
 				}
 				/**
 				 * Allow user to filter the message text.
@@ -806,10 +805,9 @@ function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_i
 	if ( is_file_being_transcoded( $post_id ) ) {
 
 		if ( current_user_can( 'administrator' ) && get_site_option( 'rtt_client_check_status_button', false ) ) {
-			$message  = '<div class="transcoding-in-progress 123">';
-			$message .= '<button id="btn_check_status' . esc_attr( $post_id ) . '" class="btn_check_transcode_status" name="check_status_btn" data-value="' . esc_attr( $post_id ) . '"> ' . esc_html( $check_button_text ) . '</button> <div class="transcode_status_box" id="span_status' . esc_attr( $post_id ) . '">' . esc_html__( 'This file is converting. Please click on check status button to know current status or refresh the page after some time. ', 'transcoder' ) . '</div></div>';
+			$message = sprintf( '<div class="transcoding-in-progress"><button id="btn_check_status%s" class="btn_check_transcode_status" name="check_status_btn" data-value="%s">%s</button> <div class="transcode_status_box" id="span_status%s">%s</div></div>', esc_attr( $post_id ), esc_attr( $post_id ), esc_attr( $check_button_text ), esc_attr( $post_id ), esc_html__( 'This file is converting. Please click on check status button to know current status or refresh the page after some time. ', 'transcoder' ) );
 		} else {
-			$message = '<p class="transcoding-in-progress"> ' . esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) . '</p>';
+			$message = sprintf( '<p class="transcoding-in-progress">%s</p>', esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) );
 		}
 
 		$arg = array(

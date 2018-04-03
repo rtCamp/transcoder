@@ -1343,6 +1343,7 @@ class RT_Transcoder_Handler {
 		if ( ! empty( $transcoded_files ) && ! empty( $transcoded_thumbs ) ) {
 
 			$message    = __( 'Your file is transcoded successfully. Please refresh the page.', 'transcoder' );
+			$status     = 'Success';
 			$upload_dir = wp_upload_dir();
 
 			$response['files']     = $upload_dir['baseurl'] . '/' . $transcoded_files['mp4'][0];
@@ -1393,8 +1394,9 @@ class RT_Transcoder_Handler {
 				$message = __( 'Your file is transcoded successfully. Please refresh the page.', 'transcoder' );
 				$status  = 'Success';
 
-				$response['files']     = site_url() . '/wp-content/uploads/' . $transcoded_files['mp4'][0];
-				$response['thumbnail'] = site_url() . '/wp-content/uploads/' . $thumbnail;
+				$upload_dir            = wp_upload_dir();
+				$response['files']     = $upload_dir['baseurl'] . '/' . $transcoded_files['mp4'][0];
+				$response['thumbnail'] = $upload_dir['baseurl'] . '/' . $thumbnail;
 
 				global $wpdb;
 				$results = $wpdb->get_results( "SELECT id FROM {$wpdb->prefix}rt_rtm_media WHERE media_id = '" . $post_id . "'", OBJECT ); // @codingStandardsIgnoreLine

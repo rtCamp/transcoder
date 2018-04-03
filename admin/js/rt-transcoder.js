@@ -21,7 +21,7 @@
 
                     var obj = jQuery.parseJSON( response.replace( /&quot;/g, '"' ) );
 
-                    if ( obj["status"] == 'Success' )
+                    if ( obj["status"] === 'Success' )
                     {
                         $( '#btn_check_status' + post_id ).hide();
                     }
