@@ -1325,7 +1325,7 @@ class RT_Transcoder_Handler {
 		if ( empty( $post_id ) ) {
 			return wp_json_encode( array(
 				'status'  => 'Error',
-				'message' => __( 'Something went wrong. Please try again!', 'transcoder' ),
+				'message' => esc_html__( 'Something went wrong. Please try again!', 'transcoder' ),
 			) );
 		}
 
@@ -1369,7 +1369,7 @@ class RT_Transcoder_Handler {
 
 			$data = json_decode( wp_json_encode( $status_info ), true );
 
-			if ( empty( $data ) || empty( $data['job_id'] ) || ! is_array( $data ) ) {
+			if ( empty( $data ) || ! is_array( $data ) || empty( $data['job_id'] ) ) {
 
 				$message = __( 'Looks like the server is taking too long to respond, Please try again in sometime.', 'transcoder' );
 
@@ -1407,7 +1407,8 @@ class RT_Transcoder_Handler {
 			}
 		}
 
-		$message = apply_filters( 'transcoder_check_status_btn_response_text', $message );
+		// Added filter to manage status messages
+		$message = apply_filters( 'rtt_transcoder_status_message', $message );
 
 		$response['message'] = esc_html( $message );
 		$response['status']  = esc_html( $status );

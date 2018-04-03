@@ -275,11 +275,11 @@ if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
  *
  * Enqueue the needed Javascript and CSS
  */
-function rtt_client_enqueues() {
+function rtt_enqueue_scripts() {
 	wp_enqueue_style( 'rt-transcoder-client-style', plugins_url( 'css/rt-transcoder-client.min.css', __FILE__ ) );
 }
 
-add_action( 'wp_enqueue_scripts', 'rtt_client_enqueues' );
+add_action( 'wp_enqueue_scripts', 'rtt_enqueue_scripts' );
 
 if ( ! function_exists( 'rtt_get_edit_post_link' ) ) {
 	/**
@@ -473,7 +473,7 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 			if ( is_file_being_transcoded( $media->media_id ) ) {
 				if ( current_user_can( 'administrator' ) && get_site_option( 'rtt_client_check_status_button', false ) ) {
 
-					$check_button_text = esc_html__( 'Check Status', 'transcoder' );
+					$check_button_text = __( 'Check Status', 'transcoder' );
 					$check_button_text = apply_filters( 'transcoder_check_status_btn_text', $check_button_text );
 
 					$message = sprintf( '<div class="transcoding-in-progress"><button id="btn_check_status%s" class="btn_check_transcode_status" name="check_status_btn" data-value="%s">%s</button> <div class="transcode_status_box" id="span_status%s">%s</div></div>', esc_attr( $media->media_id ), esc_attr( $media->media_id ), esc_attr( $check_button_text ), esc_attr( $media->media_id ), esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) );
@@ -489,12 +489,12 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 				 * @param string $message   Message to be displayed.
 				 * @param object $activity  Activity object.
 				 */
-				$message  = apply_filters( 'rtt_transcoding_in_progress_message', $message, $activity );
+				$message = apply_filters( 'rtt_transcoding_in_progress_message', $message, $activity );
 				$message .= '</div>';
 				/* Add this message to the particular media (there can be multiple medias in the activity) */
 				$search     = '/(rt_media_video_' . $media->id . ")['\"](.*?)(<\/a><\/div>)/s";
 				$text_found = array();
-				preg_match( $search , $content, $text_found ); // @codingStandardsIgnoreLine
+				preg_match( $search, $content, $text_found );
 
 				if ( ! empty( $text_found[0] ) ) {
 					$content = str_replace( $text_found[0], $text_found[1] . '"' . $text_found[2] . '</a>' . $message, $content );
@@ -695,14 +695,14 @@ function rtt_add_status_columns_content( $column_name, $post_id ) {
 
 	$transcoded_files  = get_post_meta( $post_id, '_rt_media_transcoded_files', true );
 	$transcoded_thumbs = get_post_meta( $post_id, '_rt_media_thumbnails', true );
-	$check_button_text = __( 'Check Status', 'transcoder' );
-	$check_button_text = apply_filters( 'transcoder_check_status_btn_text', $check_button_text );
 
 	if ( empty( $transcoded_files ) && is_file_being_transcoded( $post_id ) ) {
+		$check_button_text = __( 'Check Status', 'transcoder' );
+		$check_button_text = apply_filters( 'transcoder_check_status_btn_text', $check_button_text );
 
 		?>
 		<div id="span_status<?php echo esc_attr( $post_id ); ?>"></div>
-		<button type="button" id="btn_check_status<?php echo esc_attr( $post_id ); ?>" name="check_status_btn" data-value='<?php echo esc_attr( $post_id ); ?>'><?php echo esc_attr( $check_button_text ); ?></button>
+		<button type="button" id="btn_check_status<?php echo esc_attr( $post_id ); ?>" name="check_status_btn" data-value='<?php echo esc_attr( $post_id ); ?>'><?php echo esc_html( $check_button_text ); ?></button>
 		<?php
 
 	} elseif ( ! empty( $transcoded_files ) && ! empty( $transcoded_thumbs ) ) {
@@ -735,11 +735,10 @@ add_filter( 'manage_upload_sortable_columns', 'rtt_status_column_register_sortab
  */
 function rtt_get_status_action_javascript() {
 
-	$load_flag = current_user_can( 'administrator' );
 	wp_register_script( 'rt_transcoder_js', plugins_url( 'js/rt-transcoder.min.js', __FILE__ ) );
 
 	$translation_array = array(
-		'load_flag'      => $load_flag,
+		'load_flag'      => current_user_can( 'administrator' ),
 		'security_nonce' => esc_js( wp_create_nonce( 'check-transcoding-status-ajax-nonce' ) ),
 	);
 
@@ -758,7 +757,7 @@ add_action( 'admin_footer', 'rtt_get_status_action_javascript' );
 function rtt_ajax_process_check_status_request() {
 
 	check_ajax_referer( 'check-transcoding-status-ajax-nonce', 'security', true );
-	$post_id = filter_input( INPUT_POST, 'postid', FILTER_SANITIZE_STRING );
+	$post_id = filter_input( INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT );
 
 	if ( ! empty( $post_id ) ) {
 		echo esc_html( rtt_get_transcoding_status( $post_id ) );
@@ -780,7 +779,7 @@ add_action( 'wp_ajax_checkstatus', 'rtt_ajax_process_check_status_request' );
  */
 function rtt_get_transcoding_status( $post_id ) {
 
-	require_once __DIR__ . '/rt-transcoder-handler.php';
+	require_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-handler.php';
 
 	$obj    = new RT_Transcoder_Handler( true );
 	$status = $obj->get_transcoding_status( $post_id );
@@ -796,10 +795,10 @@ function rtt_get_transcoding_status( $post_id ) {
 function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_id ) {
 
 	global $wpdb;
-	$results = $wpdb->get_results( "SELECT media_id FROM {$wpdb->prefix}rt_rtm_media WHERE id = '".$rtmedia_id."'", OBJECT ); // @codingStandardsIgnoreLine
+	$results = $wpdb->get_results( "SELECT media_id FROM {$wpdb->prefix}rt_rtm_media WHERE id = '" . $rtmedia_id . "'", OBJECT );
 	$post_id = $results[0]->media_id;
 
-	$check_button_text = esc_html__( 'Check Status', 'transcoder' );
+	$check_button_text = __( 'Check Status', 'transcoder' );
 	$check_button_text = apply_filters( 'transcoder_check_status_btn_text', $check_button_text );
 
 	if ( is_file_being_transcoded( $post_id ) ) {

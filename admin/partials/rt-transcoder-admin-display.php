@@ -227,11 +227,8 @@
 							<td>
 								<?php
 								$rtt_override_thumbnail = get_site_option( 'rtt_override_thumbnail', false );
-								$checked                = $rtt_override_thumbnail;
-								$current                = 1;
-								$default                = false;
 								?>
-								<input type="checkbox" name="rtt_override_thumbnail" value="1" <?php echo checked( $checked, $current, $default ); ?> />
+								<input type="checkbox" name="rtt_override_thumbnail" value="1" <?php checked( $rtt_override_thumbnail, 1 ); ?> />
 								<span class="rtm-tooltip">
 									<i class="dashicons dashicons-info rtmicon" style="padding-top:3px"></i>
 									<span class="rtm-tip">
@@ -249,11 +246,8 @@
 							<td>
 								<?php
 								$rtt_check_status_btn = get_site_option( 'rtt_client_check_status_button', false );
-								$checked              = $rtt_check_status_btn;
-								$current              = 1;
-								$default              = false;
 								?>
-								<input type="checkbox" name="rtt_client_check_status_button" value="1" <?php echo checked( $checked, $current, $default ); ?> />
+								<input type="checkbox" name="rtt_client_check_status_button" value="1" <?php checked( $rtt_check_status_btn, 1 ); ?> />
 								<span class="rtm-tooltip">
 									<i class="dashicons dashicons-info rtmicon" style="padding-top:3px"></i>
 									<span class="rtm-tip">
@@ -265,7 +259,24 @@
 							</td>
 						</tr>
 					</table>
-					<p><?php printf( '%s <a href="https://rtmedia.io/docs/transcoder/">%s</a> %s.', esc_html__( 'Visit our', 'transcoder' ), esc_html__( 'documentation page', 'transcoder' ), esc_html__( 'for more details', 'transcoder' ) ); ?></p>
+					<p>
+						<?php
+						wp_kses(
+							printf(
+								'%1$s <a href="%2$s">%3$s</a> %4$s',
+								esc_html__( 'Visit our', 'transcoder' ),
+								esc_url( 'https://rtmedia.io/docs/transcoder/' ),
+								esc_html__( 'documentation page', 'transcoder' ),
+								esc_html__( 'for more details', 'transcoder' )
+							),
+							array(
+								'a' => array(
+									'href' => array(),
+								),
+							)
+						);
+						?>
+					</p>
 					<div class="rtm-button-container">
 						<div class="rtm-social-links alignleft">
 							<a href="http://twitter.com/rtMediaWP" class="twitter" target="_blank">
