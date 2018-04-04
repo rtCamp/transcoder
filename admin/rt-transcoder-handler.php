@@ -1408,7 +1408,7 @@ class RT_Transcoder_Handler {
 		/**
 		 * Filters the transcoding process status message message.
 		 *
-		 * @since 1.1.3
+		 * @since 1.2
 		 *
 		 * @param string $message Default transcoding process status message.
 		 */

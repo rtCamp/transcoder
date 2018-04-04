@@ -271,18 +271,6 @@ if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
 	}
 }
 
-/**
- *
- * Enqueue the needed Javascript and CSS
- */
-function rtt_enqueue_scripts() {
-	if ( get_site_option( 'rtt_client_check_status_button', false ) && current_user_can( 'administrator' ) ) {
-		wp_enqueue_style( 'rt-transcoder-client-style', plugins_url( 'css/rt-transcoder-client.min.css', __FILE__ ) );
-	}
-}
-
-add_action( 'wp_enqueue_scripts', 'rtt_enqueue_scripts' );
-
 if ( ! function_exists( 'rtt_get_edit_post_link' ) ) {
 	/**
 	 * Retrieve edit posts link for post. Derived from WordPress core
@@ -480,7 +468,7 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 					/**
 					 * Filters the text of transcoding process status check button.
 					 *
-					 * @since 1.1.3
+					 * @since 1.2
 					 *
 					 * @param string $check_button_text Default text of transcoding process status check button.
 					 */
@@ -720,11 +708,11 @@ function rtt_add_status_columns_content( $column_name, $post_id ) {
 		/**
 		 * Filters the text of transcoding process status check button.
 		 *
-		 * @since 1.1.3
+		 * @since 1.2
 		 *
 		 * @param string $check_button_text Default text of transcoding process status check button.
 		 */
-		$check_button_text = apply_filters( 'transcoder_check_status_btn_text', $check_button_text );
+		$check_button_text = apply_filters( 'transcoder_check_status_button_text', $check_button_text );
 
 		?>
 		<div id="span_status<?php echo esc_attr( $post_id ); ?>"></div>
@@ -759,7 +747,7 @@ add_filter( 'manage_upload_sortable_columns', 'rtt_status_column_register_sortab
 /**
  * Method to add js function.
  */
-function rtt_get_status_action_javascript() {
+function rtt_enqueue_scripts() {
 
 	if ( current_user_can( 'administrator' ) ) {
 		wp_register_script( 'rt_transcoder_js', plugins_url( 'js/rt-transcoder.min.js', __FILE__ ) );
@@ -771,13 +759,17 @@ function rtt_get_status_action_javascript() {
 
 		wp_localize_script( 'rt_transcoder_js', 'transcoding_status', $translation_array );
 		wp_enqueue_script( 'rt_transcoder_js' );
+
+		if ( ! is_admin() ) {
+			wp_enqueue_style( 'rt-transcoder-client-style', plugins_url( 'css/rt-transcoder-client.min.css', __FILE__ ) );
+		}
 	}
 }
 
-if ( get_site_option( 'rtt_client_check_status_button', false ) ) {
-	add_action( 'wp_footer', 'rtt_get_status_action_javascript' );
+if ( '1' === get_site_option( 'rtt_client_check_status_button', false ) ) {
+	add_action( 'wp_enqueue_scripts', 'rtt_enqueue_scripts' );
 }
-add_action( 'admin_enqueue_scripts', 'rtt_get_status_action_javascript' );
+add_action( 'admin_enqueue_scripts', 'rtt_enqueue_scripts' );
 
 /**
  * Method to handle AJAX request for checking status.
@@ -831,7 +823,7 @@ function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_i
 	/**
 	 * Filters the text of transcoding process status check button.
 	 *
-	 * @since 1.1.3
+	 * @since 1.2
 	 *
 	 * @param string $check_button_text Default text of transcoding process status check button.
 	 */
