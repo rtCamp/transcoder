@@ -461,7 +461,7 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 			}
 			/* If media is sent to the transcoder then show the message */
 			if ( is_file_being_transcoded( $media->media_id ) ) {
-				if ( current_user_can( 'administrator' ) && get_site_option( 'rtt_client_check_status_button', false ) ) {
+				if ( current_user_can( 'administrator' ) && '1' === get_site_option( 'rtt_client_check_status_button', false ) ) {
 
 					$check_button_text = __( 'Check Status', 'transcoder' );
 
@@ -831,7 +831,7 @@ function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_i
 
 	if ( is_file_being_transcoded( $post_id ) ) {
 
-		if ( current_user_can( 'administrator' ) && get_site_option( 'rtt_client_check_status_button', false ) ) {
+		if ( current_user_can( 'administrator' ) && '1' === get_site_option( 'rtt_client_check_status_button', false ) ) {
 			$message = sprintf(
 				'<div class="transcoding-in-progress"><button id="btn_check_status%1$s" class="btn_check_transcode_status" name="check_status_btn" data-value="%1$s">%2$s</button> <div class="transcode_status_box" id="span_status%1$s">%3$s</div></div>',
 				esc_attr( $post_id ),
