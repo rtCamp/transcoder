@@ -1006,7 +1006,7 @@ class RT_Transcoder_Handler {
 
 			}
 
-			$incomming_addr = filter_input( INPUT_SERVER, 'REMOTE_ADDR' );
+			$incomming_addr = filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
 
 			if ( empty( $server_addr ) || empty( $incomming_addr ) || $incomming_addr !== $server_addr ) {
 
