@@ -474,12 +474,28 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 				if ( current_user_can( 'administrator' ) && get_site_option( 'rtt_client_check_status_button', false ) ) {
 
 					$check_button_text = __( 'Check Status', 'transcoder' );
+
+					/**
+					 * Filters the text of transcoding process status check button.
+					 *
+					 * @since 1.1.3
+					 *
+					 * @param string $check_button_text Default text of transcoding process status check button.
+					 */
 					$check_button_text = apply_filters( 'transcoder_check_status_btn_text', $check_button_text );
 
-					$message = sprintf( '<div class="transcoding-in-progress"><button id="btn_check_status%s" class="btn_check_transcode_status" name="check_status_btn" data-value="%s">%s</button> <div class="transcode_status_box" id="span_status%s">%s</div></div>', esc_attr( $media->media_id ), esc_attr( $media->media_id ), esc_attr( $check_button_text ), esc_attr( $media->media_id ), esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) );
+					$message = sprintf(
+						'<div class="transcoding-in-progress"><button id="btn_check_status%1$s" class="btn_check_transcode_status" name="check_status_btn" data-value="%1$s">%2$s</button> <div class="transcode_status_box" id="span_status%1$s">%3$s</div></div>',
+						esc_attr( $media->media_id ),
+						esc_attr( $check_button_text ),
+						esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' )
+					);
 
 				} else {
-					$message = sprintf( '<p class="transcoding-in-progress">%s</p>', esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) );
+					$message = sprintf(
+						'<p class="transcoding-in-progress">%s</p>',
+						esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' )
+					);
 				}
 				/**
 				 * Allow user to filter the message text.
@@ -799,32 +815,33 @@ function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_i
 	$post_id = $results[0]->media_id;
 
 	$check_button_text = __( 'Check Status', 'transcoder' );
+
+	/**
+	 * Filters the text of transcoding process status check button.
+	 *
+	 * @since 1.1.3
+	 *
+	 * @param string $check_button_text Default text of transcoding process status check button.
+	 */
 	$check_button_text = apply_filters( 'transcoder_check_status_btn_text', $check_button_text );
 
 	if ( is_file_being_transcoded( $post_id ) ) {
 
 		if ( current_user_can( 'administrator' ) && get_site_option( 'rtt_client_check_status_button', false ) ) {
-			$message = sprintf( '<div class="transcoding-in-progress"><button id="btn_check_status%s" class="btn_check_transcode_status" name="check_status_btn" data-value="%s">%s</button> <div class="transcode_status_box" id="span_status%s">%s</div></div>', esc_attr( $post_id ), esc_attr( $post_id ), esc_attr( $check_button_text ), esc_attr( $post_id ), esc_html__( 'This file is converting. Please click on check status button to know current status or refresh the page after some time. ', 'transcoder' ) );
+			$message = sprintf(
+				'<div class="transcoding-in-progress"><button id="btn_check_status%1$s" class="btn_check_transcode_status" name="check_status_btn" data-value="%1$s">%2$s</button> <div class="transcode_status_box" id="span_status%1$s">%3$s</div></div>',
+				esc_attr( $post_id ),
+				esc_attr( $check_button_text ),
+				esc_html__( 'This file is converting. Please click on check status button to know current status or refresh the page after some time. ', 'transcoder' )
+			);
 		} else {
-			$message = sprintf( '<p class="transcoding-in-progress">%s</p>', esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' ) );
+			$message = sprintf(
+				'<p class="transcoding-in-progress">%s</p>',
+				esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' )
+			);
 		}
 
-		$arg = array(
-			'button' => array(
-				'class'      => array(),
-				'id'         => array(),
-				'name'       => array(),
-				'data-value' => array(),
-			),
-			'div'    => array(
-				'class' => array(),
-				'id'    => array(),
-			),
-			'p'      => array(
-				'class' => array(),
-			),
-		);
-		echo wp_kses( $message, $arg );
+		echo $message; // Message already escaped. @codingStandardsIgnoreLine
 
 	}
 }

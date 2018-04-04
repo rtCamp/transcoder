@@ -1367,29 +1367,27 @@ class RT_Transcoder_Handler {
 				$status_info = null;
 			}
 
-			$data = json_decode( wp_json_encode( $status_info ), true );
-
-			if ( empty( $data ) || ! is_array( $data ) || empty( $data['job_id'] ) ) {
+			if ( empty( $status_info ) || ! is_object( $status_info ) || empty( $status_info->job_id ) ) {
 
 				$message = __( 'Looks like the server is taking too long to respond, Please try again in sometime.', 'transcoder' );
 
-			} elseif ( ! empty( $data ) && ! empty( $data['error_code'] ) && ! empty( $data['error_msg'] ) ) {
+			} elseif ( ! empty( $status_info ) && ! empty( $status_info->error_code ) && ! empty( $status_info->error_msg ) ) {
 
 				$message = __( 'Unfortunately, Transcoder failed to transcode this file.', 'transcoder' ) . $data['error_msg'];
 
-			} elseif ( ! empty( $data ) && 'processing' === $data['status'] && empty( $data['error_code'] ) && empty( $data['error_msg'] ) ) {
+			} elseif ( ! empty( $status_info ) && 'processing' === $status_info->status && empty( $status_info->error_code ) && empty( $status_info->error_msg ) ) {
 
 				$message = __( 'Your file is getting transcoded. Please refresh after some time.', 'transcoder' );
 
-			} elseif ( ! empty( $data ) && 'processing' !== $data['status'] && '100' !== $data['progress'] && empty( $data['error_code'] ) && empty( $data['error_msg'] ) ) {
+			} elseif ( ! empty( $status_info ) && 'processing' !== $status_info->status && '100' !== $status_info->progress && empty( $status_info->error_code ) && empty( $status_info->error_msg ) ) {
 
 				$message = __( 'This file is still in the queue. Please refresh after some time.', 'transcoder' );
 
-			} elseif ( ! empty( $data ) && 'processed' === $data['status'] && ( empty( $transcoded_files ) || empty( $transcoded_thumbs ) ) ) {
+			} elseif ( ! empty( $status_info ) && 'processed' === $status_info->status && ( empty( $transcoded_files ) || empty( $transcoded_thumbs ) ) ) {
 
 				$message = __( 'Your server should be ready to receive the transcoded file.', 'transcoder' );
 
-			} elseif ( ! empty( $data ) && 'processed' === $data['status'] && ! empty( $transcoded_files ) && ! empty( $transcoded_thumbs ) ) {
+			} elseif ( ! empty( $status_info ) && 'processed' === $status_info->status && ! empty( $transcoded_files ) && ! empty( $transcoded_thumbs ) ) {
 
 				$message = __( 'Your file is transcoded successfully. Please refresh the page.', 'transcoder' );
 				$status  = 'Success';
@@ -1402,12 +1400,18 @@ class RT_Transcoder_Handler {
 				$results = $wpdb->get_results( "SELECT id FROM {$wpdb->prefix}rt_rtm_media WHERE media_id = '" . $post_id . "'", OBJECT ); // @codingStandardsIgnoreLine
 				$response['media_id'] = $results[0]->id;
 
-			} elseif ( ! empty( $data ) ) {
-				$message = $data['status'];
+			} elseif ( ! empty( $status_info ) ) {
+				$message = $status_info->status;
 			}
 		}
 
-		// Added filter to manage status messages
+		/**
+		 * Filters the transcoding process status message message.
+		 *
+		 * @since 1.1.3
+		 *
+		 * @param string $message Default transcoding process status message.
+		 */
 		$message = apply_filters( 'rtt_transcoder_status_message', $message );
 
 		$response['message'] = esc_html( $message );
