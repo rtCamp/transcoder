@@ -716,6 +716,14 @@ function rtt_add_status_columns_content( $column_name, $post_id ) {
 
 	if ( empty( $transcoded_files ) && is_file_being_transcoded( $post_id ) ) {
 		$check_button_text = __( 'Check Status', 'transcoder' );
+		
+		/**
+		 * Filters the text of transcoding process status check button.
+		 *
+		 * @since 1.1.3
+		 *
+		 * @param string $check_button_text Default text of transcoding process status check button.
+		 */
 		$check_button_text = apply_filters( 'transcoder_check_status_btn_text', $check_button_text );
 
 		?>

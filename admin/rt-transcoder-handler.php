@@ -1334,7 +1334,7 @@ class RT_Transcoder_Handler {
 		$transcoded_thumbs = get_post_meta( $post_id, '_rt_media_thumbnails', true );
 		$thumbnail         = get_post_meta( $post_id, '_rt_media_video_thumbnail', true );
 
-		$status_url = trailingslashit( $this->transcoding_api_url ) . 'job/status/' . $job_id;
+		$status_url = trailingslashit( $this->transcoding_api_url ) . 'job/status/' . $job_id . '/' . get_site_option( 'rt-transcoding-api-key-stored' );
 
 		$message  = '';
 		$response = array();
