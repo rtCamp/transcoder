@@ -482,7 +482,7 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 					 *
 					 * @param string $check_button_text Default text of transcoding process status check button.
 					 */
-					$check_button_text = apply_filters( 'transcoder_check_status_btn_text', $check_button_text );
+					$check_button_text = apply_filters( 'rtt_transcoder_check_status_btn_text', $check_button_text );
 
 					$message = sprintf(
 						'<div class="transcoding-in-progress"><button id="btn_check_status%1$s" class="btn_check_transcode_status" name="check_status_btn" data-value="%1$s">%2$s</button> <div class="transcode_status_box" id="span_status%1$s">%3$s</div></div>',
@@ -823,7 +823,7 @@ function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_i
 	 *
 	 * @param string $check_button_text Default text of transcoding process status check button.
 	 */
-	$check_button_text = apply_filters( 'transcoder_check_status_btn_text', $check_button_text );
+	$check_button_text = apply_filters( 'rtt_transcoder_check_status_btn_text', $check_button_text );
 
 	if ( is_file_being_transcoded( $post_id ) ) {
 
