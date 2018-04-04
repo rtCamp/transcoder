@@ -276,7 +276,9 @@ if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
  * Enqueue the needed Javascript and CSS
  */
 function rtt_enqueue_scripts() {
-	wp_enqueue_style( 'rt-transcoder-client-style', plugins_url( 'css/rt-transcoder-client.min.css', __FILE__ ) );
+	if ( get_site_option( 'rtt_client_check_status_button', false ) && current_user_can( 'administrator' ) ) {
+		wp_enqueue_style( 'rt-transcoder-client-style', plugins_url( 'css/rt-transcoder-client.min.css', __FILE__ ) );
+	}
 }
 
 add_action( 'wp_enqueue_scripts', 'rtt_enqueue_scripts' );
@@ -482,12 +484,12 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 					 *
 					 * @param string $check_button_text Default text of transcoding process status check button.
 					 */
-					$check_button_text = apply_filters( 'rtt_transcoder_check_status_btn_text', $check_button_text );
+					$check_button_text = apply_filters( 'rtt_transcoder_check_status_button_text', $check_button_text );
 
 					$message = sprintf(
 						'<div class="transcoding-in-progress"><button id="btn_check_status%1$s" class="btn_check_transcode_status" name="check_status_btn" data-value="%1$s">%2$s</button> <div class="transcode_status_box" id="span_status%1$s">%3$s</div></div>',
 						esc_attr( $media->media_id ),
-						esc_attr( $check_button_text ),
+						esc_html( $check_button_text ),
 						esc_html__( 'This file is converting. Please refresh the page after some time.', 'transcoder' )
 					);
 
@@ -751,21 +753,23 @@ add_filter( 'manage_upload_sortable_columns', 'rtt_status_column_register_sortab
  */
 function rtt_get_status_action_javascript() {
 
-	wp_register_script( 'rt_transcoder_js', plugins_url( 'js/rt-transcoder.min.js', __FILE__ ) );
+	if ( current_user_can( 'administrator' ) ) {
+		wp_register_script( 'rt_transcoder_js', plugins_url( 'js/rt-transcoder.min.js', __FILE__ ) );
 
-	$translation_array = array(
-		'load_flag'      => current_user_can( 'administrator' ),
-		'security_nonce' => esc_js( wp_create_nonce( 'check-transcoding-status-ajax-nonce' ) ),
-	);
+		$translation_array = array(
+			'load_flag'      => current_user_can( 'administrator' ),
+			'security_nonce' => esc_js( wp_create_nonce( 'check-transcoding-status-ajax-nonce' ) ),
+		);
 
-	wp_localize_script( 'rt_transcoder_js', 'transcoding_status', $translation_array );
-	wp_enqueue_script( 'rt_transcoder_js' );
+		wp_localize_script( 'rt_transcoder_js', 'transcoding_status', $translation_array );
+		wp_enqueue_script( 'rt_transcoder_js' );
+	}
 }
 
-// Add action to admin footer and client-side footer.
-add_action( 'wp_footer', 'rtt_get_status_action_javascript' );
-add_action( 'admin_footer', 'rtt_get_status_action_javascript' );
-
+if ( get_site_option( 'rtt_client_check_status_button', false ) ) {
+	add_action( 'wp_footer', 'rtt_get_status_action_javascript' );
+}
+add_action( 'admin_enqueue_scripts', 'rtt_get_status_action_javascript' );
 
 /**
  * Method to handle AJAX request for checking status.
@@ -823,7 +827,7 @@ function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_i
 	 *
 	 * @param string $check_button_text Default text of transcoding process status check button.
 	 */
-	$check_button_text = apply_filters( 'rtt_transcoder_check_status_btn_text', $check_button_text );
+	$check_button_text = apply_filters( 'rtt_transcoder_check_status_button_text', $check_button_text );
 
 	if ( is_file_being_transcoded( $post_id ) ) {
 
@@ -831,7 +835,7 @@ function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_i
 			$message = sprintf(
 				'<div class="transcoding-in-progress"><button id="btn_check_status%1$s" class="btn_check_transcode_status" name="check_status_btn" data-value="%1$s">%2$s</button> <div class="transcode_status_box" id="span_status%1$s">%3$s</div></div>',
 				esc_attr( $post_id ),
-				esc_attr( $check_button_text ),
+				esc_html( $check_button_text ),
 				esc_html__( 'This file is converting. Please click on check status button to know current status or refresh the page after some time. ', 'transcoder' )
 			);
 		} else {

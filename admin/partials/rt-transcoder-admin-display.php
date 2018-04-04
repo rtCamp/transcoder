@@ -261,13 +261,11 @@
 					</table>
 					<p>
 						<?php
-						wp_kses(
-							printf(
-								'%1$s <a href="%2$s">%3$s</a> %4$s',
-								esc_html__( 'Visit our', 'transcoder' ),
-								esc_url( 'https://rtmedia.io/docs/transcoder/' ),
-								esc_html__( 'documentation page', 'transcoder' ),
-								esc_html__( 'for more details', 'transcoder' )
+						echo wp_kses(
+							sprintf(
+								/* translators: 1. URL of documentation page. */
+								__( 'Visit our <a href="%1$s">documentation page</a> for more details', 'transcoder' ),
+								'https://rtmedia.io/docs/transcoder/'
 							),
 							array(
 								'a' => array(
