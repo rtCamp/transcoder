@@ -1383,11 +1383,11 @@ class RT_Transcoder_Handler {
 
 				$message = __( 'This file is still in the queue. Please refresh after some time.', 'transcoder' );
 
-			} elseif ( ! empty( $status_info ) && 'processed' === $status_info->status && ( empty( $transcoded_files ) || empty( $transcoded_thumbs ) ) ) {
+			} elseif ( ! empty( $status_info ) && 'processed' === $status_info->status && 'video' === $status_info->job_type && ( empty( $transcoded_files ) || empty( $transcoded_thumbs ) ) ) {
 
 				$message = __( 'Your server should be ready to receive the transcoded file.', 'transcoder' );
 
-			} elseif ( ! empty( $status_info ) && 'processed' === $status_info->status && ! empty( $transcoded_files ) && ! empty( $transcoded_thumbs ) ) {
+			} elseif ( ! empty( $status_info ) && 'processed' === $status_info->status && ! empty( $transcoded_thumbs ) && ( ! empty( $transcoded_files ) || 'thumbnail' === $status_info->job_type ) ) {
 
 				$message = __( 'Your file is transcoded successfully. Please refresh the page.', 'transcoder' );
 				$status  = 'Success';
