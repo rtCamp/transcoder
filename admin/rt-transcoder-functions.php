@@ -675,6 +675,8 @@ function rtt_get_remote_ip_address() {
 /**
  * Set status column head in media admin page
  *
+ * @since 1.2
+ *
  * @param array $defaults columns list.
  *
  * @return array columns list
@@ -691,6 +693,8 @@ add_filter( 'manage_media_columns', 'rtt_add_status_columns_head' );
 /**
  * Set status column content in media admin page
  *
+ * @since 1.2
+ *
  * @param string $column_name column name.
  * @param int    $post_id Post ID.
  */
@@ -704,7 +708,7 @@ function rtt_add_status_columns_content( $column_name, $post_id ) {
 
 	if ( empty( $transcoded_files ) && is_file_being_transcoded( $post_id ) ) {
 		$check_button_text = __( 'Check Status', 'transcoder' );
-		
+
 		/**
 		 * Filters the text of transcoding process status check button.
 		 *
@@ -730,6 +734,8 @@ add_action( 'manage_media_custom_column', 'rtt_add_status_columns_content', 10, 
 /**
  * Set sortable status column in media admin page
  *
+ * @since 1.2
+ *
  * @param array $columns columns list.
  *
  * @return array columns list
@@ -746,6 +752,8 @@ add_filter( 'manage_upload_sortable_columns', 'rtt_status_column_register_sortab
 
 /**
  * Method to add js function.
+ *
+ * @since 1.2
  */
 function rtt_enqueue_scripts() {
 
@@ -773,6 +781,8 @@ add_action( 'admin_enqueue_scripts', 'rtt_enqueue_scripts' );
 
 /**
  * Method to handle AJAX request for checking status.
+ *
+ * @since 1.2
  */
 function rtt_ajax_process_check_status_request() {
 
@@ -793,6 +803,8 @@ add_action( 'wp_ajax_checkstatus', 'rtt_ajax_process_check_status_request' );
 /**
  * To get status of transcoding process
  *
+ * @since 1.2
+ *
  * @param int $post_id post ID.
  *
  * @return string transcoding process status
@@ -809,6 +821,8 @@ function rtt_get_transcoding_status( $post_id ) {
 
 /**
  * To get status of transcoding process
+ *
+ * @since 1.2
  *
  * @param int $rtmedia_id rtmedia ID.
  */

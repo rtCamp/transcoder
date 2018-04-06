@@ -1318,6 +1318,8 @@ class RT_Transcoder_Handler {
 	/**
 	 * To get status of transcoding process
 	 *
+	 * @since 1.2
+	 *
 	 * @param string $post_id post ID.
 	 */
 	public function get_transcoding_status( $post_id ) {
