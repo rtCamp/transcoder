@@ -1315,4 +1315,110 @@ class RT_Transcoder_Handler {
 		$this->send_notification( $email_ids, $subject, $message, $include_admin = true );
 	}
 
+	/**
+	 * To get status of transcoding process
+	 *
+	 * @since 1.2
+	 *
+	 * @param string $post_id post ID.
+	 */
+	public function get_transcoding_status( $post_id ) {
+
+		if ( empty( $post_id ) ) {
+			return wp_json_encode( array(
+				'status'  => 'Error',
+				'message' => esc_html__( 'Something went wrong. Please try again!', 'transcoder' ),
+			) );
+		}
+
+		$job_id            = get_post_meta( $post_id, '_rt_transcoding_job_id', true );
+		$transcoded_files  = get_post_meta( $post_id, '_rt_media_transcoded_files', true );
+		$transcoded_thumbs = get_post_meta( $post_id, '_rt_media_thumbnails', true );
+		$thumbnail         = get_post_meta( $post_id, '_rt_media_video_thumbnail', true );
+
+		$status_url = trailingslashit( $this->transcoding_api_url ) . 'job/status/' . $job_id . '/' . get_site_option( 'rt-transcoding-api-key-stored' );
+
+		$message  = '';
+		$response = array();
+		$status   = 'running';
+
+		if ( ! empty( $transcoded_files ) && ! empty( $transcoded_thumbs ) ) {
+
+			$message    = __( 'Your file is transcoded successfully. Please refresh the page.', 'transcoder' );
+			$status     = 'Success';
+			$upload_dir = wp_upload_dir();
+
+			$response['files']     = $upload_dir['baseurl'] . '/' . $transcoded_files['mp4'][0];
+			$response['thumbnail'] = $upload_dir['baseurl'] . '/' . $thumbnail;
+
+			global $wpdb;
+			$results              = $wpdb->get_results( "SELECT id FROM {$wpdb->prefix}rt_rtm_media WHERE media_id = '" . $post_id . "'", OBJECT );
+			$response['media_id'] = $results[0]->id;
+
+		} else {
+
+			if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
+				$status_page = vip_safe_wp_remote_get( $status_url );
+			} else {
+				$status_page = wp_remote_get( $status_url, array( 'timeout' => 120 ) ); // @codingStandardsIgnoreLine
+			}
+
+			if ( ! is_wp_error( $status_page ) ) {
+				$status_info = json_decode( $status_page['body'] );
+			} else {
+				$status_info = null;
+			}
+
+			if ( empty( $status_info ) || ! is_object( $status_info ) || empty( $status_info->job_id ) ) {
+
+				$message = __( 'Looks like the server is taking too long to respond, Please try again in sometime.', 'transcoder' );
+
+			} elseif ( ! empty( $status_info ) && ! empty( $status_info->error_code ) && ! empty( $status_info->error_msg ) ) {
+
+				$message = __( 'Unfortunately, Transcoder failed to transcode this file.', 'transcoder' ) . $data['error_msg'];
+
+			} elseif ( ! empty( $status_info ) && 'processing' === $status_info->status && empty( $status_info->error_code ) && empty( $status_info->error_msg ) ) {
+
+				$message = __( 'Your file is getting transcoded. Please refresh after some time.', 'transcoder' );
+
+			} elseif ( ! empty( $status_info ) && 'processing' !== $status_info->status && '100' !== $status_info->progress && empty( $status_info->error_code ) && empty( $status_info->error_msg ) ) {
+
+				$message = __( 'This file is still in the queue. Please refresh after some time.', 'transcoder' );
+
+			} elseif ( ! empty( $status_info ) && 'processed' === $status_info->status && 'video' === $status_info->job_type && ( empty( $transcoded_files ) || empty( $transcoded_thumbs ) ) ) {
+
+				$message = __( 'Your server should be ready to receive the transcoded file.', 'transcoder' );
+
+			} elseif ( ! empty( $status_info ) && 'processed' === $status_info->status && ! empty( $transcoded_thumbs ) && ( ! empty( $transcoded_files ) || 'thumbnail' === $status_info->job_type ) ) {
+
+				$message = __( 'Your file is transcoded successfully. Please refresh the page.', 'transcoder' );
+				$status  = 'Success';
+
+				$upload_dir            = wp_upload_dir();
+				$response['files']     = $upload_dir['baseurl'] . '/' . $transcoded_files['mp4'][0];
+				$response['thumbnail'] = $upload_dir['baseurl'] . '/' . $thumbnail;
+
+				global $wpdb;
+				$results = $wpdb->get_results( "SELECT id FROM {$wpdb->prefix}rt_rtm_media WHERE media_id = '" . $post_id . "'", OBJECT ); // @codingStandardsIgnoreLine
+				$response['media_id'] = $results[0]->id;
+
+			} elseif ( ! empty( $status_info ) ) {
+				$message = $status_info->status;
+			}
+		}
+
+		/**
+		 * Filters the transcoding process status message message.
+		 *
+		 * @since 1.2
+		 *
+		 * @param string $message Default transcoding process status message.
+		 */
+		$message = apply_filters( 'rtt_transcoder_status_message', $message );
+
+		$response['message'] = esc_html( $message );
+		$response['status']  = esc_html( $status );
+
+		return wp_json_encode( $response );
+	}
 }
