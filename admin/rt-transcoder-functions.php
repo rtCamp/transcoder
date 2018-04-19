@@ -888,7 +888,7 @@ add_action( 'rtmedia_actions_before_description', 'rtt_add_transcoding_process_s
  *
  * @return string html markup
  */
-function filter_single_media_page( $html, $rtmedia_media ) {
+function rtt_filter_single_media_page_video_markup( $html, $rtmedia_media ) {
 	global $rtmedia;
 	if ( 'video' === $rtmedia_media->media_type && is_file_being_transcoded( $rtmedia_media->media_id ) ) {
 
@@ -912,5 +912,5 @@ function filter_single_media_page( $html, $rtmedia_media ) {
 	return $html;
 }
 
-add_filter( 'rtmedia_single_content_filter', 'filter_single_media_page', 10, 2 );
+add_filter( 'rtmedia_single_content_filter', 'rtt_filter_single_media_page_video_markup', 10, 2 );
 
