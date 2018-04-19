@@ -889,6 +889,9 @@ add_action( 'rtmedia_actions_before_description', 'rtt_add_transcoding_process_s
  * @return string html markup
  */
 function rtt_filter_single_media_page_video_markup( $html, $rtmedia_media ) {
+	if ( empty( $rtmedia_media ) || empty( $rtmedia_media->media_type ) || empty( $rtmedia_media->media_id ) ) {
+		return $html;
+	}
 	global $rtmedia;
 	if ( 'video' === $rtmedia_media->media_type && is_file_being_transcoded( $rtmedia_media->media_id ) ) {
 
