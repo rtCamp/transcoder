@@ -458,7 +458,9 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 				/* Thumbnail/poster URL */
 				$final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $media->media_id );
 				/* Replace the first poster (assuming activity has multiple medias in it) */
-				$content = preg_replace( '/' . str_replace( '/', '\/', $poster_url[1][ $key ] ) . '/', 'poster="' . $final_file_url . '"', $content, 1 );
+				if ( is_file_being_transcoded( $media->media_id ) ) {
+					$content = preg_replace( '/' . str_replace( '/', '\/', $poster_url[1][ $key ] ) . '/', 'poster="' . $final_file_url . '"', $content, 1 );
+				}
 			}
 			/* If media is sent to the transcoder then show the message */
 			if ( is_file_being_transcoded( $media->media_id ) ) {
@@ -507,6 +509,14 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 					$content = str_replace( $text_found[0], $text_found[1] . '"' . $text_found[2] . '</a>' . $message, $content );
 				}
 			}
+		}
+		$search = '/(<div class="rtmedia-item-title")(.*?)(>)/s';
+		$text_found = array();
+		global $rtmedia;
+		$text_to_be_entered = " style='max-width:" . esc_attr( $rtmedia->options['defaultSizes_video_activityPlayer_width'] ) . "px;' ";
+		preg_match( $search, $content, $text_found );
+		if ( ! empty( $text_found[0] ) ) {
+				$content = str_replace( $text_found[0], $text_found[1] . $text_to_be_entered . $text_found[3], $content );
 		}
 		return $content;
 	} else {
@@ -867,3 +877,40 @@ function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_i
 
 // Add action to media single page.
 add_action( 'rtmedia_actions_before_description', 'rtt_add_transcoding_process_status_button_single_media_page', 10, 1 );
+
+/**
+ * To resize video container of media single page when video is being transcoded .
+ *
+ * @since 1.2
+ *
+ * @param string $html html markup.
+ * @param object $rtmedia_media rtmedia media object.
+ *
+ * @return string html markup
+ */
+function filter_single_media_page( $html, $rtmedia_media ) {
+	global $rtmedia;
+	if ( 'video' === $rtmedia_media->media_type && is_file_being_transcoded( $rtmedia_media->media_id ) ) {
+
+		$youtube_url = get_rtmedia_meta( $rtmedia_media->id, 'video_url_uploaded_from' );
+		$html   = "<div id='rtm-mejs-video-container'>";
+
+		if ( empty( $youtube_url ) ) {
+
+			$html_video = '<video poster="%s" src="%s" type="video/mp4" class="wp-video-shortcode" id="rt_media_video_%s" controls="controls" preload="metadata"></video>';
+			$html      .= sprintf( $html_video, esc_url( $rtmedia_media->cover_art ), esc_url( wp_get_attachment_url( $rtmedia_media->media_id ) ), esc_attr( $rtmedia_media->id ) );
+
+		} else {
+
+			$html_video = '<video width="640" height="360" class="url-video" id="video-id-%s" preload="none"><source type="video/youtube" src="%s" /></video>';
+			$html .= sprintf( $html_video, esc_attr( $rtmedia_media->id ), esc_url( wp_get_attachment_url( $rtmedia_media->media_id ) ) );
+
+		}
+
+		$html   .= '</div>';
+	}
+	return $html;
+}
+
+add_filter( 'rtmedia_single_content_filter', 'filter_single_media_page', 10, 2 );
+
