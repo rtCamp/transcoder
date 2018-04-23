@@ -64,20 +64,20 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 * NEW FEATURES
 
  * Added feature to track real-time transcoding process status on BuddyPress activity, media library page and media single page for administrators
- * Added option in settings to enable/disable tracking of real-time transcoding process status feature
- * Added filters to manage track/check process status button text [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscodercheckstatusbuttontext)
- * Added filters to manage transcoding process status messages [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscoderstatusmessage)
+ * Added option in transcoder settings page to enable/disable tracking of real-time transcoding process status feature
+ * Added filter to change text of check status button [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscodercheckstatusbuttontext)
+ * Added filter to manage transcoding process status messages [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscoderstatusmessage)
 
 * ENHANCEMENTS
 
- * Improved security for callback handler of transcoded media
+ * Improved security of callback handler for transcoded media
 
 * FIXED
 
- * Fixed multiple notice generation while activating key.
- * Fixed .mov video media not getting transcoded bug
- * Fixed iPhone captured video not getting transcoded bug
- * Fixed transcoded videos getting swapped in BuddyPress activity bug
+ * PHP notices generated while activating product license key
+ * Transcoding issue for MOV file formats
+ * Transcoding issue for the files having QuickTime MIME type
+ * Issue with transcoded video files getting swapped in BuddyPress activity
 
 ### 1.1.2 [July 21, 2017] ###
 * ENHANCEMENTS
