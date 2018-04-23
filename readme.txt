@@ -1,10 +1,10 @@
 === Transcoder ===
-Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode
+Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode, thrijith, devikvekariya, sagarnasit
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 4.8
-Stable tag: 1.1.2
+Tested up to: 4.9.5
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,25 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.2 [April 23, 2018] =
+* NEW FEATURES
+
+ * Added feature to track real-time transcoding process status on BuddyPress activity, media library page and media single page for administrators
+ * Added option in settings to enable/disable tracking of real-time transcoding process status feature
+ * Added filters to manage track/check process status button text [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscodercheckstatusbuttontext)
+ * Added filters to manage transcoding process status messages [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscoderstatusmessage)
+
+* ENHANCEMENTS
+
+ * Improved security for callback handler of transcoded media
+
+* FIXED
+
+ * Fixed multiple notice generation while activating key.
+ * Fixed .mov video media not getting transcoded bug
+ * Fixed iPhone captured video not getting transcoded bug
+ * Fixed transcoded videos getting swapped in BuddyPress activity bug
+
 = 1.1.2 [July 21, 2017] =
 * ENHANCEMENTS
 
@@ -135,5 +154,5 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
-= 1.1.2 =
-Added new filter to allow adding a custom filename for the transcoded files and replaced file_get_contents() with wp_remote_get() to have better server compatibility
+= 1.2 =
+Added new feature to track real-time transcoding process status on BuddyPress activity, media library page and media single page for administrators and fixed some bugs.
