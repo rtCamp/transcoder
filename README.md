@@ -60,7 +60,7 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 1. Transcoder Settings
 
 ## Changelog ##
-### 1.2 [April 23, 2018] ###
+### 1.2 [April 24, 2018] ###
 * NEW FEATURES
 
  * Added feature to track real-time transcoding process status on BuddyPress activity, media library page and media single page for administrators
