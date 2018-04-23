@@ -227,16 +227,10 @@
 							<td>
 								<?php
 								$rtt_override_thumbnail = get_site_option( 'rtt_override_thumbnail', false );
-								$checked = '';
-								if ( empty( $rtt_override_thumbnail ) ) {
-									$rtt_override_thumbnail = false;
-								} else {
-									$checked = 'checked=checked';
-								}
 								?>
-								<input type="checkbox" name="rtt_override_thumbnail" value="1" <?php echo esc_attr( $checked ); ?> />
+								<input type="checkbox" name="rtt_override_thumbnail" value="1" <?php checked( $rtt_override_thumbnail, 1 ); ?> />
 								<span class="rtm-tooltip">
-									<i class="dashicons dashicons-info rtmicon"></i>
+									<i class="dashicons dashicons-info rtmicon" style="padding-top:3px"></i>
 									<span class="rtm-tip">
 										<?php
 										esc_html_e( 'If enabled, Transcoder will replace existing media thumbnails with regenerated ones after retranscoding. If disabled, media thumbnails will remain untouched.', 'transcoder' );
@@ -245,8 +239,42 @@
 								</span>
 							</td>
 						</tr>
+						<tr valign="top">
+							<td scope="row">
+								<?php esc_html_e( 'Allow admin to track real-time transcoding status on user profile', 'transcoder' ); ?>
+							</td>
+							<td>
+								<?php
+								$rtt_check_status_btn = get_site_option( 'rtt_client_check_status_button', false );
+								?>
+								<input type="checkbox" name="rtt_client_check_status_button" value="1" <?php checked( $rtt_check_status_btn, 1 ); ?> />
+								<span class="rtm-tooltip">
+									<i class="dashicons dashicons-info rtmicon" style="padding-top:3px"></i>
+									<span class="rtm-tip">
+										<?php
+										esc_html_e( 'If enabled, It will display check status button to know status of transcoding process at client side if that user have administrator rights.', 'transcoder' );
+										?>
+									</span>
+								</span>
+							</td>
+						</tr>
 					</table>
-					<p><?php echo esc_html__( 'Visit our', 'transcoder' ) . ' <a href="https://rtmedia.io/docs/transcoder/">' . esc_html__( 'documentation page', 'transcoder' ) . '</a> ' . esc_html__( 'for more details', 'transcoder' ) . '.'; ?></p>
+					<p>
+						<?php
+						echo wp_kses(
+							sprintf(
+								/* translators: 1. URL of documentation page. */
+								__( 'Visit our <a href="%1$s">documentation page</a> for more details', 'transcoder' ),
+								'https://rtmedia.io/docs/transcoder/'
+							),
+							array(
+								'a' => array(
+									'href' => array(),
+								),
+							)
+						);
+						?>
+					</p>
 					<div class="rtm-button-container">
 						<div class="rtm-social-links alignleft">
 							<a href="http://twitter.com/rtMediaWP" class="twitter" target="_blank">

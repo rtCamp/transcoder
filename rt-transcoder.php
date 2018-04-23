@@ -3,7 +3,7 @@
  * Plugin Name: Transcoder
  * Plugin URI: https://rtmedia.io/transcoder/?utm_source=dashboard&utm_medium=plugin&utm_campaign=transcoder
  * Description: Audio & video transcoding services for ANY WordPress website. Allows you to convert audio/video files of any format to a web-friendly format (mp3/mp4).
- * Version: 1.1.2
+ * Version: 1.2
  * Text Domain: transcoder
  * Author: rtCamp
  * Author URI: https://rtcamp.com/?utm_source=dashboard&utm_medium=plugin&utm_campaign=transcoder
@@ -39,7 +39,7 @@ if ( ! defined( 'RT_TRANSCODER_VERSION' ) ) {
 	/**
 	 * The version of the plugin
 	 */
-	define( 'RT_TRANSCODER_VERSION', '1.1.2' );
+	define( 'RT_TRANSCODER_VERSION', '1.2' );
 }
 
 require_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-functions.php';
@@ -66,9 +66,20 @@ function rtt_action_links( $links, $file ) {
 	}
 
 	// Add a few links to the existing links array.
+	$settings_url = sprintf(
+		'<a href="%1$s">%2$s</a>',
+		esc_url( admin_url( 'admin.php?page=rt-transcoder' ) ),
+		esc_html__( 'Settings', 'transcoder' )
+	);
+
+	$docs_url = sprintf(
+		'<a target="_blank" href="https://rtmedia.io/docs/transcoder/">%1$s</a>',
+		esc_html__( 'Docs', 'transcoder' )
+	);
+
 	return array_merge( $links, array(
-		'settings' => '<a href="' . esc_url( admin_url( 'admin.php?page=rt-transcoder' ) ) . '">' . esc_html__( 'Settings', 'rtmedia' ) . '</a>',
-		'docs'     => '<a target="_blank" href="' . esc_url( 'https://rtmedia.io/docs/transcoder/' ) . '">' . esc_html__( 'Docs', 'rtmedia' ) . '</a>',
+		'settings' => $settings_url,
+		'docs'     => $docs_url,
 	) );
 }
 

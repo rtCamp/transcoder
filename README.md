@@ -2,7 +2,7 @@
 
 # Transcoder #
 
-* **Contributors:** [rtcamp](http://profiles.wordpress.org/rtcamp), [mangeshp](http://profiles.wordpress.org/mangeshp), [chandrapatel](http://profiles.wordpress.org/chandrapatel), [manishsongirkar36](http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90](https://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode](https://profiles.wordpress.org/kiranpotphode)
+* **Contributors:** [rtcamp](http://profiles.wordpress.org/rtcamp), [mangeshp](http://profiles.wordpress.org/mangeshp), [chandrapatel](http://profiles.wordpress.org/chandrapatel), [manishsongirkar36](http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90](https://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode](https://profiles.wordpress.org/kiranpotphode), [thrijith](https://profiles.wordpress.org/thrijith), [devikvekariya](https://profiles.wordpress.org/devikvekariya), [sagarnasit](https://profiles.wordpress.org/sagarnasit)
 
 * **License:** [GPL v2 or later] ( http://www.gnu.org/licenses/gpl-2.0.html)
 
@@ -60,6 +60,25 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 1. Transcoder Settings
 
 ## Changelog ##
+### 1.2 [April 23, 2018] ###
+* NEW FEATURES
+
+ * Added feature to track real-time transcoding process status on BuddyPress activity, media library page and media single page for administrators
+ * Added option in settings to enable/disable tracking of real-time transcoding process status feature
+ * Added filters to manage track/check process status button text [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscodercheckstatusbuttontext)
+ * Added filters to manage transcoding process status messages [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscoderstatusmessage)
+
+* ENHANCEMENTS
+
+ * Improved security for callback handler of transcoded media
+
+* FIXED
+
+ * Fixed multiple notice generation while activating key.
+ * Fixed .mov video media not getting transcoded bug
+ * Fixed iPhone captured video not getting transcoded bug
+ * Fixed transcoded videos getting swapped in BuddyPress activity bug
+
 ### 1.1.2 [July 21, 2017] ###
 * ENHANCEMENTS
 
