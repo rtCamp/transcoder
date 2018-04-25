@@ -114,6 +114,11 @@ class RT_Transcoder_Handler {
 			add_filter( 'rtmedia_allowed_types', array( $this, 'allowed_types_admin_settings' ), 10, 1 );
 			$usage_info = get_site_option( 'rt-transcoding-usage' );
 
+			if ( empty( $usage_info ) || ! array_key_exists( $this->api_key, $usage_info ) || empty( $usage_info[ $this->api_key ]->remaining ) ) {
+					$usage_info = $this->update_usage( $this->api_key );
+					$usage_info = get_site_option( 'rt-transcoding-usage' );
+			}
+
 			if ( isset( $usage_info ) && is_array( $usage_info ) && array_key_exists( $this->api_key , $usage_info ) ) {
 				if ( isset( $usage_info[ $this->api_key ]->plan->expires )
 					&& strtotime( $usage_info[ $this->api_key ]->plan->expires ) < time() ) {
@@ -1397,22 +1402,27 @@ class RT_Transcoder_Handler {
 			if ( empty( $status_info ) || ! is_object( $status_info ) || empty( $status_info->job_id ) ) {
 
 				$message = __( 'Looks like the server is taking too long to respond, Please try again in sometime.', 'transcoder' );
+				$status  = 'null_response';
 
 			} elseif ( ! empty( $status_info ) && ! empty( $status_info->error_code ) && ! empty( $status_info->error_msg ) ) {
 
 				$message = __( 'Unfortunately, Transcoder failed to transcode this file.', 'transcoder' ) . $data['error_msg'];
+				$status  = 'failed';
 
 			} elseif ( ! empty( $status_info ) && 'processing' === $status_info->status && empty( $status_info->error_code ) && empty( $status_info->error_msg ) ) {
 
 				$message = __( 'Your file is getting transcoded. Please refresh after some time.', 'transcoder' );
+				$status  = 'running';
 
 			} elseif ( ! empty( $status_info ) && 'processing' !== $status_info->status && '100' !== $status_info->progress && empty( $status_info->error_code ) && empty( $status_info->error_msg ) ) {
 
 				$message = __( 'This file is still in the queue. Please refresh after some time.', 'transcoder' );
+				$status  = 'in_queue';
 
 			} elseif ( ! empty( $status_info ) && 'processed' === $status_info->status && 'video' === $status_info->job_type && ( empty( $transcoded_files ) || empty( $transcoded_thumbs ) ) ) {
 
 				$message = __( 'Your server should be ready to receive the transcoded file.', 'transcoder' );
+				$status  = 'receiving_back';
 
 			} elseif ( ! empty( $status_info ) && 'processed' === $status_info->status && ! empty( $transcoded_thumbs ) && ( ! empty( $transcoded_files ) || 'thumbnail' === $status_info->job_type ) ) {
 
@@ -1438,8 +1448,9 @@ class RT_Transcoder_Handler {
 		 * @since 1.2
 		 *
 		 * @param string $message Default transcoding process status message.
+		 * @param string $status as Key of message.
 		 */
-		$message = apply_filters( 'rtt_transcoder_status_message', $message );
+		$message = apply_filters( 'rtt_transcoder_status_message', $message, strtolower( $status ) );
 
 		$response['message'] = esc_html( $message );
 		$response['status']  = esc_html( $status );
