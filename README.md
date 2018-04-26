@@ -2,7 +2,7 @@
 
 # Transcoder #
 
-* **Contributors:** [rtcamp](http://profiles.wordpress.org/rtcamp), [mangeshp](http://profiles.wordpress.org/mangeshp), [chandrapatel](http://profiles.wordpress.org/chandrapatel), [manishsongirkar36](http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90](https://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode](https://profiles.wordpress.org/kiranpotphode), [thrijith](https://profiles.wordpress.org/thrijith), [devikvekariya](https://profiles.wordpress.org/devikvekariya), [sagarnasit](https://profiles.wordpress.org/sagarnasit)
+* **Contributors:** [rtcamp] (http://profiles.wordpress.org/rtcamp), [mangeshp] (http://profiles.wordpress.org/mangeshp), [chandrapatel] (http://profiles.wordpress.org/chandrapatel), [manishsongirkar36] (http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90] (http://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode] (http://profiles.wordpress.org/kiranpotphode), [thrijith] (http://profiles.wordpress.org/thrijith), [devikvekariya] (http://profiles.wordpress.org/devikvekariya), [sagarnasit] (http://profiles.wordpress.org/sagarnasit),
 
 * **License:** [GPL v2 or later] ( http://www.gnu.org/licenses/gpl-2.0.html)
 
@@ -14,7 +14,7 @@ Transcoder easily converts all audio and video files uploaded to your website to
 Transcoder eliminates the need for a dedicated media node- no fiddling with installation, managing dependancies or renting servers! Transcoder also works on shared hosting- just install, subscribe and go!
 
 All transcoding services are available via a subscription plan through this plugin.
-Subscribe to our free plan from the plugin's settings or from our [product page](https://rtmedia.io/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder). Note that Transcoder will not provide any services without a subscription plan.
+Subscribe to our free plan from the plugin's settings or from our [product page](https://rtmedia.io/transcoder/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder). Note that Transcoder will not provide any services without a subscription plan.
 
 #### Supported input media types: ####
 * Audio: mp3, m4a, wav, ogg, wma
@@ -28,9 +28,9 @@ Create the ultimate niche community by combining Transcoder with our [rtMedia](h
 
 #### Transcoder Features ####
 1. **Works with ANY WordPress website** - Transcoder plugs into your current website seamlessly, instantly improving user audio/video experience.
-2. **rtMedia integration** - Works perfectly with our own [rtMedia](https://rtmedia.io/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder), for a complete social media platform.
+2. **rtMedia integration** - Works perfectly with our own [rtMedia](https://rtmedia.io/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder), for a complete social media platform.
 3. **Thumbnail generation** - Automatically generate up to 10 thumbnails for every video, from which your users can choose one.
-4. **[rt_media] shortcode** - Use our shortcode to display transcoded audio/video file on any post or page. For example, [rt_media attachment_id####xx] the attachment_id parameter specifies the file to be displayed.
+4. **[rt_media] shortcode** - Use our shortcode to display transcoded audio/video file on any post or page. For example, [rt_media attachment_id=xx] the attachment_id parameter specifies the file to be displayed.
 
 #### Privacy Warning ####
 In order for us to transcode your media files, we need to copy it over to our server.
@@ -42,9 +42,9 @@ After transcoding is completed, the media can reside on our server for a maximum
 * RESTful API
 
 #### Important Links ####
-* [Project Homepage](https://rtmedia.io/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder "Visit Transcoder's Homepage")
-* [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder "Visit Transcoder's Documentation page")
-* [FAQ](https://rtmedia.io/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder#frequently-asked-questions "Visit FAQ page")
+* [Project Homepage](https://rtmedia.io/transcoder/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder "Visit Transcoder's Homepage")
+* [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder "Visit Transcoder's Documentation page")
+* [FAQ](https://rtmedia.io/transcoder/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder#frequently-asked-questions "Visit FAQ page")
 * [GitHub](https://github.com/rtCamp/transcoder/) - Please mention your wordpress.org username when sending pull requests.
 
 ## Installation ##
@@ -53,8 +53,8 @@ After transcoding is completed, the media can reside on our server for a maximum
 * Activate it through the 'Plugins' section.
 
 ## Frequently Asked Questions ##
-Please visit [FAQ page](https://rtmedia.io/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder#frequently-asked-questions "Visit FAQ page").
-Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&utm_medium####plugin&utm_campaign####transcoder "Visit Transcoder's Documentation page")
+Please visit [FAQ page](https://rtmedia.io/transcoder/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder#frequently-asked-questions "Visit FAQ page").
+Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder "Visit Transcoder's Documentation page")
 
 ## Screenshots ##
 1. Transcoder Settings
@@ -84,7 +84,7 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
  * Transcoding issue for the files having QuickTime MIME type
  * Issue with transcoded video files getting swapped in BuddyPress activity
 
-### 1.1.2 [July 21, 2017] ###
+#### 1.1.2 [July 21, 2017] ####
 * ENHANCEMENTS
 
  * Added: Filter to allow adding a custom filename for the transcoded files [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#transcodedtempfilename)
@@ -156,4 +156,4 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 #### 1.0.0 ####
 Initial release
 
-Fix the false positive localhost checking bug.
+Added new feature to track real-time transcoding process status on BuddyPress activity, media library page and media single page for administrators and fixed some bugs.
