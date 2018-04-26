@@ -4,7 +4,7 @@ Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
 Tested up to: 4.9.5
-Stable tag: 1.2
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,11 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.2.1 [April 26, 2017] =
+* FIXED
+
+ * Updated option in database for service usage information while uploading media
+
 = 1.2 [April 24, 2018] =
 * NEW FEATURES
 
@@ -154,5 +159,5 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
-= 1.2 =
-Added new feature to track real-time transcoding process status on BuddyPress activity, media library page and media single page for administrators and fixed some bugs.
+= 1.2.1 =
+Updated option in database for service usage information while uploading media.

@@ -60,6 +60,11 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source####readme&ut
 1. Transcoder Settings
 
 ## Changelog ##
+### 1.2.1 [April 26, 2018] ###
+* FIXED
+
+ * Updated option in database for service usage information while uploading media
+
 ### 1.2 [April 24, 2018] ###
 * NEW FEATURES
 
