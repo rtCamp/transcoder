@@ -917,3 +917,31 @@ function rtt_filter_single_media_page_video_markup( $html, $rtmedia_media ) {
 
 add_filter( 'rtmedia_single_content_filter', 'rtt_filter_single_media_page_video_markup', 10, 2 );
 
+/**
+ *
+ * Added handler to update usage if it is not updated
+ *
+ * @since 1.0.0
+ *
+ * @param array  $wp_metadata       Metadata of the attachment.
+ * @param int    $attachment_id  ID of attachment.
+ * @param string $autoformat     If true then generating thumbs only else trancode video.
+ */
+function wp_media_update_usage( $wp_metadata, $attachment_id, $autoformat = true ) {
+
+	if ( ! empty( get_site_option( 'rt-transcoding-api-key' ) ) ) {
+
+		$usage_info = get_site_option( 'rt-transcoding-usage' );
+		$handler = new RT_Transcoder_Handler( false );
+		if ( empty( $usage_info ) || empty( $usage_info[ $handler->api_key ]->remaining ) ) {
+
+			$usage = $handler->update_usage( $handler->api_key );
+		}
+	}
+
+	return $wp_metadata;
+}
+
+add_filter( 'wp_generate_attachment_metadata', 'wp_media_update_usage', 10, 2 );
+
+//a:1:{s:32:\"c69e80fd8daeb4670748171df5e2966f\";O:8:\"stdClass\":2:{s:6:\"status\";s:5:\"error\";s:3:\"msg\";s:83:\"Subscription has been expired on 2018-04-06 23:59:59. Please renew the subscription\";}}
