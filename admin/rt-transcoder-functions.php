@@ -944,4 +944,3 @@ function wp_media_update_usage( $wp_metadata, $attachment_id, $autoformat = true
 
 add_filter( 'wp_generate_attachment_metadata', 'wp_media_update_usage', 10, 2 );
 
-//a:1:{s:32:\"c69e80fd8daeb4670748171df5e2966f\";O:8:\"stdClass\":2:{s:6:\"status\";s:5:\"error\";s:3:\"msg\";s:83:\"Subscription has been expired on 2018-04-06 23:59:59. Please renew the subscription\";}}
