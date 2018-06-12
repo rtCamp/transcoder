@@ -929,12 +929,15 @@ add_filter( 'rtmedia_single_content_filter', 'rtt_filter_single_media_page_video
  */
 function rtt_media_update_usage( $wp_metadata, $attachment_id, $autoformat = true ) {
 
-	if ( ! empty( get_site_option( 'rt-transcoding-api-key' ) ) ) {
+	$stored_key     = get_site_option( 'rt-transcoding-api-key' );
+	$transient_flag = get_transient( 'rtt_usage_update_flag' );
+
+	if ( ! empty( $stored_key ) && empty( $transient_flag ) ) {
 
 		$usage_info = get_site_option( 'rt-transcoding-usage' );
-		$handler = new RT_Transcoder_Handler( false );
+		$handler    = new RT_Transcoder_Handler( false );
 
-		if ( empty( $usage_info ) || empty( $usage_info[ $handler->api_key ]->remaining ) && empty( get_transient( 'rtt_usage_update_flag' ) ) ) {
+		if ( empty( $usage_info ) || empty( $usage_info[ $handler->api_key ]->remaining ) ) {
 
 			$usage = $handler->update_usage( $handler->api_key );
 			set_transient( 'rtt_usage_update_flag', '1', HOUR_IN_SECONDS );
