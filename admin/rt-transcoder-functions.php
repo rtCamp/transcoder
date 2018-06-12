@@ -927,20 +927,22 @@ add_filter( 'rtmedia_single_content_filter', 'rtt_filter_single_media_page_video
  * @param int    $attachment_id  ID of attachment.
  * @param string $autoformat     If true then generating thumbs only else trancode video.
  */
-function wp_media_update_usage( $wp_metadata, $attachment_id, $autoformat = true ) {
+function rtt_media_update_usage( $wp_metadata, $attachment_id, $autoformat = true ) {
 
 	if ( ! empty( get_site_option( 'rt-transcoding-api-key' ) ) ) {
 
 		$usage_info = get_site_option( 'rt-transcoding-usage' );
 		$handler = new RT_Transcoder_Handler( false );
-		if ( empty( $usage_info ) || empty( $usage_info[ $handler->api_key ]->remaining ) ) {
+
+		if ( empty( $usage_info ) || empty( $usage_info[ $handler->api_key ]->remaining ) && empty( get_transient( 'rtt_usage_update_flag' ) ) ) {
 
 			$usage = $handler->update_usage( $handler->api_key );
+			set_transient( 'rtt_usage_update_flag', '1', HOUR_IN_SECONDS );
 		}
 	}
 
 	return $wp_metadata;
 }
 
-add_filter( 'wp_generate_attachment_metadata', 'wp_media_update_usage', 10, 2 );
+add_filter( 'wp_generate_attachment_metadata', 'rtt_media_update_usage', 10, 2 );
 
