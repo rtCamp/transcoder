@@ -1010,7 +1010,8 @@ class RT_Transcoder_Handler {
 
 			// Added fallback if FILTER_VALIDATE_IP is returning null value after Sanitization.
 			if ( empty( $incomming_addr ) ) {
-				$incomming_addr = sanitize_text_field( filter_input( INPUT_SERVER, 'REMOTE_ADDR' ) );
+				// Used $_server because filter_input returning null values because for INPUT_SERVER.
+				$incomming_addr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
 			}
 
 			if ( empty( $server_addr ) || empty( $incomming_addr ) || $incomming_addr !== $server_addr ) {
