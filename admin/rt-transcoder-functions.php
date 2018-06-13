@@ -919,7 +919,8 @@ add_filter( 'rtmedia_single_content_filter', 'rtt_filter_single_media_page_video
 
 /**
  *
- * Added handler to update usage if it is not updated
+ * Added handler to update usage if it is not updated.
+ * Added one flag in transient to avoid requests when usage quota is over and it is not renewed.
  *
  * @since 1.0.0
  *
