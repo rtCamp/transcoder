@@ -1008,6 +1008,11 @@ class RT_Transcoder_Handler {
 
 			$incomming_addr = filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
 
+			// Added fallback if FILTER_VALIDATE_IP is returning null value after Sanitization.
+			if ( empty( $incomming_addr ) ) {
+				$incomming_addr = sanitize_text_field( filter_input( INPUT_SERVER, 'REMOTE_ADDR' ) );
+			}
+
 			if ( empty( $server_addr ) || empty( $incomming_addr ) || $incomming_addr !== $server_addr ) {
 
 				echo esc_html__( 'Something went wrong. Invalid post request.', 'transcoder' );
