@@ -3,7 +3,7 @@ Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 4.9.5
+Tested up to: 4.9.6
 Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -62,10 +62,15 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
-= 1.2.1 [April 26, 2017] =
+= 1.2.1 [June 26, 2018] =
+* ENHANCEMENTS
+
+ * Updated usage of existing filter 'rtt_transcoder_status_message' [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscoderstatusmessage)
+
 * FIXED
 
- * Updated option in database for service usage information while uploading media
+ * Issue with Transcoding service usage update
+ * Issue with Transcoding process callback
 
 = 1.2 [April 24, 2018] =
 * NEW FEATURES
@@ -160,4 +165,4 @@ Initial release
 
 == Upgrade Notice ==
 = 1.2.1 =
-Updated option in database for service usage information while uploading media.
+Transcoder 1.2.1, with transcoding status filter update and bug fixes.
