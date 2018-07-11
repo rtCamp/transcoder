@@ -991,39 +991,9 @@ class RT_Transcoder_Handler {
 		$thumbnail		= filter_input( INPUT_POST, 'thumbnail', FILTER_SANITIZE_STRING );
 		$format			= filter_input( INPUT_POST, 'format', FILTER_SANITIZE_STRING );
 
-		$ignore_cache = filter_input( INPUT_POST, 'ignore_cache', FILTER_SANITIZE_STRING );
-
-		if ( ! empty( $job_id ) ) {
-
-			// It returns false if transient is not set.
-			$server_addr = get_transient( 'rtt_server_addr' );
-			if ( ! empty( $ignore_cache ) || false === $server_addr ) {
-
-				$path        = str_replace( 'http://', '', $this->transcoding_api_url );
-				$path_arr    = explode( '/', $path );
-				$server_addr = gethostbyname( $path_arr[0] );
-				set_transient( 'rtt_server_addr', $server_addr, WEEK_IN_SECONDS );
-
-			}
-
-			$incomming_addr = filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
-
-			// Added fallback if FILTER_VALIDATE_IP is returning null value after Sanitization.
-			if ( empty( $incomming_addr ) ) {
-				// Used $_server because filter_input returning null values because for INPUT_SERVER.
-				$incomming_addr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] ); // @codingStandardsIgnoreLine
-			}
-
-			if ( empty( $server_addr ) || empty( $incomming_addr ) || $incomming_addr !== $server_addr ) {
-
-				echo esc_html__( 'Something went wrong. Invalid post request.', 'transcoder' );
-				die();
-
-			}
-		}
-
 		if ( ! empty( $job_id )  && ! empty( $file_status ) && ( 'error' === $file_status ) ) {
 			$send_alert = $this->nofity_transcoding_failed( $job_id, $error_msg );
+			echo esc_html__( 'Something went wrong. Invalid post request.', 'transcoder' );
 			die();
 		}
 
