@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://community.rtcamp.com/\n"
-"POT-Creation-Date: 2018-06-26 06:24:37+00:00\n"
+"POT-Creation-Date: 2018-07-11 13:55:09+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -532,18 +532,18 @@ msgstr ""
 msgid "Could not read file."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:890 admin/rt-transcoder-handler.php:1067
-#: admin/rt-transcoder-handler.php:1129
+#: admin/rt-transcoder-handler.php:890 admin/rt-transcoder-handler.php:1037
+#: admin/rt-transcoder-handler.php:1099
 msgid "Transcoding: Download Failed"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:891 admin/rt-transcoder-handler.php:1068
-#: admin/rt-transcoder-handler.php:1130 admin/rt-transcoder-handler.php:1325
-#: admin/rt-transcoder-handler.php:1328
+#: admin/rt-transcoder-handler.php:891 admin/rt-transcoder-handler.php:1038
+#: admin/rt-transcoder-handler.php:1100 admin/rt-transcoder-handler.php:1295
+#: admin/rt-transcoder-handler.php:1298
 msgid "Media"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:892 admin/rt-transcoder-handler.php:1069
+#: admin/rt-transcoder-handler.php:892 admin/rt-transcoder-handler.php:1039
 msgid " was successfully encoded but there was an error while downloading:"
 msgstr ""
 
@@ -555,76 +555,76 @@ msgstr ""
 msgid "retry the download"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:906 admin/rt-transcoder-handler.php:1082
-#: admin/rt-transcoder-handler.php:1144
+#: admin/rt-transcoder-handler.php:906 admin/rt-transcoder-handler.php:1052
+#: admin/rt-transcoder-handler.php:1114
 msgid "Done"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1019
+#: admin/rt-transcoder-handler.php:996
 msgid "Something went wrong. Invalid post request."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1061 admin/rt-transcoder-handler.php:1123
+#: admin/rt-transcoder-handler.php:1031 admin/rt-transcoder-handler.php:1093
 msgid ""
 "Something went wrong. The required attachment id does not exists. It must "
 "have been deleted."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1131
+#: admin/rt-transcoder-handler.php:1101
 msgid " was successfully transcoded but there was an error while downloading:"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1185
+#: admin/rt-transcoder-handler.php:1155
 msgid "Please enter the license key."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1197
+#: admin/rt-transcoder-handler.php:1167
 msgid "Transcoding disabled successfully."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1208
+#: admin/rt-transcoder-handler.php:1178
 msgid "Transcoding enabled successfully."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1321
+#: admin/rt-transcoder-handler.php:1291
 msgid "Transcoding: Something went wrong."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1324
+#: admin/rt-transcoder-handler.php:1294
 msgid " There was unexpected error occurred while transcoding this following media."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1329
+#: admin/rt-transcoder-handler.php:1299
 msgid " there was unexpected error occurred while transcoding this media."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1361
+#: admin/rt-transcoder-handler.php:1331
 msgid "Something went wrong. Please try again!"
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1378 admin/rt-transcoder-handler.php:1409
+#: admin/rt-transcoder-handler.php:1348 admin/rt-transcoder-handler.php:1379
 msgid "Your file is transcoded successfully. Please refresh the page."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1404
+#: admin/rt-transcoder-handler.php:1374
 msgid ""
 "Looks like the server is taking too long to respond, Please try again in "
 "sometime."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1405
+#: admin/rt-transcoder-handler.php:1375
 msgid "Unfortunately, Transcoder failed to transcode this file."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1406
+#: admin/rt-transcoder-handler.php:1376
 msgid "Your file is getting transcoded. Please refresh after some time."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1407
+#: admin/rt-transcoder-handler.php:1377
 msgid "This file is still in the queue. Please refresh after some time."
 msgstr ""
 
-#: admin/rt-transcoder-handler.php:1408
+#: admin/rt-transcoder-handler.php:1378
 msgid "Your server should be ready to receive the transcoded file."
 msgstr ""
 
