@@ -96,7 +96,6 @@ class RT_Transcoder_Handler {
 
 		$this->api_key        = get_site_option( 'rt-transcoding-api-key' );
 		$this->stored_api_key = get_site_option( 'rt-transcoding-api-key-stored' );
-		$this->auth_token     = get_site_option( 'rt-transcoding-auth-key' );			// Getting stored auth token
 
 		if ( $no_init ) {
 			return;
@@ -231,7 +230,6 @@ class RT_Transcoder_Handler {
 					'force'			=> 0,
 					'formats'		=> ( true === $autoformat ) ? ( ( 'video' === $type_array[0] ) ? 'mp4' : 'mp3' ) : $autoformat,
 					'thumb_count'	=> $options_video_thumb,
-					'verification_token'=> $this->auth_token,	// Sending auth token
 				),
 			);
 
@@ -241,11 +239,8 @@ class RT_Transcoder_Handler {
 
 			if ( ! is_wp_error( $upload_page ) && ( ( isset( $upload_page['response']['code'] ) && ( 200 === intval( $upload_page['response']['code'] ) ) ) ) ) {
 				$upload_info = json_decode( $upload_page['body'] );
-				if ( isset( $upload_info->status ) && $upload_info->status
-                    && isset( $upload_info->job_id ) && $upload_info->job_id
-                    && isset( $upload_info->auth_token ) && $upload_info->auth_token ) {
+				if ( isset( $upload_info->status ) && $upload_info->status && isset( $upload_info->job_id ) && $upload_info->job_id ) {
 					$job_id = $upload_info->job_id;
-                    update_site_option( 'rt-transcoding-auth-key', $upload_info->auth_token );
 					update_post_meta( $attachment_id, '_rt_transcoding_job_id', $job_id );
 				}
 			}
@@ -995,20 +990,36 @@ class RT_Transcoder_Handler {
 		$job_for		= filter_input( INPUT_POST, 'job_for', FILTER_SANITIZE_STRING );
 		$thumbnail		= filter_input( INPUT_POST, 'thumbnail', FILTER_SANITIZE_STRING );
 		$format			= filter_input( INPUT_POST, 'format', FILTER_SANITIZE_STRING );
-		$auth_token		= filter_input( INPUT_POST,	'auth_token', FILTER_DEFAULT );
 
 		$ignore_cache = filter_input( INPUT_POST, 'ignore_cache', FILTER_SANITIZE_STRING );
 
 		if ( ! empty( $job_id ) ) {
 
-			// Verify authentication token from server
-			if( isset( $auth_token ) && $auth_token === $this->auth_token ) {
-                echo "Token matched - Authenticated Successfully";
-            } else {
-				echo "Token mis-matched - Authentication Error";
-				die();
-            }
+			// It returns false if transient is not set.
+			$server_addr = get_transient( 'rtt_server_addr' );
+			if ( ! empty( $ignore_cache ) || false === $server_addr ) {
 
+				$path        = str_replace( 'http://', '', $this->transcoding_api_url );
+				$path_arr    = explode( '/', $path );
+				$server_addr = gethostbyname( $path_arr[0] );
+				set_transient( 'rtt_server_addr', $server_addr, WEEK_IN_SECONDS );
+
+			}
+
+			$incomming_addr = filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
+
+			// Added fallback if FILTER_VALIDATE_IP is returning null value after Sanitization.
+			if ( empty( $incomming_addr ) ) {
+				// Used $_server because filter_input returning null values because for INPUT_SERVER.
+				$incomming_addr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] ); // @codingStandardsIgnoreLine
+			}
+
+			if ( empty( $server_addr ) || empty( $incomming_addr ) || $incomming_addr !== $server_addr ) {
+
+				echo esc_html__( 'Something went wrong. Invalid post request.', 'transcoder' );
+				die();
+
+			}
 		}
 
 		if ( ! empty( $job_id )  && ! empty( $file_status ) && ( 'error' === $file_status ) ) {
