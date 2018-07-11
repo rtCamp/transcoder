@@ -60,13 +60,13 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 ## Changelog ##
-### 1.2.2 [July 11, 2018] ###
+#### 1.2.2 [July 11, 2018] ####
 
 * FIXED
 
   * Issue with Transcoding service on load balancing server
 
-### 1.2.1 [June 26, 2018] ###
+#### 1.2.1 [June 26, 2018] ####
 * ENHANCEMENTS
 
   * Updated usage of existing filter 'rtt_transcoder_status_message' [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscoderstatusmessage)
@@ -75,53 +75,53 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
   * Issue with Transcoding service usage update
   * Issue with Transcoding process callback
 
-### 1.2 [April 24, 2018] ###
+#### 1.2 [April 24, 2018] ####
 * NEW FEATURES
 
-  * Added feature to track real-time transcoding process status on BuddyPress activity, media library page and media single page for administrators
-  * Added option in transcoder settings page to enable/disable tracking of real-time transcoding process status feature
-  * Added filter to change text of check status button [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscodercheckstatusbuttontext)
-  * Added filter to manage transcoding process status messages [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscoderstatusmessage)
+ * Added feature to track real-time transcoding process status on BuddyPress activity, media library page and media single page for administrators
+ * Added option in transcoder settings page to enable/disable tracking of real-time transcoding process status feature
+ * Added filter to change text of check status button [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscodercheckstatusbuttontext)
+ * Added filter to manage transcoding process status messages [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscoderstatusmessage)
 
 * ENHANCEMENTS
 
-  * Improved security of callback handler for transcoded media
+ * Improved security of callback handler for transcoded media
 
 * FIXED
 
-  * PHP notices generated while activating product license key
-  * Transcoding issue for MOV file formats
-  * Transcoding issue for the files having QuickTime MIME type
-  * Issue with transcoded video files getting swapped in BuddyPress activity
+ * PHP notices generated while activating product license key
+ * Transcoding issue for MOV file formats
+ * Transcoding issue for the files having QuickTime MIME type
+ * Issue with transcoded video files getting swapped in BuddyPress activity
 
 #### 1.1.2 [July 21, 2017] ####
 * ENHANCEMENTS
 
-  * Added: Filter to allow adding a custom filename for the transcoded files [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#transcodedtempfilename)
-  * Replaced file_get_contents() with wp_remote_get() to have better server compatibility
+ * Added: Filter to allow adding a custom filename for the transcoded files [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#transcodedtempfilename)
+ * Replaced file_get_contents() with wp_remote_get() to have better server compatibility
 
 #### 1.1.1 [Jan 10, 2017] ####
 * FIXED
 
-  * False positive result of localhost checking
+ * False positive result of localhost checking
 
 #### 1.1 [Dec 27, 2016] ####
 * NEW FEATURES
 
-  * Retranscoding service to regenerate media thumbnails and retranscode media
-  * Added option in settings to override the current video thumbnail after retranscoding
+ * Retranscoding service to regenerate media thumbnails and retranscode media
+ * Added option in settings to override the current video thumbnail after retranscoding
 
 * ENHANCEMENTS
 
-  * Added filters to disable the emails getting sent to users and administrators [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rttsendnotification)
-  * Added action before the transcoded thumbnails are stored
-  * Added action before transcoded media is stored
-  * Added action after callback response is processed
+ * Added filters to disable the emails getting sent to users and administrators [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rttsendnotification)
+ * Added action before the transcoded thumbnails are stored
+ * Added action before transcoded media is stored
+ * Added action after callback response is processed
 
 * FIXED
 
-  * Improved the condition checking and fixed several bugs
-  * Fixed transcoded media not getting deleted bug
+ * Improved the condition checking and fixed several bugs
+ * Fixed transcoded media not getting deleted bug
 
 #### 1.0.8 [Oct 05, 2016] ####
 * Update the notice messages
@@ -166,4 +166,4 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 #### 1.0.0 ####
 Initial release
 
-Added new feature to track real-time transcoding process status on BuddyPress activity, media library page and media single page for administrators and fixed some bugs.
+Transcoder 1.2.1, with transcoding status filter update and bug fixes.
