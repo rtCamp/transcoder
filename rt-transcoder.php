@@ -39,7 +39,7 @@ if ( ! defined( 'RT_TRANSCODER_VERSION' ) ) {
 	/**
 	 * The version of the plugin
 	 */
-	define( 'RT_TRANSCODER_VERSION', '1.2.1' );
+	define( 'RT_TRANSCODER_VERSION', '1.2.2' );
 }
 
 require_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-functions.php';
