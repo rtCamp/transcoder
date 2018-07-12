@@ -2,7 +2,7 @@
 
 # Transcoder #
 
-* **Contributors:** [rtcamp](http://profiles.wordpress.org/rtcamp), [mangeshp](http://profiles.wordpress.org/mangeshp), [chandrapatel](http://profiles.wordpress.org/chandrapatel), [manishsongirkar36](http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90](http://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode](http://profiles.wordpress.org/kiranpotphode), [thrijith](http://profiles.wordpress.org/thrijith), [devikvekariya](http://profiles.wordpress.org/devikvekariya), [sagarnasit](http://profiles.wordpress.org/sagarnasit),[sudhiryadav](http://profiles.wordpress.org/sudhiryadav)
+* **Contributors:** [rtcamp] (http://profiles.wordpress.org/rtcamp), [mangeshp] (http://profiles.wordpress.org/mangeshp), [chandrapatel] (http://profiles.wordpress.org/chandrapatel), [manishsongirkar36] (http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90] (http://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode] (http://profiles.wordpress.org/kiranpotphode), [thrijith] (http://profiles.wordpress.org/thrijith), [devikvekariya] (http://profiles.wordpress.org/devikvekariya), [sagarnasit] (http://profiles.wordpress.org/sagarnasit), [sudhiryadav] (http://profiles.wordpress.org/sudhiryadav),
 
 * **License:** [GPL v2 or later] ( http://www.gnu.org/licenses/gpl-2.0.html)
 
@@ -64,16 +64,17 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 
 * FIXED
 
-  * Issue with Transcoding service on load balancing server
+ * Issue with Transcoding service on load balancing server
 
 #### 1.2.1 [June 26, 2018] ####
 * ENHANCEMENTS
 
-  * Updated usage of existing filter 'rtt_transcoder_status_message' [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscoderstatusmessage)
+ * Updated usage of existing filter 'rtt_transcoder_status_message' [Documentation](https://rtmedia.io/docs/transcoder/developers-documentation/filters/#rtttranscoderstatusmessage)
 
 * FIXED
-  * Issue with Transcoding service usage update
-  * Issue with Transcoding process callback
+
+ * Issue with Transcoding service usage update
+ * Issue with Transcoding process callback
 
 #### 1.2 [April 24, 2018] ####
 * NEW FEATURES
@@ -166,4 +167,4 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 #### 1.0.0 ####
 Initial release
 
-Transcoder 1.2.1, with transcoding status filter update and bug fixes.
+Transcoder 1.2.2, with support for load balancing server.
