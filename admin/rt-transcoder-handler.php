@@ -195,11 +195,6 @@ class RT_Transcoder_Handler {
 			}
 
 			$job_type = 'video';
-			/**  FORMAT * */
-			if ( 'video/mp4' === $metadata['mime_type'] && 'mp4' === $type ) {
-				$autoformat = 'thumbnails';
-				$job_type = 'thumbnail';
-			}
 
 			if ( 'audio' === $type_array[0] ) {
 				$job_type = 'audio';
