@@ -201,7 +201,7 @@ class RT_Transcoder_Handler {
 				$job_type = 'thumbnail';
 			}
 
-			if ( 'audio' === $type_array[0] ) {
+			if ( 'audio' === $type_array[0] || in_array( $ext, explode( ',', $this->audio_extensions ), true ) ) {
 				$job_type = 'audio';
 			}
 
