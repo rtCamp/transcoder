@@ -185,6 +185,7 @@ class RT_Transcoder_Handler {
 
 		$type_arry        = explode( '.', $url );
 		$type             = strtolower( $type_arry[ count( $type_arry ) - 1 ] );
+		$extension        = pathinfo( $path, PATHINFO_EXTENSION );
 		$not_allowed_type = array( 'mp3' );
 		preg_match( '/video|audio/i', $metadata['mime_type'], $type_array );
 
@@ -201,7 +202,7 @@ class RT_Transcoder_Handler {
 				$job_type = 'thumbnail';
 			}
 
-			if ( 'audio' === $type_array[0] || in_array( $ext, explode( ',', $this->audio_extensions ), true ) ) {
+			if ( 'audio' === $type_array[0] || in_array( $extension, explode( ',', $this->audio_extensions ), true ) ) {
 				$job_type = 'audio';
 			}
 
