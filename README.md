@@ -3,7 +3,9 @@
 Transcoding services for ANY WordPress website. Convert audio/video files of any format to a web-friendly format (mp3/mp4).
 
 <center>
+
 ![Transcoder Banner](https://rtmedia.io/wp-content/uploads/2016/08/trancoder-banner-01.png)
+
 </center>
 
 <a href="https://rtcamp.com/?utm_source=github&utm_medium=readme" rel="nofollow"><img src="https://rtcamp.com/wp-content/uploads/2019/04/github-banner@2x.png" alt="Handcrafted Enterprise WordPress Solutions by rtCamp" /></a>
