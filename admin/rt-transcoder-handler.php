@@ -83,7 +83,7 @@ class RT_Transcoder_Handler {
 	 * @access   public
 	 * @var      string    $audio_extensions    Audio extensions with comma separated.
 	 */
-	public $audio_extensions = ',wma,wav,m4a';
+	public $audio_extensions = ',wma,ogg,wav,m4a';
 
 	/**
 	 * Initialize the class and set its properties.
@@ -195,16 +195,15 @@ class RT_Transcoder_Handler {
 				$options_video_thumb = 5;
 			}
 
+			$job_type = 'video';
 			/**  FORMAT * */
 			if ( 'video/mp4' === $metadata['mime_type'] && 'mp4' === $type ) {
 				$autoformat = 'thumbnails';
 				$job_type = 'thumbnail';
-			} elseif ( 'audio' === $type_array[0] || in_array( $extension, explode( ',', $this->audio_extensions ), true ) ) {
+			}
+	
+			if ( 'audio' === $type_array[0] || in_array( $extension, explode( ',', $this->audio_extensions ), true ) ) {
 				$job_type = 'audio';
-			} elseif ( 'application/ogg' === $metadata['mime_type'] ) {
-				$job_type = 'ogg';
-			} else {
-				$job_type = 'video';
 			}
 
 			/** Figure out who is requesting this job **/
