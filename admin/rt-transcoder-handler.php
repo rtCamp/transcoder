@@ -875,8 +875,9 @@ class RT_Transcoder_Handler {
 
 								$uploaded_file = _wp_relative_upload_path( $upload_info['file'] );
 
-								if ( $uploaded_file ) {
+								if ( ! empty( $uploaded_file ) ) {
 									$transcoded_files[ $key ][] = $uploaded_file;
+									update_post_meta( $attachment_id, '_wp_attached_file', $uploaded_file );
 								}
 							} else {
 								$flag = esc_html__( 'Could not read file.', 'transcoder' );
