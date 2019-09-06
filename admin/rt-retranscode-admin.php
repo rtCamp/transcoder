@@ -40,19 +40,19 @@ class RetranscodeMedia {
 			return;
 		}
 
-		add_action( 'admin_menu',                       	array( $this, 'add_admin_menu' ) );
-		add_action( 'admin_enqueue_scripts',               	array( $this, 'admin_enqueues' ) );
-		add_action( 'wp_ajax_retranscodemedia',        		array( $this, 'ajax_process_retranscode_request' ) );
-		add_filter( 'media_row_actions',                   	array( $this, 'add_media_row_action' ), 10, 2 );
-		add_action( 'admin_head-upload.php',              	array( $this, 'add_bulk_actions_via_javascript' ) );
-		add_action( 'admin_action_bulk_retranscode_media', 	array( $this, 'bulk_action_handler' ) ); // Top drowndown
-		add_action( 'admin_action_-1',                     	array( $this, 'bulk_action_handler' ) ); // Bottom dropdown (assumes top dropdown = default value)
-		add_action( 'rtt_before_thumbnail_store', 			array( $this, 'rtt_before_thumbnail_store' ), 10, 2 ); // Delete old thumbs
-		add_action( 'rtt_before_transcoded_media_store', 	array( $this, 'rtt_before_transcoded_media_store' ), 10, 2 ); // Delete old transcoded files
-		add_action( 'transcoded_thumbnails_added', 			array( $this, 'transcoded_thumbnails_added' ), 10, 1 ); // Add the current thumbnail to the newly added thumbnails
-		add_action( 'rtt_handle_callback_finished', 		array( $this, 'rtt_handle_callback_finished' ), 10, 2 ); // Clean the extra meta that has been added while sending retranscoding request
-		add_filter( 'amp_story_allowed_video_types',        array( $this, 'add_amp_video_extensions' ) ); // Extend allowed video mime type extensions for AMP Story Background.
-		add_filter( 'render_block',                         array( $this, 'update_amp_story_video_url' ), 10, 2 ); // Filter block content and replace video URLs.
+		add_action( 'admin_menu',                          array( $this, 'add_admin_menu' ) );
+		add_action( 'admin_enqueue_scripts',               array( $this, 'admin_enqueues' ) );
+		add_action( 'wp_ajax_retranscodemedia',            array( $this, 'ajax_process_retranscode_request' ) );
+		add_filter( 'media_row_actions',                   array( $this, 'add_media_row_action' ), 10, 2 );
+		add_action( 'admin_head-upload.php',               array( $this, 'add_bulk_actions_via_javascript' ) );
+		add_action( 'admin_action_bulk_retranscode_media', array( $this, 'bulk_action_handler' ) ); // Top drowndown
+		add_action( 'admin_action_-1',                     array( $this, 'bulk_action_handler' ) ); // Bottom dropdown (assumes top dropdown = default value)
+		add_action( 'rtt_before_thumbnail_store',          array( $this, 'rtt_before_thumbnail_store' ), 10, 2 ); // Delete old thumbs
+		add_action( 'rtt_before_transcoded_media_store',   array( $this, 'rtt_before_transcoded_media_store' ), 10, 2 ); // Delete old transcoded files
+		add_action( 'transcoded_thumbnails_added',         array( $this, 'transcoded_thumbnails_added' ), 10, 1 ); // Add the current thumbnail to the newly added thumbnails
+		add_action( 'rtt_handle_callback_finished',        array( $this, 'rtt_handle_callback_finished' ), 10, 2 ); // Clean the extra meta that has been added while sending retranscoding request
+		add_filter( 'amp_story_allowed_video_types',       array( $this, 'add_amp_video_extensions' ) ); // Extend allowed video mime type extensions for AMP Story Background.
+		add_filter( 'render_block',                        array( $this, 'update_amp_story_video_url' ), 10, 2 ); // Filter block content and replace video URLs.
 
 		// Allow people to change what capability is required to use this feature
 		$this->capability = apply_filters( 'retranscode_media_cap', 'manage_options' );
