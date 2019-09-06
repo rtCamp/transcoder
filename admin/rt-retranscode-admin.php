@@ -51,6 +51,8 @@ class RetranscodeMedia {
 		add_action( 'rtt_before_transcoded_media_store', 	array( $this, 'rtt_before_transcoded_media_store' ), 10, 2 ); // Delete old transcoded files
 		add_action( 'transcoded_thumbnails_added', 			array( $this, 'transcoded_thumbnails_added' ), 10, 1 ); // Add the current thumbnail to the newly added thumbnails
 		add_action( 'rtt_handle_callback_finished', 		array( $this, 'rtt_handle_callback_finished' ), 10, 2 ); // Clean the extra meta that has been added while sending retranscoding request
+		add_filter( 'amp_story_allowed_video_types',        array( $this, 'add_amp_video_extensions' ) ); // Extend allowed video mime type extensions for AMP Story Background.
+		add_filter( 'render_block',                         array( $this, 'update_amp_story_video_url' ), 10, 2 ); // Filter block content and replace video URLs.
 
 		// Allow people to change what capability is required to use this feature
 		$this->capability = apply_filters( 'retranscode_media_cap', 'manage_options' );
@@ -633,6 +635,36 @@ class RetranscodeMedia {
 
 		}
 
+		// Add thumbnail in media library for user selection and set attachment thumbnail.
+		$thumbnail_array = get_post_meta( $media_id, '_rt_media_thumbnails', true );
+
+		if ( is_array( $thumbnail_array ) ) {
+			$uploads   = wp_upload_dir();
+			$thumbnail = $thumbnail_array[0];
+
+			if ( 0 === strpos( $thumbnail, $uploads['baseurl'] ) ) {
+				$thumbnail_src = $thumbnail;
+			} else {
+				$thumbnail_src = $uploads['basedir'] . '/' . $thumbnail;
+			}
+
+			$file_type = wp_check_filetype( basename( $thumbnail_src ), null );
+
+			$attachment = array(
+				'post_mime_type' => $file_type['type'],
+				'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $thumbnail_src ) ),
+				'post_content'   => '',
+				'post_status'    => 'inherit'
+			);
+
+			$attachment_id = wp_insert_attachment( $attachment, $thumbnail_src, $media_id );
+
+			require_once( ABSPATH . 'wp-admin/includes/image.php' );
+			$attach_data = wp_generate_attachment_metadata( $attachment_id, $thumbnail_src );
+			wp_update_attachment_metadata( $attachment_id, $attach_data );
+			set_post_thumbnail( $media_id, $attachment_id );
+		}
+
 	}
 
 	/**
@@ -653,6 +685,92 @@ class RetranscodeMedia {
 
 		}
 
+	}
+
+	/**
+	 * Add extensions to allow selection of more mime types in AMP Story.
+	 *
+	 * @param array $allowed_video_mime_types Allowed video types.
+	 *
+	 * @return array
+	 */
+	public function add_amp_video_extensions( $allowed_video_mime_types ) {
+		return array_merge( $allowed_video_mime_types, [ 'video/webm', 'video/quicktime', 'video/avi', 'video/msvideo', 'video/x-msvideo', 'video/mpeg', 'video/x-flv', 'video/x-ms-wmv' ] );
+	}
+
+	/**
+	 * Filter block content and replace AMP Video URL's with transcoded media.
+	 *
+	 * @param string $block_content Block Content.
+	 * @param array  $block         Block Information.
+	 *
+	 * @return mixed
+	 */
+	public function update_amp_story_video_url( $block_content, $block ) {
+		$allowed_blocks = [ 'amp/amp-story-page', 'core/video' ];
+
+		// Check if the block content should be filtered or not.
+		if ( ! in_array( $block['blockName'], $allowed_blocks, true ) || is_admin() ) {
+			return $block_content;
+		}
+
+		if ( isset( $block['attrs'] ) ) {
+			$mediaID = '';
+			if ( isset( $block['attrs']['mediaId'] ) ) {
+				$mediaID = $block['attrs']['mediaId']; // For AMP Story Background Media.
+			} elseif ( isset( $block['attrs']['id'] ) ) {
+				$mediaID = $block['attrs']['id']; // For AMP Story Video Block.
+			}
+
+			if ( ! empty( $mediaID ) ) {
+				$transcoded_url = get_post_meta( $mediaID, '_rt_media_transcoded_files', true );
+
+				if ( ! empty( $transcoded_url ) && isset( $transcoded_url['mp4'] ) ) {
+					// Get transcoded video path.
+					$transcoded_url = empty( $transcoded_url['mp4'][0] ) ? '' : $transcoded_url['mp4'][0];
+					$uploads        = wp_get_upload_dir();
+
+					// Get URL for the transcoded video.
+					if ( 0 === strpos( $transcoded_url, $uploads['baseurl'] ) ) {
+						$final_file_url = $transcoded_url;
+					} else {
+						$final_file_url = $uploads['baseurl'] . '/' . $transcoded_url;
+					}
+
+					// Replace existing video URL with transcoded URL.
+					if ( ! empty( $transcoded_url ) ) {
+						// Check for URL in amp-video tag.
+						$amp_video_pattern = '/<amp-video (.*?) src="(?<url>.*?)" (.*?)>/m';
+						preg_match_all( $amp_video_pattern, $block_content, $amp_tag_matches, PREG_SET_ORDER, 0 );
+
+						if ( ! empty( $amp_tag_matches ) ) {
+							foreach ( $amp_tag_matches as $amp_tag ) {
+								if ( isset( $amp_tag['url'] ) ) {
+									$block_content = str_replace( $amp_tag['url'], $final_file_url, $block_content );
+								}
+							}
+
+						}
+
+						// Check for URL in video tag.
+						$video_pattern = '/<video (.*?) src="(?<url>.*?)"(.*?)>/m';
+						preg_match_all( $video_pattern, $block_content, $video_tag_matches, PREG_SET_ORDER, 0 );
+
+						if ( ! empty( $video_tag_matches ) ) {
+							foreach ( $video_tag_matches as $video_tag ) {
+								if ( isset( $video_tag['url'] ) ) {
+									$block_content = str_replace( $video_tag['url'], $final_file_url, $block_content );
+								}
+							}
+
+						}
+
+					}
+				}
+			}
+		}
+
+		return $block_content;
 	}
 
 }
