@@ -645,7 +645,7 @@ class RetranscodeMedia {
 			if ( 0 === strpos( $thumbnail, $uploads['baseurl'] ) ) {
 				$thumbnail_src = $thumbnail;
 			} else {
-				$thumbnail_src = $uploads['basedir'] . '/' . $thumbnail;
+				$thumbnail_src = trailingslashit( $uploads['basedir'] ) . $thumbnail;
 			}
 
 			$file_type = wp_check_filetype( basename( $thumbnail_src ), null );
@@ -657,12 +657,15 @@ class RetranscodeMedia {
 				'post_status'    => 'inherit'
 			);
 
+			// Insert transcoded thumbnail attachment.
 			$attachment_id = wp_insert_attachment( $attachment, $thumbnail_src, $media_id );
 
-			require_once( ABSPATH . 'wp-admin/includes/image.php' );
-			$attach_data = wp_generate_attachment_metadata( $attachment_id, $thumbnail_src );
-			wp_update_attachment_metadata( $attachment_id, $attach_data );
-			set_post_thumbnail( $media_id, $attachment_id );
+			if ( ! is_wp_error( $attachment_id ) && 0 !== $attachment_id ) {
+				require_once( ABSPATH . 'wp-admin/includes/image.php' );
+				$attach_data = wp_generate_attachment_metadata( $attachment_id, $thumbnail_src );
+				wp_update_attachment_metadata( $attachment_id, $attach_data );
+				set_post_thumbnail( $media_id, $attachment_id );
+			}
 		}
 
 	}
@@ -734,7 +737,7 @@ class RetranscodeMedia {
 					if ( 0 === strpos( $transcoded_url, $uploads['baseurl'] ) ) {
 						$final_file_url = $transcoded_url;
 					} else {
-						$final_file_url = $uploads['baseurl'] . '/' . $transcoded_url;
+						$final_file_url = trailingslashit( $uploads['baseurl'] ) . $transcoded_url;
 					}
 
 					// Replace existing video URL with transcoded URL.
