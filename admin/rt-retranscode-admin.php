@@ -768,6 +768,24 @@ class RetranscodeMedia {
 
 						}
 
+						// Replace fallback poster with generated thumbnail.
+						$amp_story_poster = '/<amp-video (.*?) poster="(?<poster>.*?)" (.*?)>/m';
+						preg_match_all( $amp_story_poster, $block_content, $poster_matches, PREG_SET_ORDER, 0);
+
+						if ( ! empty( $poster_matches ) ) {
+							foreach ( $poster_matches as $poster_match ) {
+								if ( isset( $poster_match['poster'] ) ) {
+									if ( false !== strpos( $poster_match['poster'], 'amp-story-fallback-poster.png' ) ) {
+										$video_poster_url = get_the_post_thumbnail_url( $mediaID );
+										if ( false !== $video_poster_url ) {
+											$block_content = str_replace( $poster_match['poster'], $video_poster_url, $block_content );
+										}
+									}
+								}
+							}
+
+						}
+
 					}
 				}
 			}

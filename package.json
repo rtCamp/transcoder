@@ -1,16 +1,38 @@
 {
-  "name": "Transcoder",
-  "dependencies": {
-    "load-grunt-tasks": "~0.2.1"
-  },
-  "devDependencies": {
-    "grunt": "^1.0.1",
-    "grunt-autoprefixer": "^3.0.4",
-    "grunt-checktextdomain": "^1.0.1",
-    "grunt-contrib-cssmin": "^1.0.1",
-    "grunt-contrib-uglify": "^2.0.0",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-wp-i18n": "^0.5.4",
-    "load-grunt-tasks": "^0.2.1"
-  }
+	"name": "Transcoder",
+	"scripts": {
+		"build": "cross-env BABEL_ENV=default NODE_ENV=production webpack",
+		"dev-test": "cross-env BABEL_ENV=default NODE_ENV=development webpack",
+		"dev": "cross-env BABEL_ENV=default webpack --watch"
+	},
+	"devDependencies": {
+		"babel-core": "^6.26.3",
+		"babel-eslint": "^10.0.1",
+		"babel-loader": "^7.1.1",
+		"babel-plugin-lodash": "3.2.11",
+		"babel-plugin-transform-object-rest-spread": "^6.26.0",
+		"babel-plugin-transform-react-jsx": "^6.24.1",
+		"babel-plugin-transform-runtime": "^6.23.0",
+		"babel-preset-env": "1.7.0",
+		"classnames": "2.2.5",
+		"cross-env": "^5.0.1",
+		"eslint": "4.18.2",
+		"eslint-config-wordpress": "2.0.0",
+		"eslint-plugin-jest": "21.5.0",
+		"eslint-plugin-jsx-a11y": "6.0.3",
+		"eslint-plugin-react": "7.5.1",
+		"eslint-plugin-wordpress": "git+https://github.com/WordPress-Coding-Standards/eslint-plugin-wordpress.git",
+		"glob": "^7.1.2",
+		"grunt": "^1.0.1",
+		"grunt-autoprefixer": "^3.0.4",
+		"grunt-checktextdomain": "^1.0.1",
+		"grunt-contrib-cssmin": "3.0.0",
+		"grunt-contrib-uglify": "^2.0.0",
+		"grunt-contrib-watch": "^1.0.0",
+		"grunt-wp-i18n": "1.0.3",
+		"jest": "24.7.1",
+		"load-grunt-tasks": "5.1.0",
+		"uglifyjs-webpack-plugin": "1.1.6",
+		"webpack": "3.10.0"
+	}
 }

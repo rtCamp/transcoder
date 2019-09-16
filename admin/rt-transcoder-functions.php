@@ -430,12 +430,12 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 		preg_match_all( $search_poster_url , $content, $poster_url );
 
 		$uploads = wp_upload_dir();
-		
+
 		/* Iterate through each media */
 		foreach ( $all_media as $key => $media ) {
 			/* Get default video thumbnail stored for this particular video in post meta */
 			$wp_video_thumbnail = get_post_meta( $media->media_id, '_rt_media_video_thumbnail', true );
-			
+
 			if ( ! empty( $video_src_url[2] ) ) {
 				$video_url =  $video_src_url[2][$key];
 
@@ -789,6 +789,32 @@ if ( '1' === get_site_option( 'rtt_client_check_status_button', false ) ) {
 	add_action( 'wp_enqueue_scripts', 'rtt_enqueue_scripts' );
 }
 add_action( 'admin_enqueue_scripts', 'rtt_enqueue_scripts' );
+
+add_action( 'enqueue_block_editor_assets', 'rt_transcoder_enqueue_block_editor_assets' );
+
+/**
+ * Enqueue required script for block editor.
+ */
+function rt_transcoder_enqueue_block_editor_assets() {
+	// Enqueue our script
+	wp_enqueue_script(
+		'rt-transcoder-block-editor-support',
+		esc_url( plugins_url( '/js/build/rt-transcoder-block-editor-support.build.js', __FILE__ ) ),
+		array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-editor' ),
+		RT_TRANSCODER_VERSION,
+		true
+	);
+
+	// Localize fallback poster image for use in our enqueued script.
+	wp_localize_script(
+		'rt-transcoder-block-editor-support',
+		'rt_transcoder_block_editor_support',
+		[
+			'amp_story_fallback_poster' => plugins_url( '/images/amp-story-fallback-poster.png', __FILE__ ),
+			'amp_video_fallback_poster' => plugins_url( '/images/amp-story-video-fallback-poster.png', __FILE__ )
+		]
+	);
+}
 
 /**
  * Method to handle AJAX request for checking status.
