@@ -1,7 +1,12 @@
 {
   "name": "Transcoder",
+  "scripts": {
+    "start": "parcel watch --no-hmr admin/js/rt-transcoder-block-editor-support.js -d admin/js/build",
+    "build": "parcel build admin/js/rt-transcoder-block-editor-support.js -d admin/js/build",
+    "lint": "eslint admin/js/rt-transcoder-block-editor-support.js"
+  },
   "dependencies": {
-    "load-grunt-tasks": "~0.2.1"
+    "lodash.assign": "^4.2.0"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
@@ -11,6 +16,15 @@
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-wp-i18n": "^0.5.4",
-    "load-grunt-tasks": "^0.2.1"
+    "load-grunt-tasks": "^0.2.1",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^10.0.1",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "eslint": "^5.16.0",
+    "eslint-config-wordpress": "^2.0.0",
+    "eslint-plugin-jest": "^22.5.1",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.13.0",
+    "parcel-bundler": "^1.12.3"
   }
 }
