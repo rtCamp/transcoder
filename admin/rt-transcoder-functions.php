@@ -808,7 +808,7 @@ function rt_transcoder_enqueue_block_editor_assets() {
 	// Localize fallback poster image for use in our enqueued script.
 	wp_localize_script(
 		'rt-transcoder-block-editor-support',
-		'rt_transcoder_block_editor_support',
+		'rtTranscoderBlockEditorSupport',
 		[
 			'amp_story_fallback_poster' => plugins_url( '/images/amp-story-fallback-poster.png', __FILE__ ),
 			'amp_video_fallback_poster' => plugins_url( '/images/amp-story-video-fallback-poster.png', __FILE__ )

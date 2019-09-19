@@ -56,8 +56,24 @@ class RetranscodeMedia {
 
 		// Allow people to change what capability is required to use this feature
 		$this->capability = apply_filters( 'retranscode_media_cap', 'manage_options' );
+
+		// Load Rest Endpoints.
+		$this->load_rest_endpoints();
 	}
 
+	/**
+	 * Function to load rest api endpoints.
+	 *
+	 * @return void
+	 */
+	public function load_rest_endpoints() {
+		$rest_class_file_path = RT_TRANSCODER_PATH . 'admin/rt-transcoder-rest-routes.php';
+		include_once $rest_class_file_path;
+
+		// Create class object and register routes.
+		$transcoder_rest_routes = new Transcoder_Rest_Routes();
+		add_action( 'rest_api_init', array( $transcoder_rest_routes, 'register_routes' ) );
+	}
 
 	// Register the management page
 	public function add_admin_menu() {
@@ -665,6 +681,7 @@ class RetranscodeMedia {
 				$attach_data = wp_generate_attachment_metadata( $attachment_id, $thumbnail_src );
 				wp_update_attachment_metadata( $attachment_id, $attach_data );
 				set_post_thumbnail( $media_id, $attachment_id );
+				update_post_meta( $attachment_id, 'amp_is_poster', true );
 			}
 		}
 
@@ -783,7 +800,23 @@ class RetranscodeMedia {
 									}
 								}
 							}
+						}
 
+						// Replace fallback poster with generated thumbnail for video block.
+						$video_story_poster = '/<video (.*?) poster="(?<poster>.*?)" (.*?)>/m';
+						preg_match_all( $video_story_poster, $block_content, $video_poster_matches, PREG_SET_ORDER, 0);
+
+						if ( ! empty( $video_poster_matches ) ) {
+							foreach ( $video_poster_matches as $video_poster_match ) {
+								if ( isset( $video_poster_match['poster'] ) ) {
+									if ( false !== strpos( $video_poster_match['poster'], 'amp-story-video-fallback-poster.png' ) ) {
+										$video_thumbnail_url = get_the_post_thumbnail_url( $mediaID );
+										if ( false !== $video_thumbnail_url ) {
+											$block_content = str_replace( $video_poster_match['poster'], $video_thumbnail_url, $block_content );
+										}
+									}
+								}
+							}
 						}
 
 					}
