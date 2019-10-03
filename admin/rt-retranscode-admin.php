@@ -758,7 +758,7 @@ class RetranscodeMedia {
 					}
 
 					// Replace existing video URL with transcoded URL.
-					if ( ! empty( $transcoded_url ) ) {
+					if ( ! empty( $final_file_url ) ) {
 						// Check for URL in amp-video tag.
 						$amp_video_pattern = '/<amp-video (.*?) src="(?<url>.*?)" (.*?)>/m';
 						preg_match_all( $amp_video_pattern, $block_content, $amp_tag_matches, PREG_SET_ORDER, 0 );
