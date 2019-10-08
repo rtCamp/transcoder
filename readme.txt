@@ -3,8 +3,8 @@ Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 4.9.7
-Stable tag: 1.2.2
+Tested up to: 5.2.3
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,12 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.3 [October 8, 2019] =
+
+* NEW FEATURES
+
+ * Extend Video mime types, to facilitate selection and transcoding of Videos in AMP Stories.
+
 = 1.2.2 [July 12, 2018] =
 
 * FIXED
@@ -170,5 +176,5 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
-= 1.2.2 =
-Transcoder 1.2.2, with support for load balancing server.
+= 1.3 =
+Transcoder 1.3, with support for videos in AMP Stories.

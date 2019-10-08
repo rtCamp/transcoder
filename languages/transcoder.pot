@@ -1,28 +1,28 @@
-# Copyright (C) 2018 
+# Copyright (C) 2019
 # This file is distributed under the same license as the  package.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://community.rtcamp.com/\n"
-"POT-Creation-Date: 2018-07-12 06:51:33+00:00\n"
+"POT-Creation-Date: 2019-10-08 09:12:41+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2018-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2019-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Transcoder <support@rtcamp.com>\n"
 "Language-Team: Transcoder <support@rtcamp.com>\n"
-"X-Generator: grunt-wp-i18n 0.5.4\n"
-"X-Poedit-KeywordsList: "
-"__;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;_n_noop:1,2;_nx_noop:1,2,3c;esc_"
-"attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x:1,2c;esc_html_x:1,2c;\n"
 "Language: en\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Country: United States\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: "
+"__;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;_n_noop:1,2;_nx_noop:1,2,3c;esc_"
+"attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x:1,2c;esc_html_x:1,2c;\n"
 "X-Poedit-Basepath: ../\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-Bookmarks: \n"
 "X-Textdomain-Support: yes\n"
+"X-Generator: grunt-wp-i18n 1.0.3\n"
 
 #: admin/partials/rt-transcoder-admin-display.php:14
 msgid "Transcoder Service Settings"
@@ -204,49 +204,49 @@ msgstr ""
 msgid "Subscribe"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:72 admin/rt-retranscode-admin.php:73
-#: admin/rt-retranscode-admin.php:105 admin/rt-retranscode-admin.php:119
-#: admin/rt-retranscode-admin.php:136 admin/rt-retranscode-admin.php:170
+#: admin/rt-retranscode-admin.php:90 admin/rt-retranscode-admin.php:91
+#: admin/rt-retranscode-admin.php:123 admin/rt-retranscode-admin.php:137
+#: admin/rt-retranscode-admin.php:154 admin/rt-retranscode-admin.php:188
 msgid "Retranscode Media"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:105
+#: admin/rt-retranscode-admin.php:123
 msgid "Retranscode this single media"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:178
+#: admin/rt-retranscode-admin.php:196
 msgid "Cheatin&#8217; uh?"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:209
+#: admin/rt-retranscode-admin.php:227
 msgid "Unable to find any media. Are you sure <a href='%s'>some exist</a>?"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:235
+#: admin/rt-retranscode-admin.php:253
 msgid "There are no media available to send for transcoding."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:245
+#: admin/rt-retranscode-admin.php:263
 msgid "You do not have sufficient bandwidth remaining to perform the transcoding."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:246
+#: admin/rt-retranscode-admin.php:264
 msgid "Your remaining bandwidth is : "
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:247
+#: admin/rt-retranscode-admin.php:265
 msgid "Required bandwidth is: "
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:250
+#: admin/rt-retranscode-admin.php:268
 msgid "You can select the files manually and try again."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:257 admin/rt-retranscode-admin.php:271
+#: admin/rt-retranscode-admin.php:275 admin/rt-retranscode-admin.php:289
 msgid "Proceed with retranscoding"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:285
+#: admin/rt-retranscode-admin.php:303
 msgid ""
 "Your files are being re-transcoded. Do not navigate away from this page "
 "until the process is completed, as doing so will prematurely abort the "
@@ -254,115 +254,115 @@ msgid ""
 "can view the progress below."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:289
+#: admin/rt-retranscode-admin.php:307
 msgid "To go back to the previous page, <a href=\"%s\">click here</a>."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:290
+#: admin/rt-retranscode-admin.php:308
 msgid ""
 "All done! %1$s media file(s) were successfully sent for transcoding in %2$s "
 "seconds and there were %3$s failure(s). To try transcoding the failed media "
 "again, <a href=\"%4$s\">click here</a>. %5$s"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:291
+#: admin/rt-retranscode-admin.php:309
 msgid ""
 "All done! %1$s media file(s) were successfully sent for transcoding in %2$s "
 "seconds and there were 0 failures. %3$s"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:295 admin/rt-retranscode-admin.php:444
+#: admin/rt-retranscode-admin.php:313 admin/rt-retranscode-admin.php:462
 msgid "You must enable Javascript in order to proceed!"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:301
+#: admin/rt-retranscode-admin.php:319
 msgid "Abort the Operation"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:303
+#: admin/rt-retranscode-admin.php:321
 msgid "Debugging Information"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:306
+#: admin/rt-retranscode-admin.php:324
 msgid "Total Media: %s"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:307
+#: admin/rt-retranscode-admin.php:325
 msgid "Media Sent for Retranscoding: %s"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:308
+#: admin/rt-retranscode-admin.php:326
 msgid "Failed While Sending: %s"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:339
+#: admin/rt-retranscode-admin.php:357
 msgid "Stopping..."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:391
+#: admin/rt-retranscode-admin.php:409
 msgid ""
 "The resize request was abnormally terminated (ID %s). This is likely due to "
 "the media exceeding available memory or some other type of fatal error."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:434
+#: admin/rt-retranscode-admin.php:452
 msgid ""
 "This tool will retranscode ALL audio/video media uploaded to your website. "
 "This can be handy if you need to transcode media files uploaded in the past."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:436
+#: admin/rt-retranscode-admin.php:454
 msgid ""
 "Sending your entire media library for retranscoding can consume a lot of "
 "your bandwidth allowance, so use this tool with care."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:438
+#: admin/rt-retranscode-admin.php:456
 msgid ""
 "You can retranscode specific media files (rather than ALL media) from the "
 "<a href='%s'>Media</a> page using Bulk Action via drop down or mouse hover "
 "a specific media (audio/video) file."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:440
+#: admin/rt-retranscode-admin.php:458
 msgid "To begin, just press the button below."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:442
+#: admin/rt-retranscode-admin.php:460
 msgid "Retranscode All Media"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:466
+#: admin/rt-retranscode-admin.php:484
 msgid "Sending Failed: %s is an invalid media ID/type."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:469
+#: admin/rt-retranscode-admin.php:487
 msgid ""
 "&quot;%1$s&quot; (ID %2$s) is MP3 file already. No need to send for "
 "transcoding"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:472
+#: admin/rt-retranscode-admin.php:490
 msgid "Your user account doesn't have permission to transcode"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:477
+#: admin/rt-retranscode-admin.php:495
 msgid "The media is already being transcoded"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:524
+#: admin/rt-retranscode-admin.php:542
 msgid "Unknown failure reason."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:528
+#: admin/rt-retranscode-admin.php:546
 msgid "&quot;%1$s&quot; (ID %2$s) was successfully sent in %3$s seconds."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:534
+#: admin/rt-retranscode-admin.php:552
 msgid "&quot;%1$s&quot; (ID %2$s) failed to sent. The error message was: %3$s"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:552
+#: admin/rt-retranscode-admin.php:570
 msgid "Insufficient bandwidth!"
 msgstr ""
 
@@ -416,12 +416,12 @@ msgid "This file is being transcoded. Please wait."
 msgstr ""
 
 #: admin/rt-transcoder-functions.php:469 admin/rt-transcoder-functions.php:721
-#: admin/rt-transcoder-functions.php:846
+#: admin/rt-transcoder-functions.php:872
 msgid "Check Status"
 msgstr ""
 
 #: admin/rt-transcoder-functions.php:484 admin/rt-transcoder-functions.php:490
-#: admin/rt-transcoder-functions.php:869
+#: admin/rt-transcoder-functions.php:895
 msgid "This file is converting. Please refresh the page after some time."
 msgstr ""
 
@@ -433,7 +433,7 @@ msgstr ""
 msgid "File is transcoded."
 msgstr ""
 
-#: admin/rt-transcoder-functions.php:864
+#: admin/rt-transcoder-functions.php:890
 msgid ""
 "This file is converting. Please click on check status button to know "
 "current status or refresh the page after some time. "
