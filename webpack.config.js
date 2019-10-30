@@ -14,10 +14,10 @@ const externals = {
 
 module.exports = {
 	entry: {
-		blocks: glob.sync( './admin/js/rt-transcoder-block-editor-support.js' ),
+		blocks: glob.sync( './admin/js/rt-transcoder-gutenberg-support.js' ),
 	},
 	output: {
-		filename: './admin/js/build/rt-transcoder-block-editor-support.build.js',
+		filename: './admin/js/build/rt-transcoder-gutenberg-support.build.js',
 		path: __dirname,
 	},
 	externals,

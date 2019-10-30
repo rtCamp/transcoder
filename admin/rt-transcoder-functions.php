@@ -799,7 +799,7 @@ function rt_transcoder_enqueue_block_editor_assets() {
 	// Enqueue our script
 	wp_enqueue_script(
 		'rt-transcoder-block-editor-support',
-		esc_url( plugins_url( '/js/build/rt-transcoder-block-editor-support.build.js', __FILE__ ) ),
+		esc_url( plugins_url( '/js/build/rt-transcoder-gutenberg-support.build.js', __FILE__ ) ),
 		array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-editor' ),
 		RT_TRANSCODER_VERSION,
 		true
