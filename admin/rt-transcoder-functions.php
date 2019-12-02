@@ -975,4 +975,3 @@ function rtt_media_update_usage( $wp_metadata, $attachment_id, $autoformat = tru
 }
 
 add_filter( 'wp_generate_attachment_metadata', 'rtt_media_update_usage', 10, 2 );
-
