@@ -35,8 +35,9 @@ const backgroundVideoQualityOptions = [ {
  * @returns {object} Modified block settings.
  */
 const addBackgroundVideoQualityControlAttribute = ( settings, name ) => {
-	// Do nothing if it's another block than our defined ones.
+
 	if ( ! enableTranscoderSettingsOnBlocks.includes( name ) ) {
+
 		return settings;
 	}
 
@@ -58,35 +59,49 @@ addFilter( 'blocks.registerBlockType', 'transcoder/attribute/ampStoryBackgroundV
  */
 const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
+
+		console.warn( 'props', props );
+
 		// Do nothing if it's another block than our defined ones.
 		if ( ! enableTranscoderSettingsOnBlocks.includes( props.name ) ) {
-			return ( <BlockEdit { ...props }
-			/>
+			return ( <BlockEdit { ...props } />
 			);
 		}
 
 		const { backgroundVideoQuality } = props.attributes;
+
+		console.warn( 'back', backgroundVideoQuality );
 
 		// add has-quality-xy class to block
 		if ( backgroundVideoQuality ) {
 			props.attributes.className = `has-quality-${ backgroundVideoQuality }`;
 		}
 
-		return ( <Fragment >
-			<BlockEdit { ...props }
-			/> <InspectorControls > <PanelBody title={ __( 'Transcoder Settings' ) }
-				initialOpen={ true } >
-				<SelectControl label={ __( 'Background Video Quality' ) }
-					value={ backgroundVideoQuality }
-					options={ backgroundVideoQualityOptions }
-					onChange={
-						( selectedQuality ) => {
-							props.setAttributes( {
-								backgroundVideoQuality: selectedQuality,
-							} );
-						}
-					}
-				/> </PanelBody > </InspectorControls> </Fragment >
+		return (
+			<Fragment>
+				<BlockEdit { ...props }
+				/>
+				<InspectorControls>
+					<PanelBody
+						title={ __( 'Transcoder Settings' ) }
+						initialOpen={ true }
+					>
+						<SelectControl
+							label={ __( 'Background Video Quality' ) }
+							value={ backgroundVideoQuality }
+							options={ backgroundVideoQualityOptions }
+							onChange={
+								( selectedQuality ) => {
+									console.warn( 'selectedQu', selectedQuality );
+									props.setAttributes( {
+										backgroundVideoQuality: selectedQuality,
+									} );
+								}
+							}
+						/>
+				</PanelBody>
+				</InspectorControls>
+			</Fragment>
 		);
 	};
 }, 'withTranscoderSettings' );

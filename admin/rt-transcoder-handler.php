@@ -29,7 +29,7 @@ class RT_Transcoder_Handler {
 	 * @access   protected
 	 * @var      string    $transcoding_api_url    The URL of the api.
 	 */
-	protected $transcoding_api_url = 'http://api.rtmedia.io/api/v1/';
+	protected $transcoding_api_url = 'http://dev.api.rtmedia.io/api/v1/';
 
 	/**
 	 * The URL of the EDD store.
@@ -960,6 +960,7 @@ class RT_Transcoder_Handler {
 				}
 			}
 		}
+
 		if ( ! empty( $transcoded_files ) ) {
 			$meta_key = 'medium' !== $quality ? "_rt_media_transcoded_{ $quality }_files" : '_rt_media_transcoded_files';
 			update_post_meta( $attachment_id, $meta_key, $transcoded_files );
@@ -1024,7 +1025,7 @@ class RT_Transcoder_Handler {
 				$flag       = false;
 				global $wpdb;
 
-				$meta_key = 
+				$meta_key =
 				$id       = $this->get_post_id_by_meta_key_and_value( '_rt_transcoding%job_id', $job_id );
 
 				if ( isset( $id ) && is_numeric( $id ) ) {
@@ -1042,6 +1043,7 @@ class RT_Transcoder_Handler {
 					}
 
 					if ( ! empty( $_REQUEST['files'] ) ) {
+
 						$uploded_files = $this->add_transcoded_files( $_REQUEST['files'], $attachment_id, $job_for, $quality );
 					}
 
@@ -1074,6 +1076,7 @@ class RT_Transcoder_Handler {
 			}
 		} else {
 			if ( isset( $job_id ) ) {
+
 				$has_thumbs = isset( $thumbnail ) ? true : false;
 				$flag       = false;
 				global $wpdb;
@@ -1108,6 +1111,8 @@ class RT_Transcoder_Handler {
 						$uploded_files = $this->add_transcoded_files( $_REQUEST['files'], $attachment_id, $job_for );
 					}
 
+
+
 				} else {
 					$flag = esc_html__( 'Something went wrong. The required attachment id does not exists. It must have been deleted.', 'transcoder' );
 				}
@@ -1135,6 +1140,7 @@ class RT_Transcoder_Handler {
 				die();
 			}
 		}
+
 		// @codingStandardsIgnoreEnd
 
 		/**
