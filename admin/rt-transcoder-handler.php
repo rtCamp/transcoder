@@ -978,7 +978,7 @@ class RT_Transcoder_Handler {
 	 *
 	 * @return int|bool		Return post id if found else false.
 	 */
-	function get_post_id_by_meta_key_and_value( $key, $value ) {
+	function  get_post_id_by_meta_key_and_value( $key, $value ) {
 		global $wpdb;
 		$meta = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM ' . $wpdb->postmeta . ' WHERE meta_key like %s AND meta_value = %s', $key, $value ) ); // @codingStandardsIgnoreLine
 
@@ -1020,12 +1020,13 @@ class RT_Transcoder_Handler {
 
 		// @codingStandardsIgnoreStart
 		if ( isset( $job_for ) && ( 'wp-media' === $job_for ) ) {
+
 			if ( isset( $job_id ) ) {
+
 				$has_thumbs = isset( $thumbnail ) ? true : false;
 				$flag       = false;
 				global $wpdb;
 
-				$meta_key =
 				$id       = $this->get_post_id_by_meta_key_and_value( '_rt_transcoding%job_id', $job_id );
 
 				if ( isset( $id ) && is_numeric( $id ) ) {
@@ -1075,6 +1076,7 @@ class RT_Transcoder_Handler {
 				die();
 			}
 		} else {
+
 			if ( isset( $job_id ) ) {
 
 				$has_thumbs = isset( $thumbnail ) ? true : false;

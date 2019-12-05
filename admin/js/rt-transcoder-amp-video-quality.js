@@ -60,8 +60,6 @@ addFilter( 'blocks.registerBlockType', 'transcoder/attribute/ampStoryBackgroundV
 const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
 
-		console.warn( 'props', props );
-
 		// Do nothing if it's another block than our defined ones.
 		if ( ! enableTranscoderSettingsOnBlocks.includes( props.name ) ) {
 			return ( <BlockEdit { ...props } />
@@ -69,8 +67,6 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 		}
 
 		const { backgroundVideoQuality } = props.attributes;
-
-		console.warn( 'back', backgroundVideoQuality );
 
 		// add has-quality-xy class to block
 		if ( backgroundVideoQuality ) {
@@ -92,7 +88,6 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 							options={ backgroundVideoQualityOptions }
 							onChange={
 								( selectedQuality ) => {
-									console.warn( 'selectedQu', selectedQuality );
 									props.setAttributes( {
 										backgroundVideoQuality: selectedQuality,
 									} );

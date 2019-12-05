@@ -5,6 +5,8 @@ const { rtTranscoderBlockEditorSupport } = window;
 const updateAMPStoryMedia = ( BlockEdit ) => {
 	return ( props ) => {
 
+		console.warn( 'update AMPStory Is Called', props );
+
 		const mediaAttributes = props.attributes;
 		const isAMPStory      = 'amp/amp-story-page' === props.name;
 		const isVideoBlock    = 'core/video' === props.name;
@@ -25,7 +27,11 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 					props.setAttributes( { poster: rtTranscoderBlockEditorSupport.amp_video_fallback_poster } );
 
 				}
-			} else if ( mediaAttributes.poster.endsWith( '-fallback-poster.png' ) ) {
+				//
+				// } else if ( mediaAttributes.poster.endsWith( '-fallback-poster.png' ) ) {
+
+
+			} else if ( mediaAttributes.poster.endsWith( 'jpeg' ) || mediaAttributes.poster.endsWith( 'png' ) ) {
 
 				const restBase = '/wp-json/transcoder/v1/amp-media';
 
@@ -33,17 +39,37 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 					path: `${ restBase }/${ mediaId }`,
 				} ).then( data => {
 
+					data = {
+						poster: "https://dharmin-transcoder.dev2.rt.gw/wp-content/plugins/transcoder/admin/images/amp-story-fallback-poster.png",
+						low: {
+							transcodedMedia: "https://dharmin-transcoder.dev2.rt.gw/wp-content/uploads/2019/12/funny-clip.mp4",
+						},
+						medium: {
+							transcodedMedia: "https://dharmin-transcoder.dev2.rt.gw/wp-content/uploads/2019/12/short-vid-1.mp4",
+						},
+						high: {
+							transcodedMedia: "https://dharmin-transcoder.dev2.rt.gw/wp-content/uploads/2019/12/Countdown-2637.mp4",
+						}
+					};
+
+					const videoQuality = props.attributes.backgroundVideoQuality ? props.attributes.backgroundVideoQuality : 'low';
+
 					if ( false !== data && null !== data ) {
-						if ( data.poster.length && data.transcodedMedia.length ) {
+
+						if ( data.poster.length && data[videoQuality].transcodedMedia.length ) {
+
 							if ( isAMPStory && typeof mediaAttributes.mediaType !== 'undefined' && 'video' === mediaAttributes.mediaType ) {
 								props.setAttributes( {
 									poster: data.poster,
-									mediaUrl: data.transcodedMedia,
+									mediaUrl: data[videoQuality].transcodedMedia,
 								} );
+
+
 							} else if ( isVideoBlock ) {
+
 								props.setAttributes( {
 									poster: data.poster,
-									src: data.transcodedMedia,
+									src: data[videoQuality].transcodedMedia,
 								} );
 							}
 						}
