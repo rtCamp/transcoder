@@ -31,7 +31,7 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 				// } else if ( mediaAttributes.poster.endsWith( '-fallback-poster.png' ) ) {
 
 
-			} else if ( mediaAttributes.poster.endsWith( 'jpeg' ) || mediaAttributes.poster.endsWith( 'png' ) ) {
+			} else  {
 
 				const restBase = '/wp-json/transcoder/v1/amp-media';
 
@@ -51,6 +51,7 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 							transcodedMedia: "https://dharmin-transcoder.dev2.rt.gw/wp-content/uploads/2019/12/Countdown-2637.mp4",
 						}
 					};
+
 
 					const videoQuality = props.attributes.backgroundVideoQuality ? props.attributes.backgroundVideoQuality : 'low';
 

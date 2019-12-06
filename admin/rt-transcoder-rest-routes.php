@@ -15,6 +15,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 	 */
 	public function register_routes() {
 
+
 		// Register `amp-media` route to get media poster info.
 		register_rest_route(
 			$this->namespace_prefix . $this->version,
