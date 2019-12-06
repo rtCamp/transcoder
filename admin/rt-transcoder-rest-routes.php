@@ -41,37 +41,21 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 		}
 
 		// Check if thumbnail and transcoded file exist for the passed attachment.
-		$thumbnail_id   = get_post_thumbnail_id( $media_id );
-		$transcoded_url_data = get_post_meta( $media_id, '_rt_media_transcoded_files' );
-		$transcoded_url_array =  ! empty( $transcoded_url_data[0]['mp4'] ) ? $transcoded_url_data[0]['mp4'] : [];
-
-		$final_transcoded_urls = [
-			'low' => '',
-			'medium' => '',
-			'high' => '',
-		];
+		$thumbnail_id         = get_post_thumbnail_id( $media_id );
+		$transcoded_url_data  = get_post_meta( $media_id, '_rt_media_transcoded_files' );
+		$transcoded_url_array = ! empty( $transcoded_url_data[0]['mp4'] ) ? $transcoded_url_data[0]['mp4'] : [];
 
 		// Return false if the thumbnail id or the transcoded URL is not present.
-		if ( empty( $thumbnail_id ) || empty( $transcoded_url_array ) || ! is_array( $transcoded_url_array )  ) {
+		if ( empty( $thumbnail_id ) || empty( $transcoded_url_array ) || ! is_array( $transcoded_url_array ) ) {
 			return false;
 		}
 
-		// Loop through the array and add the URL's in $final_transcoded_urls as per their quality.
-		foreach ( $transcoded_url_array as $transcoded_url ) {
+		$final_transcoded_urls = [
+			'medium' => $this->get_full_transcoded_url( $transcoded_url_array[0] ),
+			'low'    => $this->get_full_transcoded_url( $transcoded_url_array[1] ),
+			'high'   => $this->get_full_transcoded_url( $transcoded_url_array[2] ),
+		];
 
-			if ( strpos( $transcoded_url, 'low.mp4' ) ) {
-				$final_transcoded_urls['low'] = $this->get_full_transcoded_url( $transcoded_url );
-			}
-
-			if ( strpos( $transcoded_url, 'medium.mp4' ) ) {
-				$final_transcoded_urls['medium'] = $this->get_full_transcoded_url( $transcoded_url );
-			}
-
-			if ( strpos( $transcoded_url, 'high.mp4' ) ) {
-				$final_transcoded_urls['high'] = $this->get_full_transcoded_url( $transcoded_url );
-			}
-
-		}
 
 		if ( true !== (bool) get_post_meta( $thumbnail_id, 'amp_is_poster', true ) ) {
 			return false;
