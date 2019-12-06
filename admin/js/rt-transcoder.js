@@ -1,6 +1,6 @@
 (function ( $ ) {
     $( document ).ready( function () {
-    	console.warn( 'transcodin status', transcoding_status );
+
         if ( transcoding_status.load_flag ) {
             $( '[name="check_status_btn"]' ).live( 'click', function ( e ) {
 

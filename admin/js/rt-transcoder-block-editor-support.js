@@ -5,8 +5,6 @@ const { rtTranscoderBlockEditorSupport } = window;
 const updateAMPStoryMedia = ( BlockEdit ) => {
 	return ( props ) => {
 
-		console.warn( 'update AMPStory Is Called', props );
-
 		const mediaAttributes = props.attributes;
 		const isAMPStory      = 'amp/amp-story-page' === props.name;
 		const isVideoBlock    = 'core/video' === props.name;
@@ -49,9 +47,6 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 									mediaUrl: data[videoQuality].transcodedMedia,
 									src: data[videoQuality].transcodedMedia,
 								} );
-
-								console.warn( 'props', props );
-
 
 							} else if ( isVideoBlock ) {
 
