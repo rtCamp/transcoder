@@ -27,9 +27,6 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 					props.setAttributes( { poster: rtTranscoderBlockEditorSupport.amp_video_fallback_poster } );
 
 				}
-				//
-				// } else if ( mediaAttributes.poster.endsWith( '-fallback-poster.png' ) ) {
-
 
 			} else  {
 
@@ -39,31 +36,21 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 					path: `${ restBase }/${ mediaId }`,
 				} ).then( data => {
 
-					data = {
-						poster: "https://dharmin-transcoder.dev2.rt.gw/wp-content/plugins/transcoder/admin/images/amp-story-fallback-poster.png",
-						low: {
-							transcodedMedia: "https://dharmin-transcoder.dev2.rt.gw/wp-content/uploads/2019/12/funny-clip.mp4",
-						},
-						medium: {
-							transcodedMedia: "https://dharmin-transcoder.dev2.rt.gw/wp-content/uploads/2019/12/short-vid-1.mp4",
-						},
-						high: {
-							transcodedMedia: "https://dharmin-transcoder.dev2.rt.gw/wp-content/uploads/2019/12/Countdown-2637.mp4",
-						}
-					};
-
-
-					const videoQuality = props.attributes.backgroundVideoQuality ? props.attributes.backgroundVideoQuality : 'low';
+					const videoQuality = props.attributes.backgroundVideoQuality ? props.attributes.backgroundVideoQuality : 'high';
 
 					if ( false !== data && null !== data ) {
 
 						if ( data.poster.length && data[videoQuality].transcodedMedia.length ) {
 
 							if ( isAMPStory && typeof mediaAttributes.mediaType !== 'undefined' && 'video' === mediaAttributes.mediaType ) {
+
 								props.setAttributes( {
 									poster: data.poster,
 									mediaUrl: data[videoQuality].transcodedMedia,
+									src: data[videoQuality].transcodedMedia,
 								} );
+
+								console.warn( 'props', props );
 
 
 							} else if ( isVideoBlock ) {

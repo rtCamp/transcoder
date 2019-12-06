@@ -113,6 +113,7 @@ addFilter( 'editor.BlockEdit', 'transcoder/with-transcoder-settings', withTransc
  * @returns {object} Modified props of save element.
  */
 const doTranscode = ( saveElementProps, blockType, attributes ) => {
+
 	// Do nothing if it's another block than our defined ones.
 	if ( ! enableTranscoderSettingsOnBlocks.includes( blockType.name ) ) {
 		return saveElementProps;

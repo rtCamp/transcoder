@@ -52,7 +52,7 @@ class RetranscodeMedia {
 		add_action( 'transcoded_thumbnails_added',         array( $this, 'transcoded_thumbnails_added' ), 10, 1 ); // Add the current thumbnail to the newly added thumbnails
 		add_action( 'rtt_handle_callback_finished',        array( $this, 'rtt_handle_callback_finished' ), 10, 2 ); // Clean the extra meta that has been added while sending retranscoding request
 		add_filter( 'amp_story_allowed_video_types',       array( $this, 'add_amp_video_extensions' ) ); // Extend allowed video mime type extensions for AMP Story Background.
-		add_filter( 'render_block',                        array( $this, 'update_amp_story_video_url' ), 10, 2 ); // Filter block content and replace video URLs.
+//		add_filter( 'render_block',                        array( $this, 'update_amp_story_video_url' ), 10, 2 ); // Filter block content and replace video URLs.
 
 		// Allow people to change what capability is required to use this feature
 		$this->capability = apply_filters( 'retranscode_media_cap', 'manage_options' );

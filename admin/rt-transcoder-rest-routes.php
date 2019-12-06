@@ -15,7 +15,6 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 	 */
 	public function register_routes() {
 
-
 		// Register `amp-media` route to get media poster info.
 		register_rest_route(
 			$this->namespace_prefix . $this->version,
@@ -43,15 +42,59 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 
 		// Check if thumbnail and transcoded file exist for the passed attachment.
 		$thumbnail_id   = get_post_thumbnail_id( $media_id );
-		$transcoded_url = get_post_meta( $media_id, '_rt_media_transcoded_files', true );
+		$transcoded_url_data = get_post_meta( $media_id, '_rt_media_transcoded_files' );
+		$transcoded_url_array =  ! empty( $transcoded_url_data[0]['mp4'] ) ? $transcoded_url_data[0]['mp4'] : [];
 
-		if ( empty( $thumbnail_id ) || empty( $transcoded_url ) ) {
+		$final_transcoded_urls = [
+			'low' => '',
+			'medium' => '',
+			'high' => '',
+		];
+
+		// Return false if the thumbnail id or the transcoded URL is not present.
+		if ( empty( $thumbnail_id ) || empty( $transcoded_url_array ) || ! is_array( $transcoded_url_array )  ) {
 			return false;
 		}
 
-		// Get transcoded video path.
-		$transcoded_url = empty( $transcoded_url['mp4'][0] ) ? '' : $transcoded_url['mp4'][0];
-		$uploads        = wp_get_upload_dir();
+		// Loop through the array and add the URL's in $final_transcoded_urls as per their quality.
+		foreach ( $transcoded_url_array as $transcoded_url ) {
+
+			if ( strpos( $transcoded_url, 'low.mp4' ) ) {
+				$final_transcoded_urls['low'] = $this->get_full_transcoded_url( $transcoded_url );
+			}
+
+			if ( strpos( $transcoded_url, 'medium.mp4' ) ) {
+				$final_transcoded_urls['medium'] = $this->get_full_transcoded_url( $transcoded_url );
+			}
+
+			if ( strpos( $transcoded_url, 'high.mp4' ) ) {
+				$final_transcoded_urls['high'] = $this->get_full_transcoded_url( $transcoded_url );
+			}
+
+		}
+
+		if ( true !== (bool) get_post_meta( $thumbnail_id, 'amp_is_poster', true ) ) {
+			return false;
+		}
+
+		return [
+			'poster' => get_the_post_thumbnail_url( $media_id ),
+			'low'    => [ 'transcodedMedia' => $final_transcoded_urls['low'] ],
+			'medium' => [ 'transcodedMedia' => $final_transcoded_urls['medium'] ],
+			'high'   => [ 'transcodedMedia' => $final_transcoded_urls['high'] ],
+		];
+	}
+
+	/**
+	 * Get the full transcoded URL with upload directory path.
+	 *
+	 * @param $transcoded_url Transcodes URL
+	 *
+	 * @return string Full Transcoded URL with upload directory path.
+	 */
+	public function get_full_transcoded_url( $transcoded_url ) {
+
+		$uploads = wp_get_upload_dir();
 
 		// Get URL for the transcoded video.
 		if ( 0 === strpos( $transcoded_url, $uploads['baseurl'] ) ) {
@@ -60,14 +103,8 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 			$final_file_url = trailingslashit( $uploads['baseurl'] ) . $transcoded_url;
 		}
 
-		if ( true !== (bool) get_post_meta( $thumbnail_id, 'amp_is_poster', true ) || empty( $final_file_url ) ) {
-			return false;
-		}
+		return $final_file_url;
 
-		return [
-			'poster'          => get_the_post_thumbnail_url( $media_id ),
-			'transcodedMedia' => $final_file_url
-		];
 	}
 
 }
