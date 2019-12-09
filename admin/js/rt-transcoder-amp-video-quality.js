@@ -1,30 +1,18 @@
-import assign from 'lodash.assign';
-
 const { createHigherOrderComponent } = wp.compose;
 const { Fragment } = wp.element;
-const { InspectorControls } = wp.editor;
 const { PanelBody, SelectControl } = wp.components;
 const { addFilter } = wp.hooks;
 const { __ } = wp.i18n;
+const InspectorControls = wp.blockEditor.InspectorControls;
+const apiFetch = wp.apiFetch;
 
 // Enable Transcoder settings on the following blocks
 const enableTranscoderSettingsOnBlocks = [
 	'amp/amp-story-page',
+	'core/video',
 ];
 
-// Available background video quality options
-const backgroundVideoQualityOptions = [ {
-	label: __( 'Low' ),
-	value: 'low',
-},
-{
-	label: __( 'Medium' ),
-	value: 'medium',
-},
-{
-	label: __( 'High' ),
-	value: 'high',
-} ];
+const { rtTranscoderBlockEditorSupport } = window;
 
 /**
  * Add background video quality attribute to block.
@@ -35,19 +23,19 @@ const backgroundVideoQualityOptions = [ {
  * @returns {object} Modified block settings.
  */
 const addBackgroundVideoQualityControlAttribute = ( settings, name ) => {
-
 	if ( ! enableTranscoderSettingsOnBlocks.includes( name ) ) {
-
 		return settings;
 	}
 
-	// Use Lodash's assign to gracefully handle if attributes are undefined
-	settings.attributes = assign( settings.attributes, {
-		backgroundVideoQuality: {
-			type: 'string',
-			default: backgroundVideoQualityOptions[ 1 ].value,
-		},
-	} );
+	//check if object exists for old Gutenberg version compatibility
+	if ( typeof settings.attributes !== 'undefined' ) {
+		settings.attributes = Object.assign( settings.attributes, {
+			rtBackgroundVideoQuality: {
+				type: 'string',
+				default: 'high',
+			},
+		} );
+	}
 
 	return settings;
 };
@@ -59,18 +47,64 @@ addFilter( 'blocks.registerBlockType', 'transcoder/attribute/ampStoryBackgroundV
  */
 const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
-
 		// Do nothing if it's another block than our defined ones.
 		if ( ! enableTranscoderSettingsOnBlocks.includes( props.name ) ) {
-			return ( <BlockEdit { ...props } />
-			);
+			return ( <BlockEdit { ...props } /> );
 		}
 
-		const { backgroundVideoQuality } = props.attributes;
+		const mediaAttributes = props.attributes;
+		const isAMPStory = 'amp/amp-story-page' === props.name;
+		const isVideoBlock = 'core/video' === props.name;
+		const mediaId = isAMPStory ? mediaAttributes.mediaId : mediaAttributes.id;
+
+		if ( typeof mediaId !== 'undefined' ) {
+			if ( typeof mediaAttributes.poster === 'undefined' ) {
+				if ( isAMPStory && typeof mediaAttributes.mediaType !== 'undefined' &&
+					'video' === mediaAttributes.mediaType && ! mediaAttributes.mediaUrl.endsWith( 'mp4' ) ) {
+					props.setAttributes( { poster: rtTranscoderBlockEditorSupport.amp_story_fallback_poster } );
+				} else if ( isVideoBlock && typeof mediaAttributes.src !== 'undefined' &&
+					mediaAttributes.src.indexOf( 'blob:' ) !== 0 && ! mediaAttributes.src.endsWith( 'mp4' ) ) {
+					props.setAttributes( { poster: rtTranscoderBlockEditorSupport.amp_video_fallback_poster } );
+				}
+			} else {
+				const restBase = '/transcoder/v1/amp-media';
+				apiFetch( {
+					path: `${ restBase }/${ mediaId }`,
+				} ).then( data => {
+					const videoQuality = props.attributes.rtBackgroundVideoQuality ? props.attributes.rtBackgroundVideoQuality : 'high';
+					if ( false !== data && null !== data ) {
+						if ( data.poster.length && data[ videoQuality ].transcodedMedia.length ) {
+							if ( isAMPStory && typeof mediaAttributes.mediaType !== 'undefined' && 'video' === mediaAttributes.mediaType ) {
+								props.setAttributes( {
+									poster: data.poster,
+									mediaUrl: data[ videoQuality ].transcodedMedia,
+									src: data[ videoQuality ].transcodedMedia,
+									rtBackgroundVideoQuality: videoQuality,
+								} );
+							} else if ( isVideoBlock ) {
+								props.setAttributes( {
+									poster: data.poster,
+									src: data[ videoQuality ].transcodedMedia,
+									rtBackgroundVideoQuality: videoQuality,
+								} );
+							}
+						}
+					}
+				} );
+			}
+		}
+
+		const { rtBackgroundVideoQuality } = props.attributes;
 
 		// add has-quality-xy class to block
-		if ( backgroundVideoQuality ) {
-			props.attributes.className = `has-quality-${ backgroundVideoQuality }`;
+		if ( rtBackgroundVideoQuality ) {
+			props.setAttributes( {
+				className: `has-quality-${ rtBackgroundVideoQuality }`,
+			} );
+		} else {
+			props.setAttributes( {
+				rtBackgroundVideoQuality: 'high',
+			} );
 		}
 
 		return (
@@ -79,49 +113,30 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 				/>
 				<InspectorControls>
 					<PanelBody
-						title={ __( 'Transcoder Settings' ) }
+						title={ __( 'Transcoder Settings', 'transcoder' ) }
 						initialOpen={ true }
 					>
 						<SelectControl
-							label={ __( 'Background Video Quality' ) }
-							value={ backgroundVideoQuality }
-							options={ backgroundVideoQualityOptions }
+							label={ __( 'Background Video Quality', 'transcoder' ) }
+							value={ rtBackgroundVideoQuality }
+							options={ [
+								{ value: 'low', label: __( 'Low', 'transcoder' ) },
+								{ value: 'medium', label: __( 'Medium', 'transcoder' ) },
+								{ value: 'high', label: __( 'High', 'transcoder' ) },
+							] }
 							onChange={
 								( selectedQuality ) => {
 									props.setAttributes( {
-										backgroundVideoQuality: selectedQuality,
+										rtBackgroundVideoQuality: selectedQuality,
 									} );
 								}
 							}
 						/>
-				</PanelBody>
+					</PanelBody>
 				</InspectorControls>
 			</Fragment>
 		);
 	};
 }, 'withTranscoderSettings' );
 
-addFilter( 'editor.BlockEdit', 'transcoder/with-transcoder-settings', withTranscoderSettings );
-
-/**
- * Transcode video on save element of block.
- *
- * @param {object} saveElementProps Props of save element.
- * @param {Object} blockType Block type information.
- * @param {Object} attributes Attributes of block.
- *
- * @returns {object} Modified props of save element.
- */
-const doTranscode = ( saveElementProps, blockType, attributes ) => {
-
-	// Do nothing if it's another block than our defined ones.
-	if ( ! enableTranscoderSettingsOnBlocks.includes( blockType.name ) ) {
-		return saveElementProps;
-	}
-
-	// Transcoding code
-
-	return saveElementProps;
-};
-
-addFilter( 'blocks.getSaveContent.extraProps', 'transcoder/get-save-content/do-transcode', doTranscode );
+addFilter( 'editor.BlockEdit', 'rt-transcoder-amp/with-transcoder-settings', withTranscoderSettings );
