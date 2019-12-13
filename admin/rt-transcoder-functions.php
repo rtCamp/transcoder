@@ -811,7 +811,8 @@ function rt_transcoder_enqueue_block_editor_assets() {
 		'rtTranscoderBlockEditorSupport',
 		[
 			'amp_story_fallback_poster' => plugins_url( '/images/amp-story-fallback-poster.png', __FILE__ ),
-			'amp_video_fallback_poster' => plugins_url( '/images/amp-story-video-fallback-poster.png', __FILE__ )
+			'amp_video_fallback_poster' => plugins_url( '/images/amp-story-video-fallback-poster.png', __FILE__ ),
+			'rt_default_video_quality'  => get_site_option( 'rtt_default_video_quality', 'high' ),
 		]
 	);
 }

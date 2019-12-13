@@ -137,6 +137,7 @@ class RT_Transcoder_Admin {
 		register_setting( 'rt-transcoder-settings-group', 'number_of_thumbs' );
 		register_setting( 'rt-transcoder-settings-group', 'rtt_override_thumbnail' );
 		register_setting( 'rt-transcoder-settings-group', 'rtt_client_check_status_button' );
+		register_setting( 'rt-transcoder-settings-group', 'rtt_default_video_quality' );
 	}
 
 	/**

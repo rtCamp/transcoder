@@ -14,6 +14,10 @@ const enableTranscoderSettingsOnBlocks = [
 
 const { rtTranscoderBlockEditorSupport } = window;
 
+// Default Video Quality for for selection.
+const defaultVideoQuality = typeof rtTranscoderBlockEditorSupport.rt_default_video_quality !== 'undefined' ?
+	rtTranscoderBlockEditorSupport.rt_default_video_quality : 'high';
+
 /**
  * Add background video quality attribute to block.
  *
@@ -32,7 +36,7 @@ const addBackgroundVideoQualityControlAttribute = ( settings, name ) => {
 		settings.attributes = Object.assign( settings.attributes, {
 			rtBackgroundVideoQuality: {
 				type: 'string',
-				default: 'high',
+				default: defaultVideoQuality,
 			},
 		} );
 	}
@@ -56,6 +60,7 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 		const isAMPStory = 'amp/amp-story-page' === props.name;
 		const isVideoBlock = 'core/video' === props.name;
 		const mediaId = isAMPStory ? mediaAttributes.mediaId : mediaAttributes.id;
+		const mediaType = mediaAttributes.mediaType ? mediaAttributes.mediaType : '';
 
 		if ( typeof mediaId !== 'undefined' ) {
 			if ( typeof mediaAttributes.poster === 'undefined' ) {
@@ -71,7 +76,7 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 				apiFetch( {
 					path: `${ restBase }/${ mediaId }`,
 				} ).then( data => {
-					const videoQuality = props.attributes.rtBackgroundVideoQuality ? props.attributes.rtBackgroundVideoQuality : 'high';
+					const videoQuality = props.attributes.rtBackgroundVideoQuality ? props.attributes.rtBackgroundVideoQuality : defaultVideoQuality;
 					if ( false !== data && null !== data ) {
 						if ( data.poster.length && data[ videoQuality ].transcodedMedia.length ) {
 							if ( isAMPStory && typeof mediaAttributes.mediaType !== 'undefined' && 'video' === mediaAttributes.mediaType ) {
@@ -103,7 +108,7 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 			} );
 		} else {
 			props.setAttributes( {
-				rtBackgroundVideoQuality: 'high',
+				rtBackgroundVideoQuality: defaultVideoQuality,
 			} );
 		}
 
@@ -111,29 +116,33 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 			<Fragment>
 				<BlockEdit { ...props }
 				/>
-				<InspectorControls>
-					<PanelBody
-						title={ __( 'Transcoder Settings', 'transcoder' ) }
-						initialOpen={ true }
-					>
-						<SelectControl
-							label={ __( 'Background Video Quality', 'transcoder' ) }
-							value={ rtBackgroundVideoQuality }
-							options={ [
-								{ value: 'low', label: __( 'Low', 'transcoder' ) },
-								{ value: 'medium', label: __( 'Medium', 'transcoder' ) },
-								{ value: 'high', label: __( 'High', 'transcoder' ) },
-							] }
-							onChange={
-								( selectedQuality ) => {
-									props.setAttributes( {
-										rtBackgroundVideoQuality: selectedQuality,
-									} );
-								}
-							}
-						/>
-					</PanelBody>
-				</InspectorControls>
+				{
+					( isVideoBlock || ( isAMPStory && 'video' === mediaType ) ) && (
+						<InspectorControls>
+							<PanelBody
+								title={ __( 'Transcoder Settings', 'transcoder' ) }
+								initialOpen={ true }
+							>
+								<SelectControl
+									label={ __( 'Background Video Quality', 'transcoder' ) }
+									value={ rtBackgroundVideoQuality }
+									options={ [
+										{ value: 'low', label: __( 'Low', 'transcoder' ) },
+										{ value: 'medium', label: __( 'Medium', 'transcoder' ) },
+										{ value: 'high', label: __( 'High', 'transcoder' ) },
+									] }
+									onChange={
+										( selectedQuality ) => {
+											props.setAttributes( {
+												rtBackgroundVideoQuality: selectedQuality,
+											} );
+										}
+									}
+								/>
+							</PanelBody>
+						</InspectorControls>
+					)
+				}
 			</Fragment>
 		);
 	};
