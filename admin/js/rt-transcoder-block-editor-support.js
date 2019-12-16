@@ -10,6 +10,8 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 		const isVideoBlock    = 'core/video' === props.name;
 		const mediaId         = isAMPStory ? mediaAttributes.mediaId : mediaAttributes.id;
 
+		console.warn( 'mediaId', mediaId );
+
 		if ( typeof mediaId !== 'undefined' ) {
 
 			if ( typeof mediaAttributes.poster === 'undefined' ) {
@@ -34,7 +36,10 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 					path: `${ restBase }/${ mediaId }`,
 				} ).then( data => {
 
-					const videoQuality = props.attributes.backgroundVideoQuality ? props.attributes.backgroundVideoQuality : 'high';
+					// Derive the video quality from the classname.
+					const qualitySavedInClassName = props.attributes.className ? ( props.attributes.className.split( '-' ) )[2] : '';
+					const videoQuality = qualitySavedInClassName ? qualitySavedInClassName : 'high';
+
 
 					if ( false !== data && null !== data ) {
 
@@ -46,6 +51,9 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 									poster: data.poster,
 									mediaUrl: data[videoQuality].transcodedMedia,
 									src: data[videoQuality].transcodedMedia,
+									backgroundVideoQuality: props.attributes.backgroundVideoQuality,
+									className: props.attributes.className,
+									mediaId: props.attributes.mediaId,
 								} );
 
 							} else if ( isVideoBlock ) {
@@ -53,6 +61,10 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 								props.setAttributes( {
 									poster: data.poster,
 									src: data[videoQuality].transcodedMedia,
+									mediaUrl: data[videoQuality].transcodedMedia,
+									backgroundVideoQuality: props.attributes.backgroundVideoQuality,
+									mediaId: props.attributes.mediaId,
+									className: props.attributes.className,
 								} );
 							}
 						}

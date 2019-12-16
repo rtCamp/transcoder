@@ -56,6 +56,10 @@ addFilter( 'blocks.registerBlockType', 'transcoder/attribute/ampStoryBackgroundV
 
 /**
  * Create HOC to add Transcoder settings controls to inspector controls of block.
+ *
+ * @param {function} BlockEdit Block edit component.
+ *
+ * @return {function} BlockEdit Modified block edit component.
  */
 const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
@@ -67,6 +71,12 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 		}
 
 		const { backgroundVideoQuality } = props.attributes;
+
+		// Derive the video quality from the classname.
+		const qualitySavedInClassName = props.attributes.className ? ( props.attributes.className.split( '-' ) )[2] : '';
+		// Set the video quality equal to the value derived from classname if the backgroundVideoQuality is undefined.
+		const videoQuality = ( undefined === backgroundVideoQuality ) ? qualitySavedInClassName : backgroundVideoQuality;
+
 
 		// add has-quality-xy class to block
 		if ( backgroundVideoQuality ) {
@@ -84,7 +94,7 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 					>
 						<SelectControl
 							label={ __( 'Background Video Quality' ) }
-							value={ backgroundVideoQuality }
+							value={ videoQuality }
 							options={ backgroundVideoQualityOptions }
 							onChange={
 								( selectedQuality ) => {
@@ -120,7 +130,6 @@ const doTranscode = ( saveElementProps, blockType, attributes ) => {
 	}
 
 	// Transcoding code
-
 	return saveElementProps;
 };
 
