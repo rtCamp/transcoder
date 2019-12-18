@@ -52,7 +52,7 @@ class RetranscodeMedia {
 		add_action( 'transcoded_thumbnails_added',         array( $this, 'transcoded_thumbnails_added' ), 10, 1 ); // Add the current thumbnail to the newly added thumbnails
 		add_action( 'rtt_handle_callback_finished',        array( $this, 'rtt_handle_callback_finished' ), 10, 2 ); // Clean the extra meta that has been added while sending retranscoding request
 		add_filter( 'amp_story_allowed_video_types',       array( $this, 'add_amp_video_extensions' ) ); // Extend allowed video mime type extensions for AMP Story Background.
-//		add_filter( 'render_block',                        array( $this, 'update_amp_story_video_url' ), 10, 2 ); // Filter block content and replace video URLs.
+		add_filter( 'render_block',                        array( $this, 'update_amp_story_video_url' ), 10, 2 ); // Filter block content and replace video URLs.
 
 		// Allow people to change what capability is required to use this feature
 		$this->capability = apply_filters( 'retranscode_media_cap', 'manage_options' );
@@ -742,20 +742,23 @@ class RetranscodeMedia {
 				$mediaID = $block['attrs']['id']; // For AMP Story Video Block.
 			}
 
+			$mediaQuality = $block['attrs']['rtBackgroundVideoQuality'];
+
 			if ( ! empty( $mediaID ) ) {
-				$transcoded_url = get_post_meta( $mediaID, '_rt_media_transcoded_files', true );
+				$transcoded_url_data  = get_post_meta( $mediaID, '_rt_media_transcoded_files' );
+				$transcoded_url_array = ! empty( $transcoded_url_data[0]['mp4'] ) ? $transcoded_url_data[0]['mp4'] : [];
 
-				if ( ! empty( $transcoded_url ) && isset( $transcoded_url['mp4'] ) ) {
+				if ( ! empty( $transcoded_url_array ) && is_array( $transcoded_url_array ) ) {
+
 					// Get transcoded video path.
-					$transcoded_url = empty( $transcoded_url['mp4'][0] ) ? '' : $transcoded_url['mp4'][0];
-					$uploads        = wp_get_upload_dir();
+					$final_transcoded_urls = [
+						'medium' => RT_Transcoder_Admin::get_full_transcoded_url( $transcoded_url_array[0] ),
+						'low'    => RT_Transcoder_Admin::get_full_transcoded_url( $transcoded_url_array[1] ),
+						'high'   => RT_Transcoder_Admin::get_full_transcoded_url( $transcoded_url_array[2] ),
+					];
 
-					// Get URL for the transcoded video.
-					if ( 0 === strpos( $transcoded_url, $uploads['baseurl'] ) ) {
-						$final_file_url = $transcoded_url;
-					} else {
-						$final_file_url = trailingslashit( $uploads['baseurl'] ) . $transcoded_url;
-					}
+					// Use selected video quality.
+					$final_file_url = $final_transcoded_urls[$mediaQuality];
 
 					// Replace existing video URL with transcoded URL.
 					if ( ! empty( $final_file_url ) ) {

@@ -44,7 +44,7 @@ const addBackgroundVideoQualityControlAttribute = ( settings, name ) => {
 	return settings;
 };
 
-addFilter( 'blocks.registerBlockType', 'transcoder/attribute/ampStoryBackgroundVideoQuality', addBackgroundVideoQualityControlAttribute );
+addFilter( 'blocks.registerBlockType', 'transcoder/ampStoryBackgroundVideoQuality', addBackgroundVideoQualityControlAttribute, 9 );
 
 /**
  * Create HOC to add Transcoder settings controls to inspector controls of block.

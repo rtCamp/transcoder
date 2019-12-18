@@ -498,4 +498,26 @@ class RT_Transcoder_Admin {
 	function mediaelement_add_class( $output, $url ) {
 		return sprintf( '<a class="no-popup" href="%1$s">%1$s</a>', esc_url( $url ) );
 	}
+
+	/**
+	 * Get the full Transcoded URL with upload directory path.
+	 *
+	 * @param $transcoded_url Transcodes URL
+	 *
+	 * @return string Full Transcoded URL with upload directory path.
+	 */
+	public static function get_full_transcoded_url( $transcoded_url ) {
+
+		$uploads = wp_get_upload_dir();
+
+		// Get URL for the transcoded video.
+		if ( 0 === strpos( $transcoded_url, $uploads['baseurl'] ) ) {
+			$final_file_url = $transcoded_url;
+		} else {
+			$final_file_url = trailingslashit( $uploads['baseurl'] ) . $transcoded_url;
+		}
+
+		return $final_file_url;
+
+	}
 }

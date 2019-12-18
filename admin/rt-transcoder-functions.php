@@ -790,7 +790,7 @@ if ( '1' === get_site_option( 'rtt_client_check_status_button', false ) ) {
 }
 add_action( 'admin_enqueue_scripts', 'rtt_enqueue_scripts' );
 
-add_action( 'enqueue_block_editor_assets', 'rt_transcoder_enqueue_block_editor_assets' );
+add_action( 'enqueue_block_editor_assets', 'rt_transcoder_enqueue_block_editor_assets', 9 );
 
 /**
  * Enqueue required script for block editor.
