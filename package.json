@@ -38,6 +38,6 @@
 		"webpack": "4.41.2"
 	},
 	"dependencies": {
-		"@wordpress/api-fetch": "3.6.0"
+		"@wordpress/api-fetch": "3.8.0"
 	}
 }
