@@ -223,7 +223,7 @@ class RT_Transcoder_Handler {
 				'timeout' 	=> 60,
 				'body' 		=> array(
 					'api_token' 	=> $this->api_key,
-					'job_type' 		=> $this->is_amp_story_media() ? 'amp-story' : $job_typee
+					'job_type' 		=> $this->is_amp_story_media() ? 'amp-story' : $job_type,
 					'job_for' 		=> $job_for,
 					'file_url'		=> urlencode( $url ),
 					'callback_url'	=> urlencode( trailingslashit( home_url() ) . 'index.php' ),
