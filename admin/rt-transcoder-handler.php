@@ -223,7 +223,7 @@ class RT_Transcoder_Handler {
 				'timeout' 	=> 60,
 				'body' 		=> array(
 					'api_token' 	=> $this->api_key,
-					'job_type' 		=> $this->is_amp_story_media() ? 'amp-story' : $job_type,
+					'job_type' 		=> $this->is_amp_story_media() ? 'amp-story' : $job_typee
 					'job_for' 		=> $job_for,
 					'file_url'		=> urlencode( $url ),
 					'callback_url'	=> urlencode( trailingslashit( home_url() ) . 'index.php' ),
@@ -260,7 +260,10 @@ class RT_Transcoder_Handler {
 		$action  = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
 		$post_id = filter_input( INPUT_POST, 'post_id', FILTER_SANITIZE_NUMBER_INT );
 
-		return 'upload-attachment' === $action && get_post_type( $post_id ) === 'amp_story';
+		// Post ID while requesting on WP REST API i.e. from video block.
+                $rest_post_id = filter_input( INPUT_POST, 'post', FILTER_SANITIZE_NUMBER_INT );
+
+                return ( ! empty( $rest_post_id ) && get_post_type( $rest_post_id ) === 'amp_story' ) ||  ( 'upload-attachment' === $action && get_post_type( $post_id ) === 'amp_story' );
 	}
 
 	/**
