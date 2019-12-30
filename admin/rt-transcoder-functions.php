@@ -796,12 +796,16 @@ add_action( 'enqueue_block_editor_assets', 'rt_transcoder_enqueue_block_editor_a
  * Enqueue required script for block editor.
  */
 function rt_transcoder_enqueue_block_editor_assets() {
+
+	// Load dependencies and version from build file.
+	$asset_file = include( RT_TRANSCODER_PATH . 'admin/js/build/rt-transcoder-gutenberg-support.asset.php' );
+
 	// Enqueue our script
 	wp_enqueue_script(
 		'rt-transcoder-block-editor-support',
-		esc_url( plugins_url( '/js/build/rt-transcoder-gutenberg-support.build.js', __FILE__ ) ),
-		array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-editor' ),
-		RT_TRANSCODER_VERSION,
+		esc_url( plugins_url( '/js/build/rt-transcoder-gutenberg-support.js', __FILE__ ) ),
+		$asset_file['dependencies'],
+		$asset_file['version'],
 		true
 	);
 

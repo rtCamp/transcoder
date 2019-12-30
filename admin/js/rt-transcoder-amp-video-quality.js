@@ -1,10 +1,10 @@
-const { createHigherOrderComponent } = wp.compose;
-const { Fragment } = wp.element;
-const { PanelBody, SelectControl } = wp.components;
-const { addFilter } = wp.hooks;
-const { __ } = wp.i18n;
-const InspectorControls = wp.blockEditor.InspectorControls;
-const apiFetch = wp.apiFetch;
+import { createHigherOrderComponent } from '@wordpress/compose';
+import { Fragment } from '@wordpress/element';
+import { PanelBody, SelectControl } from '@wordpress/components';
+import { addFilter } from '@wordpress/hooks';
+import { __ } from '@wordpress/i18n';
+import { InspectorControls } from '@wordpress/block-editor';
+import apiFetch from '@wordpress/api-fetch';
 
 // Enable Transcoder settings on the following blocks
 const enableTranscoderSettingsOnBlocks = [
