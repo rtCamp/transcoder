@@ -59,6 +59,58 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 		const mediaAttributes = props.attributes;
 		const isAMPStory = 'amp/amp-story-page' === props.name;
 		const isVideoBlock = 'core/video' === props.name;
+		const mediaType = mediaAttributes.mediaType ? mediaAttributes.mediaType : '';
+		const { rtBackgroundVideoQuality } = mediaAttributes;
+
+		return (
+			<Fragment>
+				<BlockEdit { ...props }
+				/>
+				{
+					( isVideoBlock || ( isAMPStory && 'video' === mediaType ) ) && (
+						<InspectorControls>
+							<PanelBody
+								title={ __( 'Transcoder Settings', 'transcoder' ) }
+								initialOpen={ true }
+							>
+								<SelectControl
+									label={ __( 'Background Video Quality', 'transcoder' ) }
+									value={ rtBackgroundVideoQuality }
+									options={ [
+										{ value: 'low', label: __( 'Low', 'transcoder' ) },
+										{ value: 'medium', label: __( 'Medium', 'transcoder' ) },
+										{ value: 'high', label: __( 'High', 'transcoder' ) },
+									] }
+									onChange={
+										( selectedQuality ) => {
+											props.setAttributes( {
+												rtBackgroundVideoQuality: selectedQuality,
+											} );
+										}
+									}
+								/>
+							</PanelBody>
+						</InspectorControls>
+					)
+				}
+			</Fragment>
+		);
+	};
+}, 'withTranscoderSettings' );
+
+addFilter( 'editor.BlockEdit', 'rt-transcoder-amp/with-transcoder-settings', withTranscoderSettings, 12 );
+
+const updateAMPStoryMedia = ( BlockEdit ) => {
+	return ( props ) => {
+
+		// Do nothing if it's another block than our defined ones.
+		if ( ! enableTranscoderSettingsOnBlocks.includes( props.name ) ) {
+			return ( <BlockEdit { ...props } /> );
+		}
+
+		const mediaAttributes = props.attributes;
+		const isAMPStory = 'amp/amp-story-page' === props.name;
+		const isVideoBlock = 'core/video' === props.name;
 		const mediaId = isAMPStory ? mediaAttributes.mediaId : mediaAttributes.id;
 		const mediaType = mediaAttributes.mediaType ? mediaAttributes.mediaType : '';
 
@@ -113,39 +165,9 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 		}
 
 		return (
-			<Fragment>
-				<BlockEdit { ...props }
-				/>
-				{
-					( isVideoBlock || ( isAMPStory && 'video' === mediaType ) ) && (
-						<InspectorControls>
-							<PanelBody
-								title={ __( 'Transcoder Settings', 'transcoder' ) }
-								initialOpen={ true }
-							>
-								<SelectControl
-									label={ __( 'Background Video Quality', 'transcoder' ) }
-									value={ rtBackgroundVideoQuality }
-									options={ [
-										{ value: 'low', label: __( 'Low', 'transcoder' ) },
-										{ value: 'medium', label: __( 'Medium', 'transcoder' ) },
-										{ value: 'high', label: __( 'High', 'transcoder' ) },
-									] }
-									onChange={
-										( selectedQuality ) => {
-											props.setAttributes( {
-												rtBackgroundVideoQuality: selectedQuality,
-											} );
-										}
-									}
-								/>
-							</PanelBody>
-						</InspectorControls>
-					)
-				}
-			</Fragment>
+			<BlockEdit { ...props } />
 		);
 	};
-}, 'withTranscoderSettings' );
+};
 
-addFilter( 'editor.BlockEdit', 'rt-transcoder-amp/with-transcoder-settings', withTranscoderSettings );
+addFilter( 'editor.BlockEdit', 'rt-transcoder-amp/set-media-attributes', updateAMPStoryMedia, 11 );

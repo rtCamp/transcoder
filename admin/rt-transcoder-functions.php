@@ -806,7 +806,7 @@ function rt_transcoder_enqueue_block_editor_assets() {
 		esc_url( plugins_url( '/js/build/rt-transcoder-gutenberg-support.js', __FILE__ ) ),
 		$asset_file['dependencies'],
 		$asset_file['version'],
-		true
+		false
 	);
 
 	// Localize fallback poster image for use in our enqueued script.
