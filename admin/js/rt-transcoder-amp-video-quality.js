@@ -34,6 +34,9 @@ const addBackgroundVideoQualityControlAttribute = ( settings, name ) => {
 	//check if object exists for old Gutenberg version compatibility
 	if ( typeof settings.attributes !== 'undefined' ) {
 		settings.attributes = Object.assign( settings.attributes, {
+			rtBackgroundVideoInfo: {
+				type: 'object',
+			},
 			rtBackgroundVideoQuality: {
 				type: 'string',
 				default: defaultVideoQuality,
@@ -124,30 +127,38 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 					props.setAttributes( { poster: rtTranscoderBlockEditorSupport.amp_video_fallback_poster } );
 				}
 			} else {
-				const restBase = '/transcoder/v1/amp-media';
-				apiFetch( {
-					path: `${ restBase }/${ mediaId }`,
-				} ).then( data => {
+
+				if ( typeof  props.attributes.rtBackgroundVideoInfo !== 'undefined' ) {
+					const mediaInfo = props.attributes.rtBackgroundVideoInfo;
 					const videoQuality = props.attributes.rtBackgroundVideoQuality ? props.attributes.rtBackgroundVideoQuality : defaultVideoQuality;
-					if ( false !== data && null !== data ) {
-						if ( data.poster.length && data[ videoQuality ].transcodedMedia.length ) {
-							if ( isAMPStory && typeof mediaAttributes.mediaType !== 'undefined' && 'video' === mediaAttributes.mediaType ) {
-								props.setAttributes( {
-									poster: data.poster,
-									mediaUrl: data[ videoQuality ].transcodedMedia,
-									src: data[ videoQuality ].transcodedMedia,
-									rtBackgroundVideoQuality: videoQuality,
-								} );
-							} else if ( isVideoBlock ) {
-								props.setAttributes( {
-									poster: data.poster,
-									src: data[ videoQuality ].transcodedMedia,
-									rtBackgroundVideoQuality: videoQuality,
-								} );
-							}
+					if ( mediaInfo.poster.length && mediaInfo[ videoQuality ].transcodedMedia.length ) {
+						if ( isAMPStory && typeof mediaAttributes.mediaType !== 'undefined' && 'video' === mediaAttributes.mediaType ) {
+							props.setAttributes( {
+								poster: mediaInfo.poster,
+								mediaUrl: mediaInfo[ videoQuality ].transcodedMedia,
+								src: mediaInfo[ videoQuality ].transcodedMedia,
+								rtBackgroundVideoQuality: videoQuality,
+							} );
+						} else if ( isVideoBlock ) {
+							props.setAttributes( {
+								poster: mediaInfo.poster,
+								src: mediaInfo[ videoQuality ].transcodedMedia,
+								rtBackgroundVideoQuality: videoQuality,
+							} );
 						}
 					}
-				} );
+				} else {
+					const restBase = '/transcoder/v1/amp-media';
+					apiFetch( {
+						path: `${ restBase }/${ mediaId }`,
+					} ).then( data => {
+						if ( false !== data && null !== data ) {
+							props.setAttributes( {
+								rtBackgroundVideoInfo: data,
+							} );
+						}
+					} );
+				}
 			}
 		}
 
