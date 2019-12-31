@@ -742,86 +742,89 @@ class RetranscodeMedia {
 				$mediaID = $block['attrs']['id']; // For AMP Story Video Block.
 			}
 
-			$mediaQuality = $block['attrs']['rtBackgroundVideoQuality'];
+			if ( isset( $block['attrs']['rtBackgroundVideoQuality'] ) ) {
 
-			if ( ! empty( $mediaID ) ) {
-				$transcoded_url_data  = get_post_meta( $mediaID, '_rt_media_transcoded_files' );
-				$transcoded_url_array = ! empty( $transcoded_url_data[0]['mp4'] ) ? $transcoded_url_data[0]['mp4'] : [];
+				$mediaQuality = $block['attrs']['rtBackgroundVideoQuality'];
 
-				if ( ! empty( $transcoded_url_array ) && is_array( $transcoded_url_array ) ) {
+				if ( ! empty( $mediaID ) ) {
+					$transcoded_url_data  = get_post_meta( $mediaID, '_rt_media_transcoded_files' );
+					$transcoded_url_array = ! empty( $transcoded_url_data[0]['mp4'] ) ? $transcoded_url_data[0]['mp4'] : [];
 
-					// Get transcoded video path.
-					$final_transcoded_urls = [
-						'medium' => RT_Transcoder_Admin::get_full_transcoded_url( $transcoded_url_array[0] ),
-						'low'    => RT_Transcoder_Admin::get_full_transcoded_url( $transcoded_url_array[1] ),
-						'high'   => RT_Transcoder_Admin::get_full_transcoded_url( $transcoded_url_array[2] ),
-					];
+					if ( ! empty( $transcoded_url_array ) && is_array( $transcoded_url_array ) ) {
 
-					// Use selected video quality.
-					$final_file_url = $final_transcoded_urls[$mediaQuality];
+						// Get transcoded video path.
+						$final_transcoded_urls = [
+							'medium' => RT_Transcoder_Admin::get_full_transcoded_url( $transcoded_url_array[0] ),
+							'low'    => RT_Transcoder_Admin::get_full_transcoded_url( $transcoded_url_array[1] ),
+							'high'   => RT_Transcoder_Admin::get_full_transcoded_url( $transcoded_url_array[2] ),
+						];
 
-					// Replace existing video URL with transcoded URL.
-					if ( ! empty( $final_file_url ) ) {
-						// Check for URL in amp-video tag.
-						$amp_video_pattern = '/<amp-video (.*?) src="(?<url>.*?)" (.*?)>/m';
-						preg_match_all( $amp_video_pattern, $block_content, $amp_tag_matches, PREG_SET_ORDER, 0 );
+						// Use selected video quality.
+						$final_file_url = $final_transcoded_urls[$mediaQuality];
 
-						if ( ! empty( $amp_tag_matches ) ) {
-							foreach ( $amp_tag_matches as $amp_tag ) {
-								if ( isset( $amp_tag['url'] ) ) {
-									$block_content = str_replace( $amp_tag['url'], $final_file_url, $block_content );
+						// Replace existing video URL with transcoded URL.
+						if ( ! empty( $final_file_url ) ) {
+							// Check for URL in amp-video tag.
+							$amp_video_pattern = '/<amp-video (.*?) src="(?<url>.*?)" (.*?)>/m';
+							preg_match_all( $amp_video_pattern, $block_content, $amp_tag_matches, PREG_SET_ORDER, 0 );
+
+							if ( ! empty( $amp_tag_matches ) ) {
+								foreach ( $amp_tag_matches as $amp_tag ) {
+									if ( isset( $amp_tag['url'] ) ) {
+										$block_content = str_replace( $amp_tag['url'], $final_file_url, $block_content );
+									}
 								}
+
 							}
 
-						}
+							// Check for URL in video tag.
+							$video_pattern = '/<video (.*?) src="(?<url>.*?)"(.*?)>/m';
+							preg_match_all( $video_pattern, $block_content, $video_tag_matches, PREG_SET_ORDER, 0 );
 
-						// Check for URL in video tag.
-						$video_pattern = '/<video (.*?) src="(?<url>.*?)"(.*?)>/m';
-						preg_match_all( $video_pattern, $block_content, $video_tag_matches, PREG_SET_ORDER, 0 );
-
-						if ( ! empty( $video_tag_matches ) ) {
-							foreach ( $video_tag_matches as $video_tag ) {
-								if ( isset( $video_tag['url'] ) ) {
-									$block_content = str_replace( $video_tag['url'], $final_file_url, $block_content );
+							if ( ! empty( $video_tag_matches ) ) {
+								foreach ( $video_tag_matches as $video_tag ) {
+									if ( isset( $video_tag['url'] ) ) {
+										$block_content = str_replace( $video_tag['url'], $final_file_url, $block_content );
+									}
 								}
+
 							}
 
-						}
+							// Replace fallback poster with generated thumbnail.
+							$amp_story_poster = '/<amp-video (.*?) poster="(?<poster>.*?)" (.*?)>/m';
+							preg_match_all( $amp_story_poster, $block_content, $poster_matches, PREG_SET_ORDER, 0);
 
-						// Replace fallback poster with generated thumbnail.
-						$amp_story_poster = '/<amp-video (.*?) poster="(?<poster>.*?)" (.*?)>/m';
-						preg_match_all( $amp_story_poster, $block_content, $poster_matches, PREG_SET_ORDER, 0);
-
-						if ( ! empty( $poster_matches ) ) {
-							foreach ( $poster_matches as $poster_match ) {
-								if ( isset( $poster_match['poster'] ) ) {
-									if ( false !== strpos( $poster_match['poster'], 'amp-story-fallback-poster.png' ) ) {
-										$video_poster_url = get_the_post_thumbnail_url( $mediaID );
-										if ( false !== $video_poster_url ) {
-											$block_content = str_replace( $poster_match['poster'], $video_poster_url, $block_content );
+							if ( ! empty( $poster_matches ) ) {
+								foreach ( $poster_matches as $poster_match ) {
+									if ( isset( $poster_match['poster'] ) ) {
+										if ( false !== strpos( $poster_match['poster'], 'amp-story-fallback-poster.png' ) ) {
+											$video_poster_url = get_the_post_thumbnail_url( $mediaID );
+											if ( false !== $video_poster_url ) {
+												$block_content = str_replace( $poster_match['poster'], $video_poster_url, $block_content );
+											}
 										}
 									}
 								}
 							}
-						}
 
-						// Replace fallback poster with generated thumbnail for video block.
-						$video_story_poster = '/<video (.*?) poster="(?<poster>.*?)" (.*?)>/m';
-						preg_match_all( $video_story_poster, $block_content, $video_poster_matches, PREG_SET_ORDER, 0);
+							// Replace fallback poster with generated thumbnail for video block.
+							$video_story_poster = '/<video (.*?) poster="(?<poster>.*?)" (.*?)>/m';
+							preg_match_all( $video_story_poster, $block_content, $video_poster_matches, PREG_SET_ORDER, 0);
 
-						if ( ! empty( $video_poster_matches ) ) {
-							foreach ( $video_poster_matches as $video_poster_match ) {
-								if ( isset( $video_poster_match['poster'] ) ) {
-									if ( false !== strpos( $video_poster_match['poster'], 'amp-story-video-fallback-poster.png' ) ) {
-										$video_thumbnail_url = get_the_post_thumbnail_url( $mediaID );
-										if ( false !== $video_thumbnail_url ) {
-											$block_content = str_replace( $video_poster_match['poster'], $video_thumbnail_url, $block_content );
+							if ( ! empty( $video_poster_matches ) ) {
+								foreach ( $video_poster_matches as $video_poster_match ) {
+									if ( isset( $video_poster_match['poster'] ) ) {
+										if ( false !== strpos( $video_poster_match['poster'], 'amp-story-video-fallback-poster.png' ) ) {
+											$video_thumbnail_url = get_the_post_thumbnail_url( $mediaID );
+											if ( false !== $video_thumbnail_url ) {
+												$block_content = str_replace( $video_poster_match['poster'], $video_thumbnail_url, $block_content );
+											}
 										}
 									}
 								}
 							}
-						}
 
+						}
 					}
 				}
 			}

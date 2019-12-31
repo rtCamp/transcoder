@@ -223,7 +223,7 @@ class RT_Transcoder_Handler {
 				'timeout' 	=> 60,
 				'body' 		=> array(
 					'api_token' 	=> $this->api_key,
-					'job_type' 		=> $this->is_amp_story_media() ? 'amp-story' : $job_type,
+					'job_type' 		=> $this->is_block_media() ? 'amp-story' : $job_type,
 					'job_for' 		=> $job_for,
 					'file_url'		=> urlencode( $url ),
 					'callback_url'	=> urlencode( trailingslashit( home_url() ) . 'index.php' ),
@@ -250,20 +250,41 @@ class RT_Transcoder_Handler {
 	}
 
 	/**
-	 * Check if the media is uploaded from the amp story.
+	 * Check if the media has whitelisted blocks to create multi quality videos.
 	 *
 	 * @since 1.4
 	 *
 	 * @return boolean
 	 */
-	private function is_amp_story_media() {
-		$action  = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
-		$post_id = filter_input( INPUT_POST, 'post_id', FILTER_SANITIZE_NUMBER_INT );
+	private function is_block_media() {
+
+		// Verify usage of block function.
+		if ( ! function_exists( 'has_block' ) ) {
+			return false;
+		}
+
+		// Get current Post ID.
+		$post_id = intval( filter_input( INPUT_POST, 'post_id', FILTER_SANITIZE_NUMBER_INT ) );
 
 		// Post ID while requesting on WP REST API i.e. from video block.
-                $rest_post_id = filter_input( INPUT_POST, 'post', FILTER_SANITIZE_NUMBER_INT );
+		$rest_post_id = intval( filter_input( INPUT_POST, 'post', FILTER_SANITIZE_NUMBER_INT ) );
 
-                return ( ! empty( $rest_post_id ) && get_post_type( $rest_post_id ) === 'amp_story' ) ||  ( 'upload-attachment' === $action && get_post_type( $post_id ) === 'amp_story' );
+		// Check if post has AMP Story Page Block.
+		$is_amp_story_block = (
+			has_block( 'amp/amp-story-page', $post_id ) ||
+			has_block( 'amp/amp-story-page', $rest_post_id ) ) ? true : false;
+
+		// Check if post has Core Video Block.
+		$is_core_video_block = (
+			has_block( 'video', $post_id ) ||
+			has_block( 'video', $rest_post_id ) ) ? true : false;
+
+		// If either of blocks are found
+		if ( $is_amp_story_block || $is_core_video_block ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
