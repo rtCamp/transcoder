@@ -5,6 +5,12 @@ import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import apiFetch from '@wordpress/api-fetch';
+import { dispatch, select } from '@wordpress/data';
+
+const {
+	getBlocksByClientId,
+	getClientIdsWithDescendants,
+} = select( 'core/block-editor' );
 
 // Enable Transcoder settings on the following blocks
 const enableTranscoderSettingsOnBlocks = [
@@ -103,6 +109,28 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 
 addFilter( 'editor.BlockEdit', 'rt-transcoder-amp/with-transcoder-settings', withTranscoderSettings, 12 );
 
+/**
+ * Get Transcoded Media Data.
+ */
+const getMediaInfo = async ( mediaId ) => {
+	try {
+		const restBase = '/transcoder/v1/amp-media';
+		const response = await apiFetch(
+			{
+				path: `${ restBase }/${ mediaId }`,
+				method: 'GET'
+			}
+		);
+		if ( false !== response && null !== response ) {
+			return response;
+		} else {
+			return false;
+		}
+	} catch(error) {
+		console.log(error);
+	}
+};
+
 const updateAMPStoryMedia = ( BlockEdit ) => {
 	return ( props ) => {
 
@@ -115,10 +143,9 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 		const isAMPStory = 'amp/amp-story-page' === props.name;
 		const isVideoBlock = 'core/video' === props.name;
 		const mediaId = isAMPStory ? mediaAttributes.mediaId : mediaAttributes.id;
-		const mediaType = mediaAttributes.mediaType ? mediaAttributes.mediaType : '';
 
 		if ( typeof mediaId !== 'undefined' ) {
-			if ( typeof mediaAttributes.poster === 'undefined' ) {
+			if ( typeof mediaAttributes.poster === 'undefined' && 'amp_story' === rtTranscoderBlockEditorSupport.current_post_type ) {
 				if ( isAMPStory && typeof mediaAttributes.mediaType !== 'undefined' &&
 					'video' === mediaAttributes.mediaType && ! mediaAttributes.mediaUrl.endsWith( 'mp4' ) ) {
 					props.setAttributes( { poster: rtTranscoderBlockEditorSupport.amp_story_fallback_poster } );
@@ -127,7 +154,6 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 					props.setAttributes( { poster: rtTranscoderBlockEditorSupport.amp_video_fallback_poster } );
 				}
 			} else {
-
 				if ( typeof  props.attributes.rtBackgroundVideoInfo !== 'undefined' ) {
 					const mediaInfo = props.attributes.rtBackgroundVideoInfo;
 					const videoQuality = props.attributes.rtBackgroundVideoQuality ? props.attributes.rtBackgroundVideoQuality : defaultVideoQuality;
@@ -147,17 +173,6 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 							} );
 						}
 					}
-				} else {
-					const restBase = '/transcoder/v1/amp-media';
-					apiFetch( {
-						path: `${ restBase }/${ mediaId }`,
-					} ).then( data => {
-						if ( false !== data && null !== data ) {
-							props.setAttributes( {
-								rtBackgroundVideoInfo: data,
-							} );
-						}
-					} );
 				}
 			}
 		}
@@ -182,3 +197,48 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 };
 
 addFilter( 'editor.BlockEdit', 'rt-transcoder-amp/set-media-attributes', updateAMPStoryMedia, 11 );
+
+setInterval( function () {
+	const allBlocks = getBlocksByClientId( getClientIdsWithDescendants() );
+	if ( allBlocks.length ) {
+		for ( const currentBlock of allBlocks ) {
+			if ( currentBlock.name.length && enableTranscoderSettingsOnBlocks.includes( currentBlock.name ) ) {
+				const blockAttributes = currentBlock.attributes;
+				const clientId = currentBlock.clientId;
+				if ( typeof clientId !== 'undefined' && typeof blockAttributes.rtBackgroundVideoInfo === 'undefined' ) {
+					const isAMPStory = 'amp/amp-story-page' === currentBlock.name;
+					const isVideoBlock = 'core/video' === currentBlock.name;
+					const mediaId = isAMPStory ? blockAttributes.mediaId : blockAttributes.id;
+					if ( typeof mediaId !== 'undefined' ) {
+						getMediaInfo( mediaId ).then( data => {
+							if ( false !== data && null !== data ) {
+								const mediaInfo = data;
+								const videoQuality = blockAttributes.rtBackgroundVideoQuality ? blockAttributes.rtBackgroundVideoQuality : defaultVideoQuality;
+								if ( typeof mediaInfo !== 'undefined' && mediaInfo.poster.length && mediaInfo[ videoQuality ].transcodedMedia.length ) {
+									if ( isAMPStory && typeof blockAttributes.mediaType !== 'undefined' && 'video' === blockAttributes.mediaType ) {
+										dispatch( 'core/block-editor' ).updateBlockAttributes( clientId,
+											{
+												poster: mediaInfo.poster,
+												mediaUrl: mediaInfo[ videoQuality ].transcodedMedia,
+												src: mediaInfo[ videoQuality ].transcodedMedia,
+												rtBackgroundVideoInfo: data,
+											}
+										);
+									} else if ( isVideoBlock ) {
+										dispatch( 'core/block-editor' ).updateBlockAttributes( clientId,
+											{
+												poster: mediaInfo.poster,
+												src: mediaInfo[ videoQuality ].transcodedMedia,
+												rtBackgroundVideoInfo: data,
+											}
+										);
+									}
+								}
+							}
+						});
+					}
+				}
+			}
+		}
+	}
+}, 10000 );

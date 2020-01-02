@@ -261,7 +261,7 @@
 						<tr valign="top">
 							<td scope="row">
 								<label>
-									<?php esc_html_e( 'Please selected a default quality for Transcoded video.', 'transcoder' ); ?>
+									<?php esc_html_e( 'Please select a default quality for Transcoded video in AMP Stories.', 'transcoder' ); ?>
 								</label>
 							</td>
 							<td>

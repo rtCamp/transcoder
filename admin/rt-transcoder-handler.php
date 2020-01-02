@@ -270,17 +270,10 @@ class RT_Transcoder_Handler {
 		$rest_post_id = intval( filter_input( INPUT_POST, 'post', FILTER_SANITIZE_NUMBER_INT ) );
 
 		// Check if post has AMP Story Page Block.
-		$is_amp_story_block = (
-			has_block( 'amp/amp-story-page', $post_id ) ||
-			has_block( 'amp/amp-story-page', $rest_post_id ) ) ? true : false;
+		$is_amp_story_block = ( has_block( 'amp/amp-story-page', $post_id ) || has_block( 'amp/amp-story-page', $rest_post_id ) );
 
-		// Check if post has Core Video Block.
-		$is_core_video_block = (
-			has_block( 'video', $post_id ) ||
-			has_block( 'video', $rest_post_id ) ) ? true : false;
-
-		// If either of blocks are found
-		if ( $is_amp_story_block || $is_core_video_block ) {
+		// If either of blocks are found or if an upload using AJAX.
+		if ( $is_amp_story_block ) {
 			return true;
 		}
 
