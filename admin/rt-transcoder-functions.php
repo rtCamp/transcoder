@@ -790,28 +790,38 @@ if ( '1' === get_site_option( 'rtt_client_check_status_button', false ) ) {
 }
 add_action( 'admin_enqueue_scripts', 'rtt_enqueue_scripts' );
 
-add_action( 'enqueue_block_editor_assets', 'rt_transcoder_enqueue_block_editor_assets' );
+add_action( 'enqueue_block_editor_assets', 'rt_transcoder_enqueue_block_editor_assets', 9 );
 
 /**
  * Enqueue required script for block editor.
  */
 function rt_transcoder_enqueue_block_editor_assets() {
+
+	// Load dependencies and version from build file.
+	$asset_file = include( RT_TRANSCODER_PATH . 'admin/js/build/rt-transcoder-gutenberg-support.asset.php' );
+
 	// Enqueue our script
 	wp_enqueue_script(
 		'rt-transcoder-block-editor-support',
-		esc_url( plugins_url( '/js/build/rt-transcoder-gutenberg-support.build.js', __FILE__ ) ),
-		array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-editor' ),
-		RT_TRANSCODER_VERSION,
-		true
+		esc_url( plugins_url( '/js/build/rt-transcoder-gutenberg-support.js', __FILE__ ) ),
+		$asset_file['dependencies'],
+		$asset_file['version'],
+		false
 	);
+
+	// Check if a Transcoding key exists, if empty the service is disabled.
+	$is_transcoding_enabled = get_site_option( 'rt-transcoding-api-key', '' );
 
 	// Localize fallback poster image for use in our enqueued script.
 	wp_localize_script(
 		'rt-transcoder-block-editor-support',
 		'rtTranscoderBlockEditorSupport',
 		[
+			'is_transcoding_enabled'    => empty( $is_transcoding_enabled ) ? 'false' : 'true',
+			'current_post_type'         => get_post_type(),
 			'amp_story_fallback_poster' => plugins_url( '/images/amp-story-fallback-poster.png', __FILE__ ),
-			'amp_video_fallback_poster' => plugins_url( '/images/amp-story-video-fallback-poster.png', __FILE__ )
+			'amp_video_fallback_poster' => plugins_url( '/images/amp-story-video-fallback-poster.png', __FILE__ ),
+			'rt_default_video_quality'  => get_site_option( 'rtt_default_video_quality', 'high' ),
 		]
 	);
 }

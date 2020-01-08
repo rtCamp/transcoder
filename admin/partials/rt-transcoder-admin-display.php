@@ -258,6 +258,34 @@
 								</span>
 							</td>
 						</tr>
+						<tr valign="top">
+							<td scope="row">
+								<label>
+									<?php esc_html_e( 'Please select a default quality for Transcoded video in AMP Stories', 'transcoder' ); ?>
+								</label>
+							</td>
+							<td>
+								<?php
+								$default_quality = get_site_option( 'rtt_default_video_quality', 'high' );
+								if ( empty( $default_quality ) ) {
+									$default_quality = 'high';
+								}
+								?>
+								<select name="rtt_default_video_quality">
+									<option value="high" <?php selected( $default_quality, 'high' ); ?>><?php esc_html_e( 'High', 'transcoder' ); ?></option>
+									<option value="medium" <?php selected( $default_quality, 'medium'); ?>><?php esc_html_e( 'Medium', 'transcoder' ); ?></option>
+									<option value="low" <?php selected( $default_quality, 'low'); ?>><?php esc_html_e( 'Low', 'transcoder' ); ?></option>
+								</select>
+								<span class="rtm-tooltip">
+									<i class="dashicons dashicons-info"></i>
+									<span class="rtm-tip">
+										<?php
+										esc_html_e( 'This field specifies the default quality to be chosen for a media, defaults to High. Selected option will be the preference of media quality when there are multiple qualities available for the media.', 'transcoder' );
+										?>
+									</span>
+								</span>
+							</td>
+						</tr>
 					</table>
 					<p>
 						<?php

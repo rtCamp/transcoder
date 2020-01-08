@@ -15,7 +15,7 @@ bower_components
 _book
 nbproject
 nbproject/private/
-build/
+/build/
 nbbuild/
 dist/
 nbdist/

@@ -1,5 +1,6 @@
 (function ( $ ) {
     $( document ).ready( function () {
+
         if ( transcoding_status.load_flag ) {
             $( '[name="check_status_btn"]' ).live( 'click', function ( e ) {
 
