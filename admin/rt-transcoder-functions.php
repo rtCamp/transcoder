@@ -809,12 +809,16 @@ function rt_transcoder_enqueue_block_editor_assets() {
 		false
 	);
 
+	// Check if a Transcoding key exists, if empty the service is disabled.
+	$is_transcoding_enabled = get_site_option( 'rt-transcoding-api-key', '' );
+
 	// Localize fallback poster image for use in our enqueued script.
 	wp_localize_script(
 		'rt-transcoder-block-editor-support',
 		'rtTranscoderBlockEditorSupport',
 		[
-			'current_post_type'        => get_post_type(),
+			'is_transcoding_enabled'    => empty( $is_transcoding_enabled ) ? 'false' : 'true',
+			'current_post_type'         => get_post_type(),
 			'amp_story_fallback_poster' => plugins_url( '/images/amp-story-fallback-poster.png', __FILE__ ),
 			'amp_video_fallback_poster' => plugins_url( '/images/amp-story-video-fallback-poster.png', __FILE__ ),
 			'rt_default_video_quality'  => get_site_option( 'rtt_default_video_quality', 'high' ),

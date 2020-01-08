@@ -6,6 +6,7 @@ import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import apiFetch from '@wordpress/api-fetch';
 import { dispatch, select } from '@wordpress/data';
+import { showNotice, showSnackBar } from './helpers';
 
 // To get all blocks on the current page.
 const {
@@ -25,6 +26,9 @@ const { rtTranscoderBlockEditorSupport } = window;
 const defaultVideoQuality = typeof rtTranscoderBlockEditorSupport.rt_default_video_quality !== 'undefined' ?
 	rtTranscoderBlockEditorSupport.rt_default_video_quality : 'high';
 
+const isTranscodingEnabled = typeof rtTranscoderBlockEditorSupport.is_transcoding_enabled !== 'undefined' ?
+	rtTranscoderBlockEditorSupport.is_transcoding_enabled : 'false';
+
 /**
  * Add background video quality and media info attribute to block.
  *
@@ -35,7 +39,8 @@ const defaultVideoQuality = typeof rtTranscoderBlockEditorSupport.rt_default_vid
  */
 const addBackgroundVideoQualityControlAttribute = ( settings, name ) => {
 	if ( ! enableTranscoderSettingsOnBlocks.includes( name ) ||
-		'amp_story' !== rtTranscoderBlockEditorSupport.current_post_type ) {
+		'amp_story' !== rtTranscoderBlockEditorSupport.current_post_type ||
+		'false' === isTranscodingEnabled ) {
 		return settings;
 	}
 
@@ -64,7 +69,8 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
 		// Do nothing if it's another block than our defined ones.
 		if ( ! enableTranscoderSettingsOnBlocks.includes( props.name ) ||
-			'amp_story' !== rtTranscoderBlockEditorSupport.current_post_type ) {
+			'amp_story' !== rtTranscoderBlockEditorSupport.current_post_type ||
+			'false' === isTranscodingEnabled ) {
 			return ( <BlockEdit { ...props } /> );
 		}
 
@@ -72,24 +78,32 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 		const isAMPStory = 'amp/amp-story-page' === props.name;
 		const isVideoBlock = 'core/video' === props.name;
 		const mediaType = mediaAttributes.mediaType ? mediaAttributes.mediaType : '';
-		const { rtBackgroundVideoQuality } = mediaAttributes;
+		const mediaId = isAMPStory ? mediaAttributes.mediaId : mediaAttributes.id;
+		const { rtBackgroundVideoQuality, rtBackgroundVideoInfo } = mediaAttributes;
 
 		return (
 			<Fragment>
 				<BlockEdit { ...props }
 				/>
-				{
-					( isVideoBlock || ( isAMPStory && 'video' === mediaType ) ) && (
-						<InspectorControls>
-							<PanelBody
-								title={ __( 'Transcoder Settings', 'transcoder' ) }
-								initialOpen={ true }
+				{ ( ( isVideoBlock || ( isAMPStory && 'video' === mediaType ) ) && typeof mediaId !== "undefined" ) && (
+					<InspectorControls>
+						<PanelBody
+							title={ __( 'Transcoder Settings', 'transcoder' ) }
+							initialOpen={ true }
 							>
+							{ ( typeof rtBackgroundVideoInfo === 'undefined' ) && (
+								showNotice(
+									'error',
+									__( 'Please wait while the video is being Transcoded. Quality settings will be available once transcoding is complete.', 'transcoder' ),
+									false
+								)
+							) }
+							{ ( typeof rtBackgroundVideoInfo !== 'undefined' ) && (
 								<SelectControl
 									label={ __( 'Background Video Quality', 'transcoder' ) }
 									value={ rtBackgroundVideoQuality }
 									options={ [
-										{ value: 'low', label: __( 'Low', 'transcoder' ) },
+												{ value: 'low', label: __( 'Low', 'transcoder' ) },
 										{ value: 'medium', label: __( 'Medium', 'transcoder' ) },
 										{ value: 'high', label: __( 'High', 'transcoder' ) },
 									] }
@@ -101,10 +115,10 @@ const withTranscoderSettings = createHigherOrderComponent( ( BlockEdit ) => {
 										}
 									}
 								/>
-							</PanelBody>
-						</InspectorControls>
-					)
-				}
+							) }
+						</PanelBody>
+					</InspectorControls>
+				) }
 			</Fragment>
 		);
 	};
@@ -134,12 +148,16 @@ const getMediaInfo = async ( mediaId ) => {
 	}
 };
 
+/**
+ * Update media attributes once video is transcoded.
+ */
 const updateAMPStoryMedia = ( BlockEdit ) => {
 	return ( props ) => {
 
 		// Do nothing if it's another block than our defined ones.
 		if ( ! enableTranscoderSettingsOnBlocks.includes( props.name ) ||
-			'amp_story' !== rtTranscoderBlockEditorSupport.current_post_type ) {
+			'amp_story' !== rtTranscoderBlockEditorSupport.current_post_type ||
+			'false' === isTranscodingEnabled ) {
 			return ( <BlockEdit { ...props } /> );
 		}
 
@@ -151,11 +169,17 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 		if ( typeof mediaId !== 'undefined' ) {
 			if ( typeof mediaAttributes.poster === 'undefined' ) {
 				if ( isAMPStory && typeof mediaAttributes.mediaType !== 'undefined' &&
-					'video' === mediaAttributes.mediaType && ! mediaAttributes.mediaUrl.endsWith( 'mp4' ) ) {
-					props.setAttributes( { poster: rtTranscoderBlockEditorSupport.amp_story_fallback_poster } );
+					'video' === mediaAttributes.mediaType ) {
+					if ( ! mediaAttributes.mediaUrl.endsWith( 'mp4' ) ) {
+						props.setAttributes( { poster: rtTranscoderBlockEditorSupport.amp_story_fallback_poster } );
+					}
+					showSnackBar(  __( 'Please wait while the video is being Transcoded. Video URL and thumbnails will be updated automatically.', 'transcoder' ) );
 				} else if ( isVideoBlock && typeof mediaAttributes.src !== 'undefined' &&
-					mediaAttributes.src.indexOf( 'blob:' ) !== 0 && ! mediaAttributes.src.endsWith( 'mp4' ) ) {
-					props.setAttributes( { poster: rtTranscoderBlockEditorSupport.amp_video_fallback_poster } );
+					mediaAttributes.src.indexOf( 'blob:' ) !== 0 ) {
+					if ( ! mediaAttributes.src.endsWith( 'mp4' ) ) {
+						props.setAttributes( { poster: rtTranscoderBlockEditorSupport.amp_video_fallback_poster } );
+					}
+					showSnackBar(  __( 'Please wait while the video is being Transcoded. Video URL and thumbnails will be updated automatically.', 'transcoder' ) );
 				}
 			} else {
 				if ( typeof  props.attributes.rtBackgroundVideoInfo !== 'undefined' ) {
@@ -212,7 +236,7 @@ setInterval( function () {
 		for ( const currentBlock of allBlocks ) {
 			// Verify block is of allowed type and we are on valid page.
 			if ( currentBlock.name.length && enableTranscoderSettingsOnBlocks.includes( currentBlock.name ) &&
-				'amp_story' === rtTranscoderBlockEditorSupport.current_post_type ) {
+				'amp_story' === rtTranscoderBlockEditorSupport.current_post_type && 'true' === isTranscodingEnabled ) {
 				const blockAttributes = currentBlock.attributes;
 				const clientId = currentBlock.clientId;
 				if ( typeof clientId !== 'undefined' && typeof blockAttributes.rtBackgroundVideoInfo === 'undefined' ) {
@@ -234,6 +258,7 @@ setInterval( function () {
 												rtBackgroundVideoInfo: data,
 											}
 										);
+										showSnackBar( __( 'Video has been Transcoded, you may now select desired quality from block settings.', 'transcoder' ) );
 									} else if ( isVideoBlock ) {
 										dispatch( 'core/block-editor' ).updateBlockAttributes( clientId,
 											{
@@ -242,6 +267,7 @@ setInterval( function () {
 												rtBackgroundVideoInfo: data,
 											}
 										);
+										showSnackBar( __( 'Video has been Transcoded, you may now select desired quality from block settings.', 'transcoder' ) );
 									}
 								}
 							}

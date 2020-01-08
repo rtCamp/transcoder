@@ -40,6 +40,29 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 			return false;
 		}
 
+		// Check if the video is sent for Transcoding.
+		$job_id = get_post_meta( $media_id, '_rt_transcoding_job_id', true );
+
+		// If a job id doesn't exist, send the media for Transcoding.
+		if ( empty( $job_id ) ) {
+			$media = get_post( $media_id );
+
+			// Get the Transcoder object.
+			$transcoder = new RT_Transcoder_Handler( $no_init = true );
+			$attachment_meta['mime_type'] = $media->post_mime_type;
+
+			// Send media for (Re)transcoding.
+			$transcoder->wp_media_transcoding( $attachment_meta, $media->ID, false, true );
+
+			$is_sent = get_post_meta( $media->ID, '_rt_transcoding_job_id', true );
+
+			if ( ! $is_sent ) {
+				return false;
+			} else {
+				update_post_meta( $media->ID, '_rt_retranscoding_sent', $is_sent );
+			}
+		}
+
 		// Check if thumbnail and transcoded file exist for the passed attachment.
 		$thumbnail_id         = get_post_thumbnail_id( $media_id );
 		$transcoded_url_data  = get_post_meta( $media_id, '_rt_media_transcoded_files' );

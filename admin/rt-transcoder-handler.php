@@ -159,11 +159,12 @@ class RT_Transcoder_Handler {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array  $metadata 			Metadata of the attachment.
-	 * @param int    $attachment_id		ID of attachment.
-	 * @param string $autoformat		If true then generating thumbs only else trancode video.
+	 * @param array  $metadata 			   Metadata of the attachment.
+	 * @param int    $attachment_id		   ID of attachment.
+	 * @param string $autoformat		   If true then generating thumbs only else trancode video.
+	 * @param bool   $create_multi_quality If true multiple quality videos will be created for the media.
 	 */
-	function wp_media_transcoding( $wp_metadata, $attachment_id, $autoformat = true ) {
+	function wp_media_transcoding( $wp_metadata, $attachment_id, $autoformat = true, $create_multi_quality = false ) {
 		if ( empty( $wp_metadata['mime_type'] ) ) {
 			return $wp_metadata;
 		}
@@ -223,7 +224,7 @@ class RT_Transcoder_Handler {
 				'timeout' 	=> 60,
 				'body' 		=> array(
 					'api_token' 	=> $this->api_key,
-					'job_type' 		=> $this->is_block_media() ? 'amp-story' : $job_type,
+					'job_type' 		=> ( $this->is_block_media() || $create_multi_quality ) ? 'amp-story' : $job_type,
 					'job_for' 		=> $job_for,
 					'file_url'		=> urlencode( $url ),
 					'callback_url'	=> urlencode( trailingslashit( home_url() ) . 'index.php' ),
@@ -263,6 +264,9 @@ class RT_Transcoder_Handler {
 			return false;
 		}
 
+		// Store action param to verify if an upload is being done via AJAX.
+		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
+
 		// Get current Post ID.
 		$post_id = intval( filter_input( INPUT_POST, 'post_id', FILTER_SANITIZE_NUMBER_INT ) );
 
@@ -273,7 +277,7 @@ class RT_Transcoder_Handler {
 		$is_amp_story_block = ( has_block( 'amp/amp-story-page', $post_id ) || has_block( 'amp/amp-story-page', $rest_post_id ) );
 
 		// If either of blocks are found or if an upload using AJAX.
-		if ( $is_amp_story_block ) {
+		if ( $is_amp_story_block || ( ! empty( $rest_post_id ) && get_post_type( $rest_post_id ) === 'amp_story' ) || ( 'upload-attachment' === $action && get_post_type( $post_id ) === 'amp_story' ) ) {
 			return true;
 		}
 
