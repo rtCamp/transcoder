@@ -233,45 +233,59 @@ setInterval( function () {
 	// Get all blocks.
 	const allBlocks = getBlocksByClientId( getClientIdsWithDescendants() );
 	if ( allBlocks.length ) {
-		for ( const currentBlock of allBlocks ) {
+		for (const currentBlock of allBlocks) {
 			// Verify block is of allowed type and we are on valid page.
-			if ( currentBlock.name.length && enableTranscoderSettingsOnBlocks.includes( currentBlock.name ) &&
-				'amp_story' === rtTranscoderBlockEditorSupport.current_post_type && 'true' === isTranscodingEnabled ) {
+			if (currentBlock.name.length && enableTranscoderSettingsOnBlocks.includes(currentBlock.name) &&
+				'amp_story' === rtTranscoderBlockEditorSupport.current_post_type && 'true' === isTranscodingEnabled) {
 				const blockAttributes = currentBlock.attributes;
 				const clientId = currentBlock.clientId;
-				if ( typeof clientId !== 'undefined' && typeof blockAttributes.rtBackgroundVideoInfo === 'undefined' ) {
-					const isAMPStory = 'amp/amp-story-page' === currentBlock.name;
-					const isVideoBlock = 'core/video' === currentBlock.name;
-					const mediaId = isAMPStory ? blockAttributes.mediaId : blockAttributes.id;
-					if ( typeof mediaId !== 'undefined' ) {
-						getMediaInfo( mediaId ).then( data => {
-							if ( false !== data && null !== data ) {
-								const mediaInfo = data;
-								const videoQuality = blockAttributes.rtBackgroundVideoQuality ? blockAttributes.rtBackgroundVideoQuality : defaultVideoQuality;
-								if ( typeof mediaInfo !== 'undefined' && mediaInfo.poster.length && mediaInfo[ videoQuality ].transcodedMedia.length ) {
-									if ( isAMPStory && typeof blockAttributes.mediaType !== 'undefined' && 'video' === blockAttributes.mediaType ) {
-										dispatch( 'core/block-editor' ).updateBlockAttributes( clientId,
-											{
-												poster: mediaInfo.poster,
-												mediaUrl: mediaInfo[ videoQuality ].transcodedMedia,
-												src: mediaInfo[ videoQuality ].transcodedMedia,
-												rtBackgroundVideoInfo: data,
-											}
-										);
-										showSnackBar( __( 'Video has been Transcoded, you may now select desired quality from block settings.', 'transcoder' ) );
-									} else if ( isVideoBlock ) {
-										dispatch( 'core/block-editor' ).updateBlockAttributes( clientId,
-											{
-												poster: mediaInfo.poster,
-												src: mediaInfo[ videoQuality ].transcodedMedia,
-												rtBackgroundVideoInfo: data,
-											}
-										);
-										showSnackBar( __( 'Video has been Transcoded, you may now select desired quality from block settings.', 'transcoder' ) );
+				const isAMPStory = 'amp/amp-story-page' === currentBlock.name;
+				const isVideoBlock = 'core/video' === currentBlock.name;
+				const mediaId = isAMPStory ? blockAttributes.mediaId : blockAttributes.id;
+				const storyBlockSource = document.querySelector(`div[data-block='${clientId}'] video.editor-amp-story-page-video source`);
+				if (typeof clientId !== 'undefined' && typeof blockAttributes.rtBackgroundVideoInfo === 'undefined' &&
+					typeof mediaId !== 'undefined') {
+					getMediaInfo(mediaId).then(data => {
+						if (false !== data && null !== data) {
+							const mediaInfo = data;
+							const videoQuality = blockAttributes.rtBackgroundVideoQuality ?
+								blockAttributes.rtBackgroundVideoQuality : defaultVideoQuality;
+							if (typeof mediaInfo !== 'undefined' && mediaInfo.poster.length &&
+								mediaInfo[videoQuality].transcodedMedia.length) {
+								if (isAMPStory && typeof blockAttributes.mediaType !== 'undefined' && 'video' === blockAttributes.mediaType) {
+									dispatch('core/block-editor').updateBlockAttributes(clientId,
+										{
+											poster               : mediaInfo.poster,
+											mediaUrl             : mediaInfo[videoQuality].transcodedMedia,
+											rtBackgroundVideoInfo: data,
+										}
+									);
+									showSnackBar(__('Video has been Transcoded, you may now select desired quality from block settings.', 'transcoder'));
+									// Set mime type on source to get the video working.
+									if (null !== storyBlockSource) {
+										storyBlockSource.setAttribute('type', 'video/mp4');
 									}
+								} else if (isVideoBlock) {
+									dispatch('core/block-editor').updateBlockAttributes(clientId,
+										{
+											poster               : mediaInfo.poster,
+											src                  : mediaInfo[videoQuality].transcodedMedia,
+											rtBackgroundVideoInfo: data,
+										}
+									);
+									showSnackBar(__('Video has been Transcoded, you may now select desired quality from block settings.', 'transcoder'));
 								}
 							}
-						});
+						}
+					});
+				}
+
+				// Set mime type on source to get the video working.
+				if ( typeof clientId !== 'undefined' &&
+					typeof blockAttributes.rtBackgroundVideoInfo !== 'undefined' && isAMPStory ) {
+					if ( null !== storyBlockSource ) {
+						const currentClass = blockAttributes.className;
+						storyBlockSource.setAttribute( 'type', 'video/mp4' );
 					}
 				}
 			}
