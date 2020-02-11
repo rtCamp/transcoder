@@ -196,12 +196,6 @@ class RT_Transcoder_Handler {
 			}
 
 			$job_type = 'video';
-			/**  FORMAT * */
-			if ( 'video/mp4' === $metadata['mime_type'] && 'mp4' === $type ) {
-				$autoformat = 'thumbnails';
-				$job_type = 'thumbnail';
-			}
-	
 			if ( 'audio' === $type_array[0] || in_array( $extension, explode( ',', $this->audio_extensions ), true ) ) {
 				$job_type = 'audio';
 			}
