@@ -501,7 +501,7 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 				$message = apply_filters( 'rtt_transcoding_in_progress_message', $message, $activity );
 				$message .= '</div>';
 				/* Add this message to the particular media (there can be multiple medias in the activity) */
-				$search     = '/(rt_media_video_' . $media->id . ")['\"](.*?)(<\/a><\/div>)/s";
+				$search     = '/(rt_media_video_' . $media->id . ")['\"](.*?)(<\/a><\/p><\/div>)/s";
 				$text_found = array();
 				preg_match( $search, $content, $text_found );
 
