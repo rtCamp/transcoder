@@ -818,9 +818,9 @@ class RT_Transcoder_Handler {
 
 		do_action( 'rtt_before_transcoded_media_store', $attachment_id, $file_post_array );
 
-		if ( isset( $file_post_array ) && is_array( $file_post_array ) && ( count( $file_post_array > 0 ) ) ) {
+		if ( isset( $file_post_array ) && is_array( $file_post_array ) && ( count( $file_post_array ) > 0 ) ) {
 			foreach ( $file_post_array as $key => $format ) {
-				if ( is_array( $format ) && ( count( $format > 0 ) ) ) {
+				if ( is_array( $format ) && ( count( $format ) > 0 ) ) {
 					foreach ( $format as $each => $file ) {
 						$flag = false;
 						if ( isset( $file ) ) {
