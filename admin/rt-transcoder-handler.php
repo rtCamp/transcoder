@@ -185,18 +185,18 @@ class RT_Transcoder_Handler {
 
 		$type_arry        = explode( '.', $url );
 		$type             = strtolower( $type_arry[ count( $type_arry ) - 1 ] );
+		$extension        = pathinfo( $path, PATHINFO_EXTENSION );
 		$not_allowed_type = array( 'mp3' );
 		preg_match( '/video|audio/i', $metadata['mime_type'], $type_array );
 
-		if ( preg_match( '/video|audio/i', $metadata['mime_type'], $type_array ) && ! in_array( $metadata['mime_type'], array( 'audio/mp3' ), true ) && ! in_array( $type, $not_allowed_type, true ) ) {
+		if ( ( preg_match( '/video|audio/i', $metadata['mime_type'], $type_array ) || 'application/ogg' === $metadata['mime_type'] ) && ! in_array( $metadata['mime_type'], array( 'audio/mp3' ), true ) && ! in_array( $type, $not_allowed_type, true ) ) {
 			$options_video_thumb = $this->get_thumbnails_required( $attachment_id );
 			if ( empty( $options_video_thumb ) ) {
 				$options_video_thumb = 5;
 			}
 
 			$job_type = 'video';
-
-			if ( 'audio' === $type_array[0] ) {
+			if ( 'audio' === $type_array[0] || in_array( $extension, explode( ',', $this->audio_extensions ), true ) ) {
 				$job_type = 'audio';
 			}
 
