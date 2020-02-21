@@ -672,7 +672,6 @@ class RT_Transcoder_Handler {
 	 * @return url
 	 */
 	public function add_media_thumbnails( $post_array ) {
-g
 		$defaults = array(
 	 		'post_id' 	=> '',
 	 		'job_for' 	=> '',
