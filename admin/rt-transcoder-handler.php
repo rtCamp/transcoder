@@ -672,7 +672,6 @@ class RT_Transcoder_Handler {
 	 * @return url
 	 */
 	public function add_media_thumbnails( $post_array ) {
-
 		$defaults = array(
 	 		'post_id' 	=> '',
 	 		'job_for' 	=> '',
@@ -836,6 +835,7 @@ class RT_Transcoder_Handler {
 							$download_url                   = urldecode( urldecode( $file ) );
 							$new_wp_attached_file_pathinfo 	= pathinfo( $download_url );
 							$post_mime_type                	= 'mp4' === $new_wp_attached_file_pathinfo['extension'] ? 'video/mp4' : 'audio/mp3';
+							$attachemnt_url  	            = wp_get_attachment_url( $attachment_id );
 							try {
 								$response = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $download_url ) : wp_remote_get( $download_url ); // @codingStandardsIgnoreLine
 							} catch ( Exception $e ) {
@@ -907,7 +907,6 @@ class RT_Transcoder_Handler {
 					if ( 'rtmedia' === $job_for ) {
 						$activity_id = $media[0]->activity_id;
 						if ( $activity_id ) {
-							$attachemnt_url  	= wp_get_attachment_url( $attachment_id );
 							$content          	= $wpdb->get_var( $wpdb->prepare( "SELECT content FROM {$wpdb->base_prefix}bp_activity WHERE id = %d", $activity_id ) );
 
 							/* for WordPress backward compatibility */
