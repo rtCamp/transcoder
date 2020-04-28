@@ -2,7 +2,7 @@
 /**
  * Handle progress calculation and display of progress bar.
  *
- * @since	1.0.0
+ * @since   1.0.0
  *
  * @package    Transcoder
  * @subpackage Transcoder/Admin
@@ -11,7 +11,7 @@
 /**
  * Handle progress calculation and display of progress bar.
  *
- * @since	1.0.0
+ * @since   1.0.0
  *
  * @package    Transcoder
  * @subpackage Transcoder/Admin
@@ -21,12 +21,12 @@ class RT_Progress {
 	/**
 	 * Constructor
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 *
 	 * @access public
 	 * @return void
 	 */
-	function __construct() {
+	public function __construct() {
 
 	}
 
@@ -35,12 +35,12 @@ class RT_Progress {
 	 *
 	 * @access public
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 *
-	 * @param  float $progress	Progress value.
-	 * @param  bool  $echo		If true then echo the output else return.
+	 * @param  float $progress  Progress value.
+	 * @param  bool  $echo      If true then echo the output else return.
 	 *
-	 * @return string $progress_ui	Output of progress bar.
+	 * @return string $progress_ui  Output of progress bar.
 	 */
 	public function progress_ui( $progress, $echo = true ) {
 		$progress_ui = '
@@ -50,7 +50,15 @@ class RT_Progress {
 			';
 
 		if ( $echo ) {
-			echo $progress_ui; // @codingStandardsIgnoreLine
+			echo wp_kses(
+				$progress_ui,
+				array(
+					'div' => array(
+						'id' => array(),
+						'style' => array(),
+					),
+				) 
+			);
 		} else {
 			return $progress_ui;
 		}
@@ -61,10 +69,10 @@ class RT_Progress {
 	 *
 	 * @access public
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 *
-	 * @param  float $progress	Progress value.
-	 * @param  float $total		Total value.
+	 * @param  float $progress  Progress value.
+	 * @param  float $total     Total value.
 	 *
 	 * @return float
 	 */

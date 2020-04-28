@@ -17,7 +17,7 @@ if ( ! function_exists( 'rtt_video_editor_title' ) ) {
 	/**
 	 * Add the video thumbnail tab on video edit page.
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 */
 	function rtt_video_editor_title() {
 		global $rtmedia_query;
@@ -53,16 +53,16 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 	/**
 	 * Display the HTML to set the thumbnail for video.
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 */
 	function rtt_rtmedia_vedio_editor_content() {
 		global $rtmedia_query;
 		if ( isset( $rtmedia_query->media ) && is_array( $rtmedia_query->media ) && isset( $rtmedia_query->media[0]->media_type ) && 'video' === $rtmedia_query->media[0]->media_type ) {
-			$media_id        = $rtmedia_query->media[0]->media_id;
+			$media_id                        = $rtmedia_query->media[0]->media_id;
 			$rtmedia_transcoded_video_thumbs = get_post_meta( $rtmedia_query->media[0]->media_id, '_rt_media_thumbnails', true );
-			$thumbnail_array = '';
+
 			if ( ! is_array( $rtmedia_transcoded_video_thumbs ) ) {
-				$thumbnail_array = $rtmedia_transcoded_video_thumbs = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
+				$rtmedia_transcoded_video_thumbs = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
 			}
 			echo '<div class="content" id="panel2">';
 			if ( is_array( $rtmedia_transcoded_video_thumbs ) ) {
@@ -77,21 +77,20 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 						} else {
 							$uploads = wp_upload_dir();
 						}
-						$base_url 	= $uploads['baseurl'];
-						$media_id 	= $rtmedia_query->media[0]->media_id;
+						$media_id = $rtmedia_query->media[0]->media_id;
 						foreach ( $rtmedia_transcoded_video_thumbs as $key => $thumbnail_src ) {
 							$wp_video_thumbnail = get_post_meta( $media_id, '_rt_media_video_thumbnail', true );
 
 							if ( 0 === strpos( $thumbnail_src, $uploads['baseurl'] ) ) {
 								$thumbnail_src = str_replace( $uploads['baseurl'], '', $thumbnail_src );
-						    }
+							}
 
 							if ( empty( $wp_video_thumbnail ) ) {
 								$wp_video_thumbnail = $rtmedia_query->media[0]->cover_art;
 								$wp_video_thumbnail = str_replace( $uploads['baseurl'], '', $wp_video_thumbnail );
 							}
 
-							$checked = false;
+							$checked          = false;
 							$thumbnail_src_og = $thumbnail_src;
 							if ( $wp_video_thumbnail === $thumbnail_src ) {
 								$checked = 'checked=checked';
@@ -101,10 +100,10 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 
 							if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
 								$thumbnail_src = $file_url;
-						    } else {
-						    	$thumbnail_src = $uploads['baseurl'] . '/' . $file_url;
-						    }
-						    $thumbnail_src = apply_filters( 'transcoded_file_url', $thumbnail_src, $media_id );
+							} else {
+								$thumbnail_src = $uploads['baseurl'] . '/' . $file_url;
+							}
+							$thumbnail_src = apply_filters( 'transcoded_file_url', $thumbnail_src, $media_id );
 							?>
 							<li<?php echo $checked ? ' class="selected"' : ''; ?>
 								style="width: 150px;display: inline-block;">
@@ -112,11 +111,11 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 									for="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
 									class="alignleft">
 									<input type="radio"<?php echo esc_attr( $checked ); ?>
-									       id="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
-									       value="<?php echo esc_attr( $thumbnail_src_og ); ?>"
-									       name="rtmedia-thumbnail"/>
-									<img src="<?php echo esc_attr( $thumbnail_src ); ?>"
-									     style="max-height: 120px;max-width: 120px"/>
+										   id="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
+										   value="<?php echo esc_attr( $thumbnail_src_og ); ?>"
+										   name="rtmedia-thumbnail"/>
+									<img src="<?php echo esc_url( $thumbnail_src ); ?>"
+										 style="max-height: 120px;max-width: 120px"/>
 								</label>
 							</li>
 							<?php
@@ -124,7 +123,7 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 						?>
 					</ul>
 				</div>
-			<?php
+				<?php
 			} else { // check for array of thumbs stored as attachement ids.
 				global $rtmedia_media;
 				$curr_cover_art = $rtmedia_media->cover_art;
@@ -145,11 +144,11 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 											for="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
 											class="alignleft">
 											<input type="radio"<?php checked( $attachment_id, $curr_cover_art ); ?>
-											       id="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
-											       value="<?php echo esc_attr( $attachment_id ); ?>"
-											       name="rtmedia-thumbnail"/>
-											<img src="<?php echo esc_attr( $thumbnail_src ); ?>"
-											     style="max-height: 120px;max-width: 120px"/>
+												   id="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
+												   value="<?php echo esc_attr( $attachment_id ); ?>"
+												   name="rtmedia-thumbnail"/>
+											<img src="<?php echo esc_url( $thumbnail_src ); ?>"
+												 style="max-height: 120px;max-width: 120px"/>
 										</label>
 									</li>
 									<?php
@@ -174,14 +173,14 @@ if ( ! function_exists( 'rtt_set_video_thumbnail' ) ) {
 	/**
 	 * Set the video thumbnail
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 *
 	 * @param number $id rtMedia activity ID.
 	 */
 	function rtt_set_video_thumbnail( $id ) {
-		$media_type 	= rtmedia_type( $id );
-		$attachment_id 	= rtmedia_media_id( $id );		// Get the wp attachment ID.
-		$thumbnail  = filter_input( INPUT_POST, 'rtmedia-thumbnail', FILTER_SANITIZE_URL );
+		$media_type    = rtmedia_type( $id );
+		$attachment_id = rtmedia_media_id( $id );      // Get the wp attachment ID.
+		$thumbnail     = filter_input( INPUT_POST, 'rtmedia-thumbnail', FILTER_SANITIZE_URL );
 		if ( 'video' === $media_type && ! empty( $thumbnail ) ) {
 
 			if ( ! is_numeric( $thumbnail ) ) {
@@ -194,18 +193,18 @@ if ( ! function_exists( 'rtt_set_video_thumbnail' ) ) {
 				}
 				if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
 					$final_file_url = $file_url;
-			    } else {
-			    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
-			    }
+				} else {
+					$final_file_url = $uploads['baseurl'] . '/' . $file_url;
+				}
 
-			    $final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $attachment_id );
+				$final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $attachment_id );
 
 				update_post_meta( $attachment_id, '_rt_media_video_thumbnail', $thumbnail );
 			}
 
 			$model = new RTMediaModel();
-	        $model->update( array( 'cover_art' => $final_file_url ), array( 'id' => intval( $id ) ) );
-	        rtt_update_activity_after_thumb_set( $id );
+			$model->update( array( 'cover_art' => $final_file_url ), array( 'id' => intval( $id ) ) );
+			rtt_update_activity_after_thumb_set( $id );
 
 		}
 	}
@@ -217,25 +216,23 @@ add_action( 'rtmedia_after_update_media', 'rtt_set_video_thumbnail', 12 );
  * Set the cover art/video thumbnail for the videos which are not uploaded from the rtMedia activity
  *
  * @since 1.0.7
- * @param string 	$thumb_url     Video thumbnail URL
- * @param int 		$attachment_id Attachment ID of the media/video for which thumbnail has to be set
+ * @param string $thumb_url     Video thumbnail URL.
+ * @param int    $attachment_id Attachment ID of the media/video for which thumbnail has to be set.
  */
 function rtt_update_wp_media_thumbnail( $thumb_url, $attachment_id ) {
 	if ( class_exists( 'RTMediaModel' ) ) {
-		$model 		= new RTMediaModel();
-		$media 		= $model->get( array( 'media_id' => $attachment_id ) );
+		$model = new RTMediaModel();
+		$media = $model->get( array( 'media_id' => $attachment_id ) );
 
 		if ( ! empty( $media ) && ! empty( $media[0] ) ) {
-			$media_id		= $media[0]->id;
-			$attachment_id	= $media[0]->media_id;
-			$media_type 	= $media[0]->media_type;
-			$cover_art 		= $media[0]->cover_art;
+			$attachment_id = $media[0]->media_id;
+			$media_type    = $media[0]->media_type;
+			$cover_art     = $media[0]->cover_art;
 
 			if ( 'video' === $media_type && empty( $cover_art ) && ! empty( $thumb_url ) ) {
 				$model->update( array( 'cover_art' => $thumb_url ), array( 'media_id' => $attachment_id ) );
 			}
 		}
-
 	}
 }
 
