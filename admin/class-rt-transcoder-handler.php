@@ -29,7 +29,7 @@ class RT_Transcoder_Handler {
 	 * @access   protected
 	 * @var      string    $transcoding_api_url    The URL of the api.
 	 */
-	protected $transcoding_api_url = 'http://test.api.rtmedia.io/api/v1/';
+	protected $transcoding_api_url = 'http://api.rtmedia.io/api/v1/';
 
 	/**
 	 * The URL of the EDD store.
