@@ -33,26 +33,32 @@ module.exports = {
 				test: /.js?$/,
 				loader: 'babel-loader',
 				exclude: /node_modules/,
-			},
+		},
 		],
 	},
 	plugins: [
-		new webpack.DefinePlugin( {
-			'process.env.NODE_ENV': JSON.stringify( process.env.NODE_ENV || 'development' ),
-		} ),
+		new webpack.DefinePlugin(
+			{
+				'process.env.NODE_ENV': JSON.stringify( process.env.NODE_ENV || 'development' ),
+			} 
+		),
 	],
 };
 
 if ( process.env.NODE_ENV === 'production' ) {
-	module.exports.plugins = ( module.exports.plugins || [] ).concat( [
-		new UglifyJsPlugin( {
-			sourceMap: true,
-			uglifyOptions: {
-				ecma: 8,
-				compress: {
-					warnings: false,
+	module.exports.plugins = ( module.exports.plugins || [] ).concat(
+		[
+		new UglifyJsPlugin(
+			{
+				sourceMap: true,
+				uglifyOptions: {
+					ecma: 8,
+					compress: {
+						warnings: false,
+					},
 				},
-			},
-		} ),
-	] );
+			} 
+		),
+		] 
+	);
 }
