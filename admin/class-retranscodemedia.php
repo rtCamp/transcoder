@@ -764,7 +764,6 @@ class RetranscodeMedia {
 
 		// Add thumbnail in media library for user selection and set attachment thumbnail.
 		$thumbnail_array = get_post_meta( $media_id, '_rt_media_thumbnails', true );
-
 		if ( is_array( $thumbnail_array ) ) {
 			$uploads   = wp_upload_dir();
 			$thumbnail = $thumbnail_array[0];
@@ -784,11 +783,18 @@ class RetranscodeMedia {
 				'post_status'    => 'inherit',
 			);
 
-			// Insert transcoded thumbnail attachment.
-			$attachment_id = wp_insert_attachment( $attachment, $thumbnail_src, $media_id );
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+
+			$attachment_id = 0;
+			if ( 'application/pdf' === get_post_mime_type( $media_id ) ) {
+				$attach_data = wp_generate_attachment_metadata( $media_id, $thumbnail_src );
+				wp_update_attachment_metadata( $media_id, $attach_data );
+			} else {
+				// Insert transcoded thumbnail attachment.
+				$attachment_id = wp_insert_attachment( $attachment, $thumbnail_src, $media_id );
+			}
 
 			if ( ! is_wp_error( $attachment_id ) && 0 !== $attachment_id ) {
-				require_once ABSPATH . 'wp-admin/includes/image.php';
 				$attach_data = wp_generate_attachment_metadata( $attachment_id, $thumbnail_src );
 				wp_update_attachment_metadata( $attachment_id, $attach_data );
 				set_post_thumbnail( $media_id, $attachment_id );
