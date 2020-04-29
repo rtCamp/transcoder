@@ -50,7 +50,7 @@
 											'class': 'error',
 										}
 									);
-									$( 'h1:first' ).after( error_div.html( $( '<p />' ).text( response.error ) ) );
+									$( 'h1:first' ).after( error_div.html( $( '<p />' ).text( response.error ) ) ); // phpcs:ignoe WordPressVIPMinimum.JS.HTMLExecutingFunctions.html
 								}
 
 								$( '#api-key-submit' ).next( 'img' ).remove();
@@ -82,7 +82,7 @@
 									if ( response ) {
 
 										if ( $( '#rtt-settings_updated' ).length > 0 ) {
-											$( '#rtt-settings_updated p' ).html( response );
+											$( '#rtt-settings_updated p' ).text( response );
 											$( '#rtt-settings_updated' ).show();
 										} else {
 										}
@@ -120,7 +120,7 @@
 								function( response ) {
 									if ( response ) {
 										if ( $( '#rtt-settings_updated' ).length > 0 ) {
-											$( '#rtt-settings_updated p' ).html( response );
+											$( '#rtt-settings_updated p' ).text( response );
 											$( '#rtt-settings_updated' ).show();
 										}
 

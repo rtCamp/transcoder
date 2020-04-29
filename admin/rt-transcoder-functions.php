@@ -241,11 +241,11 @@ if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
 			$activity_text               = bp_activity_get_meta( $activity_id, 'bp_activity_text' );
 			$obj_activity->activity_text = $activity_text;
 			global $wpdb;
-			$wpdb->update(
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 				$bp->activity->table_name,
-				array( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery.
-				'type'    => 'rtmedia_update',
-				'content' => $obj_activity->create_activity_html(),
+				array(
+					'type'    => 'rtmedia_update',
+					'content' => $obj_activity->create_activity_html(),
 				),
 				array( 'id' => $activity_id ) 
 			);
@@ -983,7 +983,7 @@ function get_server_var( $server_key, $filter_type = FILTER_SANITIZE_STRING ) {
 	if ( function_exists( 'filter_input' ) && filter_has_var( INPUT_SERVER, $server_key ) ) {
 		$server_val = filter_input( INPUT_SERVER, $server_key, $filter_type );
 	} elseif ( isset( $_SERVER[ $server_key ] ) ) {
-		$server_val = $_SERVER[ $server_key ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized.
+		$server_val = $_SERVER[ $server_key ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}
 	return $server_val;
 }
