@@ -406,9 +406,9 @@ class RT_Transcoder_Handler {
 	 * @since   1.0.0
 	 */
 	public function save_api_key() {
-		$is_api_key_updated     = filter_input( INPUT_GET, 'api-key-updated', FILTER_SANITIZE_STRING );
-		$is_invalid_license_key = filter_input( INPUT_GET, 'invalid-license-key', FILTER_SANITIZE_STRING );
-		$is_localhost           = filter_input( INPUT_GET, 'need-public-host', FILTER_SANITIZE_STRING );
+		$is_api_key_updated     = transcoder_filter_input( INPUT_GET, 'api-key-updated', FILTER_SANITIZE_STRING );
+		$is_invalid_license_key = transcoder_filter_input( INPUT_GET, 'invalid-license-key', FILTER_SANITIZE_STRING );
+		$is_localhost           = transcoder_filter_input( INPUT_GET, 'need-public-host', FILTER_SANITIZE_STRING );
 
 		if ( $is_api_key_updated ) {
 			if ( is_multisite() ) {
@@ -430,8 +430,8 @@ class RT_Transcoder_Handler {
 			add_action( 'admin_notices', array( $this, 'public_host_needed_notice' ) );
 		}
 
-		$apikey = trim( filter_input( INPUT_GET, 'apikey', FILTER_SANITIZE_STRING ) );
-		$page   = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+		$apikey = trim( transcoder_filter_input( INPUT_GET, 'apikey', FILTER_SANITIZE_STRING ) );
+		$page   = transcoder_filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
 
 		if ( ! empty( $apikey ) && is_admin() && ! empty( $page ) && ( 'rt-transcoder' === $page ) ) {
 			/* Do not activate transcoding service on localhost */
@@ -528,7 +528,7 @@ class RT_Transcoder_Handler {
 		<div class="updated">
 			<p>
 				<?php
-				$api_key_updated = filter_input( INPUT_GET, 'api-key-updated', FILTER_SANITIZE_STRING );
+				$api_key_updated = transcoder_filter_input( INPUT_GET, 'api-key-updated', FILTER_SANITIZE_STRING );
 				printf(
 					wp_kses(
 						__( 'You have successfully subscribed.', 'transcoder' ),
@@ -1004,12 +1004,12 @@ class RT_Transcoder_Handler {
 	public function handle_callback() {
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 
-		$job_id      = filter_input( INPUT_POST, 'job_id', FILTER_SANITIZE_STRING );
-		$file_status = filter_input( INPUT_POST, 'file_status', FILTER_SANITIZE_STRING );
-		$error_msg   = filter_input( INPUT_POST, 'error_msg', FILTER_SANITIZE_STRING );
-		$job_for     = filter_input( INPUT_POST, 'job_for', FILTER_SANITIZE_STRING );
-		$thumbnail   = filter_input( INPUT_POST, 'thumbnail', FILTER_SANITIZE_STRING );
-		$format      = filter_input( INPUT_POST, 'format', FILTER_SANITIZE_STRING );
+		$job_id      = transcoder_filter_input( INPUT_POST, 'job_id', FILTER_SANITIZE_STRING );
+		$file_status = transcoder_filter_input( INPUT_POST, 'file_status', FILTER_SANITIZE_STRING );
+		$error_msg   = transcoder_filter_input( INPUT_POST, 'error_msg', FILTER_SANITIZE_STRING );
+		$job_for     = transcoder_filter_input( INPUT_POST, 'job_for', FILTER_SANITIZE_STRING );
+		$thumbnail   = transcoder_filter_input( INPUT_POST, 'thumbnail', FILTER_SANITIZE_STRING );
+		$format      = transcoder_filter_input( INPUT_POST, 'format', FILTER_SANITIZE_STRING );
 
 		if ( ! empty( $job_id ) && ! empty( $file_status ) && ( 'error' === $file_status ) ) {
 			$this->nofity_transcoding_failed( $job_id, $error_msg );
@@ -1017,16 +1017,14 @@ class RT_Transcoder_Handler {
 			die();
 		}
 
+		$mail = defined( 'RT_TRANSCODER_NO_MAIL' ) ? false : true;
+
 		$attachment_id = '';
 
 		if ( isset( $job_for ) && ( 'wp-media' === $job_for ) ) {
 			if ( isset( $job_id ) ) {
 				$has_thumbs = isset( $thumbnail ) ? true : false;
 				$flag       = false;
-				$mail       = true;
-				if ( defined( 'RT_TRANSCODER_NO_MAIL' ) ) {
-					$mail = false;
-				}
 
 				$id = $this->get_post_id_by_meta_key_and_value( '_rt_transcoding_job_id', $job_id );
 
@@ -1072,21 +1070,25 @@ class RT_Transcoder_Handler {
 				die();
 			}
 		} else {
-			if ( isset( $job_id ) ) {
-				$has_thumbs   = isset( $thumbnail ) ? true : false;
-				$flag         = false;
-				$model        = new RTDBModel( 'rtm_media_meta', false, 10, true );
+			if ( isset( $job_id ) && class_exists( 'RTDBModel' ) ) {
+
+				$has_thumbs = isset( $thumbnail ) ? true : false;
+				$flag       = false;
+				$model      = new RTDBModel( 'rtm_media_meta', false, 10, true );
+
 				$meta_details = $model->get(
 					array(
 						'meta_value' => sanitize_text_field( wp_unslash( $job_id ) ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 						'meta_key'   => 'rtmedia-transcoding-job-id', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 					) 
 				);
+
 				if ( ! isset( $meta_details[0] ) ) {
 					$id = $this->get_post_id_by_meta_key_and_value( '_rt_transcoding_job_id', $job_id );
 				} else {
 					$id = $meta_details[0]->media_id;
 				}
+
 				if ( isset( $id ) && is_numeric( $id ) ) {
 					$model              = new RTMediaModel();
 					$media              = $model->get_media( array( 'media_id' => $id ), 0, 1 );
@@ -1164,7 +1166,7 @@ class RT_Transcoder_Handler {
 	 * @since 1.0
 	 */
 	public function enter_api_key() {
-		$apikey = filter_input( INPUT_GET, 'apikey', FILTER_SANITIZE_STRING );
+		$apikey = transcoder_filter_input( INPUT_GET, 'apikey', FILTER_SANITIZE_STRING );
 		if ( ! empty( $apikey ) ) {
 			echo wp_json_encode( array( 'apikey' => $apikey ) );
 		} else {

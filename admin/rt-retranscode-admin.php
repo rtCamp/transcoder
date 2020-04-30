@@ -235,20 +235,23 @@ class RetranscodeMedia {
 	 */
 	public function bulk_action_handler() {
 
-		$action  = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
-		$action2 = filter_input( INPUT_POST, 'action2', FILTER_SANITIZE_STRING );
+		$action  = transcoder_filter_input( INPUT_REQUEST, 'action', FILTER_SANITIZE_STRING );
+		$action2 = transcoder_filter_input( INPUT_REQUEST, 'action2', FILTER_SANITIZE_STRING );
+		$media   = transcoder_filter_input( INPUT_REQUEST, 'media', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY );
 
-		if ( empty( $action ) || ( 'bulk_retranscode_media' !== $action && 'bulk_retranscode_media' !== $action2 ) ) {
+		if ( empty( $action ) || empty( $media ) || ! is_array( $media ) ||
+			( 'bulk_retranscode_media' !== $action && 'bulk_retranscode_media' !== $action2 )
+		) {
 			return;
 		}
 
-		if ( empty( $_REQUEST['media'] ) || ! is_array( $_REQUEST['media'] ) ) {
+		if ( empty( $media ) || ! is_array( $media ) ) {
 			return;
 		}
 
 		check_admin_referer( 'bulk-media' );
 
-		$ids = implode( ',', array_map( 'intval', $_REQUEST['media'] ) );
+		$ids = implode( ',', $media );
 
 		// Can't use wp_nonce_url() as it escapes HTML entities.
 		$redirect_url = add_query_arg(
@@ -287,9 +290,11 @@ class RetranscodeMedia {
 
 			$file_size = 0;
 			$files     = array();
+
 			// Create the list of image IDs.
 			$usage_info = get_site_option( 'rt-transcoding-usage' );
-			$ids        = filter_input( INPUT_POST, 'ids', FILTER_SANITIZE_STRING );
+			$ids        = transcoder_filter_input( INPUT_REQUEST, 'ids', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY );
+
 			if ( ! empty( $ids ) ) {
 				if ( is_array( $ids ) ) {
 					$ids = implode( ',', $ids );
@@ -594,9 +599,12 @@ class RetranscodeMedia {
 	public function ajax_process_retranscode_request() {
 
 		header( 'Content-type: application/json' );
-		$id = filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT );
-		if ( empty( $id ) ) {
-			$id = filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT );
+
+		$id = transcoder_filter_input( INPUT_REQUEST, 'id', FILTER_SANITIZE_NUMBER_INT );
+		$id = intval( $id );
+
+		if ( empty( $id ) || 0 >= $id ) {
+			wp_send_json_error();
 		}
 
 		$media = get_post( $id );
@@ -604,7 +612,7 @@ class RetranscodeMedia {
 		if ( ! $media || 'attachment' !== $media->post_type || ( 'audio/' !== substr( $media->post_mime_type, 0, 6 ) && 'video/' !== substr( $media->post_mime_type, 0, 6 ) ) ) {
 
 			// translators: Media id of the invalid media type.
-			die( wp_json_encode( array( 'error' => sprintf( __( 'Sending Failed: %s is an invalid media ID/type.', 'transcoder' ), esc_html( $id ) ) ) ) );
+			die( wp_json_encode( array( 'error' => sprintf( __( 'Sending Failed: %d is an invalid media ID/type.', 'transcoder' ), intval( $id ) ) ) ) );
 		}
 
 		if ( 'audio/mpeg' === $media->post_mime_type ) {

@@ -829,7 +829,7 @@ function rt_transcoder_enqueue_block_editor_assets() {
 function rtt_ajax_process_check_status_request() {
 
 	check_ajax_referer( 'check-transcoding-status-ajax-nonce', 'security', true );
-	$post_id = filter_input( INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT );
+	$post_id = transcoder_filter_input( INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT );
 
 	if ( ! empty( $post_id ) ) {
 		echo esc_html( rtt_get_transcoding_status( $post_id ) );
@@ -998,7 +998,7 @@ add_filter( 'wp_generate_attachment_metadata', 'rtt_media_update_usage', 10, 2 )
 function get_server_var( $server_key, $filter_type = FILTER_SANITIZE_STRING ) {
 	$server_val = '';
 	if ( function_exists( 'filter_input' ) && filter_has_var( INPUT_SERVER, $server_key ) ) {
-		$server_val = filter_input( INPUT_SERVER, $server_key, $filter_type );
+		$server_val = transcoder_filter_input( INPUT_SERVER, $server_key, $filter_type );
 	} elseif ( isset( $_SERVER[ $server_key ] ) ) {
 		$server_val = $_SERVER[ $server_key ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}

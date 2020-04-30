@@ -185,7 +185,7 @@ class RT_Transcoder_Admin {
 	public function enqueue_scripts_styles() {
 		global $pagenow;
 
-		$page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+		$page = transcoder_filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
 
 		if ( 'admin.php' !== $pagenow || 'rt-transcoder' !== $page ) {
 			return;
@@ -375,7 +375,7 @@ class RT_Transcoder_Admin {
 	 * @return array $form_fields
 	 */
 	public function save_video_thumbnail( $post ) {
-		$rtmedia_thumbnail = filter_input( INPUT_POST, 'rtmedia-thumbnail', FILTER_SANITIZE_STRING );
+		$rtmedia_thumbnail = transcoder_filter_input( INPUT_POST, 'rtmedia-thumbnail', FILTER_SANITIZE_STRING );
 		$id                = $post['post_ID'];
 		if ( isset( $rtmedia_thumbnail ) ) {
 			if ( class_exists( 'rtMedia' ) ) {
