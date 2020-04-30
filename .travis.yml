@@ -1,0 +1,21 @@
+language: php
+php:
+- 5.5
+before_script:
+- pear install pear/PHP_CodeSniffer-2.9.1
+- git clone git://github.com/wimg/PHPCompatibility.git $(pear config-get php_dir)/PHP/CodeSniffer/Standards/PHPCompatibility
+- phpenv rehash
+- phpcs --config-set installed_paths $(pear config-get php_dir)/PHP/CodeSniffer/Standards
+- phpcs --config-set installed_paths $(pear config-get php_dir)/PHP/CodeSniffer/Standards/PHPCompatibility
+- phpcs -i
+- phpenv rehash
+- phpcs --config-set error_severity 1
+- phpcs --config-set warning_severity 0
+script:
+- phpcs --standard=PHPCompatibility --runtime-set testVersion 5.3-5.5 $(find ./ -name
+  '*.php')
+- if find . -name "*.php" ! -path "./node_modules/*" -exec php -l {} 2>&1 \; | grep
+  "syntax error, unexpected"; then exit 1; fi
+notifications:
+  slack:
+    secure: Lc1pQX4sSJgnxeEmuYbtZJepmOj6Ywzxcom8yHp2C5XnrDe2laiVNloMgx2Uy1vdRQIxwGm1+Zk6WPgu0GOtEDcGWHMP8N09SXQUEKXRT2+o94j4DW1REWWMJmf8RXz8xLFToC+eVCwG5YOq43tFrQLV8pQfkL8XPvdPp0xAFFKLURDNGvr1FLFvPuNqo0zzA6tve8pgJE5lA+vS9G+mJvvoALUiZRS+sxBdBLT2gBCWxaAIdKzw19aIdMCb+4bi/RiNT5vCH8SF/C7GePIarCRVHMOaFBsZ+D0Zk3e387PzLVv08vM7xW6f4bMBzs4G4khmAeeNbWEnqqEO/AyXBx0Aht93MDHg6fq+XhO2nejeWNBdbQpVNXA01ck2ALg2/4qxX4GOVWz484sqEyvIFFD94eZVZIDiPeMQWW3/LWyf8hVgseSTS2eKllQlbYL1XVMo9B8oj6j3+7Q+QMSig7A4EdJHwayjt7CITQKgdrz5tzLupMeBmbjdi5liQ1A8SpxyB0Inq0H36Vu/yMcnGpzBpZ7vHodmvhe4xmPvlHs5DrpCLxKE4UM3Ab8AULygxZwrB/BWHRza2ATxR4aQ+beLtbZSd21PIHUYg4D4cZX+RuARCyH0C/G/6omlavdwF5YHXPMkI95No53hvp4LTg3ukz+ampuPWw2/99m9wDo=
