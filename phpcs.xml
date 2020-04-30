@@ -4,29 +4,26 @@
 	<!-- Set a description for this ruleset. -->
 	<description>A custom set of code standard rules to check for Transcoder plugin.</description>
 
-	<!-- Pass some flags to PHPCS:
-         p flag: Show progress of the run.
-         s flag: Show sniff codes in all reports.
-         v flag: Print processed files.
-         n flag: Do not print warnings.
-    -->
-	<arg value="psvn"/>
+	<rule ref="WordPress">
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
+	</rule>
+
+	<rule ref="WordPress-VIP-Go" />
+
+	<rule ref="WordPressVIPMinimum" />
+
+	<rule ref="PHPCompatibility">
+		<exclude name="PSR2.Methods.MethodDeclaration.Underscore"/>
+	</rule>
+
+	<config name="testVersion" value="7.0-"/>
+
+	<arg name="extensions" value="php"/>
+	<arg value="s"/>
 
 	<!-- Check up to 8 files simultanously. -->
 	<arg name="parallel" value="8"/>
-
-	<!-- Check PHP and JS files. -->
-	<arg name="extensions" value="php,js"/>
-
-	<!-- Check all files in this directory and the directories below it. -->
-	<file>.</file>
-
-	<!-- Exclude folders. -->
-	<exclude-pattern>*/languages/*</exclude-pattern>
-
-	<!-- Include the WordPress standard. -->
-	<rule ref="WordPress" />
-	<rule ref="WordPress-VIP-Go" />
 
 	<!-- Verify that the text_domain is set to the desired text-domain.
 		 Multiple valid text domains can be provided as a comma-delimited list. -->
@@ -45,8 +42,11 @@
 		</properties>
 	</rule>
 
-	<!-- Include sniffs for PHP cross-version compatibility. -->
-	<rule ref="PHPCompatibility"/>
-	<config name="testVersion" value="5.3-99.0"/>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/webpack.config.js</exclude-pattern>
+	<exclude-pattern>*/postcss.config.js</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>.github/</exclude-pattern>
+	<exclude-pattern>*/index.php</exclude-pattern>
 
 </ruleset>
