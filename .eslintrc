@@ -47,10 +47,6 @@
 			"1tbs"
 		],
 		"camelcase": [1],
-//		"comma-dangle": [
-//			"error",
-//			"always-multiline"
-//		],
 		"comma-spacing": "error",
 		"comma-style": "error",
 		"computed-property-spacing": [

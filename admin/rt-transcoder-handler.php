@@ -123,7 +123,7 @@ class RT_Transcoder_Handler {
 					if ( isset( $usage_info[ $this->api_key ]->remaining ) && $usage_info[ $this->api_key ]->remaining > 0 ) {
 
 						// Enable re-transcoding.
-						include_once RT_TRANSCODER_PATH . 'admin/class-retranscodemedia.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+						include_once RT_TRANSCODER_PATH . 'admin/rt-retranscode-admin.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 
 						if ( $usage_info[ $this->api_key ]->remaining < 524288000 && ! get_site_option( 'rt-transcoding-usage-limit-mail' ) ) {
 							$this->nearing_usage_limit( $usage_info );

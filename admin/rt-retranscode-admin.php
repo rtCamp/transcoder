@@ -91,7 +91,7 @@ class RetranscodeMedia {
 	 * @return void
 	 */
 	public function load_rest_endpoints() {
-		include_once RT_TRANSCODER_PATH . 'admin/class-transcoder-rest-routes.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant.
+		include_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-rest-routes.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant.
 
 		// Create class object and register routes.
 		$transcoder_rest_routes = new Transcoder_Rest_Routes();
@@ -228,7 +228,6 @@ class RetranscodeMedia {
 		<?php
 	}
 
-
 	/**
 	 * Handles the bulk actions POST
 	 *
@@ -236,8 +235,8 @@ class RetranscodeMedia {
 	 */
 	public function bulk_action_handler() {
 
-		$action  = filter_input( INPUT_POS, 'action', FILTER_SANITIZE_STRING );
-		$action2 = filter_input( INPUT_POS, 'action2', FILTER_SANITIZE_STRING );
+		$action  = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
+		$action2 = filter_input( INPUT_POST, 'action2', FILTER_SANITIZE_STRING );
 
 		if ( empty( $action ) || ( 'bulk_retranscode_media' !== $action && 'bulk_retranscode_media' !== $action2 ) ) {
 			return;
