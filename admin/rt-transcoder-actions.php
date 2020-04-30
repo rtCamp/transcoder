@@ -107,15 +107,12 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 							?>
 							<li<?php echo $checked ? ' class="selected"' : ''; ?>
 								style="width: 150px;display: inline-block;">
-								<label
-									for="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
-									class="alignleft">
+								<label for="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>" class="alignleft">
 									<input type="radio"<?php echo esc_attr( $checked ); ?>
-										   id="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
-										   value="<?php echo esc_attr( $thumbnail_src_og ); ?>"
-										   name="rtmedia-thumbnail"/>
-									<img src="<?php echo esc_url( $thumbnail_src ); ?>"
-										 style="max-height: 120px;max-width: 120px"/>
+										id="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
+										value="<?php echo esc_attr( $thumbnail_src_og ); ?>"
+										name="rtmedia-thumbnail"/>
+									<img src="<?php echo esc_url( $thumbnail_src ); ?>" style="max-height: 120px;max-width: 120px"/>
 								</label>
 							</li>
 							<?php
@@ -140,15 +137,12 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 									?>
 									<li<?php echo checked( $attachment_id, $curr_cover_art, false ) ? ' class="selected"' : ''; ?>
 										style="width: 150px;display: inline-block;">
-										<label
-											for="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
-											class="alignleft">
+										<label for="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>" class="alignleft">
 											<input type="radio"<?php checked( $attachment_id, $curr_cover_art ); ?>
-												   id="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
-												   value="<?php echo esc_attr( $attachment_id ); ?>"
-												   name="rtmedia-thumbnail"/>
-											<img src="<?php echo esc_url( $thumbnail_src ); ?>"
-												 style="max-height: 120px;max-width: 120px"/>
+												id="rtmedia-upload-select-thumbnail-<?php echo intval( sanitize_text_field( $key ) ) + 1; ?>"
+												value="<?php echo esc_attr( $attachment_id ); ?>"
+												name="rtmedia-thumbnail"/>
+											<img src="<?php echo esc_url( $thumbnail_src ); ?>" style="max-height: 120px;max-width: 120px"/>
 										</label>
 									</li>
 									<?php

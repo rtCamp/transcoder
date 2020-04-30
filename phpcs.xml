@@ -14,7 +14,7 @@
 	<rule ref="WordPressVIPMinimum" />
 
 	<rule ref="PHPCompatibility">
-		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
+		<exclude name="PSR2.Methods.MethodDeclaration.Underscore"/>
 	</rule>
 
 	<config name="testVersion" value="7.0-"/>
@@ -41,5 +41,12 @@
 			<property name="minimum_supported_version" value="4.1" />
 		</properties>
 	</rule>
+
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/webpack.config.js</exclude-pattern>
+	<exclude-pattern>*/postcss.config.js</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>.github/</exclude-pattern>
+	<exclude-pattern>*/index.php</exclude-pattern>
 
 </ruleset>

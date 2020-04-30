@@ -100,8 +100,11 @@ class RetranscodeMedia {
 
 	/**
 	 * Register the management page.
+	 *
+	 * @return void
 	 */
 	public function add_admin_menu() {
+
 		add_submenu_page(
 			'rt-transcoder',
 			'Transcoder',
@@ -110,6 +113,7 @@ class RetranscodeMedia {
 			'rt-transcoder',
 			array( $this, '_transcoder_settings_page' )
 		);
+
 		$this->menu_id = add_submenu_page(
 			'rt-transcoder',
 			__( 'Retranscode Media', 'transcoder' ),
@@ -118,10 +122,15 @@ class RetranscodeMedia {
 			'rt-retranscoder',
 			array( $this, 'retranscode_interface' )
 		);
+
 	}
 
 	/**
 	 * Transcoder settings render.
+	 *
+	 * Note: DO NOT USE directly.
+	 *
+	 * @return void
 	 */
 	public function _transcoder_settings_page() {
 		include_once RT_TRANSCODER_PATH . 'admin/partials/rt-transcoder-admin-display.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant.
@@ -130,7 +139,9 @@ class RetranscodeMedia {
 	/** 
 	 * Enqueue the needed Javascript and CSS
 	 * 
-	 * @param sting $hook_suffix Suffix of the hook.
+	 * @param string $hook_suffix Suffix of the hook.
+	 *
+	 * @return void
 	 */
 	public function admin_enqueues( $hook_suffix ) {
 		if ( $hook_suffix !== $this->menu_id ) {
@@ -149,30 +160,42 @@ class RetranscodeMedia {
 
 
 	/**
-	 * Add a "Retranscode Media" link to the media row actions
+	 * Add a "Re Transcode Media" link to the media row actions
 	 *
-	 * @param string  $actions Actions to perform.
-	 * @param WP_Post $post Post object.
+	 * @param array   $actions   An array of action links for each attachment.
+	 *                           Default 'Edit', 'Delete Permanently', 'View'.
+	 * @param WP_Post $post      WP_Post object for the current attachment.
+	 *
+	 * @return array
 	 */
 	public function add_media_row_action( $actions, $post ) {
-		
-		if ( ( 'audio/' !== substr( $post->post_mime_type, 0, 6 ) && 'video/' !== substr( $post->post_mime_type, 0, 6 ) ) || 'audio/mpeg' === $post->post_mime_type || ! current_user_can( $this->capability ) ) {
+
+		if ( (
+				'audio/' !== substr( $post->post_mime_type, 0, 6 ) &&
+				'video/' !== substr( $post->post_mime_type, 0, 6 )
+			) ||
+			'audio/mpeg' === $post->post_mime_type ||
+			! current_user_can( $this->capability )
+		) {
 			return $actions;
 		}
 
-		$url                          = wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1&ids=' . $post->ID ), 'rt-retranscoder' );
+		$url = wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1&ids=' . $post->ID ), 'rt-retranscoder' );
+
 		$actions['retranscode_media'] = '<a href="' . esc_url( $url ) . '" title="' . esc_attr( __( 'Retranscode this single media', 'transcoder' ) ) . '">' . __( 'Retranscode Media', 'transcoder' ) . '</a>';
 
 		return $actions;
 	}
 
-
 	/**
-	 * Add "Retranscode Media" to the Bulk Actions media dropdown
+	 * Add "Re Transcode Media" to the Bulk Actions media dropdown
 	 *
-	 * @param string $actions Actions to perform.
+	 * @param array $actions Actions to perform.
+	 *
+	 * @return array
 	 */
 	public function add_bulk_actions( $actions ) {
+
 		$delete = false;
 		if ( ! empty( $actions['delete'] ) ) {
 			$delete = $actions['delete'];
@@ -208,10 +231,14 @@ class RetranscodeMedia {
 
 	/**
 	 * Handles the bulk actions POST
+	 *
+	 * @return void
 	 */
 	public function bulk_action_handler() {
-		$action = filter_input( INPUT_POS, 'action', FILTER_SANITIZE_STRING );
+
+		$action  = filter_input( INPUT_POS, 'action', FILTER_SANITIZE_STRING );
 		$action2 = filter_input( INPUT_POS, 'action2', FILTER_SANITIZE_STRING );
+
 		if ( empty( $action ) || ( 'bulk_retranscode_media' !== $action && 'bulk_retranscode_media' !== $action2 ) ) {
 			return;
 		}
@@ -225,7 +252,13 @@ class RetranscodeMedia {
 		$ids = implode( ',', array_map( 'intval', $_REQUEST['media'] ) );
 
 		// Can't use wp_nonce_url() as it escapes HTML entities.
-		wp_redirect( add_query_arg( '_wpnonce', wp_create_nonce( 'rt-retranscoder' ), admin_url( 'admin.php?page=rt-retranscoder&goback=1&ids=' . $ids ) ) );
+		$redirect_url = add_query_arg(
+			'_wpnonce',
+			wp_create_nonce( 'rt-retranscoder' ),
+			admin_url( 'admin.php?page=rt-retranscoder&goback=1&ids=' . $ids )
+		);
+
+		wp_safe_redirect( $redirect_url );
 		exit();
 	}
 

@@ -605,7 +605,7 @@ class RT_Transcoder_Handler {
 				}
 				if ( isset( $usage_details[ $api_key ]->used ) ) {
 					$used_size = size_format( $usage_details[ $api_key ]->used, 2 );
-					$content .= '<p><span class="transcoding-used"></span><strong>' . esc_html__( 'Used', 'transcoder' ) . ':</strong> ' . ( ( ! empty( $used_size ) ) ? esc_html( $used_size ) : '0MB' ) . '</p>';
+					$content  .= '<p><span class="transcoding-used"></span><strong>' . esc_html__( 'Used', 'transcoder' ) . ':</strong> ' . ( ( ! empty( $used_size ) ) ? esc_html( $used_size ) : '0MB' ) . '</p>';
 				}
 				if ( isset( $usage_details[ $api_key ]->remaining ) ) {
 					$content .= '<p><span class="transcoding-remaining"></span><strong>' . esc_html__( 'Remaining', 'transcoder' ) . ':</strong> ';
@@ -893,7 +893,7 @@ class RT_Transcoder_Handler {
 											array(
 												'job_id'  => rtt_get_job_id_by_attachment_id( $attachment_id ),
 												'job_for' => $job_for,
-												'files[' . $key . '][0]'    => esc_url( $download_url ),
+												'files[' . $key . '][0]' => esc_url( $download_url ),
 											),
 											home_url()
 										)

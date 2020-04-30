@@ -14,16 +14,18 @@
 		<?php esc_html_e( 'Transcoder Service Settings', 'transcoder' ); ?>
 		<span class="alignright by">
 			<a class="rt-link"
-			   href="https://rtmedia.io/?utm_source=dashboard&utm_medium=plugin&utm_campaign=transcoder"
-			   target="_blank"
-			   title="rtCamp : <?php esc_attr_e( 'Empowering The Web With WordPress', 'transcoder' ); ?>">
+				href="https://rtmedia.io/?utm_source=dashboard&utm_medium=plugin&utm_campaign=transcoder"
+				target="_blank"
+				title="rtCamp : <?php esc_attr_e( 'Empowering The Web With WordPress', 'transcoder' ); ?>">
 				<img src="<?php echo esc_url( RT_TRANSCODER_URL ); ?>admin/images/rtcamp-logo.png" alt="rtCamp"/>
 			</a>
 		</span>
 	</h1>
 	<div id="rtt-settings_updated" class="updated settings-error notice is-dismissible hide">
 		<p></p>
-		<button type="button" class="notice-dismiss"><span class="screen-reader-text"><?php echo esc_attr__( 'Dismiss this notice', 'transcoder' ); ?>.</span></button>
+		<button type="button" class="notice-dismiss"><span
+				class="screen-reader-text"><?php echo esc_attr__( 'Dismiss this notice', 'transcoder' ); ?>.</span>
+		</button>
 	</div>
 	<div class="transcoder-settings-boxes-wrapper">
 		<div id="transcoder-settings-boxes" class="transcoder-settings-boxes-container transcoder-setting-container">
@@ -31,22 +33,24 @@
 				<label for="new-api-key">
 					<?php esc_html_e( 'Enter License Key', 'transcoder' ); ?>
 				</label>
-				<input id="new-api-key" type="text" name="new-api-key" value="<?php echo esc_attr( $this->stored_api_key ); ?>" size="60" />
-				<input type="submit" id="api-key-submit" name="api-key-submit" value="<?php echo esc_attr__( 'Save Key', 'transcoder' ); ?>" class="button-primary" />
+				<input id="new-api-key" type="text" name="new-api-key" value="<?php echo esc_attr( $this->stored_api_key ); ?>" size="60"/>
+				<input type="submit" id="api-key-submit" name="api-key-submit" value="<?php echo esc_attr__( 'Save Key', 'transcoder' ); ?>" class="button-primary"/>
 			</p>
 
 			<p>
 				<?php
+
 				$enable_btn_style  = 'display:none;';
 				$disable_btn_style = 'display:none;';
+
 				if ( $this->api_key ) {
 					$enable_btn_style = 'display:inline;';
 				} elseif ( $this->stored_api_key ) {
 					$disable_btn_style = 'display:inline;';
 				}
 				?>
-				<input type="submit" id="disable-transcoding" name="disable-transcoding" value="Disable Transcoding" class="button-secondary" style="<?php echo esc_attr( $enable_btn_style ); ?>" />
-				<input type="submit" id="enable-transcoding" name="enable-transcoding" value="Enable Transcoding" class="button-secondary" style="<?php echo esc_attr( $disable_btn_style ); ?>" />
+				<input type="submit" id="disable-transcoding" name="disable-transcoding" value="Disable Transcoding" class="button-secondary" style="<?php echo esc_attr( $enable_btn_style ); ?>"/>
+				<input type="submit" id="enable-transcoding" name="enable-transcoding" value="Enable Transcoding" class="button-secondary" style="<?php echo esc_attr( $disable_btn_style ); ?>"/>
 			</p>
 
 			<!-- Results table headers -->
@@ -138,40 +142,42 @@
 					</th>
 					<td>
 						<?php
-							$allowed_tags = array(
-								'a' => array(
-									'href' => array(),
-									'target' => array(),
-									'title' => array(),
-									'class' => array(),
-								),
-								'div' => array(
-									'title' => array(),
-									'id' => array(),
-								),
-								'button' => array(
-									'disabled' => array(),
-									'data-plan' => array(),
-									'data-price' => array(),
-									'type' => array(),
-									'class' => array(),
-								),
-								'textarea' => array(
-									'rows' => array(),
-									'cols' => array(),
-									'id' => array(),
-								),
-								'p' => array(),
-							);
 
-							$button = $this->transcoding_subscription_button( 'free', 0 );
-							echo wp_kses( $button, $allowed_tags );
-							?>
+						$allowed_tags = array(
+							'a'        => array(
+								'href'   => array(),
+								'target' => array(),
+								'title'  => array(),
+								'class'  => array(),
+							),
+							'div'      => array(
+								'title' => array(),
+								'id'    => array(),
+							),
+							'button'   => array(
+								'disabled'   => array(),
+								'data-plan'  => array(),
+								'data-price' => array(),
+								'type'       => array(),
+								'class'      => array(),
+							),
+							'textarea' => array(
+								'rows' => array(),
+								'cols' => array(),
+								'id'   => array(),
+							),
+							'p'        => array(),
+						);
+
+						$button = $this->transcoding_subscription_button( 'free', 0 );
+						echo wp_kses( $button, $allowed_tags );
+						?>
 					</td>
 					<td>
 						<?php
-							$button = $this->transcoding_subscription_button( 'silver', 9 );
-							echo wp_kses( $button, $allowed_tags );
+
+						$button = $this->transcoding_subscription_button( 'silver', 9 );
+						echo wp_kses( $button, $allowed_tags );
 						?>
 					</td>
 				</tr>
@@ -181,12 +187,13 @@
 			<div class="transcoder-notice">
 				<p>
 					<?php
-						$allowed_tags = array(
-							'i' => array(),
-							'strong' => array(),
-						);
-						printf( wp_kses( __( '<strong>Note</strong>: Transcoder will only work on publicly accessible websites. If you are using Transcoder on a <strong>locally hosted website</strong> (i.e. <strong>localhost</strong>), we will be unable to identify the source of your audio/video transcoding requests.', 'transcoder' ), $allowed_tags ) );
-						?>
+
+					$allowed_tags = array(
+						'i'      => array(),
+						'strong' => array(),
+					);
+					printf( wp_kses( __( '<strong>Note</strong>: Transcoder will only work on publicly accessible websites. If you are using Transcoder on a <strong>locally hosted website</strong> (i.e. <strong>localhost</strong>), we will be unable to identify the source of your audio/video transcoding requests.', 'transcoder' ), $allowed_tags ) );
+					?>
 
 				</p>
 			</div>
@@ -194,6 +201,7 @@
 			<div class="transcoder-setting-form">
 				<form method="post" action="options.php">
 					<?php
+
 					settings_fields( 'rt-transcoder-settings-group' );
 					do_settings_sections( 'rt-transcoder-settings-group' );
 					?>
@@ -204,16 +212,18 @@
 							</td>
 							<td>
 								<?php
+
 								$number_of_thumbnails = get_site_option( 'number_of_thumbs', 5 );
 								if ( empty( $number_of_thumbnails ) ) {
 									$number_of_thumbnails = 5;
 								}
 								?>
-								<input type="number" name="number_of_thumbs" value="<?php echo esc_attr( $number_of_thumbnails ); ?>" min="1" max="10" />
+								<input type="number" name="number_of_thumbs" value="<?php echo esc_attr( $number_of_thumbnails ); ?>" min="1" max="10"/>
 								<span class="rtm-tooltip">
 									<i class="dashicons dashicons-info"></i>
 									<span class="rtm-tip">
 										<?php
+
 										esc_html_e( 'This field specifies the number of video thumbnails that will be generated by the Transcoder. To choose from the generated thumbnails for a video, go to ​Media > Edit > Video Thumbnails. Thumbnails are only generated when the video is first uploaded. Maximum value is 10.', 'transcoder' );
 										?>
 									</span>
@@ -226,6 +236,7 @@
 							</td>
 							<td>
 								<?php
+
 								$rtt_override_thumbnail = get_site_option( 'rtt_override_thumbnail', false );
 								?>
 								<input type="checkbox" name="rtt_override_thumbnail" value="1" <?php checked( $rtt_override_thumbnail, 1 ); ?> />
@@ -233,6 +244,7 @@
 									<i class="dashicons dashicons-info" style="padding-top:3px"></i>
 									<span class="rtm-tip">
 										<?php
+
 										esc_html_e( 'If enabled, Transcoder will replace existing media thumbnails with regenerated ones after retranscoding. If disabled, media thumbnails will remain untouched.', 'transcoder' );
 										?>
 									</span>
@@ -245,6 +257,7 @@
 							</td>
 							<td>
 								<?php
+
 								$rtt_check_status_btn = get_site_option( 'rtt_client_check_status_button', false );
 								?>
 								<input type="checkbox" name="rtt_client_check_status_button" value="1" <?php checked( $rtt_check_status_btn, 1 ); ?> />
@@ -252,6 +265,7 @@
 									<i class="dashicons dashicons-info" style="padding-top:3px"></i>
 									<span class="rtm-tip">
 										<?php
+
 										esc_html_e( 'If enabled, It will display check status button to know status of transcoding process at client side if that user have administrator rights.', 'transcoder' );
 										?>
 									</span>
@@ -261,6 +275,7 @@
 					</table>
 					<p>
 						<?php
+
 						echo wp_kses(
 							sprintf(
 								/* translators: 1. URL of documentation page. */
@@ -308,6 +323,7 @@
 			<div class="inside">
 				<div id="social" class="rtm-social-share">
 					<?php
+
 					// translators: Placeholde contains link of the home url.
 					$message = sprintf( esc_html__( 'I use @rtMediaWP http://rt.cx/rtmedia on %s', 'transcoder' ), home_url() );
 					?>
@@ -346,7 +362,10 @@
 			</h3>
 			<div class="inside">
 				<?php $the_current_user = wp_get_current_user(); ?>
-				<form action="http://rtcamp.us1.list-manage1.com/subscribe/post?u=85b65c9c71e2ba3fab8cb1950&amp;id=9e8ded4470" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+				<form
+					action="http://rtcamp.us1.list-manage1.com/subscribe/post?u=85b65c9c71e2ba3fab8cb1950&amp;id=9e8ded4470"
+					method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate"
+					target="_blank" novalidate>
 					<div class="mc-field-group">
 						<input type="email" value="<?php echo esc_attr( $the_current_user->user_email ); ?>" name="EMAIL" placeholder="Email" class="required email" id="mce-EMAIL" />
 						<input style="display:none;" type="checkbox" checked="checked" value="1" name="group[1721][1]" id="mce-group[1721]-1721-0" />

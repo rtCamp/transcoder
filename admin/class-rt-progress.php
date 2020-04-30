@@ -43,6 +43,7 @@ class RT_Progress {
 	 * @return string $progress_ui  Output of progress bar.
 	 */
 	public function progress_ui( $progress, $echo = true ) {
+
 		$progress_ui = '
 			<div id="rttprogressbar">
 				<div style="width:' . esc_attr( $progress ) . '%"></div>
@@ -54,10 +55,10 @@ class RT_Progress {
 				$progress_ui,
 				array(
 					'div' => array(
-						'id' => array(),
+						'id'    => array(),
 						'style' => array(),
 					),
-				) 
+				)
 			);
 		} else {
 			return $progress_ui;

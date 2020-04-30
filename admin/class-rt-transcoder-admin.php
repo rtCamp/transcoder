@@ -230,7 +230,7 @@ class RT_Transcoder_Admin {
 		} else {
 			$plan_name = 'free' === $name ? 'Try Now' : 'Subscribe';
 			$form      = '<a href="https://rtmedia.io/?transcoding-plan=' . $name . '" target="_blank" class="button button-primary">
-						' . esc_html( $plan_name, 'transcoder' ) . '
+						' . esc_html( $plan_name ) . '
 					</a>';
 		}
 

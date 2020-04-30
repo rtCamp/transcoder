@@ -206,11 +206,14 @@ if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
 	/**
 	 * Update the activity after thumb is set to the video.
 	 *
-	 * @since   1.0.0
+	 * @since 1.0.0
 	 *
-	 * @param  number $id media id.
+	 * @param number $id media id.
+	 *
+	 * @return void
 	 */
 	function rtt_update_activity_after_thumb_set( $id ) {
+
 		$model       = new RTMediaModel();
 		$media_obj   = new RTMediaMedia();
 		$media       = $model->get( array( 'id' => $id ) );
@@ -244,10 +247,10 @@ if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery	
 				$bp->activity->table_name,
 				array(
-				'type'    => 'rtmedia_update',
-				'content' => $obj_activity->create_activity_html(),
+					'type'    => 'rtmedia_update',
+					'content' => $obj_activity->create_activity_html(),
 				),
-				array( 'id' => $activity_id ) 
+				array( 'id' => $activity_id )
 			);
 		}
 	}
