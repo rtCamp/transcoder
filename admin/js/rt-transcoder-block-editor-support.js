@@ -27,36 +27,36 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 				const restBase = '/wp-json/transcoder/v1/amp-media';
 				apiFetch(
 					{
-						path: `${ restBase } / ${ mediaId }`,
-					} 
+						path: `${ restBase } / ${ mediaId }`
+					}
 				).then(
 					data => {
-                    if ( false !== data && null !== data ) {
+						if ( false !== data && null !== data ) {
 							if ( data.poster.length && data.transcodedMedia.length ) {
 								if ( isAMPStory && typeof mediaAttributes.mediaType !== 'undefined' && 'video' === mediaAttributes.mediaType ) {
 									props.setAttributes(
 										{
 											poster: data.poster,
 											mediaUrl: data.transcodedMedia,
-										} 
+										}
 									);
 								} else if ( isVideoBlock ) {
 									props.setAttributes(
 										{
 											poster: data.poster,
 											src: data.transcodedMedia,
-											} 
+										}
 									);
 								}
 							}
 						}
-					} 
+					}
 				);
 			}
 		}
 
 		return (
-			< BlockEdit { ...props } / >
+			<BlockEdit { ...props } />
 		);
 	};
 };
