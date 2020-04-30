@@ -116,8 +116,9 @@ class RetranscodeMedia {
 
 	// Add a "Retranscode Media" link to the media row actions
 	public function add_media_row_action( $actions, $post ) {
-		if ( ( 'audio/' != substr( $post->post_mime_type, 0, 6 ) && 'video/' != substr( $post->post_mime_type, 0, 6 ) ) || 'audio/mpeg' === $post->post_mime_type || ! current_user_can( $this->capability ) )
+		if ( ( 'audio/' !== substr( $post->post_mime_type, 0, 6 ) && 'video/' !== substr( $post->post_mime_type, 0, 6 ) && 'application/pdf' !== $post->post_mime_type ) || 'audio/mpeg' === $post->post_mime_type || ! current_user_can( $this->capability ) ) {
 			return $actions;
+		}
 
 		$url = wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1&ids=' . $post->ID ), 'rt-retranscoder' );
 		$actions['retranscode_media'] = '<a href="' . esc_url( $url ) . '" title="' . esc_attr( __( "Retranscode this single media", 'transcoder' ) ) . '">' . __( 'Retranscode Media', 'transcoder' ) . '</a>';
@@ -480,8 +481,9 @@ class RetranscodeMedia {
 		$id = (int) $_REQUEST['id'];
 		$media = get_post( $id );
 
-		if ( ! $media || 'attachment' != $media->post_type || ( 'audio/' != substr( $media->post_mime_type, 0, 6 ) && 'video/' != substr( $media->post_mime_type, 0, 6 ) ) )
+		if ( ! $media || 'attachment' !== $media->post_type || ( 'audio/' !== substr( $media->post_mime_type, 0, 6 ) && 'video/' !== substr( $media->post_mime_type, 0, 6 ) || 'application/pdf' !== $media->post_mime_type ) ) {
 			die( json_encode( array( 'error' => sprintf( __( 'Sending Failed: %s is an invalid media ID/type.', 'transcoder' ), esc_html( $_REQUEST['id'] ) ) ) ) );
+		}
 
 		if ( 'audio/mpeg' === $media->post_mime_type )
 			die( json_encode( array( 'error' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) is MP3 file already. No need to send for transcoding', 'transcoder' ), esc_html( get_the_title( $media->ID ) ), $media->ID ) ) ) );
@@ -674,17 +676,25 @@ class RetranscodeMedia {
 			);
 
 			// Insert transcoded thumbnail attachment.
-			$attachment_id = wp_insert_attachment( $attachment, $thumbnail_src, $media_id );
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+			$attachment_id = 0;
+			// Generate thumbnail for PDF file.
+			if ( 'application/pdf' === get_post_mime_type( $media_id ) ) {
+				$attach_data = wp_generate_attachment_metadata( $media_id, $thumbnail_src );
+				wp_update_attachment_metadata( $media_id, $attach_data );
+			} else {
+				// Insert transcoded thumbnail attachment for video/audio files.
+				$attachment_id = wp_insert_attachment( $attachment, $thumbnail_src, $media_id );
+			}
 
+			// Generate attachment metadata for thumbnail and set post thumbnail for video/audio files.
 			if ( ! is_wp_error( $attachment_id ) && 0 !== $attachment_id ) {
-				require_once( ABSPATH . 'wp-admin/includes/image.php' );
 				$attach_data = wp_generate_attachment_metadata( $attachment_id, $thumbnail_src );
 				wp_update_attachment_metadata( $attachment_id, $attach_data );
 				set_post_thumbnail( $media_id, $attachment_id );
 				update_post_meta( $attachment_id, 'amp_is_poster', true );
 			}
 		}
-
 	}
 
 	/**
