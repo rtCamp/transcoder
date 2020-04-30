@@ -766,7 +766,7 @@ class RT_Transcoder_Handler {
 				$upload_thumbnail_array[] = $file;
 			}
 
-			$current_thumb_size = @filesize( $thumb_upload_info['file'] );
+			$current_thumb_size = filesize( $thumb_upload_info['file'] );
 
 			if ( $current_thumb_size >= $largest_thumb_size ) {
 				$largest_thumb_size = $current_thumb_size;
