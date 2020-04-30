@@ -970,9 +970,11 @@ class RetranscodeMedia {
 	}
 
 	/**
-	 * WHERE seach query to check attachment mime-type.
+	 * WHERE search query to check attachment mime-type.
 	 *
 	 * @param string $where The WHERE clause of the query.
+	 *
+	 * @return string The WHERE clause of the query.
 	 */
 	public function add_search_mime_types( $where ) {
 		$where .= " AND post_mime_type LIKE 'audio/%' OR post_mime_type LIKE 'video/%'";
@@ -988,7 +990,10 @@ add_action( 'init', 'retranscode_media' );
  * Execute RetranscodeMedia constructor.
  */
 function retranscode_media() {
-	new RetranscodeMedia();
+
+	global $RetranscodeMedia;
+
+	$RetranscodeMedia = new RetranscodeMedia();
 }
 
 ?>
