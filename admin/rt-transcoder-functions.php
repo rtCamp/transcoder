@@ -303,19 +303,21 @@ if ( ! function_exists( 'rtt_get_job_id_by_attachment_id' ) ) {
 	/**
 	 * Get the job id of attachment
 	 *
-	 * @since   1.0.0
+	 * @since 1.0.0
 	 *
-	 * @param  number $attachment_id Attachment id.
-	 * @return number                On success it returns the job id otherwise it returns the false.
+	 * @param number $attachment_id Attachment id.
+	 *
+	 * @return number On success it returns the job id otherwise it returns the false.
 	 */
 	function rtt_get_job_id_by_attachment_id( $attachment_id ) {
+
 		if ( empty( $attachment_id ) ) {
-			return false;
+			return 0;
 		}
 
 		$job_id = get_post_meta( $attachment_id, '_rt_transcoding_job_id', true );
 
-		return $job_id ? $job_id : false;
+		return $job_id ? $job_id : 0;
 	}
 }
 
@@ -324,12 +326,14 @@ if ( ! function_exists( 'rtt_get_job_id_by_attachment_id' ) ) {
  *
  * @since  1.0
  *
- * @param  text   $html       short code for the media.
- * @param  number $send_id    unique id for the short code.
- * @param  array  $attachment attachment array.
- * @return text
+ * @param string $html       Short code for the media.
+ * @param number $send_id    Unique id for the short code.
+ * @param array  $attachment Attachment array.
+ *
+ * @return string
  */
 function rtt_generate_video_shortcode( $html, $send_id, $attachment ) {
+
 	if ( empty( $attachment ) ) {
 		return $html;
 	}
@@ -381,15 +385,17 @@ add_filter( 'media_send_to_editor', 'rtt_generate_video_shortcode', 100, 3 );
  *
  * @since 1.0.1
  *
- * @param  string $content  HTML contents of the activity.
- * @param  object $activity Activity object.
+ * @param string $content  HTML contents of the activity.
+ * @param object $activity Activity object.
  *
  * @return string
  */
-function rtt_bp_get_activity_content( $content, $activity = '' ) {
+function rtt_bp_get_activity_content( $content, $activity ) {
+
 	if ( empty( $activity ) || empty( $content ) ) {
 		return $content;
 	}
+
 	if ( class_exists( 'RTMediaModel' ) ) {
 		$rt_model  = new RTMediaModel();
 		$all_media = $rt_model->get( array( 'activity_id' => $activity->id ) );
@@ -588,18 +594,26 @@ add_action( 'delete_attachment', 'rtt_delete_related_transcoded_files', 99, 1 );
  *
  * @since 1.0.5
  *
- * @param  mixed $files     Files array or file path string.
+ * @param mixed $files Files array or file path string.
+ *
+ * @return void
  */
 function rtt_delete_transcoded_files( $files ) {
-	if ( ! is_array( $files ) ) {
+
+	if ( empty( $files ) ) {
+		return;
+	}
+
+	if ( ! empty( $files ) && ! is_array( $files ) ) {
 		$files = array( $files );
 	}
+
 	$uploadpath = rtt_get_upload_dir();
+
 	foreach ( $files as $file ) {
 		if ( ! empty( $file ) ) {
-			if ( file_exists( $file ) ) {
-				@unlink( path_join( $uploadpath['basedir'], $file ) ); // phpcs:ignore Generic.PHP.NoSilencedErrors.Forbidden, WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_unlink
-			}
+			$file_path = path_join( $uploadpath['basedir'], $file );
+			\Transcoder\Inc\FileSystem::delete_file( $file_path );
 		}
 	}
 }
@@ -635,9 +649,9 @@ function rtt_get_upload_dir() {
  *
  * @since 1.1.0
  *
- * @param int $attachment_id    ID of attachment.
+ * @param int|string $attachment_id ID of attachment.
  *
- * @return boolean              TRUE if override is ON, FALSE is OFF
+ * @return boolean TRUE if override is ON, FALSE is OFF
  */
 function rtt_is_override_thumbnail( $attachment_id = '' ) {
 
@@ -858,7 +872,7 @@ function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_i
 
 	global $wpdb;
 	$rtmedia_media_table = $wpdb->prefix . 'rt_rtm_media';
-	
+
 	$post_id = wp_cache_get( 'media_' . $rtmedia_id, 'transcoder' );
 	if ( empty( $post_id ) ) {
 		$results = $wpdb->get_results( $wpdb->prepare( 'SELECT media_id FROM %s WHERE id = %d', $rtmedia_media_table, $rtmedia_id ), OBJECT ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery

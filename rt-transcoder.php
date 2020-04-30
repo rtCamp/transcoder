@@ -46,10 +46,16 @@ if ( ! defined( 'RT_TRANSCODER_NO_MAIL' ) && defined( 'VIP_GO_APP_ENVIRONMENT' )
 	define( 'RT_TRANSCODER_NO_MAIL', true );
 }
 
+require_once RT_TRANSCODER_PATH . 'inc/helpers/autoloader.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant.
 require_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-functions.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant.
 require_once RT_TRANSCODER_PATH . 'admin/class-rt-transcoder-admin.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant.
 
 global $rt_transcoder_admin;
+
+/**
+ * Initiate file system.
+ */
+\Transcoder\Inc\FileSystem::get_instance();
 
 $rt_transcoder_admin = new RT_Transcoder_Admin();
 
