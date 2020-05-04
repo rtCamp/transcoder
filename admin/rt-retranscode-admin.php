@@ -116,12 +116,28 @@ class RetranscodeMedia {
 
 	// Add a "Retranscode Media" link to the media row actions
 	public function add_media_row_action( $actions, $post ) {
-		if ( ( 'audio/' !== substr( $post->post_mime_type, 0, 6 ) && 'video/' !== substr( $post->post_mime_type, 0, 6 ) && 'application/pdf' !== $post->post_mime_type ) || 'audio/mpeg' === $post->post_mime_type || ! current_user_can( $this->capability ) ) {
+
+		if ( (
+				'audio/' !== substr( $post->post_mime_type, 0, 6 ) &&
+				'video/' !== substr( $post->post_mime_type, 0, 6 ) &&
+				'application/pdf' !== $post->post_mime_type
+			) ||
+			'audio/mpeg' === $post->post_mime_type ||
+			! current_user_can( $this->capability )
+		) {
 			return $actions;
 		}
 
+		$actions = ( ! empty( $actions ) && is_array( $actions ) ) ? $actions : [];
+
 		$url = wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1&ids=' . $post->ID ), 'rt-retranscoder' );
-		$actions['retranscode_media'] = '<a href="' . esc_url( $url ) . '" title="' . esc_attr( __( "Retranscode this single media", 'transcoder' ) ) . '">' . __( 'Retranscode Media', 'transcoder' ) . '</a>';
+
+		$actions['retranscode_media'] = sprintf(
+			'<a href="%s" title="%s">%s</a>',
+			esc_url( $url ),
+			esc_attr__( 'Retranscode this single media', 'transcoder' ),
+			__( 'Retranscode Media', 'transcoder' )
+		);
 
 		return $actions;
 	}
@@ -481,7 +497,13 @@ class RetranscodeMedia {
 		$id = (int) $_REQUEST['id'];
 		$media = get_post( $id );
 
-		if ( ! $media || 'attachment' !== $media->post_type || ( 'audio/' !== substr( $media->post_mime_type, 0, 6 ) && 'video/' !== substr( $media->post_mime_type, 0, 6 ) || 'application/pdf' !== $media->post_mime_type ) ) {
+		if ( ! $media || 'attachment' !== $media->post_type ||
+			(
+				'audio/' !== substr( $media->post_mime_type, 0, 6 ) &&
+				'video/' !== substr( $media->post_mime_type, 0, 6 ) ||
+				'application/pdf' !== $media->post_mime_type
+		     )
+		) {
 			die( json_encode( array( 'error' => sprintf( __( 'Sending Failed: %s is an invalid media ID/type.', 'transcoder' ), esc_html( $_REQUEST['id'] ) ) ) ) );
 		}
 

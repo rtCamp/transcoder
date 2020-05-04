@@ -29,7 +29,7 @@ class RT_Transcoder_Handler {
 	 * @access   protected
 	 * @var      string    $transcoding_api_url    The URL of the api.
 	 */
-	protected $transcoding_api_url = 'http://test.api.rtmedia.io/api/v1/';
+	protected $transcoding_api_url = 'http://api.rtmedia.io/api/v1/';
 
 	/**
 	 * The URL of the EDD store.
@@ -84,6 +84,7 @@ class RT_Transcoder_Handler {
 	 * @var      string    $audio_extensions    Audio extensions with comma separated.
 	 */
 	public $audio_extensions = ',wma,ogg,wav,m4a';
+
 	/**
 	 * Other extensions with comma separated.
 	 *
@@ -92,6 +93,7 @@ class RT_Transcoder_Handler {
 	 * @var      string    $other_extensions    Other extensions with comma separated.
 	 */
 	public $other_extensions = ',pdf';
+
 	/**
 	 * Allowed mimetypes.
 	 *
@@ -103,6 +105,7 @@ class RT_Transcoder_Handler {
 		'application/ogg',
 		'application/pdf',
 	);
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -112,15 +115,18 @@ class RT_Transcoder_Handler {
 	 */
 	public function __construct( $no_init = false ) {
 
-		$this->api_key        = get_site_option( 'rt-transcoding-api-key' );
-		$this->stored_api_key = get_site_option( 'rt-transcoding-api-key-stored' );
+		$this->api_key             = get_site_option( 'rt-transcoding-api-key' );
+		$this->stored_api_key      = get_site_option( 'rt-transcoding-api-key-stored' );
+		$this->transcoding_api_url = apply_filters( 'transcoding_api_url', $this->transcoding_api_url );
 
 		if ( $no_init ) {
 			return;
 		}
+
 		if ( is_admin() ) {
 			add_action( 'rt_transcoder_before_widgets', array( $this, 'usage_widget' ) );
 		}
+
 		add_action( 'admin_init', array( $this, 'save_api_key' ), 10, 1 );
 
 		if ( $this->api_key ) {
@@ -1449,6 +1455,7 @@ class RT_Transcoder_Handler {
 
 		return wp_json_encode( $response );
 	}
+
 	/**
 	 * Send transcoding request to the server for PDF files.
 	 *
@@ -1459,35 +1466,20 @@ class RT_Transcoder_Handler {
 	 */
 	public function after_upload_pdf( $post_id ) {
 
-		/**
-		 * Allow users to disable PDF thumbnail generation using transcoder.
-		 */
-		if ( ! apply_filters( 'transcoder_enable_pdf_thumbnail', true ) ) {
-			return;
-		}
-
-		// Check if the Ghostscript is enabled.
-		$is_gs_enabled = false;
-		if ( ! defined( 'VIP_GO_APP_ENVIRONMENT' ) && function_exists( 'exec' ) ) {
-			$gs = exec( 'gs --version' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec
-			if ( empty( $gs ) ) {
-				$is_gs_enabled = false;
-			} else {
-				$is_gs_enabled = true;
-			}
-		}
-
 		// If it have native support, skip the use of transcoder server.
-		if ( extension_loaded( 'imagick' ) && class_exists( 'Imagick', false ) &&
+		if ( extension_loaded( 'imagick' ) &&
+			class_exists( 'Imagick', false ) &&
 			class_exists( 'ImagickPixel', false ) &&
-			version_compare( phpversion( 'imagick' ), '2.2.0', '>=' ) &&
-			$is_gs_enabled
+			version_compare( phpversion( 'imagick' ), '2.2.0', '>=' )
 		) {
 			return;
 		}
 
 		$file_url = wp_get_attachment_url( $post_id );
 		$filetype = wp_check_filetype( $file_url );
+
+		$filetype['ext'] = strtolower( $filetype['ext'] );
+
 		if ( 'pdf' === $filetype['ext'] ) {
 			$this->wp_media_transcoding( array( 'mime_type' => 'application/pdf' ), $post_id );
 		}
