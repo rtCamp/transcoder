@@ -853,7 +853,7 @@ add_action( 'wp_ajax_checkstatus', 'rtt_ajax_process_check_status_request' );
  */
 function rtt_get_transcoding_status( $post_id ) {
 
-	require_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-handler.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant.
+	require_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-handler.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 
 	$obj    = new RT_Transcoder_Handler( true );
 	$status = $obj->get_transcoding_status( $post_id );

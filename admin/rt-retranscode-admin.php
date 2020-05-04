@@ -91,7 +91,7 @@ class RetranscodeMedia {
 	 * @return void
 	 */
 	public function load_rest_endpoints() {
-		include_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-rest-routes.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant.
+		include_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-rest-routes.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 
 		// Create class object and register routes.
 		$transcoder_rest_routes = new Transcoder_Rest_Routes();
@@ -133,7 +133,7 @@ class RetranscodeMedia {
 	 * @return void
 	 */
 	public function _transcoder_settings_page() {
-		include_once RT_TRANSCODER_PATH . 'admin/partials/rt-transcoder-admin-display.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant.
+		include_once RT_TRANSCODER_PATH . 'admin/partials/rt-transcoder-admin-display.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 	}
 
 	/** 

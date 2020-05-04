@@ -43,7 +43,7 @@ class FileSystem {
 	}
 
 	/**
-	 * Check if file exists in DAM or not.
+	 * Check if file exists in upload directory or not.
 	 *
 	 * @param string $file File path to check. Either absolute or relative path.
 	 *
@@ -61,7 +61,7 @@ class FileSystem {
 	}
 
 	/**
-	 * To delete file within DAM directory.
+	 * To delete file within upload directory directory.
 	 *
 	 * @param string $file File path.
 	 *
