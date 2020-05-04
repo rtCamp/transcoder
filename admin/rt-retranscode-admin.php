@@ -999,9 +999,9 @@ add_action( 'init', 'retranscode_media' );
  */
 function retranscode_media() {
 
-	global $RetranscodeMedia;
+	global $RetranscodeMedia; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 
-	$RetranscodeMedia = new RetranscodeMedia();
+	$RetranscodeMedia = new RetranscodeMedia(); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 }
 
 ?>

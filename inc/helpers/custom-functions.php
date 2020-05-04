@@ -5,12 +5,10 @@
  * @package transcoder
  */
 
-
 /**
  * This method is an improved version of PHP's filter_input() and
  * works well on PHP CLI as well which PHP default method does not.
  * Also Provide support INPUT_REQUEST.
- *
  *
  * Reference:
  * - https://bugs.php.net/bug.php?id=49184
@@ -32,15 +30,13 @@ function transcoder_filter_input( $type, $variable_name, $filter = FILTER_DEFAUL
 	 * Reference: https://bugs.php.net/bug.php?id=54672
 	 */
 	if ( INPUT_REQUEST === $type ) {
-
-		if ( isset( $_POST[ $variable_name ] ) ) {
+		if ( isset( $_POST[ $variable_name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$type = INPUT_POST;
-		} elseif ( isset( $_GET[ $variable_name ] ) ) {
+		} elseif ( isset( $_GET[ $variable_name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$type = INPUT_GET;
 		} else {
 			return null;
 		}
-
 	}
 
 	if ( php_sapi_name() !== 'cli' ) {
