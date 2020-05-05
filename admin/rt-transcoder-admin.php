@@ -15,10 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * The admin-specific functionality of the plugin.
  *
- * @since		1.0.0
+ * @since       1.0.0
  *
- * @package		Transcoder
- * @subpackage	Transcoder/Admin
+ * @package     Transcoder
+ * @subpackage  Transcoder/Admin
  */
 class RT_Transcoder_Admin {
 
@@ -56,17 +56,17 @@ class RT_Transcoder_Admin {
 	 */
 	public function __construct() {
 
-		$this->api_key			= get_site_option( 'rt-transcoding-api-key' );
-		$this->stored_api_key	= get_site_option( 'rt-transcoding-api-key-stored' );
+		$this->api_key        = get_option( 'rt-transcoding-api-key' );
+		$this->stored_api_key = get_option( 'rt-transcoding-api-key-stored' );
 
 		$this->load_translation();
 
 		if ( ! class_exists( 'RT_Progress' ) ) {
-			include_once( RT_TRANSCODER_PATH . 'admin/rt-transcoder-progressbar.php' );
+			include_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-progressbar.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 		}
 
-		include_once( RT_TRANSCODER_PATH . 'admin/rt-transcoder-handler.php' );
-		include_once( RT_TRANSCODER_PATH . 'admin/rt-transcoder-actions.php' );
+		include_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-handler.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+		include_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-actions.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
 
@@ -80,9 +80,9 @@ class RT_Transcoder_Admin {
 			add_action( 'admin_menu', array( $this, 'menu' ) );
 			add_action( 'admin_init', array( $this, 'register_transcoder_settings' ) );
 			if ( class_exists( 'RTMediaEncoding' ) ) {
-				$old_rtmedia_encoding_key = get_site_option( 'rtmedia-encoding-api-key' );
+				$old_rtmedia_encoding_key = get_option( 'rtmedia-encoding-api-key' );
 				if ( ! empty( $old_rtmedia_encoding_key ) ) {
-					update_site_option( 'rtmedia-encoding-api-key', '' );
+					update_option( 'rtmedia-encoding-api-key', '' );
 				}
 				add_action( 'init', array( $this, 'disable_encoding' ) );
 			}
@@ -94,7 +94,7 @@ class RT_Transcoder_Admin {
 
 		if ( class_exists( 'RTMedia' ) ) {
 			if ( ! function_exists( 'get_plugin_data' ) ) {
-				include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+				include_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
 			$rtmedia_plugin_info = get_plugin_data( RTMEDIA_PATH . 'index.php' );
 
@@ -116,7 +116,7 @@ class RT_Transcoder_Admin {
 	 * Display errors if any while settings are save.
 	 */
 	public function add_settings_errors() {
-	    settings_errors( 'rt-transcoder-settings-group' );
+		settings_errors( 'rt-transcoder-settings-group' );
 	}
 
 	/**
@@ -145,7 +145,7 @@ class RT_Transcoder_Admin {
 	 * @since    1.0.0
 	 */
 	public function settings_page() {
-		include_once( RT_TRANSCODER_PATH . 'admin/partials/rt-transcoder-admin-display.php' );
+		include_once RT_TRANSCODER_PATH . 'admin/partials/rt-transcoder-admin-display.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 	}
 
 	/**
@@ -160,7 +160,7 @@ class RT_Transcoder_Admin {
 	/**
 	 * Remove actions and filters from old rtMedia (v4.0.2) plugin.
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 */
 	public function disable_encoding() {
 		global $rtmedia_admin;
@@ -185,7 +185,7 @@ class RT_Transcoder_Admin {
 	public function enqueue_scripts_styles() {
 		global $pagenow;
 
-		$page = filter_input( INPUT_GET, 'page',	 FILTER_SANITIZE_STRING );
+		$page = transcoder_filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
 
 		if ( 'admin.php' !== $pagenow || 'rt-transcoder' !== $page ) {
 			return;
@@ -196,11 +196,11 @@ class RT_Transcoder_Admin {
 		wp_register_script( 'rt-transcoder-main', RT_TRANSCODER_URL . 'admin/js/rt-transcoder-admin' . $suffix . '.js', array( 'jquery' ), RT_TRANSCODER_VERSION, true );
 
 		$localize_script_data = array(
-			'admin_url'				 => esc_url( admin_url() ),
-			'loader_image'			 => esc_url( admin_url( 'images/loading.gif' ) ),
-			'disable_encoding'		 => esc_html__( 'Are you sure you want to disable the transcoding service?', 'transcoder' ),
-			'enable_encoding'		 => esc_html__( 'Are you sure you want to enable the transcoding service?', 'transcoder' ),
-			'something_went_wrong'	 => esc_html__( 'Something went wrong. Please ', 'transcoder' ) . '<a href onclick="location.reload();">' . esc_html__( 'refresh', 'transcoder' ) . '</a>' . esc_html__( ' page.', 'transcoder' ),
+			'admin_url'            => esc_url( admin_url() ),
+			'loader_image'         => esc_url( admin_url( 'images/loading.gif' ) ),
+			'disable_encoding'     => esc_html__( 'Are you sure you want to disable the transcoding service?', 'transcoder' ),
+			'enable_encoding'      => esc_html__( 'Are you sure you want to enable the transcoding service?', 'transcoder' ),
+			'something_went_wrong' => esc_html__( 'Something went wrong. Please ', 'transcoder' ) . '<a href onclick="location.reload();">' . esc_html__( 'refresh', 'transcoder' ) . '</a>' . esc_html__( ' page.', 'transcoder' ),
 		);
 
 		wp_localize_script( 'rt-transcoder-main', 'rt_transcoder_script', $localize_script_data );
@@ -213,7 +213,7 @@ class RT_Transcoder_Admin {
 	 *
 	 * @since    1.0.0
 	 *
-	 * @param string $name	 The name of subscription plan.
+	 * @param string $name   The name of subscription plan.
 	 * @param float  $price  The price of subscription plan.
 	 * @param bool   $force  If true then it always show subscriobe form.
 	 * @return string
@@ -223,14 +223,14 @@ class RT_Transcoder_Admin {
 			$this->transcoder_handler->update_usage( $this->api_key );
 		}
 
-		$usage_details = get_site_option( 'rt-transcoding-usage' );
+		$usage_details = get_option( 'rt-transcoding-usage' );
 
 		if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) === strtolower( $name ) ) && $usage_details[ $this->api_key ]->sub_status && ! $force ) {
 			$form = '<button disabled="disabled" type="submit" class="button button-primary bpm-unsubscribe">' . esc_html__( 'Current Plan', 'transcoder' ) . '</button>';
 		} else {
 			$plan_name = 'free' === $name ? 'Try Now' : 'Subscribe';
-			$form = '<a href="https://rtmedia.io/?transcoding-plan=' . $name . '" target="_blank" class="button button-primary">
-						' . esc_html( $plan_name, 'transcoder' ) . '
+			$form      = '<a href="https://rtmedia.io/?transcoding-plan=' . $name . '" target="_blank" class="button button-primary">
+						' . esc_html( $plan_name ) . '
 					</a>';
 		}
 
@@ -240,22 +240,22 @@ class RT_Transcoder_Admin {
 	/**
 	 * Display all video thumbnails on attachment edit page.
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 *
 	 * @param array   $form_fields  An array of attachment form fields.
-	 * @param WP_Post $post		    The WP_Post attachment object.
+	 * @param WP_Post $post         The WP_Post attachment object.
 	 * @return array $form_fields
 	 */
-	function edit_video_thumbnail( $form_fields, $post ) {
+	public function edit_video_thumbnail( $form_fields, $post ) {
 
 		if ( isset( $post->post_mime_type ) ) {
 			$media_type = explode( '/', $post->post_mime_type );
 			if ( is_array( $media_type ) && 'video' === $media_type[0] ) {
-				$media_id         = $post->ID;
-				$thumbnail_array  = get_post_meta( $media_id, '_rt_media_thumbnails', true );
+				$media_id        = $post->ID;
+				$thumbnail_array = get_post_meta( $media_id, '_rt_media_thumbnails', true );
 
 				if ( empty( $thumbnail_array ) ) {
-					$thumbnail_array  = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
+					$thumbnail_array = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
 				}
 
 				$wp_video_thumbnail = get_post_meta( $media_id, '_rt_media_video_thumbnail', true );
@@ -269,10 +269,9 @@ class RT_Transcoder_Admin {
 					} else {
 						$uploads = wp_upload_dir();
 					}
-		        	$base_url 	= $uploads['baseurl'];
 
 					foreach ( $thumbnail_array as $key => $thumbnail_src ) {
-						$checked = false;
+						$checked          = false;
 						$thumbnail_src_og = $thumbnail_src;
 						if ( $wp_video_thumbnail === $thumbnail_src ) {
 							$checked = 'checked=checked';
@@ -282,11 +281,11 @@ class RT_Transcoder_Admin {
 
 						if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
 							$thumbnail_src = $file_url;
-					    } else {
-					    	$thumbnail_src = $uploads['baseurl'] . '/' . $file_url;
-					    }
-						$thumbnail_src = apply_filters( 'transcoded_file_url', $thumbnail_src, $media_id );
-						$count   = $key + 1;
+						} else {
+							$thumbnail_src = $uploads['baseurl'] . '/' . $file_url;
+						}
+						$thumbnail_src     = apply_filters( 'transcoded_file_url', $thumbnail_src, $media_id );
+						$count             = $key + 1;
 						$video_thumb_html .= '<li style="width: 150px;display: inline-block;"> ' .
 							'<label for="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '"> ' .
 							'<input type="radio" ' . esc_attr( $checked ) . ' id="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '" value="' . esc_attr( $thumbnail_src_og ) . '" name="rtmedia-thumbnail" /> ' .
@@ -294,7 +293,7 @@ class RT_Transcoder_Admin {
 							'</label></li>';
 					}
 
-					$video_thumb_html .= '</ul>';
+					$video_thumb_html                      .= '</ul>';
 					$form_fields['rtmedia_video_thumbnail'] = array(
 						'label' => 'Video Thumbnails',
 						'input' => 'html',
@@ -309,21 +308,21 @@ class RT_Transcoder_Admin {
 	/**
 	 * Display all video thumbnails on attachment edit page.
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 *
 	 * @param array   $form_fields  An array of attachment form fields.
-	 * @param WP_Post $post		    The WP_Post attachment object.
+	 * @param WP_Post $post         The WP_Post attachment object.
 	 * @return array $form_fields
 	 */
-	function edit_video_thumbnail_( $form_fields, $post ) {
+	public function edit_video_thumbnail_( $form_fields, $post ) {
 		if ( isset( $post->post_mime_type ) ) {
 			$media_type = explode( '/', $post->post_mime_type );
 			if ( is_array( $media_type ) && 'video' === $media_type[0] ) {
-				$media_id         = $post->ID;
-				$thumbnail_array  = get_post_meta( $media_id, '_rt_media_thumbnails', true );
+				$media_id        = $post->ID;
+				$thumbnail_array = get_post_meta( $media_id, '_rt_media_thumbnails', true );
 
 				if ( empty( $thumbnail_array ) ) {
-					$thumbnail_array  = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
+					$thumbnail_array = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
 				}
 
 				$rtmedia_model    = new RTMediaModel();
@@ -337,15 +336,15 @@ class RT_Transcoder_Admin {
 					} else {
 						$uploads = wp_upload_dir();
 					}
-		        	$base_url 	= $uploads['baseurl'];
+					$base_url = $uploads['baseurl'];
 
 					$video_thumb_html .= '<ul> ';
 
 					foreach ( $thumbnail_array as $key => $thumbnail_src ) {
-						$checked = checked( $thumbnail_src, $rtmedia_media[0]->cover_art, false );
-						$count   = $key + 1;
-						$final_file_url = $base_url . '/' . $thumbnail_src;
-						$final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $media_id );
+						$checked           = checked( $thumbnail_src, $rtmedia_media[0]->cover_art, false );
+						$count             = $key + 1;
+						$final_file_url    = $base_url . '/' . $thumbnail_src;
+						$final_file_url    = apply_filters( 'transcoded_file_url', $final_file_url, $media_id );
 						$video_thumb_html .= '<li style="width: 150px;display: inline-block;">
 								<label for="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '">
 								<input type="radio" ' . esc_attr( $checked ) . ' id="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '" value="' . esc_attr( $thumbnail_src ) . '" name="rtmedia-thumbnail" />
@@ -353,7 +352,7 @@ class RT_Transcoder_Admin {
 								</label></li> ';
 					}
 
-					$video_thumb_html .= '  </ul>';
+					$video_thumb_html                      .= '  </ul>';
 					$form_fields['rtmedia_video_thumbnail'] = array(
 						'label' => 'Video Thumbnails',
 						'input' => 'html',
@@ -370,14 +369,14 @@ class RT_Transcoder_Admin {
 	 * Save selected video thumbnail in attachment meta.
 	 * Selected thumbnail use as cover art for buddypress activity if video was uploaded in activity.
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 *
-	 * @param array $post		An array of post data.
+	 * @param array $post       An array of post data.
 	 * @return array $form_fields
 	 */
-	function save_video_thumbnail( $post ) {
-		$rtmedia_thumbnail = filter_input( INPUT_POST, 'rtmedia-thumbnail', FILTER_SANITIZE_STRING );
-		$id = $post['ID'];
+	public function save_video_thumbnail( $post ) {
+		$rtmedia_thumbnail = transcoder_filter_input( INPUT_POST, 'rtmedia-thumbnail', FILTER_SANITIZE_STRING );
+		$id                = $post['ID'];
 		if ( isset( $rtmedia_thumbnail ) ) {
 			if ( class_exists( 'rtMedia' ) ) {
 				$file_url = $rtmedia_thumbnail;
@@ -389,9 +388,9 @@ class RT_Transcoder_Admin {
 				}
 				if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
 					$final_file_url = $file_url;
-			    } else {
-			    	$final_file_url = $uploads['baseurl'] . '/' . $file_url;
-			    }
+				} else {
+					$final_file_url = $uploads['baseurl'] . '/' . $file_url;
+				}
 
 				$rtmedia_model = new RTMediaModel();
 				$media         = $rtmedia_model->get( array( 'media_id' => $id ) );
@@ -408,13 +407,13 @@ class RT_Transcoder_Admin {
 	/**
 	 * Display admin notice.
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 */
-	function transcoder_admin_notice() {
-		$show_notice = get_site_option( 'transcoder_admin_notice', 1 );
+	public function transcoder_admin_notice() {
+		$show_notice = get_option( 'transcoder_admin_notice', 1 );
 
 		if ( '1' === $show_notice || 1 === $show_notice ) :
-	?>
+			?>
 		<div class="notice notice-info transcoder-notice is-dismissible">
 			<?php wp_nonce_field( '_transcoder_hide_notice_', 'transcoder_hide_notice_nonce' ); ?>
 			<p>
@@ -434,37 +433,37 @@ class RT_Transcoder_Admin {
 				});
 			});
 		</script>
-	<?php
+			<?php
 		endif;
 	}
 
 	/**
 	 * Display subscribe to the transcoding service
-	 *
 	 */
-	function subscribe_transcoder_admin_notice() {
+	public function subscribe_transcoder_admin_notice() {
 		if ( ! empty( $this->api_key ) ) {
 			return false;
 		}
 		$settings_page_link = 'admin.php?page=rt-transcoder';
-		$class = 'notice notice-error';
-		$valid_tags = array(
-			'div' => array( 'class' => array() ),
-			'p' => array(),
+		$class              = 'notice notice-error';
+		$valid_tags         = array(
+			'div'    => array( 'class' => array() ),
+			'p'      => array(),
 			'strong' => array(),
-			'a' => array( 'href' => array() ),
+			'a'      => array( 'href' => array() ),
 		);
-		printf( wp_kses( __( '<div class="%1$s"><p><strong>IMPORTANT!</strong> The Transcoder plugin works with active transcoding services subscription plan. <a href="%2$s">Click here</a> to subscribe or enable.</p></div>', 'transcoder' ), $valid_tags ), $class, admin_url( $settings_page_link ) );
+		// translators: Markup to show the info about plugin subscription if no API key is there.
+		printf( wp_kses( __( '<div class="%1$s"><p><strong>IMPORTANT!</strong> The Transcoder plugin works with active transcoding services subscription plan. <a href="%2$s">Click here</a> to subscribe or enable.</p></div>', 'transcoder' ), $valid_tags ), esc_attr( $class ), esc_url( admin_url( $settings_page_link ) ) );
 	}
 
 	/**
 	 * Set option to hide admin notice when user click on dismiss button.
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 */
-	function transcoder_hide_admin_notice() {
+	public function transcoder_hide_admin_notice() {
 		if ( check_ajax_referer( '_transcoder_hide_notice_', 'transcoder_notice_nonce' ) ) {
-			update_site_option( 'transcoder_admin_notice', '0' );
+			update_option( 'transcoder_admin_notice', '0' );
 		}
 		die();
 	}
@@ -472,29 +471,29 @@ class RT_Transcoder_Admin {
 	/**
 	 * Hide encoding tab in old rtMedia plugin.
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 */
-	function rtmedia_hide_encoding_tab() {
-	?>
+	public function rtmedia_hide_encoding_tab() {
+		?>
 		<style>
 			.rtmedia-tab-title.audiovideo-encoding {
 				display: none;
 			}
 		</style>
-	<?php
+		<?php
 	}
 
 	/**
 	 * Filters the Mediaelement fallback output to add class.
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 *
-	 * @param type $output	Fallback output for no-JS.
-	 * @param type $url		Media file URL.
+	 * @param type $output  Fallback output for no-JS.
+	 * @param type $url     Media file URL.
 	 *
 	 * @return string return fallback output.
 	 */
-	function mediaelement_add_class( $output, $url ) {
+	public function mediaelement_add_class( $output, $url ) {
 		return sprintf( '<a class="no-popup" href="%1$s">%1$s</a>', esc_url( $url ) );
 	}
 }

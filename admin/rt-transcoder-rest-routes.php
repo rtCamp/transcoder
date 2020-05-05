@@ -1,13 +1,27 @@
 <?php
-
 /**
  * Class Transcoder_Rest_Routes
+ *
+ * @package transcoder
+ */
+
+/**
  * Handle REST Routes for Transcoder.
  */
 class Transcoder_Rest_Routes extends WP_REST_Controller {
 
+	/**
+	 * Version of REST route.
+	 *
+	 * @var int
+	 */
 	public $version = 1;
 
+	/**
+	 * Prefix for API endpoint namespace.
+	 *
+	 * @var string
+	 */
 	public $namespace_prefix = 'transcoder/v';
 
 	/**
@@ -22,13 +36,14 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 			array(
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_media_data' ),
-			) );
+			)
+		);
 	}
 
 	/**
 	 * Return poster url for requested media if exists.
 	 *
-	 * @param WP_REST_Request $request Object of WP_REST_Request
+	 * @param WP_REST_Request $request Object of WP_REST_Request.
 	 *
 	 * @return array|bool
 	 */
@@ -63,10 +78,10 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 			return false;
 		}
 
-		return [
+		return array(
 			'poster'          => get_the_post_thumbnail_url( $media_id ),
-			'transcodedMedia' => $final_file_url
-		];
+			'transcodedMedia' => $final_file_url,
+		);
 	}
 
 }

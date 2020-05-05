@@ -1,106 +1,150 @@
-(function( $ ) {
-	$( document ).ready( function() {
+/**
+ * Transcoder admin page.
+ *
+ * @package transcoder
+ */
 
-		$( document ).on( 'click', '#api-key-submit', function( e ) {
-			e.preventDefault();
+/* global ajaxurl, rt_transcoder_script */
 
-			if ( $( this ).next( 'img' ).length === 0 ) {
-				$( this ).after( $( '<img />' ).attr( 'src', rt_transcoder_script.loader_image ).addClass( 'rtt-loader' ) );
-			}
+( function ( $ ) {
+	$( document ).ready(
+		function() {
 
-			var data = {
-				action: 'rt_enter_api_key',
-				apikey: $( '#new-api-key' ).val()
-			};
+			$( document ).on(
+				'click',
+				'#api-key-submit',
+				function( e ) {
+					e.preventDefault();
 
-			// Since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
-			$.getJSON( ajaxurl, data, function( response ) {
-				if ( response.error === undefined && response.apikey ) {
-					var tempUrl = window.location.href;
-					var hash = window.location.hash;
-					tempUrl = tempUrl.replace( hash, '' );
-
-					if ( tempUrl.toString().indexOf( '&apikey=' + response.apikey ) == -1 ) {
-						tempUrl += '&apikey=' + response.apikey;
-					}
-					if ( tempUrl.toString().indexOf( '&update=true' ) == -1 ) {
-						tempUrl += '&update=true';
+					if ( $( this ).next( 'img' ).length === 0 ) {
+						$( this ).after( $( '<img/>' ).attr( 'src', rt_transcoder_script.loader_image ).addClass( 'rtt-loader' ) );
 					}
 
-					document.location.href = tempUrl + hash;
-				} else {
-					$( '#api-key-error' ).remove();
-					var error_div = $( '<div/>', {
-						'id' : 'api-key-error',
-						'class': 'error',
-					});
-					$( 'h1:first' ).after( error_div.html( $( '<p />' ).text( response.error ) ) );
+					var data = {
+						action: 'rt_enter_api_key',
+						apikey: $( '#new-api-key' ).val()
+					};
+
+					// Since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php.
+					$.getJSON(
+						ajaxurl,
+						data,
+						function( response ) {
+
+							var tempUrl = window.location.href;
+							var hash = window.location.hash;
+
+							if ( response.error === undefined && response.apikey ) {
+
+								tempUrl = tempUrl.replace( hash, '' );
+
+								if ( -1 === tempUrl.toString().indexOf( '&apikey=' + response.apikey ) ) {
+									tempUrl += '&apikey=' + response.apikey;
+								}
+
+								if ( -1 === tempUrl.toString().indexOf( '&update=true' ) ) {
+									tempUrl += '&update=true';
+								}
+
+								document.location.href = tempUrl + hash;
+							} else {
+								$( '#api-key-error' ).remove();
+
+								var error_div = $(
+									'<div/>',
+									{
+										id: 'api-key-error',
+										class: 'error'
+									}
+								);
+
+								$( 'h1:first' ).after( error_div.html( $( '<p/>' ).text( response.error ) ) ); // phpcs:ignoe WordPressVIPMinimum.JS.HTMLExecutingFunctions.html
+							}
+
+							$( '#api-key-submit' ).next( 'img' ).remove();
+						}
+					);
 				}
+			);
 
-				$( '#api-key-submit' ).next( 'img' ).remove();
-			} );
-		} );
+			$( document ).on(
+				'click',
+				'#disable-transcoding',
+				function( e ) {
 
-		$( document ).on( 'click', '#disable-transcoding', function( e ) {
-			e.preventDefault();
-			if ( confirm( rt_transcoder_script.disable_encoding ) ) {
+					e.preventDefault();
 
-				var data = {
-					action: 'rt_disable_transcoding'
-				};
+					if ( confirm( rt_transcoder_script.disable_encoding ) ) {
 
-				if ( $( this ).next( 'img' ).length === 0 ) {
-					$( this ).after( $( '<img />' ).attr( 'src', rt_transcoder_script.loader_image ).addClass( 'rtt-loader' ) );
-				}
+						var data = {
+							action: 'rt_disable_transcoding'
+						};
 
-				// Since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
-				$.post( ajaxurl, data, function( response ) {
-					if ( response ) {
-
-						if ( $( '#rtt-settings_updated' ).length > 0 ) {
-							$( '#rtt-settings_updated p' ).html( response );
-							$( '#rtt-settings_updated' ).show();
-						} else {
+						if ( $( this ).next( 'img' ).length === 0 ) {
+							$( this ).after( $( '<img />' ).attr( 'src', rt_transcoder_script.loader_image ).addClass( 'rtt-loader' ) );
 						}
 
-						//$( '#rtmedia-transcoding-usage' ).hide();
-						$( '#disable-transcoding' ).next( 'img' ).remove();
-						$( '#disable-transcoding' ).hide();
-						$( '#enable-transcoding' ).css( 'display', 'inline' );
-					} else {
+						// Since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php.
+						$.post(
+							ajaxurl,
+							data,
+							function( response ) {
+								if ( response ) {
+									if ( $( '#rtt-settings_updated' ).length > 0 ) {
+										$( '#rtt-settings_updated p' ).text( response );
+										$( '#rtt-settings_updated' ).show();
+									}
+
+									// $( '#rtmedia-transcoding-usage' ).hide();
+									$( '#disable-transcoding' ).next( 'img' ).remove();
+									$( '#disable-transcoding' ).hide();
+									$( '#enable-transcoding' ).css( 'display', 'inline' );
+								}
+							}
+						);
 					}
-				} );
-			}
-		} );
-
-		$( document ).on( 'click', '#enable-transcoding', function( e ) {
-			e.preventDefault();
-			if ( confirm( rt_transcoder_script.enable_encoding ) ) {
-
-				var data = {
-					action: 'rt_enable_transcoding'
-				};
-
-				if ( $( this ).next( 'img' ).length === 0 ) {
-					$( this ).after( $( '<img />' ).attr( 'src', rt_transcoder_script.loader_image ).addClass( 'rtt-loader' ) );
 				}
+			);
 
-				$.post( ajaxurl, data, function( response ) {
-					if ( response ) {
-						if ( $( '#rtt-settings_updated' ).length > 0 ) {
-							$( '#rtt-settings_updated p' ).html( response );
-							$( '#rtt-settings_updated' ).show();
+			$( document ).on(
+				'click',
+				'#enable-transcoding',
+				function( e ) {
+
+					e.preventDefault();
+
+					if ( confirm( rt_transcoder_script.enable_encoding ) ) {
+
+						var data = {
+							action: 'rt_enable_transcoding'
+						};
+
+						if ( $( this ).next( 'img' ).length === 0 ) {
+							$( this ).after( $( '<img />' ).attr( 'src', rt_transcoder_script.loader_image ).addClass( 'rtt-loader' ) );
 						}
 
-						$( '#enable-transcoding' ).next( 'img' ).remove();
-						$( '#enable-transcoding' ).hide();
-						$( '#disable-transcoding' ).css( 'display', 'inline' );
-					} else {
-						$( '#settings-error-transcoding-disabled' ).remove();
+						$.post(
+							ajaxurl,
+							data,
+							function( response ) {
+								if ( response ) {
+									if ( $( '#rtt-settings_updated' ).length > 0 ) {
+										$( '#rtt-settings_updated p' ).text( response );
+										$( '#rtt-settings_updated' ).show();
+									}
 
+									$( '#enable-transcoding' ).next( 'img' ).remove();
+									$( '#enable-transcoding' ).hide();
+									$( '#disable-transcoding' ).css( 'display', 'inline' );
+								} else {
+									$( '#settings-error-transcoding-disabled' ).remove();
+								}
+							}
+						);
 					}
-				} );
-			}
-		} );
-	} );
-})( jQuery );
+				}
+			);
+		}
+	);
+
+} )( jQuery );

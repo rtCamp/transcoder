@@ -1,3 +1,9 @@
+/**
+ * Gutenberg support for transcoder.
+ *
+ * @package transcoder
+ */
+
 import apiFetch from '@wordpress/api-fetch';
 
 const { rtTranscoderBlockEditorSupport } = window;
@@ -19,25 +25,33 @@ const updateAMPStoryMedia = ( BlockEdit ) => {
 				}
 			} else if ( mediaAttributes.poster.endsWith( '-fallback-poster.png' ) ) {
 				const restBase = '/wp-json/transcoder/v1/amp-media';
-				apiFetch( {
-					path: `${ restBase }/${ mediaId }`,
-				} ).then( data => {
-					if ( false !== data && null !== data ) {
-						if ( data.poster.length && data.transcodedMedia.length ) {
-							if ( isAMPStory && typeof mediaAttributes.mediaType !== 'undefined' && 'video' === mediaAttributes.mediaType ) {
-								props.setAttributes( {
-									poster: data.poster,
-									mediaUrl: data.transcodedMedia,
-								} );
-							} else if ( isVideoBlock ) {
-								props.setAttributes( {
-									poster: data.poster,
-									src: data.transcodedMedia,
-								} );
+				apiFetch(
+					{
+						path: `${ restBase } / ${ mediaId }`
+					}
+				).then(
+					data => {
+						if ( false !== data && null !== data ) {
+							if ( data.poster.length && data.transcodedMedia.length ) {
+								if ( isAMPStory && typeof mediaAttributes.mediaType !== 'undefined' && 'video' === mediaAttributes.mediaType ) {
+									props.setAttributes(
+										{
+											poster: data.poster,
+											mediaUrl: data.transcodedMedia,
+										}
+									);
+								} else if ( isVideoBlock ) {
+									props.setAttributes(
+										{
+											poster: data.poster,
+											src: data.transcodedMedia,
+										}
+									);
+								}
 							}
 						}
 					}
-				} );
+				);
 			}
 		}
 

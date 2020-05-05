@@ -1,3 +1,11 @@
+/**
+ * Webpack configuration file.
+ *
+ * @package transcoder
+ */
+
+/* global process */
+
 const webpack = require( 'webpack' );
 const glob = require( 'glob' );
 const UglifyJsPlugin = require( 'uglifyjs-webpack-plugin' );
@@ -9,50 +17,56 @@ const externals = {
 	tinymce: 'tinymce',
 	moment: 'moment',
 	jquery: 'jQuery',
-	'@wordpress/components': 'wp.components', // Not really a package.
+	'@wordpress/components': 'wp.components' // Not really a package.
 };
+
+const module = {};
 
 module.exports = {
 	entry: {
-		blocks: glob.sync( './admin/js/rt-transcoder-block-editor-support.js' ),
+		blocks: glob.sync( './admin/js/rt-transcoder-block-editor-support.js' )
 	},
 	output: {
 		filename: './admin/js/build/rt-transcoder-block-editor-support.build.js',
-		path: __dirname,
+		path: __dirname
 	},
 	externals,
 	resolve: {
 		modules: [
 			__dirname,
-			'node_modules',
-		],
+			'node_modules'
+		]
 	},
 	module: {
 		rules: [
 			{
 				test: /.js?$/,
 				loader: 'babel-loader',
-				exclude: /node_modules/,
-			},
-		],
+				exclude: /node_modules/
+			}
+		]
 	},
 	plugins: [
 		new webpack.DefinePlugin( {
 			'process.env.NODE_ENV': JSON.stringify( process.env.NODE_ENV || 'development' ),
-		} ),
-	],
+		} )
+	]
 };
 
 if ( process.env.NODE_ENV === 'production' ) {
-	module.exports.plugins = ( module.exports.plugins || [] ).concat( [
-		new UglifyJsPlugin( {
-			sourceMap: true,
-			uglifyOptions: {
-				ecma: 8,
-				compress: {
-					warnings: false,
-				},
-			},
-		} ),
-	] );
+	module.exports.plugins = (
+		module.exports.plugins || []
+	).concat(
+		[
+			new UglifyJsPlugin( {
+				sourceMap: true,
+				uglifyOptions: {
+					ecma: 8,
+					compress: {
+						warnings: false,
+					}
+				}
+			} )
+		]
+	);
 }
