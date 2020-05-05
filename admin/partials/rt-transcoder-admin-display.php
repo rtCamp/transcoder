@@ -213,7 +213,7 @@
 							<td>
 								<?php
 
-								$number_of_thumbnails = get_site_option( 'number_of_thumbs', 5 );
+								$number_of_thumbnails = get_option( 'number_of_thumbs', 5 );
 								if ( empty( $number_of_thumbnails ) ) {
 									$number_of_thumbnails = 5;
 								}
@@ -237,7 +237,7 @@
 							<td>
 								<?php
 
-								$rtt_override_thumbnail = get_site_option( 'rtt_override_thumbnail', false );
+								$rtt_override_thumbnail = get_option( 'rtt_override_thumbnail', false );
 								?>
 								<input type="checkbox" name="rtt_override_thumbnail" value="1" <?php checked( $rtt_override_thumbnail, 1 ); ?> />
 								<span class="rtm-tooltip">
@@ -258,7 +258,7 @@
 							<td>
 								<?php
 
-								$rtt_check_status_btn = get_site_option( 'rtt_client_check_status_button', false );
+								$rtt_check_status_btn = get_option( 'rtt_client_check_status_button', false );
 								?>
 								<input type="checkbox" name="rtt_client_check_status_button" value="1" <?php checked( $rtt_check_status_btn, 1 ); ?> />
 								<span class="rtm-tooltip">
