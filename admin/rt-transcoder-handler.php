@@ -1528,8 +1528,24 @@ class RT_Transcoder_Handler {
 	 * `add_attachment` hook will do it fo PDF.
 	 *
 	 * @param int $post_id Attachment ID of the PDF.
+	 *
+	 * @return void
 	 */
 	public function after_upload_pdf( $post_id ) {
+
+		$post_id = ( ! empty( $post_id ) && 0 < intval( $post_id ) ) ? intval( $post_id ) : 0;
+
+		if ( empty( $post_id ) ) {
+			return;
+		}
+
+		$file_path = get_attached_file( $post_id );
+		$file_type = wp_check_filetype( $file_path );
+		$file_type = array_map( 'strtolower', $file_type );
+
+		if ( 'pdf' !== $file_type['ext'] ) {
+			return;
+		}
 
 		$allow_transcoding = true;
 
@@ -1546,18 +1562,16 @@ class RT_Transcoder_Handler {
 			$allow_transcoding = true;
 		}
 
+		if ( false === $allow_transcoding && empty( wp_get_attachment_metadata( $post_id ) ) ) {
+			$allow_transcoding = true;
+		}
+
 		if ( false === $allow_transcoding ) {
 			return;
 		}
 
-		$file_url = wp_get_attachment_url( $post_id );
-		$filetype = wp_check_filetype( $file_url );
+		$this->wp_media_transcoding( array( 'mime_type' => 'application/pdf' ), $post_id );
 
-		$filetype['ext'] = strtolower( $filetype['ext'] );
-
-		if ( 'pdf' === $filetype['ext'] ) {
-			$this->wp_media_transcoding( array( 'mime_type' => 'application/pdf' ), $post_id );
-		}
 	}
 
 	/**
