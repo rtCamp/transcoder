@@ -1523,12 +1523,22 @@ class RT_Transcoder_Handler {
 	 */
 	public function after_upload_pdf( $post_id ) {
 
+		$allow_transcoding = true;
+
 		// If it have native support, skip the use of transcoder server.
 		if ( extension_loaded( 'imagick' ) &&
 			class_exists( 'Imagick', false ) &&
 			class_exists( 'ImagickPixel', false ) &&
 			version_compare( phpversion( 'imagick' ), '2.2.0', '>=' )
 		) {
+			$allow_transcoding = false;
+		}
+
+		if ( defined( 'VIP_GO_ENV' ) || defined( 'VIP_GO_APP_ENVIRONMENT' ) ) {
+			$allow_transcoding = true;
+		}
+
+		if ( false === $allow_transcoding ) {
 			return;
 		}
 
