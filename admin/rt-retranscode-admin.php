@@ -181,7 +181,7 @@ class RetranscodeMedia {
 			return $actions;
 		}
 
-		$actions = ( ! empty( $actions ) && is_array( $actions ) ) ? $actions : [];
+		$actions = ( ! empty( $actions ) && is_array( $actions ) ) ? $actions : array();
 
 		$url = wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1&ids=' . $post->ID ), 'rt-retranscoder' );
 
@@ -617,16 +617,15 @@ class RetranscodeMedia {
 
 		$media = get_post( $id );
 
-		if ( ! $media || 'attachment' !== $media->post_type || ( 'audio/' !== substr( $media->post_mime_type, 0, 6 ) && 'video/' !== substr( $media->post_mime_type, 0, 6 ) ) ) {
-
 		if ( ! $media || 'attachment' !== $media->post_type ||
 			(
 				'audio/' !== substr( $media->post_mime_type, 0, 6 ) &&
 				'video/' !== substr( $media->post_mime_type, 0, 6 ) ||
 				'application/pdf' !== $media->post_mime_type
-		     )
+			)
 		) {
-			die( json_encode( array( 'error' => sprintf( __( 'Sending Failed: %s is an invalid media ID/type.', 'transcoder' ), esc_html( $_REQUEST['id'] ) ) ) ) );
+			// translators: Media id of the invalid media type.
+			die( wp_json_encode( array( 'error' => sprintf( __( 'Sending Failed: %s is an invalid media ID/type.', 'transcoder' ), esc_html( $id ) ) ) ) );
 		}
 
 		if ( 'audio/mpeg' === $media->post_mime_type ) {
