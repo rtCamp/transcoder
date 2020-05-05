@@ -355,7 +355,7 @@ class RT_Transcoder_Handler {
 	public function is_valid_key( $key ) {
 		$validate_url = trailingslashit( $this->store_url ) . 'rt-eddsl-api/?rt-eddsl-license-key=' . $key;
 		if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
-			$validation_page = vip_safe_wp_remote_get( $validate_url );
+			$validation_page = vip_safe_wp_remote_get( $validate_url, '', 3, 3 );
 		} else {
 			$validation_page = wp_remote_get( $validate_url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 		}
@@ -383,7 +383,7 @@ class RT_Transcoder_Handler {
 	public function update_usage( $key ) {
 		$usage_url = trailingslashit( $this->transcoding_api_url ) . 'usage/' . $key;
 		if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
-			$usage_page = vip_safe_wp_remote_get( $usage_url );
+			$usage_page = vip_safe_wp_remote_get( $usage_url, '', 3, 3 );
 		} else {
 			$usage_page = wp_remote_get( $usage_url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 		}
@@ -735,7 +735,7 @@ class RT_Transcoder_Handler {
 	 *
 	 * @param array $post_array  Attachment data.
 	 *
-	 * @return url
+	 * @return string
 	 */
 	public function add_media_thumbnails( $post_array ) {
 		$defaults = array(
@@ -899,7 +899,7 @@ class RT_Transcoder_Handler {
 							$post_mime_type                = 'mp4' === $new_wp_attached_file_pathinfo['extension'] ? 'video/mp4' : 'audio/mp3';
 							$attachemnt_url                = wp_get_attachment_url( $attachment_id );
 							try {
-								$response = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $download_url ) : wp_remote_get( $download_url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+								$response = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $download_url, '', 3, 3 ) : wp_remote_get( $download_url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 							} catch ( Exception $e ) {
 								$flag = $e->getMessage();
 							}
@@ -1394,7 +1394,9 @@ class RT_Transcoder_Handler {
 	 *
 	 * @since 1.2
 	 *
-	 * @param string $post_id post ID.
+	 * @param int $post_id post ID.
+	 *
+	 * @return string
 	 */
 	public function get_transcoding_status( $post_id ) {
 
@@ -1439,7 +1441,7 @@ class RT_Transcoder_Handler {
 		} else {
 
 			if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
-				$status_page = vip_safe_wp_remote_get( $status_url );
+				$status_page = vip_safe_wp_remote_get( $status_url, '', 3, 3 );
 			} else {
 				$status_page = wp_remote_get( $status_url, array( 'timeout' => 120 ) ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get, WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 			}
