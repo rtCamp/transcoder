@@ -375,8 +375,10 @@ class RT_Transcoder_Admin {
 	 * @return array $form_fields
 	 */
 	public function save_video_thumbnail( $post ) {
+
 		$rtmedia_thumbnail = transcoder_filter_input( INPUT_POST, 'rtmedia-thumbnail', FILTER_SANITIZE_STRING );
-		$id                = $post['ID'];
+		$id                = ( ! empty( $post['ID'] ) && 0 < intval( $post['ID'] ) ) ? intval( $post['ID'] ) : 0;
+
 		if ( isset( $rtmedia_thumbnail ) ) {
 			if ( class_exists( 'rtMedia' ) ) {
 				$file_url = $rtmedia_thumbnail;

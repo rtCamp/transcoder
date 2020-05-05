@@ -625,7 +625,7 @@ class RetranscodeMedia {
 			)
 		) {
 			// translators: Media id of the invalid media type.
-			die( wp_json_encode( array( 'error' => sprintf( __( 'Sending Failed: %s is an invalid media ID/type.', 'transcoder' ), esc_html( $id ) ) ) ) );
+			die( wp_json_encode( array( 'error' => sprintf( __( 'Sending Failed: %d is an invalid media ID/type.', 'transcoder' ), intval( $id ) ) ) ) );
 		}
 
 		if ( 'audio/mpeg' === $media->post_mime_type ) {
