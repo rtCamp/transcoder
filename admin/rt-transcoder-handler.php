@@ -115,8 +115,8 @@ class RT_Transcoder_Handler {
 	 */
 	public function __construct( $no_init = false ) {
 
-		$this->api_key             = get_site_option( 'rt-transcoding-api-key' );
-		$this->stored_api_key      = get_site_option( 'rt-transcoding-api-key-stored' );
+		$this->api_key        = get_site_option( 'rt-transcoding-api-key' );
+		$this->stored_api_key = get_site_option( 'rt-transcoding-api-key-stored' );
 
 		/**
 		 * Allow other plugin and wp-config to overwrite API URL.
@@ -222,13 +222,22 @@ class RT_Transcoder_Handler {
 		$not_allowed_type = array( 'mp3' );
 		preg_match( '/video|audio/i', $metadata['mime_type'], $type_array );
 
-		if ( ( preg_match( '/video|audio/i', $metadata['mime_type'], $type_array ) || in_array( $metadata['mime_type'], $this->allowed_mimetypes, true ) ) && ! in_array( $metadata['mime_type'], array( 'audio/mp3' ), true ) && ! in_array( $type, $not_allowed_type, true ) ) {
+		if ( (
+				preg_match( '/video|audio/i', $metadata['mime_type'], $type_array ) ||
+				in_array( $metadata['mime_type'], $this->allowed_mimetypes, true )
+			) &&
+			! in_array( $metadata['mime_type'], array( 'audio/mp3' ), true ) &&
+			! in_array( $type, $not_allowed_type, true )
+		) {
+
 			$options_video_thumb = $this->get_thumbnails_required( $attachment_id );
+
 			if ( empty( $options_video_thumb ) ) {
 				$options_video_thumb = 5;
 			}
 
 			$job_type = 'video';
+
 			if ( ( ! empty( $type_array ) && 'audio' === $type_array[0] ) || in_array( $extension, explode( ',', $this->audio_extensions ), true ) ) {
 				$job_type = 'audio';
 			} elseif ( in_array( $extension, explode( ',', $this->other_extensions ), true ) ) {
@@ -269,7 +278,12 @@ class RT_Transcoder_Handler {
 
 			$upload_page = wp_remote_post( $transcoding_url, $args );
 
-			if ( ! is_wp_error( $upload_page ) && ( ( isset( $upload_page['response']['code'] ) && ( 200 === intval( $upload_page['response']['code'] ) ) ) ) ) {
+			if ( ! is_wp_error( $upload_page ) &&
+				(
+					isset( $upload_page['response']['code'] ) &&
+					200 === intval( $upload_page['response']['code'] )
+				)
+			) {
 				$upload_info = json_decode( $upload_page['body'] );
 				if ( isset( $upload_info->status ) && $upload_info->status && isset( $upload_info->job_id ) && $upload_info->job_id ) {
 					$job_id = $upload_info->job_id;
