@@ -11,7 +11,7 @@
 /**
  * Return instance of RT_Transcoder_Admin Class.
  *
- * @since	1.0.0
+ * @since   1.0.0
  *
  * @return object
  */
@@ -34,8 +34,8 @@ function rta() {
  *
  *     @type int $attachment_id     ID of attachment.
  * }
- * @param  string $content	Shortcode content.
- * @return string|void		HTML content to display video.
+ * @param  string $content  Shortcode content.
+ * @return string|void      HTML content to display video.
  */
 function rt_media_shortcode( $attrs, $content = '' ) {
 
@@ -56,12 +56,12 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 	if ( 'video' === $mime_type[0] ) {
 
 		$video_shortcode_attributes = '';
-		$media_url 	= rtt_get_media_url( $attachment_id );
+		$media_url                  = rtt_get_media_url( $attachment_id );
 
-		$poster 	= rt_media_get_video_thumbnail( $attachment_id );
+		$poster = rt_media_get_video_thumbnail( $attachment_id );
 
-		$attrs['src'] 		= $media_url;
-		$attrs['poster'] 	= $poster;
+		$attrs['src']    = $media_url;
+		$attrs['poster'] = $poster;
 
 		foreach ( $attrs as $key => $value ) {
 			$video_shortcode_attributes .= ' ' . $key . '="' . $value . '"';
@@ -71,7 +71,7 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 
 	} elseif ( 'audio' === $mime_type[0] ) {
 
-		$media_url 	= rtt_get_media_url( $attachment_id, 'mp3' );
+		$media_url = rtt_get_media_url( $attachment_id, 'mp3' );
 
 		$audio_shortcode_attributes = 'src="' . $media_url . '"';
 
@@ -92,10 +92,10 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $content    	Activity content.
-	 * @param int $attachment_id  	ID of attachment.
-	 * @param string $media_url  	URL of the media.
-	 * @param string $media_type  	Mime type of the media.
+	 * @param string $content       Activity content.
+	 * @param int $attachment_id    ID of attachment.
+	 * @param string $media_url     URL of the media.
+	 * @param string $media_type    Mime type of the media.
 	 */
 	return apply_filters( 'rt_media_shortcode', $content, $attachment_id, $media_url, $mime_type[0] );
 }
@@ -105,15 +105,15 @@ add_shortcode( 'rt_media', 'rt_media_shortcode' );
 /**
  * Check whether the file is sent to the transcoder or not.
  *
- * @since	1.0.0
+ * @since   1.0.0
  *
- * @param  number $attachment_id	ID of attachment.
+ * @param  number $attachment_id    ID of attachment.
  * @return boolean
  */
 function is_file_being_transcoded( $attachment_id ) {
 	$job_id = get_post_meta( $attachment_id, '_rt_transcoding_job_id', true );
 	if ( ! empty( $job_id ) ) {
-		$transcoded_files = get_post_meta( $attachment_id, '_rt_media_transcoded_files', true );
+		$transcoded_files  = get_post_meta( $attachment_id, '_rt_media_transcoded_files', true );
 		$transcoded_thumbs = get_post_meta( $attachment_id, '_rt_media_thumbnails', true );
 		if ( empty( $transcoded_files ) && empty( $transcoded_thumbs ) ) {
 			return true;
@@ -128,7 +128,7 @@ function is_file_being_transcoded( $attachment_id ) {
  * @since 1.0.0
  *
  * @param  int $attachment_id   ID of attachment.
- * @return string 				returns image file url on success.
+ * @return string               returns image file url on success.
  */
 function rt_media_get_video_thumbnail( $attachment_id ) {
 
@@ -141,7 +141,7 @@ function rt_media_get_video_thumbnail( $attachment_id ) {
 	if ( ! empty( $thumbnails ) ) {
 
 		$file_url = $thumbnails;
-		/* for WordPress backward compatibility */
+		// for WordPress backward compatibility.
 		if ( function_exists( 'wp_get_upload_dir' ) ) {
 			$uploads = wp_get_upload_dir();
 		} else {
@@ -168,9 +168,9 @@ function rt_media_get_video_thumbnail( $attachment_id ) {
  *
  * @since 1.0.0
  *
- * @param  int    $attachment_id	 ID of attachment.
+ * @param  int    $attachment_id     ID of attachment.
  * @param  string $media_type        Type of media i.e mp4, mp3. By default it mp4 is passed.
- * @return string					 Returns audio file url on success.
+ * @return string                    Returns audio file url on success.
  */
 function rtt_get_media_url( $attachment_id, $media_type = 'mp4' ) {
 
@@ -182,7 +182,7 @@ function rtt_get_media_url( $attachment_id, $media_type = 'mp4' ) {
 
 	if ( isset( $medias[ $media_type ] ) && is_array( $medias[ $media_type ] ) && ! empty( $medias[ $media_type ][0] ) ) {
 		$file_url = $medias[ $media_type ][0];
-		/* for WordPress backward compatibility */
+		// for WordPress backward compatibility.
 		if ( function_exists( 'wp_get_upload_dir' ) ) {
 			$uploads = wp_get_upload_dir();
 		} else {
@@ -202,38 +202,18 @@ function rtt_get_media_url( $attachment_id, $media_type = 'mp4' ) {
 
 }
 
-/**
- * Give the thumbnail URL for rtMedia gallery shortcode.
- *
- * @since	1.0.0
- *
- * @param  string $src			thumbnail URL.
- * @param  number $media_id		ID of attachment.
- * @param  string $media_type	media type i.e video, audio etc.
- *
- * @return string				thumbnail URL
- */
-function rtt_transcoded_thumb( $src, $media_id, $media_type ) {
-	if ( 'video' === $media_type ) {
-		$attachment_id = rtmedia_media_id( $media_id );
-		$thumb_src = rt_media_get_video_thumbnail( $attachment_id );
-		if ( ! empty( $thumb_src ) ) {
-			$src = $thumb_src;
-		}
-	}
-	return $src;
-}
-//add_filter( 'rtmedia_media_thumb', 'rtt_transcoded_thumb', 11, 3 );
-
 if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
 	/**
 	 * Update the activity after thumb is set to the video.
 	 *
-	 * @since	1.0.0
+	 * @since 1.0.0
 	 *
-	 * @param  number $id media id.
+	 * @param number $id media id.
+	 *
+	 * @return void
 	 */
 	function rtt_update_activity_after_thumb_set( $id ) {
+
 		$model       = new RTMediaModel();
 		$media_obj   = new RTMediaMedia();
 		$media       = $model->get( array( 'id' => $id ) );
@@ -246,7 +226,7 @@ if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
 				$update_activity_media[] = $a_media->id;
 			}
 			$obj_activity = new RTMediaActivity( $update_activity_media, $privacy, false );
-			global $wpdb, $bp;
+			global $bp;
 			$activity_old_content = bp_activity_get_meta( $activity_id, 'bp_old_activity_content' );
 			$activity_text        = bp_activity_get_meta( $activity_id, 'bp_activity_text' );
 			if ( ! empty( $activity_old_content ) ) {
@@ -256,17 +236,22 @@ if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
 				$activity_body = $activity->content;
 				bp_activity_update_meta( $activity_id, 'bp_old_activity_content', $activity_body );
 				// extract activity text from old content.
-				$activity_text = strip_tags( $activity_body, '<span>' );
+				$activity_text = wp_kses( $activity_body, array( '<span>' => array() ) );
 				$activity_text = explode( '</span>', $activity_text );
-				$activity_text = strip_tags( $activity_text[0] );
+				$activity_text = wp_strip_all_tags( $activity_text[0] );
 				bp_activity_update_meta( $activity_id, 'bp_activity_text', $activity_text );
 			}
 			$activity_text               = bp_activity_get_meta( $activity_id, 'bp_activity_text' );
 			$obj_activity->activity_text = $activity_text;
-			$wpdb->update( $bp->activity->table_name, array(
-				'type'    => 'rtmedia_update',
-				'content' => $obj_activity->create_activity_html(),
-			), array( 'id' => $activity_id ) );
+			global $wpdb;
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery	
+				$bp->activity->table_name,
+				array(
+					'type'    => 'rtmedia_update',
+					'content' => $obj_activity->create_activity_html(),
+				),
+				array( 'id' => $activity_id )
+			);
 		}
 	}
 }
@@ -286,11 +271,12 @@ if ( ! function_exists( 'rtt_get_edit_post_link' ) ) {
 	 *                     not allow an editing UI.
 	 */
 	function rtt_get_edit_post_link( $id = 0, $context = 'display' ) {
-		if ( ! $post = get_post( $id ) ) {
+		$_post = get_post( $id );
+		if ( empty( $_post ) ) {
 			return;
 		}
 
-		if ( 'revision' === $post->post_type ) {
+		if ( 'revision' === $_post->post_type ) {
 			$action = '';
 		} elseif ( 'display' === $context ) {
 			$action = '&amp;action=edit';
@@ -298,13 +284,13 @@ if ( ! function_exists( 'rtt_get_edit_post_link' ) ) {
 			$action = '&action=edit';
 		}
 
-		$post_type_object = get_post_type_object( $post->post_type );
+		$post_type_object = get_post_type_object( $_post->post_type );
 		if ( ! $post_type_object ) {
 			return;
 		}
 
 		if ( $post_type_object->_edit_link ) {
-			$link = admin_url( sprintf( $post_type_object->_edit_link . $action, $post->ID ) );
+			$link = admin_url( sprintf( $post_type_object->_edit_link . $action, $_post->ID ) );
 		} else {
 			$link = '';
 		}
@@ -317,19 +303,21 @@ if ( ! function_exists( 'rtt_get_job_id_by_attachment_id' ) ) {
 	/**
 	 * Get the job id of attachment
 	 *
-	 * @since	1.0.0
+	 * @since 1.0.0
 	 *
-	 * @param  number $attachment_id Attachment id
-	 * @return number                On success it returns the job id otherwise it returns the false.
+	 * @param number $attachment_id Attachment id.
+	 *
+	 * @return number On success it returns the job id otherwise it returns the false.
 	 */
 	function rtt_get_job_id_by_attachment_id( $attachment_id ) {
+
 		if ( empty( $attachment_id ) ) {
-			return false;
+			return 0;
 		}
 
 		$job_id = get_post_meta( $attachment_id, '_rt_transcoding_job_id', true );
 
-		return $job_id ? $job_id : false;
+		return $job_id ? $job_id : 0;
 	}
 }
 
@@ -338,20 +326,22 @@ if ( ! function_exists( 'rtt_get_job_id_by_attachment_id' ) ) {
  *
  * @since  1.0
  *
- * @param  text 	$html       short code for the media
- * @param  number 	$send_id    unique id for the short code
- * @param  array 	$attachment attachment array
- * @return text
+ * @param string $html       Short code for the media.
+ * @param number $send_id    Unique id for the short code.
+ * @param array  $attachment Attachment array.
+ *
+ * @return string
  */
 function rtt_generate_video_shortcode( $html, $send_id, $attachment ) {
+
 	if ( empty( $attachment ) ) {
 		return $html;
 	}
 
 	$post_mime_type = get_post_mime_type( $attachment['id'] );
-	$mime_type 		= explode( '/',  $post_mime_type );
+	$mime_type      = explode( '/', $post_mime_type );
 
-	$medias 				= get_post_meta( $attachment['id'], '_rt_media_transcoded_files', true );
+	$medias = get_post_meta( $attachment['id'], '_rt_media_transcoded_files', true );
 
 	if ( 0 === strpos( $post_mime_type, '[audio' ) || 0 === strpos( $post_mime_type, '[video' ) ) {
 		return $html;
@@ -395,15 +385,17 @@ add_filter( 'media_send_to_editor', 'rtt_generate_video_shortcode', 100, 3 );
  *
  * @since 1.0.1
  *
- * @param  string $content  HTML contents of the activity
- * @param  object $activity Activity object
+ * @param string $content  HTML contents of the activity.
+ * @param object $activity Activity object.
  *
  * @return string
  */
-function rtt_bp_get_activity_content( $content, $activity = '' ) {
+function rtt_bp_get_activity_content( $content, $activity ) {
+
 	if ( empty( $activity ) || empty( $content ) ) {
 		return $content;
 	}
+
 	if ( class_exists( 'RTMediaModel' ) ) {
 		$rt_model  = new RTMediaModel();
 		$all_media = $rt_model->get( array( 'activity_id' => $activity->id ) );
@@ -411,33 +403,32 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 			return $content;
 		}
 
-		/* Filter all video objects. So we only get video objects in $all_media array */
+		// Filter all video objects. So we only get video objects in $all_media array.
 		foreach ( $all_media as $key => $media ) {
 			if ( 'video' !== $media->media_type ) {
 				unset( $all_media[ $key ] );
 			}
 		}
-		/* Reset the array keys */
-		/* Changing SORT_DESC from SORT_ASC because $video_src_url is in desc order  */
+
+		// Reset the array keys. Changing SORT_DESC from SORT_ASC because $video_src_url is in desc order.
 		array_multisort( $all_media, SORT_DESC );
 
-		/* Get all the video src */
-		$search_video_url 	= "/<video.+(src=[\"]([^\"]*)[\"])/";
-		preg_match_all( $search_video_url , $content, $video_src_url );
+		// Get all the video src.
+		$search_video_url = '/<video.+(src=["]([^"]*)["])/';
+		preg_match_all( $search_video_url, $content, $video_src_url );
 
-		/* Get all the poster src */
-		$search_poster_url 	= "/<video.+(poster=[\"]([^\"]*)[\"])/";
-		preg_match_all( $search_poster_url , $content, $poster_url );
+		// Get all the poster src.
+		$search_poster_url = '/<video.+(poster=["]([^"]*)["])/';
+		preg_match_all( $search_poster_url, $content, $poster_url );
 
 		$uploads = wp_upload_dir();
 
-		/* Iterate through each media */
+		// Iterate through each media.
 		foreach ( $all_media as $key => $media ) {
-			/* Get default video thumbnail stored for this particular video in post meta */
+			// Get default video thumbnail stored for this particular video in post meta.
 			$wp_video_thumbnail = get_post_meta( $media->media_id, '_rt_media_video_thumbnail', true );
 
 			if ( ! empty( $video_src_url[2] ) ) {
-				$video_url =  $video_src_url[2][$key];
 
 				$transcoded_media_url = rtt_get_media_url( $media->media_id );
 
@@ -446,7 +437,7 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 				}
 			}
 
-			/* Make the URL absolute */
+			// Make the URL absolute.
 			if ( ! empty( $wp_video_thumbnail ) ) {
 				$file_url = $wp_video_thumbnail;
 
@@ -455,14 +446,14 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 				} else {
 					$final_file_url = $uploads['baseurl'] . '/' . $file_url;
 				}
-				/* Thumbnail/poster URL */
+				// Thumbnail/poster URL.
 				$final_file_url = apply_filters( 'transcoded_file_url', $final_file_url, $media->media_id );
-				/* Replace the first poster (assuming activity has multiple medias in it) */
+				// Replace the first poster (assuming activity has multiple medias in it).
 				if ( is_file_being_transcoded( $media->media_id ) ) {
 					$content = preg_replace( '/' . str_replace( '/', '\/', $poster_url[1][ $key ] ) . '/', 'poster="' . $final_file_url . '"', $content, 1 );
 				}
 			}
-			/* If media is sent to the transcoder then show the message */
+			// If media is sent to the transcoder then show the message.
 			if ( is_file_being_transcoded( $media->media_id ) ) {
 				if ( current_user_can( 'administrator' ) && '1' === get_site_option( 'rtt_client_check_status_button', false ) ) {
 
@@ -498,9 +489,9 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 				 * @param string $message   Message to be displayed.
 				 * @param object $activity  Activity object.
 				 */
-				$message = apply_filters( 'rtt_transcoding_in_progress_message', $message, $activity );
+				$message  = apply_filters( 'rtt_transcoding_in_progress_message', $message, $activity );
 				$message .= '</div>';
-				/* Add this message to the particular media (there can be multiple medias in the activity) */
+				// Add this message to the particular media (there can be multiple medias in the activity).
 				$search     = '/(rt_media_video_' . $media->id . ")['\"](.*?)(<\/a><\/div>)/s";
 				$text_found = array();
 				preg_match( $search, $content, $text_found );
@@ -510,7 +501,7 @@ function rtt_bp_get_activity_content( $content, $activity = '' ) {
 				}
 			}
 		}
-		$search = '/(<div class="rtmedia-item-title")(.*?)(>)/s';
+		$search     = '/(<div class="rtmedia-item-title")(.*?)(>)/s';
 		$text_found = array();
 		global $rtmedia;
 		$text_to_be_entered = " style='max-width:" . esc_attr( $rtmedia->options['defaultSizes_video_activityPlayer_width'] ) . "px;' ";
@@ -530,22 +521,23 @@ add_filter( 'bp_get_activity_content_body', 'rtt_bp_get_activity_content', 99, 2
  *
  * @since 1.0.4
  *
- * @param  string $url The URL to be parsed
- * @return array       Array containing the information about the URL
+ * @param  string $url The URL to be parsed.
+ * @return array       Array containing the information about the URL.
  */
 function rtt_wp_parse_url( $url ) {
 	if ( function_exists( 'wp_parse_url' ) ) {
 		return wp_parse_url( $url );
 	}
-	$parts = @parse_url( $url );
+	$parts = wp_parse_url( $url );
 	if ( ! $parts ) {
 		// < PHP 5.4.7 compat, trouble with relative paths including a scheme break in the path
-		if ( '/' == $url[0] && false !== strpos( $url, '://' ) ) {
-			// Since we know it's a relative path, prefix with a scheme/host placeholder and try again
-			if ( ! $parts = @parse_url( 'placeholder://placeholder' . $url ) ) {
+		if ( '/' === $url[0] && false !== strpos( $url, '://' ) ) {
+			// Since we know it's a relative path, prefix with a scheme/host placeholder and try again.
+			$parts = wp_parse_url( 'placeholder://placeholder' . $url );
+			if ( empty( $parts ) ) {
 				return $parts;
 			}
-			// Remove the placeholder values
+			// Remove the placeholder values.
 			unset( $parts['scheme'], $parts['host'] );
 		} else {
 			return $parts;
@@ -553,8 +545,8 @@ function rtt_wp_parse_url( $url ) {
 	}
 
 	// < PHP 5.4.7 compat, doesn't detect schemeless URL's host field
-	if ( '//' == substr( $url, 0, 2 ) && ! isset( $parts['host'] ) ) {
-		$path_parts = explode( '/', substr( $parts['path'], 2 ), 2 );
+	if ( '//' === substr( $url, 0, 2 ) && ! isset( $parts['host'] ) ) {
+		$path_parts    = explode( '/', substr( $parts['path'], 2 ), 2 );
 		$parts['host'] = $path_parts[0];
 		if ( isset( $path_parts[1] ) ) {
 			$parts['path'] = '/' . $path_parts[1];
@@ -570,7 +562,7 @@ function rtt_wp_parse_url( $url ) {
  *
  * @since 1.0.5
  *
- * @param  int $post_id Attachment ID
+ * @param  int $post_id Attachment ID.
  */
 function rtt_delete_related_transcoded_files( $post_id ) {
 	if ( empty( $post_id ) ) {
@@ -579,20 +571,20 @@ function rtt_delete_related_transcoded_files( $post_id ) {
 
 	$transcoded_files = get_post_meta( $post_id, '_rt_media_transcoded_files', true );
 
-	if ( ! empty( $transcoded_files ) && is_array( $transcoded_files )  ) {
-		foreach ( $transcoded_files as $type => $files ) {
+	if ( ! empty( $transcoded_files ) && is_array( $transcoded_files ) ) {
+		foreach ( $transcoded_files as $files ) {
 			if ( ! empty( $files ) && is_array( $files ) ) {
-				$delete = rtt_delete_transcoded_files( $files );
+				rtt_delete_transcoded_files( $files );
 			}
 		}
 	}
-	$delete_meta = delete_post_meta( $post_id, '_rt_media_transcoded_files' );
+	delete_post_meta( $post_id, '_rt_media_transcoded_files' );
 
 	$thumbnails = get_post_meta( $post_id, '_rt_media_thumbnails', true );
-	if ( ! empty( $thumbnails ) && is_array( $thumbnails )  ) {
-		$delete = rtt_delete_transcoded_files( $thumbnails );
+	if ( ! empty( $thumbnails ) && is_array( $thumbnails ) ) {
+		rtt_delete_transcoded_files( $thumbnails );
 	}
-	$delete_meta = delete_post_meta( $post_id, '_rt_media_thumbnails' );
+	delete_post_meta( $post_id, '_rt_media_thumbnails' );
 }
 
 add_action( 'delete_attachment', 'rtt_delete_related_transcoded_files', 99, 1 );
@@ -602,18 +594,26 @@ add_action( 'delete_attachment', 'rtt_delete_related_transcoded_files', 99, 1 );
  *
  * @since 1.0.5
  *
- * @param  mixed $files 	Files array or file path string
+ * @param mixed $files Files array or file path string.
+ *
+ * @return void
  */
 function rtt_delete_transcoded_files( $files ) {
-	if ( ! is_array( $files ) ) {
+
+	if ( empty( $files ) ) {
+		return;
+	}
+
+	if ( ! empty( $files ) && ! is_array( $files ) ) {
 		$files = array( $files );
 	}
+
 	$uploadpath = rtt_get_upload_dir();
-	foreach ( $files as $key => $file ) {
+
+	foreach ( $files as $file ) {
 		if ( ! empty( $file ) ) {
-			if ( file_exists( $file ) ) {
-				@unlink( path_join( $uploadpath['basedir'], $file ) );
-			}
+			$file_path = path_join( $uploadpath['basedir'], $file );
+			\Transcoder\Inc\FileSystem::delete_file( $file_path );
 		}
 	}
 }
@@ -634,7 +634,7 @@ function rtt_delete_transcoded_files( $files ) {
  * @return array See above for description.
  */
 function rtt_get_upload_dir() {
-	/* for WordPress backward compatibility */
+	// for WordPress backward compatibility.
 	if ( function_exists( 'wp_get_upload_dir' ) ) {
 		$uploads = wp_get_upload_dir();
 	} else {
@@ -649,9 +649,9 @@ function rtt_get_upload_dir() {
  *
  * @since 1.1.0
  *
- * @param int $attachment_id	ID of attachment.
+ * @param int|string $attachment_id ID of attachment.
  *
- * @return boolean 				TRUE if override is ON, FALSE is OFF
+ * @return boolean TRUE if override is ON, FALSE is OFF
  */
 function rtt_is_override_thumbnail( $attachment_id = '' ) {
 
@@ -662,8 +662,8 @@ function rtt_is_override_thumbnail( $attachment_id = '' ) {
 	 *
 	 * @since 1.1.0
 	 *
-	 * @param boolean 	$rtt_override_thumbnail    	Number of thumbnails set in setting.
-	 * @param int 		$attachment_id  			ID of attachment.
+	 * @param boolean   $rtt_override_thumbnail     Number of thumbnails set in setting.
+	 * @param int       $attachment_id              ID of attachment.
 	 */
 	$rtt_override_thumbnail = apply_filters( 'rtt_is_override_thumbnail', $rtt_override_thumbnail, $attachment_id );
 
@@ -672,15 +672,20 @@ function rtt_is_override_thumbnail( $attachment_id = '' ) {
 
 /**
  * Get remote IP address
+ *
  * @return string Remote IP address
  */
 function rtt_get_remote_ip_address() {
-	if ( isset( $_SERVER['HTTP_CLIENT_IP'] ) && ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-		return $_SERVER['HTTP_CLIENT_IP'];
-	} elseif ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) && ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-		return $_SERVER['HTTP_X_FORWARDED_FOR'];
+	$client_ip = get_server_var( 'HTTP_CLIENT_IP' );
+	$xff       = get_server_var( 'HTTP_X_FORWARDED_FOR' );
+	if ( ! empty( $client_ip ) ) {
+		return $client_ip;
+	} elseif ( ! empty( $xff ) ) {
+		return $xff;
 	}
-	return $_SERVER['REMOTE_ADDR'];
+
+	$remote_addr = get_server_var( 'REMOTE_ADDR' );
+	return $remote_addr;
 }
 
 /**
@@ -769,7 +774,7 @@ add_filter( 'manage_upload_sortable_columns', 'rtt_status_column_register_sortab
 function rtt_enqueue_scripts() {
 
 	if ( current_user_can( 'administrator' ) ) {
-		wp_register_script( 'rt_transcoder_js', plugins_url( 'js/rt-transcoder.min.js', __FILE__ ) );
+		wp_register_script( 'rt_transcoder_js', plugins_url( 'js/rt-transcoder.min.js', __FILE__ ), array(), RT_TRANSCODER_VERSION, false );
 
 		$translation_array = array(
 			'load_flag'      => current_user_can( 'administrator' ),
@@ -780,7 +785,7 @@ function rtt_enqueue_scripts() {
 		wp_enqueue_script( 'rt_transcoder_js' );
 
 		if ( ! is_admin() ) {
-			wp_enqueue_style( 'rt-transcoder-client-style', plugins_url( 'css/rt-transcoder-client.min.css', __FILE__ ) );
+			wp_enqueue_style( 'rt-transcoder-client-style', plugins_url( 'css/rt-transcoder-client.min.css', __FILE__ ), array(), RT_TRANSCODER_VERSION );
 		}
 	}
 }
@@ -796,7 +801,7 @@ add_action( 'enqueue_block_editor_assets', 'rt_transcoder_enqueue_block_editor_a
  * Enqueue required script for block editor.
  */
 function rt_transcoder_enqueue_block_editor_assets() {
-	// Enqueue our script
+	// Enqueue our script.
 	wp_enqueue_script(
 		'rt-transcoder-block-editor-support',
 		esc_url( plugins_url( '/js/build/rt-transcoder-block-editor-support.build.js', __FILE__ ) ),
@@ -809,10 +814,10 @@ function rt_transcoder_enqueue_block_editor_assets() {
 	wp_localize_script(
 		'rt-transcoder-block-editor-support',
 		'rtTranscoderBlockEditorSupport',
-		[
+		array(
 			'amp_story_fallback_poster' => plugins_url( '/images/amp-story-fallback-poster.png', __FILE__ ),
-			'amp_video_fallback_poster' => plugins_url( '/images/amp-story-video-fallback-poster.png', __FILE__ )
-		]
+			'amp_video_fallback_poster' => plugins_url( '/images/amp-story-video-fallback-poster.png', __FILE__ ),
+		)
 	);
 }
 
@@ -824,7 +829,7 @@ function rt_transcoder_enqueue_block_editor_assets() {
 function rtt_ajax_process_check_status_request() {
 
 	check_ajax_referer( 'check-transcoding-status-ajax-nonce', 'security', true );
-	$post_id = filter_input( INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT );
+	$post_id = transcoder_filter_input( INPUT_POST, 'postid', FILTER_SANITIZE_NUMBER_INT );
 
 	if ( ! empty( $post_id ) ) {
 		echo esc_html( rtt_get_transcoding_status( $post_id ) );
@@ -848,7 +853,7 @@ add_action( 'wp_ajax_checkstatus', 'rtt_ajax_process_check_status_request' );
  */
 function rtt_get_transcoding_status( $post_id ) {
 
-	require_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-handler.php';
+	require_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-handler.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 
 	$obj    = new RT_Transcoder_Handler( true );
 	$status = $obj->get_transcoding_status( $post_id );
@@ -866,8 +871,14 @@ function rtt_get_transcoding_status( $post_id ) {
 function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_id ) {
 
 	global $wpdb;
-	$results = $wpdb->get_results( "SELECT media_id FROM {$wpdb->prefix}rt_rtm_media WHERE id = '" . $rtmedia_id . "'", OBJECT );
-	$post_id = $results[0]->media_id;
+	$rtmedia_media_table = $wpdb->prefix . 'rt_rtm_media';
+
+	$post_id = wp_cache_get( 'media_' . $rtmedia_id, 'transcoder' );
+	if ( empty( $post_id ) ) {
+		$results = $wpdb->get_results( $wpdb->prepare( 'SELECT media_id FROM %s WHERE id = %d', $rtmedia_media_table, $rtmedia_id ), OBJECT ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		$post_id = $results[0]->media_id;
+		wp_cache_set( 'media_' . $rtmedia_id, $post_id, 'transcoder', 3600 );
+	}
 
 	$check_button_text = __( 'Check Status', 'transcoder' );
 
@@ -896,7 +907,8 @@ function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_i
 			);
 		}
 
-		echo $message; // Message already escaped. @codingStandardsIgnoreLine
+		// Message already escaped.
+		echo $message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 	}
 }
@@ -918,11 +930,10 @@ function rtt_filter_single_media_page_video_markup( $html, $rtmedia_media ) {
 	if ( empty( $rtmedia_media ) || empty( $rtmedia_media->media_type ) || empty( $rtmedia_media->media_id ) ) {
 		return $html;
 	}
-	global $rtmedia;
 	if ( 'video' === $rtmedia_media->media_type && is_file_being_transcoded( $rtmedia_media->media_id ) ) {
 
 		$youtube_url = get_rtmedia_meta( $rtmedia_media->id, 'video_url_uploaded_from' );
-		$html   = "<div id='rtm-mejs-video-container'>";
+		$html        = "<div id='rtm-mejs-video-container'>";
 
 		if ( empty( $youtube_url ) ) {
 
@@ -932,11 +943,11 @@ function rtt_filter_single_media_page_video_markup( $html, $rtmedia_media ) {
 		} else {
 
 			$html_video = '<video width="640" height="360" class="url-video" id="video-id-%s" preload="none"><source type="video/youtube" src="%s" /></video>';
-			$html .= sprintf( $html_video, esc_attr( $rtmedia_media->id ), esc_url( wp_get_attachment_url( $rtmedia_media->media_id ) ) );
+			$html      .= sprintf( $html_video, esc_attr( $rtmedia_media->id ), esc_url( wp_get_attachment_url( $rtmedia_media->media_id ) ) );
 
 		}
 
-		$html   .= '</div>';
+		$html .= '</div>';
 	}
 	return $html;
 }
@@ -966,7 +977,7 @@ function rtt_media_update_usage( $wp_metadata, $attachment_id, $autoformat = tru
 
 		if ( empty( $usage_info ) || empty( $usage_info[ $handler->api_key ]->remaining ) ) {
 
-			$usage = $handler->update_usage( $handler->api_key );
+			$handler->update_usage( $handler->api_key );
 			set_transient( 'rtt_usage_update_flag', '1', HOUR_IN_SECONDS );
 		}
 	}
@@ -976,3 +987,20 @@ function rtt_media_update_usage( $wp_metadata, $attachment_id, $autoformat = tru
 
 add_filter( 'wp_generate_attachment_metadata', 'rtt_media_update_usage', 10, 2 );
 
+/**
+ * To get sanitized server variables.
+ *
+ * @param string $server_key Key of the $_SERVER superglobal variable.
+ * @param int    $filter_type The ID of the filter to apply.
+ *
+ * @return string Filtered value if supports.
+ */
+function get_server_var( $server_key, $filter_type = FILTER_SANITIZE_STRING ) {
+	$server_val = '';
+	if ( function_exists( 'filter_input' ) && filter_has_var( INPUT_SERVER, $server_key ) ) {
+		$server_val = transcoder_filter_input( INPUT_SERVER, $server_key, $filter_type );
+	} elseif ( isset( $_SERVER[ $server_key ] ) ) {
+		$server_val = $_SERVER[ $server_key ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	}
+	return $server_val;
+}

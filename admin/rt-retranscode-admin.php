@@ -1,36 +1,60 @@
-<?php /*
+<?php
+/**
+ * Retranscode media https://wordpress.org/plugins/regenerate-thumbnails/
+ * The code and UI is borrowed from the following plugin (Author: Alex Mills).
+ *
+ * @package transcoder
+ */
 
-**************************************************************************
-
-Retranscode media
-
-The code and UI is borrowed from the following plugin (Author: Alex Mills).
-https://wordpress.org/plugins/regenerate-thumbnails/
-**************************************************************************/
-
+/**
+ * Media retranscode module. 
+ */
 class RetranscodeMedia {
+	/**
+	 * ID of the menu.
+	 *
+	 *  @var string
+	 */
 	public $menu_id;
 
+	/**
+	 * API key of transcoder subscription.
+	 *
+	 *  @var string
+	 */
 	public $api_key;
 
+	/**
+	 * Stored API key of transcoder subscription.
+	 *
+	 *  @var string
+	 */
 	public $stored_api_key;
 
+	
+	/**
+	 * Usage info of transcoder subscription.
+	 *
+	 *  @var array
+	 */
 	public $usage_info;
 
-	// Functinallity initialization
+	/**
+	 * Functinallity initialization
+	 */
 	public function __construct() {
 
-		$this->api_key			= get_site_option( 'rt-transcoding-api-key' );
-		$this->stored_api_key	= get_site_option( 'rt-transcoding-api-key-stored' );
+		$this->api_key        = get_site_option( 'rt-transcoding-api-key' );
+		$this->stored_api_key = get_site_option( 'rt-transcoding-api-key-stored' );
 
-		$this->usage_info 		= get_site_option( 'rt-transcoding-usage' );
+		$this->usage_info = get_site_option( 'rt-transcoding-usage' );
 
 		// Do not activate re-transcoding without valid license key
-		// Or usage are fully utilized
+		// Or usage are fully utilized.
 		if ( empty( $this->api_key ) ) {
 			return;
 		}
-		if ( isset( $this->usage_info ) && is_array( $this->usage_info ) && array_key_exists( $this->api_key , $this->usage_info ) ) {
+		if ( isset( $this->usage_info ) && is_array( $this->usage_info ) && array_key_exists( $this->api_key, $this->usage_info ) ) {
 			if ( is_object( $this->usage_info[ $this->api_key ] ) && isset( $this->usage_info[ $this->api_key ]->status ) && $this->usage_info[ $this->api_key ]->status ) {
 				if ( isset( $this->usage_info[ $this->api_key ]->remaining ) && $this->usage_info[ $this->api_key ]->remaining <= 0 ) {
 					return;
@@ -40,21 +64,21 @@ class RetranscodeMedia {
 			return;
 		}
 
-		add_action( 'admin_menu',                          array( $this, 'add_admin_menu' ) );
-		add_action( 'admin_enqueue_scripts',               array( $this, 'admin_enqueues' ) );
-		add_action( 'wp_ajax_retranscodemedia',            array( $this, 'ajax_process_retranscode_request' ) );
-		add_filter( 'media_row_actions',                   array( $this, 'add_media_row_action' ), 10, 2 );
-		add_action( 'admin_head-upload.php',               array( $this, 'add_bulk_actions_via_javascript' ) );
-		add_action( 'admin_action_bulk_retranscode_media', array( $this, 'bulk_action_handler' ) ); // Top drowndown
-		add_action( 'admin_action_-1',                     array( $this, 'bulk_action_handler' ) ); // Bottom dropdown (assumes top dropdown = default value)
-		add_action( 'rtt_before_thumbnail_store',          array( $this, 'rtt_before_thumbnail_store' ), 10, 2 ); // Delete old thumbs
-		add_action( 'rtt_before_transcoded_media_store',   array( $this, 'rtt_before_transcoded_media_store' ), 10, 2 ); // Delete old transcoded files
-		add_action( 'transcoded_thumbnails_added',         array( $this, 'transcoded_thumbnails_added' ), 10, 1 ); // Add the current thumbnail to the newly added thumbnails
-		add_action( 'rtt_handle_callback_finished',        array( $this, 'rtt_handle_callback_finished' ), 10, 2 ); // Clean the extra meta that has been added while sending retranscoding request
-		add_filter( 'amp_story_allowed_video_types',       array( $this, 'add_amp_video_extensions' ) ); // Extend allowed video mime type extensions for AMP Story Background.
-		add_filter( 'render_block',                        array( $this, 'update_amp_story_video_url' ), 10, 2 ); // Filter block content and replace video URLs.
+		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueues' ) );
+		add_action( 'wp_ajax_retranscodemedia', array( $this, 'ajax_process_retranscode_request' ) );
+		add_filter( 'media_row_actions', array( $this, 'add_media_row_action' ), 10, 2 );
+		add_action( 'admin_head-upload.php', array( $this, 'add_bulk_actions_via_javascript' ) );
+		add_action( 'admin_action_bulk_retranscode_media', array( $this, 'bulk_action_handler' ) ); // Top drowndown.
+		add_action( 'admin_action_-1', array( $this, 'bulk_action_handler' ) ); // Bottom dropdown (assumes top dropdown = default value).
+		add_action( 'rtt_before_thumbnail_store', array( $this, 'rtt_before_thumbnail_store' ), 10, 2 ); // Delete old thumbs.
+		add_action( 'rtt_before_transcoded_media_store', array( $this, 'rtt_before_transcoded_media_store' ), 10, 2 ); // Delete old transcoded files.
+		add_action( 'transcoded_thumbnails_added', array( $this, 'transcoded_thumbnails_added' ), 10, 1 ); // Add the current thumbnail to the newly added thumbnails.
+		add_action( 'rtt_handle_callback_finished', array( $this, 'rtt_handle_callback_finished' ), 10, 2 ); // Clean the extra meta that has been added while sending retranscoding request.
+		add_filter( 'amp_story_allowed_video_types', array( $this, 'add_amp_video_extensions' ) ); // Extend allowed video mime type extensions for AMP Story Background.
+		add_filter( 'render_block', array( $this, 'update_amp_story_video_url' ), 10, 2 ); // Filter block content and replace video URLs.
 
-		// Allow people to change what capability is required to use this feature
+		// Allow people to change what capability is required to use this feature.
 		$this->capability = apply_filters( 'retranscode_media_cap', 'manage_options' );
 
 		// Load Rest Endpoints.
@@ -67,67 +91,111 @@ class RetranscodeMedia {
 	 * @return void
 	 */
 	public function load_rest_endpoints() {
-		$rest_class_file_path = RT_TRANSCODER_PATH . 'admin/rt-transcoder-rest-routes.php';
-		include_once $rest_class_file_path;
+		include_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-rest-routes.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 
 		// Create class object and register routes.
 		$transcoder_rest_routes = new Transcoder_Rest_Routes();
 		add_action( 'rest_api_init', array( $transcoder_rest_routes, 'register_routes' ) );
 	}
 
-	// Register the management page
+	/**
+	 * Register the management page.
+	 *
+	 * @return void
+	 */
 	public function add_admin_menu() {
+
 		add_submenu_page(
 			'rt-transcoder',
 			'Transcoder',
 			'Settings',
-		    'manage_options',
-		    'rt-transcoder',
-		    array( $this, '_transcoder_settings_page' )
+			'manage_options',
+			'rt-transcoder',
+			array( $this, '_transcoder_settings_page' )
 		);
+
 		$this->menu_id = add_submenu_page(
 			'rt-transcoder',
-			__( 'Retranscode Media' , 'transcoder'),
 			__( 'Retranscode Media', 'transcoder' ),
-		    $this->capability,
-		    'rt-retranscoder',
-			array($this, 'retranscode_interface')
+			__( 'Retranscode Media', 'transcoder' ),
+			$this->capability,
+			'rt-retranscoder',
+			array( $this, 'retranscode_interface' )
 		);
+
 	}
 
-	public function _transcoder_settings_page(){
-		include_once( RT_TRANSCODER_PATH . 'admin/partials/rt-transcoder-admin-display.php' );
+	/**
+	 * Transcoder settings render.
+	 *
+	 * Note: DO NOT USE directly.
+	 *
+	 * @return void
+	 */
+	public function _transcoder_settings_page() {
+		include_once RT_TRANSCODER_PATH . 'admin/partials/rt-transcoder-admin-display.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 	}
 
-	// Enqueue the needed Javascript and CSS
+	/** 
+	 * Enqueue the needed Javascript and CSS
+	 * 
+	 * @param string $hook_suffix Suffix of the hook.
+	 *
+	 * @return void
+	 */
 	public function admin_enqueues( $hook_suffix ) {
-		if ( $hook_suffix != $this->menu_id )
+		if ( $hook_suffix !== $this->menu_id ) {
 			return;
+		}
 
-		// WordPress 3.1 vs older version compatibility
-		if ( wp_script_is( 'jquery-ui-widget', 'registered' ) )
-			wp_enqueue_script( 'jquery-ui-progressbar', plugins_url( 'js/jquery.ui.progressbar.min.js', __FILE__ ), array( 'jquery-ui-core', 'jquery-ui-widget' ), '1.8.6' );
-		else
-			wp_enqueue_script( 'jquery-ui-progressbar', plugins_url( 'js/jquery.ui.progressbar.min.1.7.2.js', __FILE__ ), array( 'jquery-ui-core' ), '1.7.2' );
+		// WordPress 3.1 vs older version compatibility.
+		if ( wp_script_is( 'jquery-ui-widget', 'registered' ) ) {
+			wp_enqueue_script( 'jquery-ui-progressbar', plugins_url( 'js/jquery.ui.progressbar.min.js', __FILE__ ), array( 'jquery-ui-core', 'jquery-ui-widget' ), '1.8.6', true );
+		} else {
+			wp_enqueue_script( 'jquery-ui-progressbar', plugins_url( 'js/jquery.ui.progressbar.min.1.7.2.js', __FILE__ ), array( 'jquery-ui-core' ), '1.7.2', true );
+		}
 
 		wp_enqueue_style( 'jquery-ui-retranscodemedia', plugins_url( 'css/jquery-ui-1.7.2.custom.css', __FILE__ ), array(), '1.7.2' );
 	}
 
 
-	// Add a "Retranscode Media" link to the media row actions
+	/**
+	 * Add a "Re Transcode Media" link to the media row actions
+	 *
+	 * @param array   $actions   An array of action links for each attachment.
+	 *                           Default 'Edit', 'Delete Permanently', 'View'.
+	 * @param WP_Post $post      WP_Post object for the current attachment.
+	 *
+	 * @return array
+	 */
 	public function add_media_row_action( $actions, $post ) {
-		if ( ( 'audio/' != substr( $post->post_mime_type, 0, 6 ) && 'video/' != substr( $post->post_mime_type, 0, 6 ) ) || 'audio/mpeg' === $post->post_mime_type || ! current_user_can( $this->capability ) )
+
+		if ( (
+				'audio/' !== substr( $post->post_mime_type, 0, 6 ) &&
+				'video/' !== substr( $post->post_mime_type, 0, 6 )
+			) ||
+			'audio/mpeg' === $post->post_mime_type ||
+			! current_user_can( $this->capability )
+		) {
 			return $actions;
+		}
 
 		$url = wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1&ids=' . $post->ID ), 'rt-retranscoder' );
-		$actions['retranscode_media'] = '<a href="' . esc_url( $url ) . '" title="' . esc_attr( __( "Retranscode this single media", 'transcoder' ) ) . '">' . __( 'Retranscode Media', 'transcoder' ) . '</a>';
+
+		$actions['retranscode_media'] = '<a href="' . esc_url( $url ) . '" title="' . esc_attr( __( 'Retranscode this single media', 'transcoder' ) ) . '">' . __( 'Retranscode Media', 'transcoder' ) . '</a>';
 
 		return $actions;
 	}
 
-
-	// Add "Retranscode Media" to the Bulk Actions media dropdown
+	/**
+	 * Add "Re Transcode Media" to the Bulk Actions media dropdown
+	 *
+	 * @param array $actions Actions to perform.
+	 *
+	 * @return array
+	 */
 	public function add_bulk_actions( $actions ) {
+
 		$delete = false;
 		if ( ! empty( $actions['delete'] ) ) {
 			$delete = $actions['delete'];
@@ -136,113 +204,141 @@ class RetranscodeMedia {
 
 		$actions['bulk_retranscode_media'] = __( 'Retranscode Media', 'transcoder' );
 
-		if ( $delete )
+		if ( $delete ) {
 			$actions['delete'] = $delete;
+		}
 
 		return $actions;
 	}
 
 
-	// Add new items to the Bulk Actions using Javascript
-	// A last minute change to the "bulk_actions-xxxxx" filter in 3.1 made it not possible to add items using that
+	/**
+	 * Add new items to the Bulk Actions using Javascript
+	 */
 	public function add_bulk_actions_via_javascript() {
-		if ( ! current_user_can( $this->capability ) )
+		if ( ! current_user_can( $this->capability ) ) {
 			return;
-?>
+		}
+		?>
 		<script type="text/javascript">
 			jQuery(document).ready(function($){
 				$('select[name^="action"] option:last-child').before('<option value="bulk_retranscode_media"><?php echo esc_attr( __( 'Retranscode Media', 'transcoder' ) ); ?></option>');
 			});
 		</script>
-<?php
+		<?php
 	}
 
-
-	// Handles the bulk actions POST
+	/**
+	 * Handles the bulk actions POST
+	 *
+	 * @return void
+	 */
 	public function bulk_action_handler() {
-		if ( empty( $_REQUEST['action'] ) || ( 'bulk_retranscode_media' != $_REQUEST['action'] && 'bulk_retranscode_media' != $_REQUEST['action2'] ) )
-			return;
 
-		if ( empty( $_REQUEST['media'] ) || ! is_array( $_REQUEST['media'] ) )
+		$action  = transcoder_filter_input( INPUT_REQUEST, 'action', FILTER_SANITIZE_STRING );
+		$action2 = transcoder_filter_input( INPUT_REQUEST, 'action2', FILTER_SANITIZE_STRING );
+		$media   = transcoder_filter_input( INPUT_REQUEST, 'media', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY );
+
+		if ( empty( $action ) || empty( $media ) || ! is_array( $media ) ||
+			( 'bulk_retranscode_media' !== $action && 'bulk_retranscode_media' !== $action2 )
+		) {
 			return;
+		}
+
+		if ( empty( $media ) || ! is_array( $media ) ) {
+			return;
+		}
 
 		check_admin_referer( 'bulk-media' );
 
-		$ids = implode( ',', array_map( 'intval', $_REQUEST['media'] ) );
+		$ids = implode( ',', $media );
 
-		// Can't use wp_nonce_url() as it escapes HTML entities
-		wp_redirect( add_query_arg( '_wpnonce', wp_create_nonce( 'rt-retranscoder' ), admin_url( 'admin.php?page=rt-retranscoder&goback=1&ids=' . $ids ) ) );
+		// Can't use wp_nonce_url() as it escapes HTML entities.
+		$redirect_url = add_query_arg(
+			'_wpnonce',
+			wp_create_nonce( 'rt-retranscoder' ),
+			admin_url( 'admin.php?page=rt-retranscoder&goback=1&ids=' . $ids )
+		);
+
+		wp_safe_redirect( $redirect_url );
 		exit();
 	}
 
 
-	// The user interface
+	/**
+	 * The user interface
+	 */
 	public function retranscode_interface() {
-		global $wpdb;
-
 		?>
 
 <div id="message" class="updated fade" style="display:none"></div>
 
 <div class="wrap retranscodemedia">
-	<h2><?php _e('Retranscode Media', 'transcoder'); ?></h2>
+	<h2><?php esc_html_e( 'Retranscode Media', 'transcoder' ); ?></h2>
 
-<?php
+		<?php
 
-		// If the button was clicked
+		// If the button was clicked.
 		if ( ! empty( $_POST['rt-retranscoder'] ) || ! empty( $_REQUEST['ids'] ) ) {
-			// Capability check
-			if ( ! current_user_can( $this->capability ) )
-				wp_die( __( 'Cheatin&#8217; uh?', 'transcoder' ) );
+			// Capability check.
+			if ( ! current_user_can( $this->capability ) ) {
+				wp_die( esc_html__( 'Cheatin&#8217; uh?', 'transcoder' ) );
+			}
 
-			// Form nonce check
+			// Form nonce check.
 			check_admin_referer( 'rt-retranscoder' );
 
 			$file_size = 0;
-			$files = array();
-			// Create the list of image IDs
+			$files     = array();
+
+			// Create the list of image IDs.
 			$usage_info = get_site_option( 'rt-transcoding-usage' );
-			if ( ! empty( $_REQUEST['ids'] ) ) {
-				if ( is_array( $_REQUEST['ids'] ) ){
-					$_REQUEST['ids'] = implode( ',', $_REQUEST['ids'] );
+			$ids        = transcoder_filter_input( INPUT_REQUEST, 'ids', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY );
+
+			if ( ! empty( $ids ) ) {
+				if ( is_array( $ids ) ) {
+					$ids = implode( ',', $ids );
 				}
-				$media = array_map( 'intval', explode( ',', trim( $_REQUEST['ids'], ',' ) ) );
-				$ids = implode( ',', $media );
+				$media = array_map( 'intval', explode( ',', trim( $ids, ',' ) ) );
+				$ids   = implode( ',', $media );
 				foreach ( $media as $key => $each ) {
 					$path = get_attached_file( $each );
 					if ( file_exists( $path ) ) {
 						$current_file_size = filesize( $path );
-						$file_size = $file_size + $current_file_size ;
-						$files[ $each ] = array(
+						$file_size         = $file_size + $current_file_size;
+						$files[ $each ]    = array(
 							'name' => esc_html( get_the_title( $each ) ),
-							'size' => $current_file_size
+							'size' => $current_file_size,
 						);
 					}
 				}
 			} else {
-				// Directly querying the database is normally frowned upon, but all
-				// of the API functions will return the full post objects which will
-				// suck up lots of memory. This is best, just not as future proof.
-				if ( ! $media = $wpdb->get_results( "SELECT ID, post_mime_type FROM $wpdb->posts WHERE post_type = 'attachment' AND ( post_mime_type LIKE 'audio/%' OR post_mime_type LIKE 'video/%' ) ORDER BY ID DESC" ) ) {
-					echo '	<p>' . sprintf( __( "Unable to find any media. Are you sure <a href='%s'>some exist</a>?", 'transcoder' ), admin_url( 'upload.php' ) ) . "</p></div>";
+				add_filter( 'posts_where', array( $this, 'add_search_mime_types' ) );
+				$query = new WP_Query( array( 'post_type' => 'attachments' ) );
+				$media = $query->get_posts();
+				remove_filter( 'posts_where', array( $this, 'add_search_mime_types' ) );
+				if ( empty( $media ) || is_wp_error( $media ) ) {
+					
+					// translators: Link to the media page.
+					echo '	<p>' . sprintf( esc_html__( "Unable to find any media. Are you sure <a href='%s'>some exist</a>?", 'transcoder' ), esc_url( admin_url( 'upload.php' ) ) ) . '</p></div>';
 					return;
 				}
 
-				// Generate the list of IDs
+				// Generate the list of IDs.
 				$ids = array();
 				foreach ( $media as $i => $each ) {
 					if ( ! in_array( $each->post_mime_type, array( 'audio/mp3', 'audio/mpeg' ), true ) ) {
 						$ids[] = $each->ID;
-						$path = get_attached_file( $each->ID );
+						$path  = get_attached_file( $each->ID );
 						if ( file_exists( $path ) ) {
-							$current_file_size = filesize( $path );
-							$file_size = $file_size + $current_file_size ;
+							$current_file_size  = filesize( $path );
+							$file_size          = $file_size + $current_file_size;
 							$files[ $each->ID ] = array(
 								'name' => esc_html( get_the_title( $each->ID ) ),
-								'size' => $current_file_size
+								'size' => $current_file_size,
 							);
 						}
-					} else if ( in_array( $each->post_mime_type, array( 'audio/mp3', 'audio/mpeg' ), true ) ) {
+					} elseif ( in_array( $each->post_mime_type, array( 'audio/mp3', 'audio/mpeg' ), true ) ) {
 						unset( $media[ $i ] );
 					}
 				}
@@ -250,48 +346,49 @@ class RetranscodeMedia {
 			}
 
 			if ( empty( $ids ) ) {
-				echo '	<p>' . __( "There are no media available to send for transcoding.", 'transcoder' ) . '</p>';
+				echo '	<p>' . esc_html__( 'There are no media available to send for transcoding.', 'transcoder' ) . '</p>';
 				return;
 			}
 
-			if ( isset( $usage_info ) && is_array( $usage_info ) && array_key_exists( $this->api_key , $usage_info ) ) {
+			if ( isset( $usage_info ) && is_array( $usage_info ) && array_key_exists( $this->api_key, $usage_info ) ) {
 				if ( is_object( $usage_info[ $this->api_key ] ) && isset( $usage_info[ $this->api_key ]->status ) && $usage_info[ $this->api_key ]->status ) {
 					if ( isset( $usage_info[ $this->api_key ]->remaining ) && $usage_info[ $this->api_key ]->remaining > 0 ) {
 						if ( $usage_info[ $this->api_key ]->remaining < $file_size ) {
 							$this->retranscode_admin_error_notice();
-							// User doesn't have enough bandwidth remaining for re-transcoding
-							echo '	<p>' . __( "You do not have sufficient bandwidth remaining to perform the transcoding.", 'transcoder' ) . '</p>';
-							echo '	<p><b>' . __( "Your remaining bandwidth is : ", 'transcoder' ) . size_format( $usage_info[ $this->api_key ]->remaining, 2 ) . '</b></p>';
-							echo '	<p><b>' . __( "Required bandwidth is: ", 'transcoder' ) . size_format( $file_size , 2 ) . '</b></p></div>';
+							// User doesn't have enough bandwidth remaining for re-transcoding.
+							echo '	<p>' . esc_html__( 'You do not have sufficient bandwidth remaining to perform the transcoding.', 'transcoder' ) . '</p>';
+							echo '	<p><b>' . esc_html__( 'Your remaining bandwidth is : ', 'transcoder' ) . esc_html( size_format( $usage_info[ $this->api_key ]->remaining, 2 ) ) . '</b></p>';
+							echo '	<p><b>' . esc_html__( 'Required bandwidth is: ', 'transcoder' ) . esc_html( size_format( $file_size, 2 ) ) . '</b></p></div>';
 							if ( $usage_info[ $this->api_key ]->remaining > 0 ) {
 								if ( is_array( $files ) && count( $files ) > 0 ) {
-									echo '<div><p>' . sprintf( __( "You can select the files manually and try again.", 'transcoder' ) ) . "</p>";
-									echo '<form method="'. 'POST' . ' action="'. admin_url( 'admin.php' ) .'">';
-									wp_nonce_field('rt-retranscoder');
-									echo '<input type="hidden" name="page" value="rt-retranscoder">';
-									echo '<table border=0>';
+									?>
+									<div><p><?php esc_html_e( 'You can select the files manually and try again.', 'transcoder' ); ?></p>
+									<form method="POST" action="<?php esc_url( admin_url( 'admin.php' ) ); ?>">
+									<?php wp_nonce_field( 'rt-retranscoder' ); ?>
+									<input type="hidden" name="page" value="rt-retranscoder">
+									<table border=0>
 									?>
 										<tr>
-											<td><input type="submit" class="button button-primary button-small" value="<?php echo __( 'Proceed with retranscoding', 'transcoder'); ?>"></td>
+											<td><input type="submit" class="button button-primary button-small" value="<?php echo esc_html__( 'Proceed with retranscoding', 'transcoder' ); ?>"></td>
 											<td></td>
 										</tr>
 									<?php
 									foreach ( $files as $key => $value ) {
-									?>
+										?>
 										<tr>
-											<td><label><input type="checkbox" name="ids[]" value="<?php echo $key; ?>" /> <?php echo $value['name']; ?> (ID <?php echo $key; ?>) </label></td>
-											<td><?php echo size_format( $value['size'], 2); ?></td>
+											<td><label><input type="checkbox" name="ids[]" value="<?php echo esc_attr( $key ); ?>" /> <?php echo esc_html( $value['name'] ); ?> (ID <?php echo esc_html( $key ); ?>) </label></td>
+											<td><?php echo esc_html( size_format( $value['size'], 2 ) ); ?></td>
 										</tr>
-									<?php
+										<?php
 									}
 									?>
 										<tr>
-											<td><input type="submit" class="button button-primary button-small" value="<?php echo __( 'Proceed with retranscoding', 'transcoder'); ?>" ></td>
+											<td><input type="submit" class="button button-primary button-small" value="<?php esc_html_e( 'Proceed with retranscoding', 'transcoder' ); ?>" ></td>
 											<td></td>
 										</tr>
+									</table>
+									</form></div>
 									<?php
-									echo '</table>';
-									echo '</form></div>';
 								}
 							}
 							return;
@@ -299,31 +396,48 @@ class RetranscodeMedia {
 					}
 				}
 			}
+			?>
+			<p><?php esc_html_e( 'Your files are being re-transcoded. Do not navigate away from this page until the process is completed, as doing so will prematurely abort the script. Retranscoding can take a while, especially for larger files. You can view the progress below.', 'transcoder' ); ?></p>
 
-			echo '	<p>' . __( "Your files are being re-transcoded. Do not navigate away from this page until the process is completed, as doing so will prematurely abort the script. Retranscoding can take a while, especially for larger files. You can view the progress below.", 'transcoder' ) . '</p>';
-
+			<?php
 			$count = count( $media );
 
+			
+			// translators: Count of media which were successfully transcoded with the time in seconds.
 			$text_goback = ( ! empty( $_GET['goback'] ) ) ? sprintf( __( 'To go back to the previous page, <a href="%s">click here</a>.', 'transcoder' ), 'javascript:history.go(-1)' ) : '';
+			
+			// translators: Count of media which were successfully and media which were failed transcoded with the time in seconds and previout page link.
 			$text_failures = sprintf( __( 'All done! %1$s media file(s) were successfully sent for transcoding in %2$s seconds and there were %3$s failure(s). To try transcoding the failed media again, <a href="%4$s">click here</a>. %5$s', 'transcoder' ), "' + rt_successes + '", "' + rt_totaltime + '", "' + rt_errors + '", esc_url( wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1' ), 'rt-retranscoder' ) . '&ids=' ) . "' + rt_failedlist + '", $text_goback );
+			// translators: Count of media which were successfully transcoded with the time in seconds and previout page link.
 			$text_nofailures = sprintf( __( 'All done! %1$s media file(s) were successfully sent for transcoding in %2$s seconds and there were 0 failures. %3$s', 'transcoder' ), "' + rt_successes + '", "' + rt_totaltime + '", $text_goback );
-?>
+			?>
 
 
-	<noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'transcoder' ) ?></em></p></noscript>
+	<noscript><p><em><?php esc_html_e( 'You must enable Javascript in order to proceed!', 'transcoder' ); ?></em></p></noscript>
 
 	<div id="retranscodemedia-bar" style="position:relative;height:25px;">
 		<div id="retranscodemedia-bar-percent" style="position:absolute;left:50%;top:50%;width:300px;margin-left:-150px;height:25px;margin-top:-9px;font-weight:bold;text-align:center;"></div>
 	</div>
 
-	<p><input type="button" class="button hide-if-no-js" name="retranscodemedia-stop" id="retranscodemedia-stop" value="<?php _e( 'Abort the Operation', 'transcoder' ) ?>" /></p>
+	<p><input type="button" class="button hide-if-no-js" name="retranscodemedia-stop" id="retranscodemedia-stop" value="<?php esc_html_e( 'Abort the Operation', 'transcoder' ); ?>" /></p>
 
-	<h3 class="title"><?php _e( 'Debugging Information', 'transcoder' ) ?></h3>
+	<h3 class="title"><?php esc_html_e( 'Debugging Information', 'transcoder' ); ?></h3>
 
 	<p>
-		<?php printf( __( 'Total Media: %s', 'transcoder' ), $count ); ?><br />
-		<?php printf( __( 'Media Sent for Retranscoding: %s', 'transcoder' ), '<span id="retranscodemedia-debug-successcount">0</span>' ); ?><br />
-		<?php printf( __( 'Failed While Sending: %s', 'transcoder' ), '<span id="retranscodemedia-debug-failurecount">0</span>' ); ?>
+			<?php
+			// translators: Total count of the media.
+			printf( esc_html__( 'Total Media: %s', 'transcoder' ), esc_html( $count ) );
+			?>
+			<br />
+			<?php
+			// translators: Count of media which were successfully sent to the transcoder server.
+			printf( esc_html__( 'Media Sent for Retranscoding: %s', 'transcoder' ), '<span id="retranscodemedia-debug-successcount">0</span>' );
+			?>
+			<br />
+			<?php
+			// translators: Count of media which were failed while sending to the transcoder server.
+			printf( esc_html__( 'Failed While Sending: %s', 'transcoder' ), '<span id="retranscodemedia-debug-failurecount">0</span>' );
+			?>
 	</p>
 
 	<ol id="retranscodemedia-debuglist">
@@ -334,7 +448,7 @@ class RetranscodeMedia {
 	// <![CDATA[
 		jQuery(document).ready(function($){
 			var i;
-			var rt_media = [<?php echo $ids; ?>];
+			var rt_media = [<?php echo esc_js( $ids ); ?>];
 			var rt_total = rt_media.length;
 			var rt_count = 1;
 			var rt_percent = 0;
@@ -354,7 +468,7 @@ class RetranscodeMedia {
 			// Stop button
 			$("#retranscodemedia-stop").click(function() {
 				rt_continue = false;
-				$('#retranscodemedia-stop').val("<?php echo $this->esc_quotes( __( 'Stopping...', 'transcoder' ) ); ?>");
+				$('#retranscodemedia-stop').val("<?php echo esc_js( $this->esc_quotes( __( 'Stopping...', 'transcoder' ) ) ); ?>");
 			});
 
 			// Clear out the empty list element that's there for HTML validation purposes
@@ -387,9 +501,9 @@ class RetranscodeMedia {
 				$('#retranscodemedia-stop').hide();
 
 				if ( rt_errors > 0 ) {
-					rt_resulttext = '<?php echo $text_failures; ?>';
+					rt_resulttext = '<?php echo wp_kses( $text_failures, array( 'a' => array( 'href' => array() ) ) ); ?>';
 				} else {
-					rt_resulttext = '<?php echo $text_nofailures; ?>';
+					rt_resulttext = '<?php echo esc_html( $text_nofailures ); ?>';
 				}
 
 				$("#message").html("<p><strong>" + rt_resulttext + "</strong></p>");
@@ -406,7 +520,12 @@ class RetranscodeMedia {
 						if ( response !== Object( response ) || ( typeof response.success === "undefined" && typeof response.error === "undefined" ) ) {
 							response = new Object;
 							response.success = false;
-							response.error = "<?php printf( esc_js( __( 'The resize request was abnormally terminated (ID %s). This is likely due to the media exceeding available memory or some other type of fatal error.', 'transcoder' ) ), '" + id + "' ); ?>";
+							response.error = "
+							<?php
+							// translators: Media ID.
+							printf( esc_js( __( 'The resize request was abnormally terminated (ID %s). This is likely due to the media exceeding available memory or some other type of fatal error.', 'transcoder' ) ), '" + id + "' );
+							?>
+							";
 						}
 
 						if ( response.success ) {
@@ -440,57 +559,72 @@ class RetranscodeMedia {
 		});
 	// ]]>
 	</script>
-<?php
-		}
-
-		// No button click? Display the form.
-		else {
-?>
+			<?php
+		} else { 
+			// No button click? Display the form.
+			?>
 	<form method="post" action="">
-<?php wp_nonce_field('rt-retranscoder') ?>
+			<?php wp_nonce_field( 'rt-retranscoder' ); ?>
 
-	<p><?php printf( __( "This tool will retranscode ALL audio/video media uploaded to your website. This can be handy if you need to transcode media files uploaded in the past.", 'transcoder' ) ); ?>
+	<p><?php printf( esc_html__( 'This tool will retranscode ALL audio/video media uploaded to your website. This can be handy if you need to transcode media files uploaded in the past.', 'transcoder' ) ); ?>
 
-	<i><?php printf( __( "Sending your entire media library for retranscoding can consume a lot of your bandwidth allowance, so use this tool with care.", 'transcoder' ) ); ?></i></p>
+	<i><?php printf( esc_html__( 'Sending your entire media library for retranscoding can consume a lot of your bandwidth allowance, so use this tool with care.', 'transcoder' ) ); ?></i></p>
 
-	<p><?php printf( __( "You can retranscode specific media files (rather than ALL media) from the <a href='%s'>Media</a> page using Bulk Action via drop down or mouse hover a specific media (audio/video) file.", 'transcoder' ), admin_url( 'upload.php' ) ); ?></p>
+	<p>
+			<?php 
+			// translators: Placeholder is for admin media section link.
+			printf( wp_kses( __( "You can retranscode specific media files (rather than ALL media) from the <a href='%s'>Media</a> page using Bulk Action via drop down or mouse hover a specific media (audio/video) file.", 'transcoder' ), array( 'a' => array( 'href' => array() ) ) ), esc_url( admin_url( 'upload.php' ) ) );
+			?>
+	</p>
 
-	<p><?php _e( 'To begin, just press the button below.', 'transcoder' ); ?></p>
+	<p><?php esc_html_e( 'To begin, just press the button below.', 'transcoder' ); ?></p>
 
-	<p><input type="submit" class="button hide-if-no-js button button-primary" name="rt-retranscoder" id="rt-retranscoder" value="<?php _e( 'Retranscode All Media', 'transcoder' ) ?>" /></p>
+	<p><input type="submit" class="button hide-if-no-js button button-primary" name="rt-retranscoder" id="rt-retranscoder" value="<?php esc_html_e( 'Retranscode All Media', 'transcoder' ); ?>" /></p>
 
-	<noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'transcoder' ) ?></em></p></noscript>
+	<noscript><p><em><?php esc_html_e( 'You must enable Javascript in order to proceed!', 'transcoder' ); ?></em></p></noscript>
 
 	</form>
-<?php
+			<?php
 		} // End if button
-?>
+		?>
 </div>
 
-<?php
+		<?php
 	}
 
 
-	// Process a single image ID (this is an AJAX handler)
+	/**
+	 * Process a single image ID (this is an AJAX handler)
+	 */
 	public function ajax_process_retranscode_request() {
-		@error_reporting( 0 ); // Don't break the JSON result
 
 		header( 'Content-type: application/json' );
 
-		$id = (int) $_REQUEST['id'];
+		$id = transcoder_filter_input( INPUT_REQUEST, 'id', FILTER_SANITIZE_NUMBER_INT );
+		$id = intval( $id );
+
+		if ( empty( $id ) || 0 >= $id ) {
+			wp_send_json_error();
+		}
+
 		$media = get_post( $id );
+	
+		if ( ! $media || 'attachment' !== $media->post_type || ( 'audio/' !== substr( $media->post_mime_type, 0, 6 ) && 'video/' !== substr( $media->post_mime_type, 0, 6 ) ) ) {
 
-		if ( ! $media || 'attachment' != $media->post_type || ( 'audio/' != substr( $media->post_mime_type, 0, 6 ) && 'video/' != substr( $media->post_mime_type, 0, 6 ) ) )
-			die( json_encode( array( 'error' => sprintf( __( 'Sending Failed: %s is an invalid media ID/type.', 'transcoder' ), esc_html( $_REQUEST['id'] ) ) ) ) );
+			// translators: Media id of the invalid media type.
+			die( wp_json_encode( array( 'error' => sprintf( __( 'Sending Failed: %d is an invalid media ID/type.', 'transcoder' ), intval( $id ) ) ) ) );
+		}
 
-		if ( 'audio/mpeg' === $media->post_mime_type )
-			die( json_encode( array( 'error' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) is MP3 file already. No need to send for transcoding', 'transcoder' ), esc_html( get_the_title( $media->ID ) ), $media->ID ) ) ) );
+		if ( 'audio/mpeg' === $media->post_mime_type ) {
+			// translators: Placeholder is for Media Name and ID of media.
+			die( wp_json_encode( array( 'error' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) is MP3 file already. No need to send for transcoding', 'transcoder' ), esc_html( get_the_title( $media->ID ) ), $media->ID ) ) ) );
+		}
 
-		if ( ! current_user_can( $this->capability ) )
+		if ( ! current_user_can( $this->capability ) ) {
 			$this->die_json_error_msg( $media->ID, __( "Your user account doesn't have permission to transcode", 'transcoder' ) );
+		}
 
-		// Check if media is already being transcoded
-
+		// Check if media is already being transcoded.
 		if ( is_file_being_transcoded( $media->ID ) ) {
 			$this->die_json_error_msg( $media->ID, sprintf( __( 'The media is already being transcoded', 'transcoder' ) ) );
 		}
@@ -504,21 +638,21 @@ class RetranscodeMedia {
 		$already_sent = get_post_meta( $media->ID, '_rt_transcoding_job_id', true );
 
 		if ( ! empty( $already_sent ) ) {
-			$delete_meta = delete_post_meta( $media->ID, '_rt_transcoding_job_id' );
+			delete_post_meta( $media->ID, '_rt_transcoding_job_id' );
 		}
 
-		// Get the transcoder object
-		$transcoder = new RT_Transcoder_Handler( $no_init = true );
+		// Get the transcoder object.
+		$transcoder = new RT_Transcoder_Handler( true );
 
-		$attachment_meta['mime_type'] = $media->post_mime_type;
+		$attachment_meta = array( 'mime_type' => $media->post_mime_type );
 
 		$transcoded_files = get_post_meta( $media->ID, '_rt_media_transcoded_files', true );
 
-		// No need to ask for the transcoded (mp4) file if we already have it
-		// Only asks for the thumbnails
+		// No need to ask for the transcoded (mp4) file if we already have it.
+		// Only asks for the thumbnails.
 
 		if ( ! empty( $transcoded_files ) && is_array( $transcoded_files ) ) {
-			if ( array_key_exists( 'mp4' , $transcoded_files ) && count( $transcoded_files[ 'mp4' ] ) > 0 ) {
+			if ( array_key_exists( 'mp4', $transcoded_files ) && count( $transcoded_files['mp4'] ) > 0 ) {
 
 				/**
 				 * We can ask for the new fresh transcoded file even if it already present.
@@ -533,27 +667,39 @@ class RetranscodeMedia {
 			}
 		}
 
-		// Send media for (Re)transcoding
-		$send = $transcoder->wp_media_transcoding( $attachment_meta, $media->ID );
+		// Send media for (Re)transcoding.
+		$transcoder->wp_media_transcoding( $attachment_meta, $media->ID );
 
 		$is_sent = get_post_meta( $media->ID, '_rt_transcoding_job_id', true );
 
-		if ( ! $is_sent )
+		if ( ! $is_sent ) {
 			$this->die_json_error_msg( $media->ID, __( 'Unknown failure reason.', 'transcoder' ) );
+		}
 
-		$mark_media_as_sent = update_post_meta( $media->ID, '_rt_retranscoding_sent', $is_sent );
+		update_post_meta( $media->ID, '_rt_retranscoding_sent', $is_sent );
 
-		die( json_encode( array( 'success' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) was successfully sent in %3$s seconds.', 'transcoder' ), esc_html( get_the_title( $media->ID ) ), $media->ID, timer_stop() ) ) ) );
+		// translators: Media name, Media id and success message for successfull transcode.
+		die( wp_json_encode( array( 'success' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) was successfully sent in %3$s seconds.', 'transcoder' ), esc_html( get_the_title( $media->ID ) ), $media->ID, timer_stop() ) ) ) );
 	}
 
 
-	// Helper to make a JSON error message
+	/**
+	 * Helper to make a JSON error message
+	 *
+	 * @param int    $id ID of the attachment.
+	 * @param string $message Error message.
+	 */
 	public function die_json_error_msg( $id, $message ) {
-		die( json_encode( array( 'error' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) failed to sent. The error message was: %3$s', 'transcoder' ), esc_html( get_the_title( $id ) ), $id, $message ) ) ) );
+		// translators: Media name, Media ID and message for failed transcode.
+		die( wp_json_encode( array( 'error' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) failed to sent. The error message was: %3$s', 'transcoder' ), esc_html( get_the_title( $id ) ), $id, $message ) ) ) );
 	}
 
 
-	// Helper function to escape quotes in strings for use in Javascript
+	/** 
+	 * Helper function to escape quotes in strings for use in Javascript
+	 * 
+	 * @param string $string String to escape quotes from.
+	 */
 	public function esc_quotes( $string ) {
 		return str_replace( '"', '\"', $string );
 	}
@@ -561,66 +707,71 @@ class RetranscodeMedia {
 	/**
 	 * Display admin notice.
 	 *
-	 * @since	1.0.0
+	 * @since   1.0.0
 	 */
-	function retranscode_admin_error_notice() {
-	?>
+	private function retranscode_admin_error_notice() {
+		?>
 		<div class="error error-info retranscode-notice is-dismissible">
 			<p>
 				<?php esc_html_e( 'Insufficient bandwidth!', 'transcoder' ); ?>
 			</p>
 		</div>
-	<?php
+		<?php
 	}
 
 	/**
 	 * Delete the previously added media thumbnail files
 	 *
-	 * @param  number 	$media_id     Post ID of the media
-	 * @param  array 	$post_request Post request coming for the transcoder API
+	 * @param  number $media_id     Post ID of the media.
+	 * @param  array  $post_request Post request coming for the transcoder API.
 	 */
 	public function rtt_before_thumbnail_store( $media_id = '', $post_request = '' ) {
-		if ( empty( $media_id ) ) return;
+		if ( empty( $media_id ) ) {
+			return;
+		}
 
 		$previous_thumbs = get_post_meta( $media_id, '_rt_media_thumbnails', true );
 
 		if ( ! empty( $previous_thumbs ) && is_array( $previous_thumbs ) ) {
 
-			// Do not delete the current thumbnail of the video
+			// Do not delete the current thumbnail of the video.
 			if ( ! rtt_is_override_thumbnail() ) {
 
 				$current_thumb = get_post_meta( $media_id, '_rt_media_video_thumbnail', true );
 
-				if ( ($key = array_search( $current_thumb, $previous_thumbs ) ) !== false ) {
+				$key = array_search( $current_thumb, $previous_thumbs, true );
+				if ( false !== $key ) {
 					unset( $previous_thumbs[ $key ] );
 				}
 			}
 
-			$delete = rtt_delete_transcoded_files( $previous_thumbs );
+			rtt_delete_transcoded_files( $previous_thumbs );
 		}
-		$delete_meta = delete_post_meta( $media_id, '_rt_media_thumbnails' );
+		delete_post_meta( $media_id, '_rt_media_thumbnails' );
 
 	}
 
 	/**
 	 * Delete the previously transcoded media files
 	 *
-	 * @param  number 	$media_id     Post ID of the media
-	 * @param  array 	$post_request Post request coming for the transcoder API
+	 * @param  number $media_id     Post ID of the media.
+	 * @param  array  $transcoded_files Post request coming for the transcoder API.
 	 */
 	public function rtt_before_transcoded_media_store( $media_id = '', $transcoded_files = '' ) {
-		if ( empty( $media_id ) ) return;
+		if ( empty( $media_id ) ) {
+			return;
+		}
 
 		$current_files = get_post_meta( $media_id, '_rt_media_transcoded_files', true );
 
 		if ( ! empty( $current_files ) && is_array( $current_files ) ) {
-			foreach ( $current_files as $type => $files ) {
+			foreach ( $current_files as $files ) {
 				if ( ! empty( $files ) && is_array( $files ) ) {
-					$delete = rtt_delete_transcoded_files( $files );
+					rtt_delete_transcoded_files( $files );
 				}
 			}
 		}
-		$delete_meta = delete_post_meta( $media_id, '_rt_media_transcoded_files' );
+		delete_post_meta( $media_id, '_rt_media_transcoded_files' );
 
 	}
 
@@ -628,10 +779,12 @@ class RetranscodeMedia {
 	 * Add the current thumbnail image in the newly added thumbnails if
 	 * user wants to preserve the thumbnails set to the media
 	 *
-	 * @param  number 	$media_id     Post ID of the media
+	 * @param  number $media_id     Post ID of the media.
 	 */
 	public function transcoded_thumbnails_added( $media_id = '' ) {
-		if ( empty( $media_id ) ) return;
+		if ( empty( $media_id ) ) {
+			return;
+		}
 
 		$is_retranscoding_job = get_post_meta( $media_id, '_rt_retranscoding_sent', true );
 
@@ -644,11 +797,9 @@ class RetranscodeMedia {
 				$current_thumb = get_post_meta( $media_id, '_rt_media_video_thumbnail', true );
 				if ( $current_thumb ) {
 					$new_thumbs[] = $current_thumb;
-					update_post_meta( $media_id, '_rt_media_thumbnails',$new_thumbs );
+					update_post_meta( $media_id, '_rt_media_thumbnails', $new_thumbs );
 				}
-
 			}
-
 		}
 
 		// Add thumbnail in media library for user selection and set attachment thumbnail.
@@ -670,14 +821,14 @@ class RetranscodeMedia {
 				'post_mime_type' => $file_type['type'],
 				'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $thumbnail_src ) ),
 				'post_content'   => '',
-				'post_status'    => 'inherit'
+				'post_status'    => 'inherit',
 			);
 
 			// Insert transcoded thumbnail attachment.
 			$attachment_id = wp_insert_attachment( $attachment, $thumbnail_src, $media_id );
 
 			if ( ! is_wp_error( $attachment_id ) && 0 !== $attachment_id ) {
-				require_once( ABSPATH . 'wp-admin/includes/image.php' );
+				require_once ABSPATH . 'wp-admin/includes/image.php';
 				$attach_data = wp_generate_attachment_metadata( $attachment_id, $thumbnail_src );
 				wp_update_attachment_metadata( $attachment_id, $attach_data );
 				set_post_thumbnail( $media_id, $attachment_id );
@@ -691,11 +842,13 @@ class RetranscodeMedia {
 	 * Callback request from the transcoder has been processed, so delete the flags
 	 * which are not necessary after processing the callback request
 	 *
-	 * @param  number 	$attachment_id     	Post ID of the media
-	 * @param  string 	$job_id 			Unique job ID of the transcoding request
+	 * @param  number $attachment_id      Post ID of the media.
+	 * @param  string $job_id             Unique job ID of the transcoding request.
 	 */
 	public function rtt_handle_callback_finished( $attachment_id = '', $job_id = '' ) {
-		if ( empty( $attachment_id ) ) return;
+		if ( empty( $attachment_id ) ) {
+			return;
+		}
 
 		$is_retranscoding_job = get_post_meta( $attachment_id, '_rt_retranscoding_sent', true );
 
@@ -715,7 +868,7 @@ class RetranscodeMedia {
 	 * @return array
 	 */
 	public function add_amp_video_extensions( $allowed_video_mime_types ) {
-		return array_merge( $allowed_video_mime_types, [ 'video/webm', 'video/quicktime', 'video/avi', 'video/msvideo', 'video/x-msvideo', 'video/mpeg', 'video/x-flv', 'video/x-ms-wmv' ] );
+		return array_merge( $allowed_video_mime_types, array( 'video/webm', 'video/quicktime', 'video/avi', 'video/msvideo', 'video/x-msvideo', 'video/mpeg', 'video/x-flv', 'video/x-ms-wmv' ) );
 	}
 
 	/**
@@ -727,7 +880,7 @@ class RetranscodeMedia {
 	 * @return mixed
 	 */
 	public function update_amp_story_video_url( $block_content, $block ) {
-		$allowed_blocks = [ 'amp/amp-story-page', 'core/video' ];
+		$allowed_blocks = array( 'amp/amp-story-page', 'core/video' );
 
 		// Check if the block content should be filtered or not.
 		if ( ! in_array( $block['blockName'], $allowed_blocks, true ) || is_admin() ) {
@@ -735,15 +888,15 @@ class RetranscodeMedia {
 		}
 
 		if ( isset( $block['attrs'] ) ) {
-			$mediaID = '';
+			$media_id = '';
 			if ( isset( $block['attrs']['mediaId'] ) ) {
-				$mediaID = $block['attrs']['mediaId']; // For AMP Story Background Media.
+				$media_id = $block['attrs']['mediaId']; // For AMP Story Background Media.
 			} elseif ( isset( $block['attrs']['id'] ) ) {
-				$mediaID = $block['attrs']['id']; // For AMP Story Video Block.
+				$media_id = $block['attrs']['id']; // For AMP Story Video Block.
 			}
 
-			if ( ! empty( $mediaID ) ) {
-				$transcoded_url = get_post_meta( $mediaID, '_rt_media_transcoded_files', true );
+			if ( ! empty( $media_id ) ) {
+				$transcoded_url = get_post_meta( $media_id, '_rt_media_transcoded_files', true );
 
 				if ( ! empty( $transcoded_url ) && isset( $transcoded_url['mp4'] ) ) {
 					// Get transcoded video path.
@@ -769,7 +922,6 @@ class RetranscodeMedia {
 									$block_content = str_replace( $amp_tag['url'], $final_file_url, $block_content );
 								}
 							}
-
 						}
 
 						// Check for URL in video tag.
@@ -782,18 +934,17 @@ class RetranscodeMedia {
 									$block_content = str_replace( $video_tag['url'], $final_file_url, $block_content );
 								}
 							}
-
 						}
 
 						// Replace fallback poster with generated thumbnail.
 						$amp_story_poster = '/<amp-video (.*?) poster="(?<poster>.*?)" (.*?)>/m';
-						preg_match_all( $amp_story_poster, $block_content, $poster_matches, PREG_SET_ORDER, 0);
+						preg_match_all( $amp_story_poster, $block_content, $poster_matches, PREG_SET_ORDER, 0 );
 
 						if ( ! empty( $poster_matches ) ) {
 							foreach ( $poster_matches as $poster_match ) {
 								if ( isset( $poster_match['poster'] ) ) {
 									if ( false !== strpos( $poster_match['poster'], 'amp-story-fallback-poster.png' ) ) {
-										$video_poster_url = get_the_post_thumbnail_url( $mediaID );
+										$video_poster_url = get_the_post_thumbnail_url( $media_id );
 										if ( false !== $video_poster_url ) {
 											$block_content = str_replace( $poster_match['poster'], $video_poster_url, $block_content );
 										}
@@ -804,13 +955,13 @@ class RetranscodeMedia {
 
 						// Replace fallback poster with generated thumbnail for video block.
 						$video_story_poster = '/<video (.*?) poster="(?<poster>.*?)" (.*?)>/m';
-						preg_match_all( $video_story_poster, $block_content, $video_poster_matches, PREG_SET_ORDER, 0);
+						preg_match_all( $video_story_poster, $block_content, $video_poster_matches, PREG_SET_ORDER, 0 );
 
 						if ( ! empty( $video_poster_matches ) ) {
 							foreach ( $video_poster_matches as $video_poster_match ) {
 								if ( isset( $video_poster_match['poster'] ) ) {
 									if ( false !== strpos( $video_poster_match['poster'], 'amp-story-video-fallback-poster.png' ) ) {
-										$video_thumbnail_url = get_the_post_thumbnail_url( $mediaID );
+										$video_thumbnail_url = get_the_post_thumbnail_url( $media_id );
 										if ( false !== $video_thumbnail_url ) {
 											$block_content = str_replace( $video_poster_match['poster'], $video_thumbnail_url, $block_content );
 										}
@@ -818,7 +969,6 @@ class RetranscodeMedia {
 								}
 							}
 						}
-
 					}
 				}
 			}
@@ -827,13 +977,31 @@ class RetranscodeMedia {
 		return $block_content;
 	}
 
+	/**
+	 * WHERE search query to check attachment mime-type.
+	 *
+	 * @param string $where The WHERE clause of the query.
+	 *
+	 * @return string The WHERE clause of the query.
+	 */
+	public function add_search_mime_types( $where ) {
+		$where .= " AND post_mime_type LIKE 'audio/%' OR post_mime_type LIKE 'video/%'";
+		return $where;
+	}
+
 }
 
-// Start up this plugin
-add_action( 'init', 'RetranscodeMedia' );
-function RetranscodeMedia() {
-	global $RetranscodeMedia;
-	$RetranscodeMedia = new RetranscodeMedia();
+// Start up this plugin.
+add_action( 'init', 'retranscode_media' );
+
+/**
+ * Execute RetranscodeMedia constructor.
+ */
+function retranscode_media() {
+
+	global $RetranscodeMedia; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
+
+	$RetranscodeMedia = new RetranscodeMedia(); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 }
 
 ?>
