@@ -141,7 +141,7 @@ class RT_Transcoder_Handler {
 			// Store api key as different db key if user disable transcoding service.
 			if ( ! $this->stored_api_key ) {
 				$this->stored_api_key = $this->api_key;
-				update_option( 'rt-transcoding-api-key-stored', $this->stored_api_key );
+				update_site_option( 'rt-transcoding-api-key-stored', $this->stored_api_key );
 			}
 			add_filter( 'rtmedia_allowed_types', array( $this, 'allowed_types_admin_settings' ), 10, 1 );
 			$usage_info = get_site_option( 'rt-transcoding-usage' );
@@ -160,7 +160,7 @@ class RT_Transcoder_Handler {
 						if ( $usage_info[ $this->api_key ]->remaining < 524288000 && ! get_site_option( 'rt-transcoding-usage-limit-mail' ) ) {
 							$this->nearing_usage_limit( $usage_info );
 						} elseif ( $usage_info[ $this->api_key ]->remaining > 524288000 && get_site_option( 'rt-transcoding-usage-limit-mail' ) ) {
-							update_option( 'rt-transcoding-usage-limit-mail', 0 );
+							update_site_option( 'rt-transcoding-usage-limit-mail', 0 );
 						}
 						if ( strtotime( $usage_info[ $this->api_key ]->plan->expires ) > time() ) {
 							add_filter( 'wp_generate_attachment_metadata', array( $this, 'wp_media_transcoding' ), 21, 2 );
@@ -393,7 +393,7 @@ class RT_Transcoder_Handler {
 			$usage_info = null;
 		}
 
-		update_option( 'rt-transcoding-usage', array( $key => $usage_info ) );
+		update_site_option( 'rt-transcoding-usage', array( $key => $usage_info ) );
 
 		return $usage_info;
 	}
@@ -406,12 +406,15 @@ class RT_Transcoder_Handler {
 	 * @param array $usage_details Usage informataion.
 	 */
 	public function nearing_usage_limit( $usage_details ) {
+
 		if ( defined( 'RT_TRANSCODER_NO_MAIL' ) ) {
 			return;
 		}
+
 		$subject = esc_html__( 'Transcoding: Nearing quota limit.', 'transcoder' );
 		$message = '<p>' . esc_html__( 'You are nearing the quota limit for your transcoding service.', 'transcoder' ) . '</p><p>' . esc_html__( 'Following are the details:', 'transcoder' ) . '</p><p><strong>Used:</strong> %s</p><p><strong>' . esc_html__( 'Remaining', 'transcoder' ) . '</strong>: %s</p><p><strong>' . esc_html__( 'Total:', 'transcoder' ) . '</strong> %s</p>';
 		$users   = get_users( array( 'role' => 'administrator' ) );
+
 		if ( $users ) {
 			$admin_email_ids = array();
 			foreach ( $users as $user ) {
@@ -421,7 +424,8 @@ class RT_Transcoder_Handler {
 			wp_mail( $admin_email_ids, $subject, sprintf( $message, size_format( $usage_details[ $this->api_key ]->used, 2 ), size_format( $usage_details[ $this->api_key ]->remaining, 2 ), size_format( $usage_details[ $this->api_key ]->total, 2 ) ) ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
 			remove_filter( 'wp_mail_content_type', array( $this, 'wp_mail_content_type' ) );
 		}
-		update_option( 'rt-transcoding-usage-limit-mail', 1 );
+
+		update_site_option( 'rt-transcoding-usage-limit-mail', 1 );
 	}
 
 	/**
@@ -430,10 +434,13 @@ class RT_Transcoder_Handler {
 	 * @since   1.0.0
 	 */
 	public function usage_quota_over() {
+
 		if ( defined( 'RT_TRANSCODER_NO_MAIL' ) ) {
 			return;
 		}
+
 		$usage_details = get_site_option( 'rt-transcoding-usage' );
+
 		if ( ! $usage_details[ $this->api_key ]->remaining ) {
 			$subject = esc_html__( 'Transcoding: Usage quota over.', 'transcoder' );
 			$message = '<p>' . esc_html__( 'Your usage quota is over. Upgrade your plan', 'transcoder' ) . '</p><p>' . esc_html__( 'Following are the details:', 'transcoder' ) . '</p><p><strong>' . esc_html__( 'Used:', 'transcoder' ) . '</strong> %s</p><p><strong>' . esc_html__( 'Remaining', 'transcoder' ) . '</strong>: %s</p><p><strong>' . esc_html__( 'Total:', 'transcoder' ) . '</strong> %s</p>';
@@ -447,7 +454,8 @@ class RT_Transcoder_Handler {
 				wp_mail( $admin_email_ids, $subject, sprintf( $message, size_format( $usage_details[ $this->api_key ]->used, 2 ), 0, size_format( $usage_details[ $this->api_key ]->total, 2 ) ) ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
 				remove_filter( 'wp_mail_content_type', array( $this, 'wp_mail_content_type' ) );
 			}
-			update_option( 'rt-transcoding-usage-limit-mail', 1 );
+
+			update_site_option( 'rt-transcoding-usage-limit-mail', 1 );
 		}
 	}
 
@@ -500,8 +508,8 @@ class RT_Transcoder_Handler {
 				die();
 			}
 			if ( $this->is_valid_key( $apikey ) ) {
-				update_option( 'rt-transcoding-api-key', $apikey );
-				update_option( 'rt-transcoding-api-key-stored', $apikey );
+				update_site_option( 'rt-transcoding-api-key', $apikey );
+				update_site_option( 'rt-transcoding-api-key-stored', $apikey );
 
 				$usage_info  = $this->update_usage( $apikey );
 				$return_page = add_query_arg(
@@ -1205,8 +1213,8 @@ class RT_Transcoder_Handler {
 	 * @since 1.0.0
 	 */
 	public function hide_transcoding_notice() {
-		update_option( 'rt-transcoding-service-notice', true );
-		update_option( 'rt-transcoding-expansion-notice', true );
+		update_site_option( 'rt-transcoding-service-notice', true );
+		update_site_option( 'rt-transcoding-expansion-notice', true );
 		echo true;
 		die();
 	}
@@ -1232,7 +1240,7 @@ class RT_Transcoder_Handler {
 	 * @since 1.0.0
 	 */
 	public function disable_transcoding() {
-		update_option( 'rt-transcoding-api-key', '' );
+		update_site_option( 'rt-transcoding-api-key', '' );
 		esc_html_e( 'Transcoding disabled successfully.', 'transcoder' );
 		die();
 	}
@@ -1243,7 +1251,7 @@ class RT_Transcoder_Handler {
 	 * @since 1.0.0
 	 */
 	public function enable_transcoding() {
-		update_option( 'rt-transcoding-api-key', $this->stored_api_key );
+		update_site_option( 'rt-transcoding-api-key', $this->stored_api_key );
 		esc_html_e( 'Transcoding enabled successfully.', 'transcoder' );
 		die();
 	}

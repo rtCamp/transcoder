@@ -56,8 +56,8 @@ class RT_Transcoder_Admin {
 	 */
 	public function __construct() {
 
-		$this->api_key        = get_option( 'rt-transcoding-api-key' );
-		$this->stored_api_key = get_option( 'rt-transcoding-api-key-stored' );
+		$this->api_key        = get_site_option( 'rt-transcoding-api-key' );
+		$this->stored_api_key = get_site_option( 'rt-transcoding-api-key-stored' );
 
 		$this->load_translation();
 
@@ -80,9 +80,9 @@ class RT_Transcoder_Admin {
 			add_action( 'admin_menu', array( $this, 'menu' ) );
 			add_action( 'admin_init', array( $this, 'register_transcoder_settings' ) );
 			if ( class_exists( 'RTMediaEncoding' ) ) {
-				$old_rtmedia_encoding_key = get_option( 'rtmedia-encoding-api-key' );
+				$old_rtmedia_encoding_key = get_site_option( 'rtmedia-encoding-api-key' );
 				if ( ! empty( $old_rtmedia_encoding_key ) ) {
-					update_option( 'rtmedia-encoding-api-key', '' );
+					update_site_option( 'rtmedia-encoding-api-key', '' );
 				}
 				add_action( 'init', array( $this, 'disable_encoding' ) );
 			}
@@ -223,7 +223,7 @@ class RT_Transcoder_Admin {
 			$this->transcoder_handler->update_usage( $this->api_key );
 		}
 
-		$usage_details = get_option( 'rt-transcoding-usage' );
+		$usage_details = get_site_option( 'rt-transcoding-usage' );
 
 		if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) === strtolower( $name ) ) && $usage_details[ $this->api_key ]->sub_status && ! $force ) {
 			$form = '<button disabled="disabled" type="submit" class="button button-primary bpm-unsubscribe">' . esc_html__( 'Current Plan', 'transcoder' ) . '</button>';
@@ -412,7 +412,7 @@ class RT_Transcoder_Admin {
 	 * @since   1.0.0
 	 */
 	public function transcoder_admin_notice() {
-		$show_notice = get_option( 'transcoder_admin_notice', 1 );
+		$show_notice = get_site_option( 'transcoder_admin_notice', 1 );
 
 		if ( '1' === $show_notice || 1 === $show_notice ) :
 			?>
@@ -465,7 +465,7 @@ class RT_Transcoder_Admin {
 	 */
 	public function transcoder_hide_admin_notice() {
 		if ( check_ajax_referer( '_transcoder_hide_notice_', 'transcoder_notice_nonce' ) ) {
-			update_option( 'transcoder_admin_notice', '0' );
+			update_site_option( 'transcoder_admin_notice', '0' );
 		}
 		die();
 	}
