@@ -117,6 +117,14 @@ class RT_Transcoder_Handler {
 
 		$this->api_key             = get_site_option( 'rt-transcoding-api-key' );
 		$this->stored_api_key      = get_site_option( 'rt-transcoding-api-key-stored' );
+
+		/**
+		 * Allow other plugin and wp-config to overwrite API URL.
+		 */
+		if ( defined( 'TRANSCODER_API_URL' ) && ! empty( TRANSCODER_API_URL ) ) {
+			$this->transcoding_api_url = TRANSCODER_API_URL;
+		}
+
 		$this->transcoding_api_url = apply_filters( 'transcoding_api_url', $this->transcoding_api_url );
 
 		if ( $no_init ) {
