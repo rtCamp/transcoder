@@ -86,6 +86,27 @@ class RT_Transcoder_Handler {
 	public $audio_extensions = ',wma,ogg,wav,m4a';
 
 	/**
+	 * Other extensions with comma separated.
+	 *
+	 * @since    1.5
+	 * @access   public
+	 * @var      string    $other_extensions    Other extensions with comma separated.
+	 */
+	public $other_extensions = ',pdf';
+
+	/**
+	 * Allowed mimetypes.
+	 *
+	 * @since    1.5
+	 * @access   public
+	 * @var      array    $allowed_mimetypes    Allowed mimetypes other than audio and video.
+	 */
+	public $allowed_mimetypes = array(
+		'application/ogg',
+		'application/pdf',
+	);
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -97,12 +118,23 @@ class RT_Transcoder_Handler {
 		$this->api_key        = get_site_option( 'rt-transcoding-api-key' );
 		$this->stored_api_key = get_site_option( 'rt-transcoding-api-key-stored' );
 
+		/**
+		 * Allow other plugin and wp-config to overwrite API URL.
+		 */
+		if ( defined( 'TRANSCODER_API_URL' ) && ! empty( TRANSCODER_API_URL ) ) {
+			$this->transcoding_api_url = TRANSCODER_API_URL;
+		}
+
+		$this->transcoding_api_url = apply_filters( 'transcoding_api_url', $this->transcoding_api_url );
+
 		if ( $no_init ) {
 			return;
 		}
+
 		if ( is_admin() ) {
 			add_action( 'rt_transcoder_before_widgets', array( $this, 'usage_widget' ) );
 		}
+
 		add_action( 'admin_init', array( $this, 'save_api_key' ), 10, 1 );
 
 		if ( $this->api_key ) {
@@ -152,6 +184,7 @@ class RT_Transcoder_Handler {
 		add_action( 'wp_ajax_rt_enter_api_key', array( $this, 'enter_api_key' ), 1 );
 		add_action( 'wp_ajax_rt_disable_transcoding', array( $this, 'disable_transcoding' ), 1 );
 		add_action( 'wp_ajax_rt_enable_transcoding', array( $this, 'enable_transcoding' ), 1 );
+		add_action( 'add_attachment', array( $this, 'after_upload_pdf' ) );
 	}
 
 	/**
@@ -189,15 +222,28 @@ class RT_Transcoder_Handler {
 		$not_allowed_type = array( 'mp3' );
 		preg_match( '/video|audio/i', $metadata['mime_type'], $type_array );
 
-		if ( ( preg_match( '/video|audio/i', $metadata['mime_type'], $type_array ) || 'application/ogg' === $metadata['mime_type'] ) && ! in_array( $metadata['mime_type'], array( 'audio/mp3' ), true ) && ! in_array( $type, $not_allowed_type, true ) ) {
-			$options_video_thumb = $this->get_thumbnails_required( $attachment_id );            
+		if ( (
+				preg_match( '/video|audio/i', $metadata['mime_type'], $type_array ) ||
+				in_array( $metadata['mime_type'], $this->allowed_mimetypes, true )
+			) &&
+			! in_array( $metadata['mime_type'], array( 'audio/mp3' ), true ) &&
+			! in_array( $type, $not_allowed_type, true )
+		) {
+
+			$options_video_thumb = $this->get_thumbnails_required( $attachment_id );
+
 			if ( empty( $options_video_thumb ) ) {
 				$options_video_thumb = 5;
 			}
 
 			$job_type = 'video';
-			if ( 'audio' === $type_array[0] || in_array( $extension, explode( ',', $this->audio_extensions ), true ) ) {
+
+			if ( ( ! empty( $type_array ) && 'audio' === $type_array[0] ) || in_array( $extension, explode( ',', $this->audio_extensions ), true ) ) {
 				$job_type = 'audio';
+			} elseif ( in_array( $extension, explode( ',', $this->other_extensions ), true ) ) {
+				$job_type            = $extension;
+				$autoformat          = $extension;
+				$options_video_thumb = 0;
 			}
 
 			/** Figure out who is requesting this job */
@@ -232,7 +278,12 @@ class RT_Transcoder_Handler {
 
 			$upload_page = wp_remote_post( $transcoding_url, $args );
 
-			if ( ! is_wp_error( $upload_page ) && ( ( isset( $upload_page['response']['code'] ) && ( 200 === intval( $upload_page['response']['code'] ) ) ) ) ) {
+			if ( ! is_wp_error( $upload_page ) &&
+				(
+					isset( $upload_page['response']['code'] ) &&
+					200 === intval( $upload_page['response']['code'] )
+				)
+			) {
 				$upload_info = json_decode( $upload_page['body'] );
 				if ( isset( $upload_info->status ) && $upload_info->status && isset( $upload_info->job_id ) && $upload_info->job_id ) {
 					$job_id = $upload_info->job_id;
@@ -985,7 +1036,7 @@ class RT_Transcoder_Handler {
 			$meta = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s", $key, $value ) );  // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 			wp_cache_set( $cache_key, $meta, 'transcoder', 3600 );
 		}
-		
+
 		if ( is_array( $meta ) && ! empty( $meta ) && isset( $meta[0] ) ) {
 			$meta = $meta[0];
 		}
@@ -1080,7 +1131,7 @@ class RT_Transcoder_Handler {
 					array(
 						'meta_value' => sanitize_text_field( wp_unslash( $job_id ) ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 						'meta_key'   => 'rtmedia-transcoding-job-id', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-					) 
+					)
 				);
 
 				if ( ! isset( $meta_details[0] ) ) {
@@ -1458,6 +1509,35 @@ class RT_Transcoder_Handler {
 		$response['status']  = esc_html( $status );
 
 		return wp_json_encode( $response );
+	}
+
+	/**
+	 * Send transcoding request to the server for PDF files.
+	 *
+	 * WordPress doesn't generate metadata for PDF attachment,
+	 * `add_attachment` hook will do it fo PDF.
+	 *
+	 * @param int $post_id Attachment ID of the PDF.
+	 */
+	public function after_upload_pdf( $post_id ) {
+
+		// If it have native support, skip the use of transcoder server.
+		if ( extension_loaded( 'imagick' ) &&
+			class_exists( 'Imagick', false ) &&
+			class_exists( 'ImagickPixel', false ) &&
+			version_compare( phpversion( 'imagick' ), '2.2.0', '>=' )
+		) {
+			return;
+		}
+
+		$file_url = wp_get_attachment_url( $post_id );
+		$filetype = wp_check_filetype( $file_url );
+
+		$filetype['ext'] = strtolower( $filetype['ext'] );
+
+		if ( 'pdf' === $filetype['ext'] ) {
+			$this->wp_media_transcoding( array( 'mime_type' => 'application/pdf' ), $post_id );
+		}
 	}
 
 	/**

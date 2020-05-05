@@ -7,7 +7,7 @@
  */
 
 /**
- * Media retranscode module. 
+ * Media retranscode module.
  */
 class RetranscodeMedia {
 	/**
@@ -31,7 +31,7 @@ class RetranscodeMedia {
 	 */
 	public $stored_api_key;
 
-	
+
 	/**
 	 * Usage info of transcoder subscription.
 	 *
@@ -136,9 +136,9 @@ class RetranscodeMedia {
 		include_once RT_TRANSCODER_PATH . 'admin/partials/rt-transcoder-admin-display.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 	}
 
-	/** 
+	/**
 	 * Enqueue the needed Javascript and CSS
-	 * 
+	 *
 	 * @param string $hook_suffix Suffix of the hook.
 	 *
 	 * @return void
@@ -172,7 +172,8 @@ class RetranscodeMedia {
 
 		if ( (
 				'audio/' !== substr( $post->post_mime_type, 0, 6 ) &&
-				'video/' !== substr( $post->post_mime_type, 0, 6 )
+				'video/' !== substr( $post->post_mime_type, 0, 6 ) &&
+				'application/pdf' !== $post->post_mime_type
 			) ||
 			'audio/mpeg' === $post->post_mime_type ||
 			! current_user_can( $this->capability )
@@ -180,9 +181,16 @@ class RetranscodeMedia {
 			return $actions;
 		}
 
+		$actions = ( ! empty( $actions ) && is_array( $actions ) ) ? $actions : array();
+
 		$url = wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1&ids=' . $post->ID ), 'rt-retranscoder' );
 
-		$actions['retranscode_media'] = '<a href="' . esc_url( $url ) . '" title="' . esc_attr( __( 'Retranscode this single media', 'transcoder' ) ) . '">' . __( 'Retranscode Media', 'transcoder' ) . '</a>';
+		$actions['retranscode_media'] = sprintf(
+			'<a href="%s" title="%s">%s</a>',
+			esc_url( $url ),
+			esc_attr__( 'Retranscode this single media', 'transcoder' ),
+			__( 'Retranscode Media', 'transcoder' )
+		);
 
 		return $actions;
 	}
@@ -318,7 +326,7 @@ class RetranscodeMedia {
 				$media = $query->get_posts();
 				remove_filter( 'posts_where', array( $this, 'add_search_mime_types' ) );
 				if ( empty( $media ) || is_wp_error( $media ) ) {
-					
+
 					// translators: Link to the media page.
 					echo '	<p>' . sprintf( esc_html__( "Unable to find any media. Are you sure <a href='%s'>some exist</a>?", 'transcoder' ), esc_url( admin_url( 'upload.php' ) ) ) . '</p></div>';
 					return;
@@ -402,10 +410,10 @@ class RetranscodeMedia {
 			<?php
 			$count = count( $media );
 
-			
+
 			// translators: Count of media which were successfully transcoded with the time in seconds.
 			$text_goback = ( ! empty( $_GET['goback'] ) ) ? sprintf( __( 'To go back to the previous page, <a href="%s">click here</a>.', 'transcoder' ), 'javascript:history.go(-1)' ) : '';
-			
+
 			// translators: Count of media which were successfully and media which were failed transcoded with the time in seconds and previout page link.
 			$text_failures = sprintf( __( 'All done! %1$s media file(s) were successfully sent for transcoding in %2$s seconds and there were %3$s failure(s). To try transcoding the failed media again, <a href="%4$s">click here</a>. %5$s', 'transcoder' ), "' + rt_successes + '", "' + rt_totaltime + '", "' + rt_errors + '", esc_url( wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1' ), 'rt-retranscoder' ) . '&ids=' ) . "' + rt_failedlist + '", $text_goback );
 			// translators: Count of media which were successfully transcoded with the time in seconds and previout page link.
@@ -560,7 +568,7 @@ class RetranscodeMedia {
 	// ]]>
 	</script>
 			<?php
-		} else { 
+		} else {
 			// No button click? Display the form.
 			?>
 	<form method="post" action="">
@@ -571,7 +579,7 @@ class RetranscodeMedia {
 	<i><?php printf( esc_html__( 'Sending your entire media library for retranscoding can consume a lot of your bandwidth allowance, so use this tool with care.', 'transcoder' ) ); ?></i></p>
 
 	<p>
-			<?php 
+			<?php
 			// translators: Placeholder is for admin media section link.
 			printf( wp_kses( __( "You can retranscode specific media files (rather than ALL media) from the <a href='%s'>Media</a> page using Bulk Action via drop down or mouse hover a specific media (audio/video) file.", 'transcoder' ), array( 'a' => array( 'href' => array() ) ) ), esc_url( admin_url( 'upload.php' ) ) );
 			?>
@@ -608,9 +616,14 @@ class RetranscodeMedia {
 		}
 
 		$media = get_post( $id );
-	
-		if ( ! $media || 'attachment' !== $media->post_type || ( 'audio/' !== substr( $media->post_mime_type, 0, 6 ) && 'video/' !== substr( $media->post_mime_type, 0, 6 ) ) ) {
 
+		if ( ! $media || 'attachment' !== $media->post_type ||
+			(
+				'audio/' !== substr( $media->post_mime_type, 0, 6 ) &&
+				'video/' !== substr( $media->post_mime_type, 0, 6 ) ||
+				'application/pdf' !== $media->post_mime_type
+			)
+		) {
 			// translators: Media id of the invalid media type.
 			die( wp_json_encode( array( 'error' => sprintf( __( 'Sending Failed: %d is an invalid media ID/type.', 'transcoder' ), intval( $id ) ) ) ) );
 		}
@@ -695,9 +708,9 @@ class RetranscodeMedia {
 	}
 
 
-	/** 
+	/**
 	 * Helper function to escape quotes in strings for use in Javascript
-	 * 
+	 *
 	 * @param string $string String to escape quotes from.
 	 */
 	public function esc_quotes( $string ) {
@@ -825,17 +838,25 @@ class RetranscodeMedia {
 			);
 
 			// Insert transcoded thumbnail attachment.
-			$attachment_id = wp_insert_attachment( $attachment, $thumbnail_src, $media_id );
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+			$attachment_id = 0;
+			// Generate thumbnail for PDF file.
+			if ( 'application/pdf' === get_post_mime_type( $media_id ) ) {
+				$attach_data = wp_generate_attachment_metadata( $media_id, $thumbnail_src );
+				wp_update_attachment_metadata( $media_id, $attach_data );
+			} else {
+				// Insert transcoded thumbnail attachment for video/audio files.
+				$attachment_id = wp_insert_attachment( $attachment, $thumbnail_src, $media_id );
+			}
 
+			// Generate attachment metadata for thumbnail and set post thumbnail for video/audio files.
 			if ( ! is_wp_error( $attachment_id ) && 0 !== $attachment_id ) {
-				require_once ABSPATH . 'wp-admin/includes/image.php';
 				$attach_data = wp_generate_attachment_metadata( $attachment_id, $thumbnail_src );
 				wp_update_attachment_metadata( $attachment_id, $attach_data );
 				set_post_thumbnail( $media_id, $attachment_id );
 				update_post_meta( $attachment_id, 'amp_is_poster', true );
 			}
 		}
-
 	}
 
 	/**
