@@ -301,8 +301,7 @@ class RetranscodeMedia {
 
 			// Create the list of image IDs.
 			$usage_info = get_site_option( 'rt-transcoding-usage' );
-			$ids        = transcoder_filter_input( INPUT_REQUEST, 'ids', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY );
-
+			$ids        = filter_input( INPUT_GET, 'ids', FILTER_SANITIZE_STRING );
 			if ( ! empty( $ids ) ) {
 				if ( is_array( $ids ) ) {
 					$ids = implode( ',', $ids );
@@ -417,7 +416,7 @@ class RetranscodeMedia {
 			// translators: Count of media which were successfully and media which were failed transcoded with the time in seconds and previout page link.
 			$text_failures = sprintf( __( 'All done! %1$s media file(s) were successfully sent for transcoding in %2$s seconds and there were %3$s failure(s). To try transcoding the failed media again, <a href="%4$s">click here</a>. %5$s', 'transcoder' ), "' + rt_successes + '", "' + rt_totaltime + '", "' + rt_errors + '", esc_url( wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1' ), 'rt-retranscoder' ) . '&ids=' ) . "' + rt_failedlist + '", $text_goback );
 			// translators: Count of media which were successfully transcoded with the time in seconds and previout page link.
-			$text_nofailures = sprintf( __( 'All done! %1$s media file(s) were successfully sent for transcoding in %2$s seconds and there were 0 failures. %3$s', 'transcoder' ), "' + rt_successes + '", "' + rt_totaltime + '", $text_goback );
+			$text_nofailures = sprintf( __( 'All done! %1$s media file(s) were successfully sent for transcoding in %2$s seconds and there were 0 failures. %3$s', 'transcoder' ), " + rt_successes + ", "' + rt_totaltime + '", $text_goback );
 			?>
 
 
@@ -528,12 +527,12 @@ class RetranscodeMedia {
 						if ( response !== Object( response ) || ( typeof response.success === "undefined" && typeof response.error === "undefined" ) ) {
 							response = new Object;
 							response.success = false;
-							response.error = "
+							response.error = `
 							<?php
 							// translators: Media ID.
 							printf( esc_js( __( 'The resize request was abnormally terminated (ID %s). This is likely due to the media exceeding available memory or some other type of fatal error.', 'transcoder' ) ), '" + id + "' );
 							?>
-							";
+							`;
 						}
 
 						if ( response.success ) {
@@ -607,8 +606,7 @@ class RetranscodeMedia {
 	public function ajax_process_retranscode_request() {
 
 		header( 'Content-type: application/json' );
-
-		$id = transcoder_filter_input( INPUT_REQUEST, 'id', FILTER_SANITIZE_NUMBER_INT );
+		$id = filter_input( INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT );
 		$id = intval( $id );
 
 		if ( empty( $id ) || 0 >= $id ) {
@@ -620,7 +618,7 @@ class RetranscodeMedia {
 		if ( ! $media || 'attachment' !== $media->post_type ||
 			(
 				'audio/' !== substr( $media->post_mime_type, 0, 6 ) &&
-				'video/' !== substr( $media->post_mime_type, 0, 6 ) ||
+				'video/' !== substr( $media->post_mime_type, 0, 6 ) &&
 				'application/pdf' !== $media->post_mime_type
 			)
 		) {
