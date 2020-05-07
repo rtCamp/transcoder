@@ -1603,7 +1603,6 @@ class RT_Transcoder_Handler {
 
 		$post_array['thumbnail'] = array();
 		if ( ! empty( $post_var['thumbnail'] ) && is_array( $post_var['thumbnail'] ) ) {
-			$post_array['thumbnail'] = filter_var( $post_var['thumbnail'], FILTER_SANITIZE_URL, FILTER_FORCE_ARRAY );
 			foreach ( $post_var['thumbnail'] as $thumbnail_url ) {
 				$post_array['thumbnail'][] = filter_var( $thumbnail_url, FILTER_SANITIZE_URL );
 			}
