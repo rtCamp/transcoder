@@ -408,7 +408,7 @@ class RetranscodeMedia {
 
 
 			// translators: Count of media which were successfully transcoded with the time in seconds.
-			$text_goback = ( ! empty( $_GET['goback'] ) ) ? sprintf( __( 'To go back to the previous page, <a href="%s">click here</a>.', 'transcoder' ), 'javascript:history.go(-1)' ) : '';
+			$text_goback = ( ! empty( $_GET['goback'] ) ) ? __( 'To go back to the previous page, <a id="retranscode-goback" href="#">click here</a>.', 'transcoder' ) : '';
 
 			// translators: Count of media which were successfully and media which were failed transcoded with the time in seconds and previout page link.
 			$text_failures = sprintf( __( 'All done! %1$s media file(s) were successfully sent for transcoding in %2$s seconds and there were %3$s failure(s). To try transcoding the failed media again, <a href="%4$s">click here</a>. %5$s', 'transcoder' ), "' + rt_successes + '", "' + rt_totaltime + '", "' + rt_errors + '", esc_url( wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1' ), 'rt-retranscoder' ) . '&ids=' ) . "' + rt_failedlist + '", $text_goback );
@@ -505,13 +505,14 @@ class RetranscodeMedia {
 				$('#retranscodemedia-stop').hide();
 
 				if ( rt_errors > 0 ) {
-					rt_resulttext = '<?php echo wp_kses( $text_failures, array( 'a' => array( 'href' => array() ) ) ); ?>';
+					rt_resulttext = '<?php echo wp_kses( $text_failures, array( 'a' => array( 'href' => array(), 'id' => array() ) ) ); ?>';
 				} else {
-					rt_resulttext = '<?php echo esc_html( $text_nofailures ); ?>';
+					<?php error_log( $text_nofailures ); ?>
+					rt_resulttext = '<?php echo wp_kses( $text_nofailures, array( 'a' => array( 'href' => array(), 'id' => array() ) ), array( 'javascript' ) ); ?>';
 				}
-
 				$("#message").html("<p><strong>" + rt_resulttext + "</strong></p>");
 				$("#message").show();
+				$( '#retranscode-goback' ).attr( 'href', 'javascript:history.go(-1)' );
 			}
 			<?php
 				// translators: Media ID.
