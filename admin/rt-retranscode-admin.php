@@ -504,11 +504,20 @@ class RetranscodeMedia {
 
 				$('#retranscodemedia-stop').hide();
 
+				<?php
+					// Allowed tags for notice.
+					$allowed_tags = array(
+						'a' => array(
+							'href' => array(),
+							'id'   => array(),
+						),
+					);
+					?>
+
 				if ( rt_errors > 0 ) {
-					rt_resulttext = '<?php echo wp_kses( $text_failures, array( 'a' => array( 'href' => array(), 'id' => array() ) ) ); ?>';
+					rt_resulttext = '<?php echo wp_kses( $text_failures, $allowed_tags ); ?>';
 				} else {
-					<?php error_log( $text_nofailures ); ?>
-					rt_resulttext = '<?php echo wp_kses( $text_nofailures, array( 'a' => array( 'href' => array(), 'id' => array() ) ), array( 'javascript' ) ); ?>';
+					rt_resulttext = '<?php echo wp_kses( $text_nofailures, $allowed_tags ); ?>';
 				}
 				$("#message").html("<p><strong>" + rt_resulttext + "</strong></p>");
 				$("#message").show();
