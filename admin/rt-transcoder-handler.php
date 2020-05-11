@@ -1510,6 +1510,9 @@ class RT_Transcoder_Handler {
 				$results              = $wpdb->get_results( $wpdb->prepare( 'SELECT id FROM %s WHERE media_id = %d', $wpdb->prefix . 'rt_rtm_media', $post_id ), OBJECT ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 				$response['media_id'] = $results[0]->id;
 
+			} elseif ( ! empty( $status_info ) && 'processed' === $status_info->status && ( 'pdf' === $status_info->job_type ) ) {
+				$message = $messages['success'];
+				$status  = 'Success';
 			} elseif ( ! empty( $status_info ) ) {
 				$message = $status_info->status;
 			}

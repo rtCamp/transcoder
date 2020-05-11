@@ -512,7 +512,7 @@ class RetranscodeMedia {
 							'id'   => array(),
 						),
 					);
-					?>
+				?>
 
 				if ( rt_errors > 0 ) {
 					rt_resulttext = '<?php echo wp_kses( $text_failures, $allowed_tags ); ?>';
