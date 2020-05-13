@@ -849,10 +849,6 @@ class RetranscodeMedia {
 				wp_update_attachment_metadata( $media_id, $attach_data );
 			} else {
 				// Insert transcoded thumbnail attachment for video/audio files.
-				$existing_thumbnail = get_post_thumbnail_id( $media_id );
-				if ( ! empty( $existing_thumbnail ) ) {
-					wp_delete_attachment( $existing_thumbnail, true );
-				}
 				$attachment_id = wp_insert_attachment( $attachment, $thumbnail_src, $media_id );
 			}
 
