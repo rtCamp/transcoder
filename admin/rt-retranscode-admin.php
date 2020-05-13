@@ -318,14 +318,7 @@ class RetranscodeMedia {
 				}
 			} else {
 				add_filter( 'posts_where', array( $this, 'add_search_mime_types' ) );
-
-				$query = new WP_Query(
-					array(
-						'post_type'      => 'attachments',
-						'posts_per_page' => -1,
-						'post_status'    => 'any',
-					)
-				);
+				$query = new WP_Query( array( 'post_type' => 'attachments' ) );
 				$media = $query->get_posts();
 				remove_filter( 'posts_where', array( $this, 'add_search_mime_types' ) );
 				if ( empty( $media ) || is_wp_error( $media ) ) {
