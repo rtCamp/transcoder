@@ -29,7 +29,7 @@ class RT_Transcoder_Handler {
 	 * @access   protected
 	 * @var      string    $transcoding_api_url    The URL of the api.
 	 */
-	protected $transcoding_api_url = 'http://api.rtmedia.io/api/v1/';
+	protected $transcoding_api_url = 'https://api.rtmedia.io/api/v1/';
 
 	/**
 	 * The URL of the EDD store.
@@ -1510,6 +1510,9 @@ class RT_Transcoder_Handler {
 				$results              = $wpdb->get_results( $wpdb->prepare( 'SELECT id FROM %s WHERE media_id = %d', $wpdb->prefix . 'rt_rtm_media', $post_id ), OBJECT ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 				$response['media_id'] = $results[0]->id;
 
+			} elseif ( ! empty( $status_info ) && 'processed' === $status_info->status && ( 'pdf' === $status_info->job_type ) ) {
+				$message = $messages['success'];
+				$status  = 'Success';
 			} elseif ( ! empty( $status_info ) ) {
 				$message = $status_info->status;
 			}
@@ -1603,7 +1606,6 @@ class RT_Transcoder_Handler {
 
 		$post_array['thumbnail'] = array();
 		if ( ! empty( $post_var['thumbnail'] ) && is_array( $post_var['thumbnail'] ) ) {
-			$post_array['thumbnail'] = filter_var( $post_var['thumbnail'], FILTER_SANITIZE_URL, FILTER_FORCE_ARRAY );
 			foreach ( $post_var['thumbnail'] as $thumbnail_url ) {
 				$post_array['thumbnail'][] = filter_var( $thumbnail_url, FILTER_SANITIZE_URL );
 			}

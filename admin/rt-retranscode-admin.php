@@ -301,12 +301,8 @@ class RetranscodeMedia {
 
 			// Create the list of image IDs.
 			$usage_info = get_site_option( 'rt-transcoding-usage' );
-			$ids        = transcoder_filter_input( INPUT_REQUEST, 'ids', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY );
-
+			$ids        = transcoder_filter_input( INPUT_GET, 'ids', FILTER_SANITIZE_STRING );
 			if ( ! empty( $ids ) ) {
-				if ( is_array( $ids ) ) {
-					$ids = implode( ',', $ids );
-				}
 				$media = array_map( 'intval', explode( ',', trim( $ids, ',' ) ) );
 				$ids   = implode( ',', $media );
 				foreach ( $media as $key => $each ) {
@@ -412,7 +408,7 @@ class RetranscodeMedia {
 
 
 			// translators: Count of media which were successfully transcoded with the time in seconds.
-			$text_goback = ( ! empty( $_GET['goback'] ) ) ? sprintf( __( 'To go back to the previous page, <a href="%s">click here</a>.', 'transcoder' ), 'javascript:history.go(-1)' ) : '';
+			$text_goback = ( ! empty( $_GET['goback'] ) ) ? __( 'To go back to the previous page, <a id="retranscode-goback" href="#">click here</a>.', 'transcoder' ) : '';
 
 			// translators: Count of media which were successfully and media which were failed transcoded with the time in seconds and previout page link.
 			$text_failures = sprintf( __( 'All done! %1$s media file(s) were successfully sent for transcoding in %2$s seconds and there were %3$s failure(s). To try transcoding the failed media again, <a href="%4$s">click here</a>. %5$s', 'transcoder' ), "' + rt_successes + '", "' + rt_totaltime + '", "' + rt_errors + '", esc_url( wp_nonce_url( admin_url( 'admin.php?page=rt-retranscoder&goback=1' ), 'rt-retranscoder' ) . '&ids=' ) . "' + rt_failedlist + '", $text_goback );
@@ -508,16 +504,33 @@ class RetranscodeMedia {
 
 				$('#retranscodemedia-stop').hide();
 
-				if ( rt_errors > 0 ) {
-					rt_resulttext = '<?php echo wp_kses( $text_failures, array( 'a' => array( 'href' => array() ) ) ); ?>';
-				} else {
-					rt_resulttext = '<?php echo esc_html( $text_nofailures ); ?>';
-				}
+				<?php
+					// Allowed tags for notice.
+					$allowed_tags = array(
+						'a' => array(
+							'href' => array(),
+							'id'   => array(),
+						),
+					);
+				?>
 
+				if ( rt_errors > 0 ) {
+					rt_resulttext = '<?php echo wp_kses( $text_failures, $allowed_tags ); ?>';
+				} else {
+					rt_resulttext = '<?php echo wp_kses( $text_nofailures, $allowed_tags ); ?>';
+				}
 				$("#message").html("<p><strong>" + rt_resulttext + "</strong></p>");
 				$("#message").show();
-			}
 
+				$( '#retranscode-goback' ).on( 'click', function () {
+					window.history.go( -1 );
+				} );
+
+			}
+			<?php
+				// translators: Media ID.
+				$error_response = sprintf( __( 'The resize request was abnormally terminated (ID %s). This is likely due to the media exceeding available memory or some other type of fatal error.', 'transcoder' ), '" + id + "' );
+			?>
 			// Regenerate a specified image via AJAX
 			function RetranscodeMedia( id ) {
 				$.ajax({
@@ -528,12 +541,7 @@ class RetranscodeMedia {
 						if ( response !== Object( response ) || ( typeof response.success === "undefined" && typeof response.error === "undefined" ) ) {
 							response = new Object;
 							response.success = false;
-							response.error = "
-							<?php
-							// translators: Media ID.
-							printf( esc_js( __( 'The resize request was abnormally terminated (ID %s). This is likely due to the media exceeding available memory or some other type of fatal error.', 'transcoder' ) ), '" + id + "' );
-							?>
-							";
+							response.error = '<?php echo esc_js( $error_response ); ?>';
 						}
 
 						if ( response.success ) {
@@ -607,8 +615,7 @@ class RetranscodeMedia {
 	public function ajax_process_retranscode_request() {
 
 		header( 'Content-type: application/json' );
-
-		$id = transcoder_filter_input( INPUT_REQUEST, 'id', FILTER_SANITIZE_NUMBER_INT );
+		$id = transcoder_filter_input( INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT );
 		$id = intval( $id );
 
 		if ( empty( $id ) || 0 >= $id ) {
@@ -620,7 +627,7 @@ class RetranscodeMedia {
 		if ( ! $media || 'attachment' !== $media->post_type ||
 			(
 				'audio/' !== substr( $media->post_mime_type, 0, 6 ) &&
-				'video/' !== substr( $media->post_mime_type, 0, 6 ) ||
+				'video/' !== substr( $media->post_mime_type, 0, 6 ) &&
 				'application/pdf' !== $media->post_mime_type
 			)
 		) {
