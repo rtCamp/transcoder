@@ -806,6 +806,17 @@ class RetranscodeMedia {
 			return;
 		}
 
+		// Meta key for meta data, Which store the last generated thumbnail (by transcoder).
+		$last_generated_thumbnail_id_key = 'transcoder_generated_thumbnail_id';
+
+		$last_generated_thumbnail_id = get_post_meta( $media_id, $last_generated_thumbnail_id_key, true );
+		$last_generated_thumbnail_id = ( ! empty( $last_generated_thumbnail_id ) && 0 < intval( $last_generated_thumbnail_id ) ) ? intval( $last_generated_thumbnail_id ) : 0;
+
+		$post_thumbnail_id = get_post_thumbnail_id( $media_id );
+		$post_thumbnail_id = ( ! empty( $post_thumbnail_id ) && 0 < intval( $post_thumbnail_id ) ) ? intval( $post_thumbnail_id ) : 0;
+
+		$has_custom_thumbnail = ( ! empty( $last_generated_thumbnail_id ) && $post_thumbnail_id !== $last_generated_thumbnail_id );
+
 		$is_retranscoding_job = get_post_meta( $media_id, '_rt_retranscoding_sent', true );
 
 		if ( $is_retranscoding_job && ! rtt_is_override_thumbnail() ) {
@@ -858,10 +869,31 @@ class RetranscodeMedia {
 
 			// Generate attachment metadata for thumbnail and set post thumbnail for video/audio files.
 			if ( ! is_wp_error( $attachment_id ) && 0 !== $attachment_id ) {
+
+				/**
+				 * Save generated thumbnail ID.
+				 * In additional meta data. so we can identify which if current one is auto generated or custom.
+				 */
+				update_post_meta( $media_id, $last_generated_thumbnail_id_key, $attachment_id );
+
+				/**
+				 * Delete previously generated attachment.
+				 */
+				if ( ! empty( $last_generated_thumbnail_id ) ) {
+					wp_delete_attachment( $last_generated_thumbnail_id );
+				}
+
 				$attach_data = wp_generate_attachment_metadata( $attachment_id, $thumbnail_src );
 				wp_update_attachment_metadata( $attachment_id, $attach_data );
-				set_post_thumbnail( $media_id, $attachment_id );
 				update_post_meta( $attachment_id, 'amp_is_poster', true );
+
+				/**
+				 * Set newly generate thumbnail to attachment only if is was set automatically.
+				 */
+				if ( ! $has_custom_thumbnail ) {
+					set_post_thumbnail( $media_id, $attachment_id );
+				}
+
 			}
 		}
 	}
