@@ -521,7 +521,11 @@ class RetranscodeMedia {
 				}
 				$("#message").html("<p><strong>" + rt_resulttext + "</strong></p>");
 				$("#message").show();
-				$( '#retranscode-goback' ).attr( 'href', 'javascript:history.go(-1)' );
+
+				$( '#retranscode-goback' ).on( 'click', function () {
+					window.history.go( -1 );
+				} );
+
 			}
 			<?php
 				// translators: Media ID.
