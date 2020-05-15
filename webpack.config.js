@@ -20,8 +20,6 @@ const externals = {
 	'@wordpress/components': 'wp.components' // Not really a package.
 };
 
-const module = {};
-
 module.exports = {
 	entry: {
 		blocks: glob.sync( './admin/js/rt-transcoder-block-editor-support.js' )
