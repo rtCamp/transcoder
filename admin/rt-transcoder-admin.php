@@ -201,6 +201,7 @@ class RT_Transcoder_Admin {
 			'disable_encoding'     => esc_html__( 'Are you sure you want to disable the transcoding service?', 'transcoder' ),
 			'enable_encoding'      => esc_html__( 'Are you sure you want to enable the transcoding service?', 'transcoder' ),
 			'something_went_wrong' => esc_html__( 'Something went wrong. Please ', 'transcoder' ) . '<a href onclick="location.reload();">' . esc_html__( 'refresh', 'transcoder' ) . '</a>' . esc_html__( ' page.', 'transcoder' ),
+			'error_empty_key'      => esc_html__( 'Please enter the license key.', 'transcoder' ),
 		);
 
 		wp_localize_script( 'rt-transcoder-main', 'rt_transcoder_script', $localize_script_data );

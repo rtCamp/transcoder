@@ -14,7 +14,10 @@ module.exports = function( grunt ) {
                 tasks: [ 'autoprefixer', 'cssmin' ]
             },
             js: {
-                files: [ '<%= uglify.backend.src %>' ],
+                files: [
+                    '<%= uglify.backend.src %>',
+                    '<%= uglify.footer.src %>',
+                ],
                 tasks: [ 'uglify' ]
             }
         },

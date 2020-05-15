@@ -36,9 +36,9 @@
 							check_status_element.hide();
 						}
 
-						span_status_element.html( obj.message );
+						span_status_element.text( obj.message );
 						span_status_element.show();
-						check_status_element.html( btn_text );
+						check_status_element.text( btn_text );
 						check_status_element.prop( 'disabled', false );
 					} );
 				} );

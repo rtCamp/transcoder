@@ -8,6 +8,7 @@
  * @subpackage Transcoder/Admin/Partials
  */
 
+$current_page = transcoder_filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
 ?>
 <div class="wrap">
 	<h1 class="rtm-option-title">
@@ -23,18 +24,21 @@
 	</h1>
 	<div id="rtt-settings_updated" class="updated settings-error notice is-dismissible hide">
 		<p></p>
-		<button type="button" class="notice-dismiss"><span
-				class="screen-reader-text"><?php echo esc_attr__( 'Dismiss this notice', 'transcoder' ); ?>.</span>
+		<button type="button" class="notice-dismiss">
+			<span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'transcoder' ); ?>.</span>
 		</button>
 	</div>
 	<div class="transcoder-settings-boxes-wrapper">
 		<div id="transcoder-settings-boxes" class="transcoder-settings-boxes-container transcoder-setting-container">
 			<p>
+			<form method="get" action="/wp-admin/admin.php">
 				<label for="new-api-key">
 					<?php esc_html_e( 'Enter License Key', 'transcoder' ); ?>
 				</label>
-				<input id="new-api-key" type="text" name="new-api-key" value="<?php echo esc_attr( $this->stored_api_key ); ?>" size="60"/>
-				<input type="submit" id="api-key-submit" name="api-key-submit" value="<?php echo esc_attr__( 'Save Key', 'transcoder' ); ?>" class="button-primary"/>
+				<input type="hidden" name="page" value="<?php echo esc_attr( $current_page ); ?>">
+				<input id="new-api-key" type="text" name="apikey" value="<?php echo esc_attr( $this->stored_api_key ); ?>" size="60"/>
+				<button type="submit" id="api-key-submit" name="update" value="true" class="button-primary"><?php esc_html_e( 'Save Key', 'transcoder' ); ?></button>
+			</form>
 			</p>
 
 			<p>
