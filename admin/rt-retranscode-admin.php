@@ -78,6 +78,8 @@ class RetranscodeMedia {
 		add_filter( 'amp_story_allowed_video_types', array( $this, 'add_amp_video_extensions' ) ); // Extend allowed video mime type extensions for AMP Story Background.
 		add_filter( 'render_block', array( $this, 'update_amp_story_video_url' ), 10, 2 ); // Filter block content and replace video URLs.
 
+		add_filter( 'get_post_metadata', [ $this, 'get_post_thumbnail_metadata' ], 10, 4 );
+
 		// Allow people to change what capability is required to use this feature.
 		$this->capability = apply_filters( 'retranscode_media_cap', 'manage_options' );
 
@@ -1047,6 +1049,42 @@ class RetranscodeMedia {
 	public function add_search_mime_types( $where ) {
 		$where .= " AND post_mime_type LIKE 'audio/%' OR post_mime_type LIKE 'video/%'";
 		return $where;
+	}
+
+	/**
+	 * Set default preview of image attachment is image it self.
+	 *
+	 * @param string|int|array $value    Meta value.
+	 * @param int              $post_id  Post ID.
+	 * @param string           $meta_key Meta key.
+	 * @param bool             $single   If request single value or all the value.
+	 *
+	 * @return string|int|array Meta value.
+	 */
+	public function get_post_thumbnail_metadata( $value, $post_id, $meta_key, $single ) {
+
+		if ( empty( $post_id ) || 0 >= intval( $post_id ) || '_thumbnail_id' !== $meta_key ) {
+			return $value;
+		}
+
+		$post = get_post( $post_id );
+
+		// Only for attachment and if it. We don't want to touch any other post types.
+		if ( empty( $post ) || ! is_a( $post, 'WP_Post' ) || 'attachment' !== $post->post_type || false === strpos( $post->post_mime_type, 'video/' ) ) {
+			return $value;
+		}
+
+		remove_filter( 'get_post_metadata', [ $this, 'get_post_thumbnail_metadata' ], 10 );
+
+		$thumbnail_id = get_post_thumbnail_id( $post_id );
+
+		add_filter( 'get_post_metadata', [ $this, 'get_post_thumbnail_metadata' ], 10, 4 );
+
+		if ( empty( $thumbnail_id ) || 0 >= intval( $thumbnail_id ) ) {
+			$value = get_post_meta( $post_id, 'transcoder_generated_thumbnail_id', $single );
+		}
+
+		return $value;
 	}
 
 }
