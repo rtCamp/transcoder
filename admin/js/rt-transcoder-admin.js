@@ -14,56 +14,24 @@
 				'click',
 				'#api-key-submit',
 				function( e ) {
-					e.preventDefault();
+					var apikey = document.getElementById( 'new-api-key' ).value;
 
-					if ( $( this ).next( 'img' ).length === 0 ) {
-						$( this ).after( $( '<img/>' ).attr( 'src', rt_transcoder_script.loader_image ).addClass( 'rtt-loader' ) );
-					}
+					if ( ! apikey ) {
 
-					var data = {
-						action: 'rt_enter_api_key',
-						apikey: $( '#new-api-key' ).val()
-					};
+						$( '#api-key-error' ).remove();
 
-					// Since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php.
-					$.getJSON(
-						ajaxurl,
-						data,
-						function( response ) {
-
-							var tempUrl = window.location.href;
-							var hash = window.location.hash;
-
-							if ( response.error === undefined && response.apikey ) {
-
-								tempUrl = tempUrl.replace( hash, '' );
-
-								if ( -1 === tempUrl.toString().indexOf( '&apikey=' + response.apikey ) ) {
-									tempUrl += '&apikey=' + response.apikey;
-								}
-
-								if ( -1 === tempUrl.toString().indexOf( '&update=true' ) ) {
-									tempUrl += '&update=true';
-								}
-
-								document.location.href = tempUrl + hash;
-							} else {
-								$( '#api-key-error' ).remove();
-
-								var error_div = $(
-									'<div/>',
-									{
-										id: 'api-key-error',
-										class: 'error'
-									}
-								);
-
-								$( 'h1:first' ).after( error_div.html( $( '<p/>' ).text( response.error ) ) ); // phpcs:ignoe WordPressVIPMinimum.JS.HTMLExecutingFunctions.html
+						var error_div = $(
+							'<div/>',
+							{
+								id: 'api-key-error',
+								class: 'error'
 							}
+						);
 
-							$( '#api-key-submit' ).next( 'img' ).remove();
-						}
-					);
+						$( 'h1:first' ).after( error_div.html( $( '<p/>' ).text( rt_transcoder_script.error_empty_key ) ) );
+
+						e.preventDefault();
+					}
 				}
 			);
 
