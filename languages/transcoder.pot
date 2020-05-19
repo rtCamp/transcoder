@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://community.rtcamp.com/\n"
-"POT-Creation-Date: 2020-05-15 12:14:49+00:00\n"
+"POT-Creation-Date: 2020-05-19 13:27:19+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,99 +24,99 @@ msgstr ""
 "X-Textdomain-Support: yes\n"
 "X-Generator: grunt-wp-i18n 1.0.3\n"
 
-#: admin/partials/rt-transcoder-admin-display.php:14
+#: admin/partials/rt-transcoder-admin-display.php:15
 msgid "Transcoder Service Settings"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:19
+#: admin/partials/rt-transcoder-admin-display.php:20
 msgid "Empowering The Web With WordPress"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:27
+#: admin/partials/rt-transcoder-admin-display.php:28
 msgid "Dismiss this notice"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:34
+#: admin/partials/rt-transcoder-admin-display.php:36
 msgid "Enter License Key"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:37
+#: admin/partials/rt-transcoder-admin-display.php:40
 msgid "Save Key"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:61
+#: admin/partials/rt-transcoder-admin-display.php:65
 msgid "Feature\\Plan"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:64
-#: admin/partials/rt-transcoder-admin-display.php:133
+#: admin/partials/rt-transcoder-admin-display.php:68
+#: admin/partials/rt-transcoder-admin-display.php:137
 msgid "Free"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:67
+#: admin/partials/rt-transcoder-admin-display.php:71
 msgid "Silver"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:75
+#: admin/partials/rt-transcoder-admin-display.php:79
 msgid "File Size Limit"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:78
+#: admin/partials/rt-transcoder-admin-display.php:82
 msgid "100MB"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:81
+#: admin/partials/rt-transcoder-admin-display.php:85
 msgid "16GB"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:86
+#: admin/partials/rt-transcoder-admin-display.php:90
 msgid "Bandwidth (monthly)"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:89
+#: admin/partials/rt-transcoder-admin-display.php:93
 msgid "5GB"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:92
+#: admin/partials/rt-transcoder-admin-display.php:96
 msgid "100GB"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:97
+#: admin/partials/rt-transcoder-admin-display.php:101
 msgid "Overage Bandwidth"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:100
-#: admin/partials/rt-transcoder-admin-display.php:111
-#: admin/partials/rt-transcoder-admin-display.php:122
+#: admin/partials/rt-transcoder-admin-display.php:104
+#: admin/partials/rt-transcoder-admin-display.php:115
+#: admin/partials/rt-transcoder-admin-display.php:126
 msgid "Not Available"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:103
+#: admin/partials/rt-transcoder-admin-display.php:107
 msgid "Currently not charged"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:108
+#: admin/partials/rt-transcoder-admin-display.php:112
 msgid "Amazon S3 Support"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:114
-#: admin/partials/rt-transcoder-admin-display.php:125
+#: admin/partials/rt-transcoder-admin-display.php:118
+#: admin/partials/rt-transcoder-admin-display.php:129
 msgid "Coming Soon"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:119
+#: admin/partials/rt-transcoder-admin-display.php:123
 msgid "HD Profile"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:130
+#: admin/partials/rt-transcoder-admin-display.php:134
 msgid "Pricing"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:136
+#: admin/partials/rt-transcoder-admin-display.php:140
 msgid "$9/month"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:195
+#: admin/partials/rt-transcoder-admin-display.php:199
 msgid ""
 "<strong>Note</strong>: Transcoder will only work on publicly accessible "
 "websites. If you are using Transcoder on a <strong>locally hosted "
@@ -124,11 +124,11 @@ msgid ""
 "identify the source of your audio/video transcoding requests."
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:211
+#: admin/partials/rt-transcoder-admin-display.php:215
 msgid "Number of video thumbnails generated"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:227
+#: admin/partials/rt-transcoder-admin-display.php:231
 msgid ""
 "This field specifies the number of video thumbnails that will be generated "
 "by the Transcoder. To choose from the generated thumbnails for a video, go "
@@ -136,72 +136,72 @@ msgid ""
 "video is first uploaded. Maximum value is 10."
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:235
+#: admin/partials/rt-transcoder-admin-display.php:239
 msgid "Over-write video thumbnails after retranscoding"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:248
+#: admin/partials/rt-transcoder-admin-display.php:252
 msgid ""
 "If enabled, Transcoder will replace existing media thumbnails with "
 "regenerated ones after retranscoding. If disabled, media thumbnails will "
 "remain untouched."
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:256
+#: admin/partials/rt-transcoder-admin-display.php:260
 msgid "Allow admin to track real-time transcoding status on user profile"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:269
+#: admin/partials/rt-transcoder-admin-display.php:273
 msgid ""
 "If enabled, It will display check status button to know status of "
 "transcoding process at client side if that user have administrator rights."
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:282
+#: admin/partials/rt-transcoder-admin-display.php:286
 #. translators: 1. URL of documentation page.
 msgid "Visit our <a href=\"%1$s\">documentation page</a> for more details"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:320
+#: admin/partials/rt-transcoder-admin-display.php:324
 msgid "Spread the Word"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:328
+#: admin/partials/rt-transcoder-admin-display.php:332
 #. translators: Placeholde contains link of the home url.
 msgid "I use @rtMediaWP http://rt.cx/rtmedia on %s"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:331
+#: admin/partials/rt-transcoder-admin-display.php:335
 msgid "Post to Twitter Now"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:332
+#: admin/partials/rt-transcoder-admin-display.php:336
 msgid "Post to Twitter"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:337
+#: admin/partials/rt-transcoder-admin-display.php:341
 msgid "Share on Facebook Now"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:338
+#: admin/partials/rt-transcoder-admin-display.php:342
 msgid "Share on Facebook"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:343
+#: admin/partials/rt-transcoder-admin-display.php:347
 msgid "Rate rtMedia on Wordpress.org"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:344
+#: admin/partials/rt-transcoder-admin-display.php:348
 msgid "Rate on Wordpress.org"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:349
-#: admin/partials/rt-transcoder-admin-display.php:350
+#: admin/partials/rt-transcoder-admin-display.php:353
+#: admin/partials/rt-transcoder-admin-display.php:354
 msgid "Subscribe to our Feeds"
 msgstr ""
 
-#: admin/partials/rt-transcoder-admin-display.php:360
-#: admin/partials/rt-transcoder-admin-display.php:372
+#: admin/partials/rt-transcoder-admin-display.php:364
+#: admin/partials/rt-transcoder-admin-display.php:376
 msgid "Subscribe"
 msgstr ""
 
@@ -416,17 +416,21 @@ msgstr ""
 msgid " page."
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:229 admin/rt-transcoder-handler.php:657
+#: admin/rt-transcoder-admin.php:204 admin/rt-transcoder-handler.php:1232
+msgid "Please enter the license key."
+msgstr ""
+
+#: admin/rt-transcoder-admin.php:230 admin/rt-transcoder-handler.php:657
 msgid "Current Plan"
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:422
+#: admin/rt-transcoder-admin.php:423
 msgid ""
 "rtMedia encoding service has been disabled because you are using Transcoder "
 "plugin."
 msgstr ""
 
-#: admin/rt-transcoder-admin.php:458
+#: admin/rt-transcoder-admin.php:459
 #. translators: Markup to show the info about plugin subscription if no API key
 #. is there.
 msgid ""
@@ -596,10 +600,6 @@ msgstr ""
 
 #: admin/rt-transcoder-handler.php:1179
 msgid " was successfully transcoded but there was an error while downloading:"
-msgstr ""
-
-#: admin/rt-transcoder-handler.php:1232
-msgid "Please enter the license key."
 msgstr ""
 
 #: admin/rt-transcoder-handler.php:1244
