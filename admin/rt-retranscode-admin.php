@@ -505,13 +505,13 @@ class RetranscodeMedia {
 				$('#retranscodemedia-stop').hide();
 
 				<?php
-					// Allowed tags for notice.
-					$allowed_tags = array(
-						'a' => array(
-							'href' => array(),
-							'id'   => array(),
-						),
-					);
+				// Allowed tags for notice.
+				$allowed_tags = array(
+					'a' => array(
+						'href' => array(),
+						'id'   => array(),
+					),
+				);
 				?>
 
 				if ( rt_errors > 0 ) {
