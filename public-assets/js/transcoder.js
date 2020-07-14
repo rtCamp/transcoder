@@ -3,6 +3,9 @@
 const mediaThumbnails = {};
 
 ( function( $ ) {
+	/**
+	 * Document ready method.
+	 */
 	$( document ).ready( () => {
 		$( '.rtmedia-container ul.rtmedia-list.rtmedia-list-media.rtm-gallery-list > li.rtmedia-list-item' ).each( ( i, elem ) => {
 			elem = $( elem );
@@ -46,6 +49,13 @@ const mediaThumbnails = {};
 		}
 	} );
 
+	/**
+	 * Add media ID to mediaThumbnails array.
+	 *
+	 * @param {int} mediaID Media ID.
+	 *
+	 * @return {void}
+	 */
 	const addToMediaThumbnailQueue = ( mediaID ) => {
 		if ( 'undefined' !== typeof mediaThumbnails[ mediaID ] ) {
 			return;
@@ -53,6 +63,11 @@ const mediaThumbnails = {};
 		mediaThumbnails[ mediaID ] = {};
 	};
 
+	/**
+	 * Make ajax request to get thumbnail URL.
+	 *
+	 * @return {void}
+	 */
 	const requestThumbnails = () => {
 		let mediaIDsToRequest = [];
 		for ( const [ mediaID, obj ] of Object.entries( mediaThumbnails ) ) {
@@ -75,6 +90,13 @@ const mediaThumbnails = {};
 		} );
 	};
 
+	/**
+	 * Check response received from ajax request.
+	 *
+	 * @param {object|boolean} data Response object or false.
+	 *
+	 * @return {void}
+	 */
 	const checkResponse = ( data ) => {
 		if ( 'object' === typeof data ) {
 			for ( const [ mediaID, obj ] of Object.entries( data ) ) {
@@ -94,6 +116,13 @@ const mediaThumbnails = {};
 		}, 5000 );
 	};
 
+	/**
+	 * Update video thumbnail in DOM.
+	 *
+	 * @param {int} mediaID Media ID.
+	 *
+	 * @return {void}
+	 */
 	const updateVideoThumbnail = ( mediaID ) => {
 		if ( 'undefined' === typeof mediaThumbnails[ mediaID ] || ! isValidObject( mediaThumbnails[ mediaID ] ) ) {
 			return;
@@ -112,6 +141,13 @@ const mediaThumbnails = {};
 		img.attr( 'src', mediaThumbnails[ mediaID ].poster );
 	};
 
+	/**
+	 * Check whether an object is valid or not.
+	 *
+	 * @param {object} obj Object contains thumbnails details.
+	 *
+	 * @return {boolean} Whether the object is valid or not.
+	 */
 	const isValidObject = ( obj ) => {
 		return ( 'undefined' !== typeof obj.poster );
 	};
