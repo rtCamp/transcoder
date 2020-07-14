@@ -7,6 +7,19 @@ const mediaThumbnails = {};
 	 * Document ready method.
 	 */
 	$( document ).ready( () => {
+		$( '#activity-stream > .activity-list > li .media-type-video > .rtmedia-item-thumbnail mediaelementwrapper > video' ).each( ( i, elem ) => {
+			elem = $( elem );
+			if ( ( 'undefined' !== typeof elem.attr( 'poster' ) && elem.attr( 'poster' ).length > 0 ) || 'undefined' === typeof elem.attr( 'id' ) || -1 === elem.parent().attr( 'id' ).search( 'rt_media_video_' ) ) {
+				return;
+			}
+
+			const id = parseInt( elem.parent().attr( 'id' ).split( 'rt_media_video_' )[ 1 ] );
+			addToMediaThumbnailQueue( id );
+		} );
+
+		/**
+		 * Code for media page.
+		 */
 		$( '.rtmedia-container ul.rtmedia-list.rtmedia-list-media.rtm-gallery-list > li.rtmedia-list-item' ).each( ( i, elem ) => {
 			elem = $( elem );
 			const img = elem.find( 'a.rtmedia-list-item-a > .rtmedia-item-thumbnail > img' );
@@ -16,11 +29,16 @@ const mediaThumbnails = {};
 
 			addToMediaThumbnailQueue( parseInt( elem.attr( 'id' ) ) );
 		} );
+
+		// Request thumbnails if mediaThumbnails has any elements.
 		if ( Object.entries( mediaThumbnails ).length > 0 ) {
 			requestThumbnails();
 		}
 
 		if ( 'undefined' !== typeof rtMediaHook ) {
+			/**
+			 * Code for media page when a media is uploaded.
+			 */
 			rtMediaHook.register( 'rtmedia_js_after_file_upload', ( data ) => {
 				if ( 'undefined' === typeof data || 'undefined' === typeof data[ 1 ] || 'undefined' === typeof data[ 2 ] ) {
 					return true;
