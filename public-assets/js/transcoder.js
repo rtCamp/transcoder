@@ -38,7 +38,7 @@ const mediaThumbnails = {};
 				return true;
 			} );
 
-			rtMediaHook.register( 'rtmedia_js_after_files_uploaded', function() {
+			rtMediaHook.register( 'rtmedia_js_after_files_uploaded', () => {
 				requestThumbnails();
 
 				return true;
@@ -46,14 +46,14 @@ const mediaThumbnails = {};
 		}
 	} );
 
-	function addToMediaThumbnailQueue( mediaID ) {
+	const addToMediaThumbnailQueue = ( mediaID ) => {
 		if ( 'undefined' !== typeof mediaThumbnails[ mediaID ] ) {
 			return;
 		}
 		mediaThumbnails[ mediaID ] = {};
-	}
+	};
 
-	function requestThumbnails() {
+	const requestThumbnails = () => {
 		let mediaIDsToRequest = [];
 		for ( const [ mediaID, obj ] of Object.entries( mediaThumbnails ) ) {
 			if ( 'undefined' === typeof mediaID || 'undefined' === typeof obj ) {
@@ -70,12 +70,12 @@ const mediaThumbnails = {};
 		}
 		mediaIDsToRequest = mediaIDsToRequest.join();
 
-		$.get( rtTranscoder.restURLPrefix + '/transcoder/v1/amp-rtmedia?media_ids=' + mediaIDsToRequest, function( data ) {
+		$.get( rtTranscoder.restURLPrefix + '/transcoder/v1/amp-rtmedia?media_ids=' + mediaIDsToRequest, ( data ) => {
 			checkResponse( data );
 		} );
-	}
+	};
 
-	function checkResponse( data ) {
+	const checkResponse = ( data ) => {
 		if ( 'object' === typeof data ) {
 			for ( const [ mediaID, obj ] of Object.entries( data ) ) {
 				if ( 'undefined' === typeof mediaID || 'undefined' === typeof obj ) {
@@ -89,12 +89,12 @@ const mediaThumbnails = {};
 			}
 		}
 
-		setTimeout( function() {
+		setTimeout( () => {
 			requestThumbnails();
 		}, 5000 );
-	}
+	};
 
-	function updateVideoThumbnail( mediaID ) {
+	const updateVideoThumbnail = ( mediaID ) => {
 		if ( 'undefined' === typeof mediaThumbnails[ mediaID ] || ! isValidObject( mediaThumbnails[ mediaID ] ) ) {
 			return;
 		}
@@ -110,9 +110,9 @@ const mediaThumbnails = {};
 		}
 
 		img.attr( 'src', mediaThumbnails[ mediaID ].poster );
-	}
+	};
 
-	function isValidObject( obj ) {
+	const isValidObject = ( obj ) => {
 		return ( 'undefined' !== typeof obj.poster );
-	}
+	};
 }( jQuery ) );
