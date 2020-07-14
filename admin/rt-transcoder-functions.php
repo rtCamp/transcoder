@@ -798,6 +798,24 @@ add_action( 'admin_enqueue_scripts', 'rtt_enqueue_scripts' );
 add_action( 'enqueue_block_editor_assets', 'rt_transcoder_enqueue_block_editor_assets' );
 
 /**
+ * Enqueues script on frontend.
+ *
+ * @return void
+ */
+function rtt_enqueue_frontend_scripts() {
+	$time = time();
+	$file = path_join( RT_TRANSCODER_PATH, 'public-assets/js/build/transcoder.js' );
+	if ( file_exists( $file ) ) {
+		$time = filemtime( $file );
+	}
+	wp_enqueue_script( 'rt-transcoder-front-js', RT_TRANSCODER_URL . 'public-assets/js/build/transcoder.js', array( 'jquery', 'rtmedia-backbone' ), $time, true );
+
+	$rest_url_prefix = get_site_url() . '/' . rest_get_url_prefix();
+	wp_localize_script( 'rt-transcoder-front-js', 'rtTranscoder', array( 'restURLPrefix' => $rest_url_prefix ) );
+}
+add_action( 'wp_enqueue_scripts', 'rtt_enqueue_frontend_scripts' );
+
+/**
  * Enqueue required script for block editor.
  */
 function rt_transcoder_enqueue_block_editor_assets() {

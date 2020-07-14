@@ -38,6 +38,16 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 				'callback' => array( $this, 'get_media_data' ),
 			)
 		);
+
+		// Register `amp-rtmedia` route to get media poster info related to rtMedia.
+		register_rest_route(
+			$this->namespace_prefix . $this->version,
+			'/amp-rtmedia',
+			array(
+				'methods'  => WP_REST_Server::READABLE,
+				'callback' => array( $this, 'get_rtmedia_data' ),
+			)
+		);
 	}
 
 	/**
@@ -50,6 +60,41 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 	public function get_media_data( WP_REST_Request $request ) {
 		$media_id = $request->get_param( 'id' );
 
+		return $this->get_media_data_by_id( $media_id );
+	}
+
+	/**
+	 * Return poster url for requested media related to rtMedia if exists.
+	 *
+	 * @param WP_REST_Request $request Object of WP_REST_Request.
+	 *
+	 * @return array|bool
+	 */
+	public function get_rtmedia_data( WP_REST_Request $request ) {
+		if ( ! function_exists( 'rtmedia_media_id' ) || empty( $request['media_ids'] ) ) {
+			return false;
+		}
+		$media_ids = explode( ',', $request['media_ids'] );
+
+		$response = array();
+		foreach ( $media_ids as $media_id ) {
+			$res = $this->get_media_data_by_id( rtmedia_media_id( $media_id ) );
+			if ( false !== $res ) {
+				$response[ $media_id ] = $res;
+			}
+		}
+
+		return ( ! empty( $response ) ) ? $response : false;
+	}
+
+	/**
+	 * Return poster URL of a media from media_id.
+	 *
+	 * @param int $media_id Media ID.
+	 *
+	 * @return array|bool Poster URL and transcoded media URL or False.
+	 */
+	private function get_media_data_by_id( $media_id ) {
 		// Check media id.
 		if ( empty( $media_id ) ) {
 			return false;
