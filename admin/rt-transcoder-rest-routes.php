@@ -78,9 +78,27 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 
 		$response = array();
 		foreach ( $media_ids as $media_id ) {
-			$res = $this->get_media_data_by_id( rtmedia_media_id( $media_id ) );
+			$attachment_id = rtmedia_media_id( $media_id );
+			if ( empty( $attachment_id ) ) {
+				$response[ $media_id ] = 'invalid';
+				continue;
+			}
+
+			$rt_transcoding_job_id = get_post_meta( $attachment_id, '_rt_transcoding_job_id', true );
+			if ( empty( $rt_transcoding_job_id ) ) {
+				$response[ $media_id ] = 'invalid';
+				continue;
+			}
+
+			$res = $this->get_media_data_by_id( $media_id );
 			if ( false !== $res ) {
 				$response[ $media_id ] = $res;
+				continue;
+			}
+
+			$status = json_decode( rtt_get_transcoding_status( $attachment_id ), true );
+			if ( ! empty( $status['message'] ) && false !== strpos( $status['message'], 'Transcoder failed to transcode this file' ) ) {
+				$response[ $media_id ] = 'invalid';
 			}
 		}
 

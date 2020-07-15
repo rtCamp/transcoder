@@ -1,20 +1,36 @@
 /*global rtMediaHook, rtTranscoder*/
 
 const mediaThumbnails = {};
+let isCommentMedia = false;
+let isIntervalSet = false;
 
 ( function( $ ) {
 	/**
 	 * Document ready method.
 	 */
 	$( document ).ready( () => {
-		$( '#activity-stream > .activity-list > li .media-type-video > .rtmedia-item-thumbnail mediaelementwrapper > video' ).each( ( i, elem ) => {
-			elem = $( elem );
-			if ( ( 'undefined' !== typeof elem.attr( 'poster' ) && elem.attr( 'poster' ).length > 0 ) || 'undefined' === typeof elem.attr( 'id' ) || -1 === elem.parent().attr( 'id' ).search( 'rt_media_video_' ) ) {
-				return;
+		/**
+		 * Event after activity is loaded on BuddyPress' activity page.
+		 */
+		$( document ).ajaxComplete( ( event, xhr, settings ) => {
+			if ( 'legacy' !== bp_template_pack && bp_template_pack && 'function' === typeof get_parameter ) {
+				const get_action = get_parameter( 'action', settings.data );
+				if ( 'activity_filter' === get_action ) {
+					setTimeout( () => {
+						$( '#activity-stream > .activity-list > li .media-type-video > .rtmedia-item-thumbnail video' ).each( ( i, elem ) => {
+							elem = $( elem );
+							if ( ( 'undefined' !== typeof elem.attr( 'poster' ) && elem.attr( 'poster' ).length > 0 ) || 'undefined' === typeof elem.attr( 'id' ) || ! elem.attr( 'id' ).length ) {
+								return;
+							}
+				
+							const id = parseInt( elem.attr( 'id' ).replace( /^\D+/g, '') );
+							addToMediaThumbnailQueue( id );
+						} );
+						// Request thumbnails if mediaThumbnails has any elements.
+						setRequestInterval();
+					} , 1000 );
+				}
 			}
-
-			const id = parseInt( elem.parent().attr( 'id' ).split( 'rt_media_video_' )[ 1 ] );
-			addToMediaThumbnailQueue( id );
 		} );
 
 		/**
@@ -29,39 +45,66 @@ const mediaThumbnails = {};
 
 			addToMediaThumbnailQueue( parseInt( elem.attr( 'id' ) ) );
 		} );
-
 		// Request thumbnails if mediaThumbnails has any elements.
-		if ( Object.entries( mediaThumbnails ).length > 0 ) {
-			requestThumbnails();
-		}
+		setRequestInterval();
 
 		if ( 'undefined' !== typeof rtMediaHook ) {
+			/**
+			 * Check if uploaded media is comment media.
+			 */
+			rtMediaHook.register( 'rtmedia_js_file_added', ( data ) => {
+				if ( 'undefined' === typeof data || 'undefined' === typeof data[ 2 ] ) {
+					return true;
+				}
+
+				if ( -1 === data[ 2 ].search( '#rtmedia_uploader_filelist-activity-' ) ) {
+					return true;
+				}
+				isCommentMedia = true;
+
+				return true;
+			} );
+
 			/**
 			 * Code for media page when a media is uploaded.
 			 */
 			rtMediaHook.register( 'rtmedia_js_after_file_upload', ( data ) => {
 				if ( 'undefined' === typeof data || 'undefined' === typeof data[ 1 ] || 'undefined' === typeof data[ 2 ] ) {
+					console.log('ret1');
 					return true;
 				}
 
 				const type = data[ 1 ].type.split( '/' );
 				if ( 'video' !== type[ 0 ] ) {
+					console.log('ret2');
 					return true;
 				}
 
 				const rtMediaObj = JSON.parse( data[ 2 ] );
-				if ( 'undefined' === typeof rtMediaObj.media_id ) {
+				if ( true === Array.isArray( rtMediaObj ) && 'undefined' !== typeof rtMediaObj[0] ) {
+					addToMediaThumbnailQueue( rtMediaObj[0] );
+
+					if ( true === isCommentMedia ) {
+						requestThumbnails();
+						isCommentMedia = false;
+					}
 					return true;
 				}
-
-				addToMediaThumbnailQueue( rtMediaObj.media_id );
+				if ( 'undefined' !== typeof rtMediaObj.media_id ) {
+					addToMediaThumbnailQueue( rtMediaObj.media_id );
+					return true;
+				}
 
 				return true;
 			} );
 
 			rtMediaHook.register( 'rtmedia_js_after_files_uploaded', () => {
-				requestThumbnails();
+				setRequestInterval();
+				return true;
+			} );
 
+			rtMediaHook.register( 'rtmedia_js_after_activity_added', () => {
+				setRequestInterval();
 				return true;
 			} );
 		}
@@ -87,6 +130,10 @@ const mediaThumbnails = {};
 	 * @return {void}
 	 */
 	const requestThumbnails = () => {
+		if ( ! Object.entries( mediaThumbnails ).length ) {
+			return;
+		}
+
 		let mediaIDsToRequest = [];
 		for ( const [ mediaID, obj ] of Object.entries( mediaThumbnails ) ) {
 			if ( 'undefined' === typeof mediaID || 'undefined' === typeof obj ) {
@@ -115,10 +162,18 @@ const mediaThumbnails = {};
 	 *
 	 * @return {void}
 	 */
-	const checkResponse = ( data ) => {
+	const checkResponse = ( data = false ) => {
 		if ( 'object' === typeof data ) {
-			for ( const [ mediaID, obj ] of Object.entries( data ) ) {
-				if ( 'undefined' === typeof mediaID || 'undefined' === typeof obj ) {
+			for ( const [ mediaIDStr, obj ] of Object.entries( data ) ) {
+				if ( 'undefined' === typeof mediaIDStr || 'undefined' === typeof obj ) {
+					continue;
+				}
+				mediaID = parseInt( mediaIDStr );
+
+				if ( 'invalid' === obj ) {
+					if ( 'undefined' !== typeof mediaThumbnails[ mediaID ] ) {
+						delete mediaThumbnails[ mediaID ];
+					}
 					continue;
 				}
 
@@ -129,8 +184,23 @@ const mediaThumbnails = {};
 			}
 		}
 
+		setRequestInterval();
+	};
+
+	/**
+	 * Sets interval to request thumbnails.
+	 *
+	 * @return {void}
+	 */
+	const setRequestInterval = () => {
+		if ( true === isIntervalSet ) {
+			return;
+		}
+
+		isIntervalSet = true;
 		setTimeout( () => {
 			requestThumbnails();
+			isIntervalSet = false;
 		}, 5000 );
 	};
 
@@ -147,16 +217,27 @@ const mediaThumbnails = {};
 		}
 
 		const li = $( 'li#' + mediaID );
-		if ( ! li.length ) {
+		if ( li.length > 0 ) {
+			const img = li.find( 'div.rtmedia-item-thumbnail > img' );
+			if ( ! img.length ) {
+				return;
+			}
+
+			img.attr( 'src', mediaThumbnails[ mediaID ].poster );
 			return;
 		}
 
-		const img = li.find( 'div.rtmedia-item-thumbnail > img' );
-		if ( ! img.length ) {
+		const video = $( 'video#rt_media_video_' + mediaID );
+		if ( video.length > 0 ) {
+			video.attr( 'poster', mediaThumbnails[ mediaID ].poster );
 			return;
 		}
 
-		img.attr( 'src', mediaThumbnails[ mediaID ].poster );
+		const video1 = $( 'video#rt_media_video_' + mediaID + '_from_mejs' );
+		if ( video1.length > 0 ) {
+			video1.attr( 'poster', mediaThumbnails[ mediaID ].poster );
+			return;
+		}
 	};
 
 	/**
