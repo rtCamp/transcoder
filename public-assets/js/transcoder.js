@@ -1,4 +1,4 @@
-/*global rtMediaHook, rtTranscoder*/
+/*global rtMediaHook, rtTranscoder, get_parameter, bp_template_pack*/
 
 const mediaThumbnails = {};
 let isCommentMedia = false;
@@ -13,22 +13,22 @@ let isIntervalSet = false;
 		 * Event after activity is loaded on BuddyPress' activity page.
 		 */
 		$( document ).ajaxComplete( ( event, xhr, settings ) => {
-			if ( 'legacy' !== bp_template_pack && bp_template_pack && 'function' === typeof get_parameter ) {
-				const get_action = get_parameter( 'action', settings.data );
-				if ( 'activity_filter' === get_action ) {
+			if ( 'undefined' !== typeof bp_template_pack && 'legacy' !== bp_template_pack && bp_template_pack && 'function' === typeof get_parameter ) {
+				const getAction = get_parameter( 'action', settings.data );
+				if ( 'activity_filter' === getAction ) {
 					setTimeout( () => {
 						$( '#activity-stream > .activity-list > li .media-type-video > .rtmedia-item-thumbnail video' ).each( ( i, elem ) => {
 							elem = $( elem );
 							if ( ( 'undefined' !== typeof elem.attr( 'poster' ) && elem.attr( 'poster' ).length > 0 ) || 'undefined' === typeof elem.attr( 'id' ) || ! elem.attr( 'id' ).length ) {
 								return;
 							}
-				
-							const id = parseInt( elem.attr( 'id' ).replace( /^\D+/g, '') );
+
+							const id = parseInt( elem.attr( 'id' ).replace( /^\D+/g, '' ) );
 							addToMediaThumbnailQueue( id );
 						} );
 						// Request thumbnails if mediaThumbnails has any elements.
 						setRequestInterval();
-					} , 1000 );
+					}, 1000 );
 				}
 			}
 		} );
@@ -70,19 +70,17 @@ let isIntervalSet = false;
 			 */
 			rtMediaHook.register( 'rtmedia_js_after_file_upload', ( data ) => {
 				if ( 'undefined' === typeof data || 'undefined' === typeof data[ 1 ] || 'undefined' === typeof data[ 2 ] ) {
-					console.log('ret1');
 					return true;
 				}
 
 				const type = data[ 1 ].type.split( '/' );
 				if ( 'video' !== type[ 0 ] ) {
-					console.log('ret2');
 					return true;
 				}
 
 				const rtMediaObj = JSON.parse( data[ 2 ] );
-				if ( true === Array.isArray( rtMediaObj ) && 'undefined' !== typeof rtMediaObj[0] ) {
-					addToMediaThumbnailQueue( rtMediaObj[0] );
+				if ( true === Array.isArray( rtMediaObj ) && 'undefined' !== typeof rtMediaObj[ 0 ] ) {
+					addToMediaThumbnailQueue( rtMediaObj[ 0 ] );
 
 					if ( true === isCommentMedia ) {
 						requestThumbnails();
@@ -168,7 +166,7 @@ let isIntervalSet = false;
 				if ( 'undefined' === typeof mediaIDStr || 'undefined' === typeof obj ) {
 					continue;
 				}
-				mediaID = parseInt( mediaIDStr );
+				const mediaID = parseInt( mediaIDStr );
 
 				if ( 'invalid' === obj ) {
 					if ( 'undefined' !== typeof mediaThumbnails[ mediaID ] ) {
@@ -236,7 +234,7 @@ let isIntervalSet = false;
 		const video1 = $( 'video#rt_media_video_' + mediaID + '_from_mejs' );
 		if ( video1.length > 0 ) {
 			video1.attr( 'poster', mediaThumbnails[ mediaID ].poster );
-			return;
+
 		}
 	};
 

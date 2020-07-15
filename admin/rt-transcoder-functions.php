@@ -803,8 +803,7 @@ add_action( 'enqueue_block_editor_assets', 'rt_transcoder_enqueue_block_editor_a
  * @return void
  */
 function rtt_enqueue_frontend_scripts() {
-	// $file_to_use = 'public-assets/js/build/transcoder.min.js';
-	$file_to_use = 'public-assets/js/transcoder.js';
+	$file_to_use = 'public-assets/js/build/transcoder.min.js';
 
 	$time = time();
 	$file = path_join( RT_TRANSCODER_PATH, $file_to_use );
