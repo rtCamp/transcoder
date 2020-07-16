@@ -78,12 +78,14 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 
 		$response = array();
 		foreach ( $media_ids as $media_id ) {
+			// Convert rtMedia ID to post ID.
 			$attachment_id = rtmedia_media_id( $media_id );
 			if ( empty( $attachment_id ) ) {
 				$response[ $media_id ] = 'invalid';
 				continue;
 			}
 
+			// Check if media is eligible to be transcoded.
 			$rt_transcoding_job_id = get_post_meta( $attachment_id, '_rt_transcoding_job_id', true );
 			if ( empty( $rt_transcoding_job_id ) ) {
 				$response[ $media_id ] = 'invalid';
@@ -96,6 +98,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 				continue;
 			}
 
+			// Get transcoding status to detect if the site doesn't have HTTP auth or some other restrictions.
 			$status = json_decode( rtt_get_transcoding_status( $attachment_id ), true );
 			if ( ! empty( $status['message'] ) && false !== strpos( $status['message'], 'Transcoder failed to transcode this file' ) ) {
 				$response[ $media_id ] = 'invalid';
