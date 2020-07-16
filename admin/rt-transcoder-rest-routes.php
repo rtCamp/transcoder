@@ -92,7 +92,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 				continue;
 			}
 
-			$res = $this->get_media_data_by_id( $media_id );
+			$res = $this->get_media_data_by_id( $attachment_id );
 			if ( false !== $res ) {
 				$response[ $media_id ] = $res;
 				continue;
