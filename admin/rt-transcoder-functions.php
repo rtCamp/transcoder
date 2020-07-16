@@ -805,11 +805,9 @@ add_action( 'enqueue_block_editor_assets', 'rt_transcoder_enqueue_block_editor_a
 function rtt_enqueue_frontend_scripts() {
 	$file_to_use = 'public-assets/js/build/transcoder.min.js';
 
-	$time = time();
 	$file = path_join( RT_TRANSCODER_PATH, $file_to_use );
 	if ( file_exists( $file ) ) {
-		$time = filemtime( $file );
-		wp_enqueue_script( 'rt-transcoder-front-js', RT_TRANSCODER_URL . $file_to_use, array( 'jquery', 'rtmedia-backbone' ), $time, true );
+		wp_enqueue_script( 'rt-transcoder-front-js', RT_TRANSCODER_URL . $file_to_use, array( 'jquery', 'rtmedia-backbone' ), filemtime( $file ), true );
 
 		$rest_url_prefix = get_site_url() . '/' . rest_get_url_prefix();
 		wp_localize_script( 'rt-transcoder-front-js', 'rtTranscoder', array( 'restURLPrefix' => $rest_url_prefix ) );
