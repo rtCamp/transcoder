@@ -55,7 +55,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 	 *
 	 * @param WP_REST_Request $request Object of WP_REST_Request.
 	 *
-	 * @return array|bool
+	 * @return array|bool REST API response.
 	 */
 	public function get_media_data( WP_REST_Request $request ) {
 		$media_id = $request->get_param( 'id' );
@@ -68,7 +68,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 	 *
 	 * @param WP_REST_Request $request Object of WP_REST_Request.
 	 *
-	 * @return array|bool
+	 * @return array|bool REST API response.
 	 */
 	public function get_rtmedia_data( WP_REST_Request $request ) {
 		if ( ! function_exists( 'rtmedia_media_id' ) || empty( $request['media_ids'] ) ) {
