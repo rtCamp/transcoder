@@ -1,10 +1,10 @@
 === Transcoder ===
-Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode, thrijith, devikvekariya, sagarnasit, sudhiryadav
+Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode, thrijith, devikvekariya, sagarnasit, sudhiryadav, sid177, pooja1210
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 5.2.3
-Stable tag: 1.3
+Tested up to: 5.5
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,18 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.3.1 [August 14, 2020] =
+
+* ENHANCEMENTS
+
+ * Update thumbnails after video is transcoded on BuddyPress’ activity and rtMedia’s media page.
+
+* FIXED
+
+ * Compatibility issues with WordPress 5.5
+ * PHP Notices and Warnings
+ * PHPCS issues
+
 = 1.3 [October 8, 2019] =
 
 * NEW FEATURES
@@ -176,5 +188,5 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
-= 1.3 =
-Transcoder 1.3, with support for videos in AMP Stories.
+= 1.3.1 =
+Transcoder 1.3.1, with WordPress 5.5 compatibility and media thumbnails auto update feature after transcoding is completed on rtMedia pages.
