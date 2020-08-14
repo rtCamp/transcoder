@@ -14,7 +14,7 @@ jobs:
         ASSETS_DIR: wpassets
         EXCLUDE_LIST: .bowerrc .gitattributes .gitignore .jshintrc .travis.yml CONTRIBUTING.md
           Gruntfile.js README.md deploy.sh package-lock.json package.json phpcs.xml phpunit.xml
-          tests .babelrc .eslintignore .eslintrc .jscsrc .jshintignore .npmrc webpack.config.js
+          tests .babelrc .eslintignore .eslintrc .jscsrc .jshintignore .npmrc .nvmrc webpack.config.js
         SLUG: transcoder
         WORDPRESS_PASSWORD: ${{ secrets.WORDPRESS_PASSWORD }}
         WORDPRESS_USERNAME: ${{ secrets.WORDPRESS_USERNAME }}
