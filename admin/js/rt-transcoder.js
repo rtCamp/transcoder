@@ -10,7 +10,7 @@
 	$( document ).ready(
 		function () {
 			if ( transcoding_status.load_flag ) {
-				$( '[name="check_status_btn"]' ).live( 'click', function ( e ) {
+				$( '[name="check_status_btn"]' ).click( function ( e ) {
 
 					var post_id = $( this ).data( 'value' );
 					var btn_text = $( '#btn_check_status' + post_id ).text();
