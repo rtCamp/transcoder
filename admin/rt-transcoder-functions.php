@@ -893,7 +893,7 @@ function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_i
 
 	$post_id = wp_cache_get( 'media_' . $rtmedia_id, 'transcoder' );
 	if ( empty( $post_id ) ) {
-		$results = $wpdb->get_results( $wpdb->prepare( 'SELECT media_id FROM %s WHERE id = %d', $rtmedia_media_table, $rtmedia_id ), OBJECT ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT media_id FROM $rtmedia_media_table WHERE id = %d", $rtmedia_id ), OBJECT ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- %s adds '' around table name.
 		$post_id = $results[0]->media_id;
 		wp_cache_set( 'media_' . $rtmedia_id, $post_id, 'transcoder', 3600 );
 	}
