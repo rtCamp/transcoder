@@ -9,7 +9,7 @@ Transcoding services for ANY WordPress website. Convert audio/video files of any
  <img src="https://rtmedia.io/wp-content/uploads/2016/08/trancoder-banner-01.png" alt="Transcoder Banner"/>
 </p>
 
-* **Contributors:** [rtcamp] (http://profiles.wordpress.org/rtcamp), [mangeshp] (http://profiles.wordpress.org/mangeshp), [chandrapatel] (http://profiles.wordpress.org/chandrapatel), [manishsongirkar36] (http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90] (http://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode] (http://profiles.wordpress.org/kiranpotphode), [thrijith] (http://profiles.wordpress.org/thrijith), [devikvekariya] (http://profiles.wordpress.org/devikvekariya), [sagarnasit] (http://profiles.wordpress.org/sagarnasit), [sudhiryadav] (http://profiles.wordpress.org/sudhiryadav),
+* **Contributors:** [rtcamp] (http://profiles.wordpress.org/rtcamp), [mangeshp] (http://profiles.wordpress.org/mangeshp), [chandrapatel] (http://profiles.wordpress.org/chandrapatel), [manishsongirkar36] (http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90] (http://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode] (http://profiles.wordpress.org/kiranpotphode), [thrijith] (http://profiles.wordpress.org/thrijith), [devikvekariya] (http://profiles.wordpress.org/devikvekariya), [sagarnasit] (http://profiles.wordpress.org/sagarnasit), [sudhiryadav] (http://profiles.wordpress.org/sudhiryadav), [sid177] (https://profiles.wordpress.org/sid177/), [pooja1210] (https://profiles.wordpress.org/pooja1210/)
 
 * **License:** [GPL v2 or later] ( http://www.gnu.org/licenses/gpl-2.0.html)
 
@@ -65,6 +65,24 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 ## Changelog ##
+#### 1.3.1 [August 14, 2020] ####
+
+* ENHANCEMENTS
+
+ * Update thumbnails after video is transcoded on BuddyPress’ activity and rtMedia’s media page.
+
+* FIXED
+
+ * Compatibility issues with WordPress 5.5
+ * PHP Notices and Warnings
+ * PHPCS issues
+
+#### 1.3 [October 8, 2019] ####
+
+* NEW FEATURES
+
+ * Extend Video mime types, to facilitate selection and transcoding of Videos in AMP Stories.
+
 #### 1.2.2 [July 12, 2018] ####
 
 * FIXED
@@ -172,4 +190,4 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 #### 1.0.0 ####
 Initial release
 
-Transcoder 1.2.2, with support for load balancing server.
+Transcoder 1.3.1, with WordPress 5.5 compatibility and media thumbnails auto update feature after transcoding is completed on rtMedia pages.
