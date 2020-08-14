@@ -1,9 +1,9 @@
 {
-	"name": "Transcoder",
+	"name": "transcoder",
 	"scripts": {
-		"build": "cross-env BABEL_ENV=default NODE_ENV=production webpack",
+		"build": "cross-env BABEL_ENV=default NODE_ENV=production webpack --mode production --progress",
 		"dev-test": "cross-env BABEL_ENV=default NODE_ENV=development webpack",
-		"dev": "cross-env BABEL_ENV=default webpack --watch"
+		"dev": "cross-env BABEL_ENV=default webpack --watch --mode development --progress"
 	},
 	"devDependencies": {
 		"babel-core": "^6.26.3",
@@ -31,11 +31,12 @@
 		"grunt-contrib-uglify": "^2.0.0",
 		"grunt-contrib-watch": "^1.0.0",
 		"grunt-wp-i18n": "1.0.3",
-		"jest": "24.7.1",
+		"jest": "25.5.2",
 		"load-grunt-tasks": "5.1.0",
 		"serialize-javascript": "2.1.2",
 		"uglifyjs-webpack-plugin": "1.1.6",
-		"webpack": "4.41.2"
+		"webpack": "4.41.2",
+		"webpack-cli": "3.3.11"
 	},
 	"dependencies": {
 		"@wordpress/api-fetch": "3.6.0"
