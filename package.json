@@ -39,6 +39,6 @@
 		"webpack-cli": "3.3.11"
 	},
 	"dependencies": {
-		"@wordpress/api-fetch": "3.6.0"
+		"@wordpress/api-fetch": "3.19.1"
 	}
 }
