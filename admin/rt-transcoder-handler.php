@@ -1130,7 +1130,7 @@ class RT_Transcoder_Handler {
 			}
 		} else {
 
-		    // To check if request is sumitted from the WP Job Manager plugin ( https://wordpress.org/plugins/wp-job-manager/ ).
+			// To check if request is sumitted from the WP Job Manager plugin ( https://wordpress.org/plugins/wp-job-manager/ ).
 			$job_manager_form = transcoder_filter_input( INPUT_POST, 'job_manager_form', FILTER_SANITIZE_STRING );
 
 			if ( isset( $job_id ) && ! empty( $job_id ) && class_exists( 'RTDBModel' ) && empty( $job_manager_form ) ) {
