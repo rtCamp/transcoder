@@ -782,8 +782,23 @@ class RT_Transcoder_Handler {
 			$temp_name             = $thumbinfo['basename'];
 			$temp_name             = urldecode( $temp_name );
 			$temp_name_array       = explode( '/', $temp_name );
-			$temp_name             = $temp_name_array[ count( $temp_name_array ) - 1 ];
-			$thumbinfo['basename'] = apply_filters( 'transcoded_temp_filename', $temp_name );
+			$thumbinfo['basename'] = $temp_name_array[ count( $temp_name_array ) - 1 ];
+
+			/**
+			 * Filter: 'transcoded_temp_filename' - Allows changes for the thumbnail name.
+			 *
+			 * @deprecated 1.3.2. Use the {@see 'transcoded_thumb_filename'} filter instead.
+			 */
+			$thumbinfo['basename'] = apply_filters_deprecated( 'transcoded_temp_filename', array( $thumbinfo['basename'] ), '1.3.2', 'transcoded_thumb_filename' );
+
+			/**
+			 * Allows users/plugins to filter the thumbnail Name
+			 *
+			 * @since 1.3.2
+			 *
+			 * @param string $temp_name Contains the thumbnail public name
+			 */
+			$thumbinfo['basename'] = apply_filters( 'transcoded_thumb_filename', $thumbinfo['basename'] );
 
 			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
 				add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
@@ -920,7 +935,15 @@ class RT_Transcoder_Handler {
 									add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
 								}
 
-								$upload_info = wp_upload_bits( $new_wp_attached_file_pathinfo['basename'], null, $file_content );
+								/**
+								 * Allows users/plugins to filter the transcoded file Name
+								 *
+								 * @since 1.0.5
+								 *
+								 * @param string $new_wp_attached_file_pathinfo['basename']  Contains the file public name
+								 */
+								$video_url   = apply_filters( 'transcoded_video_filename', $new_wp_attached_file_pathinfo['basename'] );
+								$upload_info = wp_upload_bits( $video_url, null, $file_content );
 
 								/**
 								 * Allow users to filter/perform action on uploaded transcoded file.
