@@ -789,7 +789,7 @@ class RT_Transcoder_Handler {
 			 *
 			 * @deprecated 1.3.2. Use the {@see 'transcoded_thumb_filename'} filter instead.
 			 */
-			$thumbinfo['basename'] = apply_filters_deprecated( 'transcoded_temp_filename', array( $thumbinfo['basename'] ), '1.3.2', 'transcoded_thumb_filename' );
+			$thumbinfo['basename'] = apply_filters_deprecated( 'transcoded_temp_filename', array( $thumbinfo['basename'] ), '1.3.2', 'transcoded_thumb_filename', __( 'Use transcoded_thumb_filename filter to modify video thumbnail name and transcoded_video_filename filter to modify video file name.', 'transcoder' ) );
 
 			/**
 			 * Allows users/plugins to filter the thumbnail Name
