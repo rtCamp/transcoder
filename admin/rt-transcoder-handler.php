@@ -799,7 +799,7 @@ class RT_Transcoder_Handler {
 			 *
 			 * @param string $temp_name Contains the thumbnail public name
 			 */
-			$thumbinfo['basename'] = apply_filters( 'transcoded_thumb_filename', $thumbinfo['basename'], $post_array );
+			$thumbinfo['basename'] = apply_filters( 'transcoded_thumb_filename', $thumbinfo['basename'] );
 
 			// Verify Extension.
 			if ( empty( pathinfo( $thumbinfo['basename'], PATHINFO_EXTENSION ) ) ) {
