@@ -778,7 +778,7 @@ class RT_Transcoder_Handler {
 		$failed_thumbnails      = false;
 
 		foreach ( $post_thumbs_array['thumbnail'] as $thumbnail ) {
-			$thumbresource         = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $thumbnail, [ 'timeout' => 3000 ] ) : wp_remote_get( $thumbnail, [ 'timeout' => 3000 ] );  // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+			$thumbresource         = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $thumbnail, array( 'timeout' => 3000 ) ) : wp_remote_get( $thumbnail, array( 'timeout' => 3000 ) );  // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get, WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 			$thumbinfo             = pathinfo( $thumbnail );
 			$temp_name             = $thumbinfo['basename'];
 			$temp_name             = urldecode( $temp_name );
