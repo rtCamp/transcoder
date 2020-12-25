@@ -775,9 +775,10 @@ class RT_Transcoder_Handler {
 		$largest_thumb          = false;
 		$largest_thumb_url      = false;
 		$upload_thumbnail_array = array();
+		$failed_thumbnails      = false;
 
 		foreach ( $post_thumbs_array['thumbnail'] as $thumbnail ) {
-			$thumbresource         = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $thumbnail ) : wp_remote_get( $thumbnail );  // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+			$thumbresource         = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $thumbnail, [ 'timeout' => 3000 ] ) : wp_remote_get( $thumbnail, [ 'timeout' => 3000 ] );  // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 			$thumbinfo             = pathinfo( $thumbnail );
 			$temp_name             = $thumbinfo['basename'];
 			$temp_name             = urldecode( $temp_name );
@@ -798,7 +799,12 @@ class RT_Transcoder_Handler {
 			 *
 			 * @param string $temp_name Contains the thumbnail public name
 			 */
-			$thumbinfo['basename'] = apply_filters( 'transcoded_thumb_filename', $thumbinfo['basename'] );
+			$thumbinfo['basename'] = apply_filters( 'transcoded_thumb_filename', $thumbinfo['basename'], $post_array );
+
+			// Verify Extension.
+			if ( empty( pathinfo( $thumbinfo['basename'], PATHINFO_EXTENSION ) ) ) {
+				$thumbinfo['basename'] .= '.' . $thumbinfo['extension'];
+			}
 
 			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
 				add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
@@ -806,6 +812,11 @@ class RT_Transcoder_Handler {
 
 			// Create a file in the upload folder with given content.
 			$thumb_upload_info = wp_upload_bits( $thumbinfo['basename'], null, $thumbresource['body'] );
+
+			// Check error.
+			if ( ! empty( $thumb_upload_info['error'] ) ) {
+				$failed_thumbnails = $thumb_upload_info;
+			}
 
 			/**
 			 * Allow users to filter/perform action on uploaded transcoded file.
@@ -817,7 +828,6 @@ class RT_Transcoder_Handler {
 			 *                                  and $thumb_upload_info['file'] contains the file physical path
 			 * @param int  $post_id             Contains the attachment ID for which transcoded file is uploaded
 			 */
-
 			$thumb_upload_info = apply_filters( 'transcoded_file_stored', $thumb_upload_info, $post_id );
 
 			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
@@ -847,6 +857,10 @@ class RT_Transcoder_Handler {
 				$largest_thumb      = $thumb_upload_info['url'];            // Absolute URL of the thumb.
 				$largest_thumb_url  = $file ? $file : '';                   // Relative URL of the thumb.
 			}
+		}
+
+		if ( false !== $failed_thumbnails && ! empty( $failed_thumbnails['error'] ) ) {
+			$this->nofity_transcoding_failed( $post_array['job_id'], sprintf( 'Failed saving of Thumbnail for %1$s.', $post_array['file_name'] ) );
 		}
 
 		update_post_meta( $post_id, '_rt_media_source', $post_thumbs_array['job_for'] );
@@ -938,7 +952,7 @@ class RT_Transcoder_Handler {
 								/**
 								 * Allows users/plugins to filter the transcoded file Name
 								 *
-								 * @since 1.0.5
+								 * @since 1.3.2
 								 *
 								 * @param string $new_wp_attached_file_pathinfo['basename']  Contains the file public name
 								 */
