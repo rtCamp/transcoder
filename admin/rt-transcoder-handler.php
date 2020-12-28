@@ -778,7 +778,7 @@ class RT_Transcoder_Handler {
 		$failed_thumbnails      = false;
 
 		foreach ( $post_thumbs_array['thumbnail'] as $thumbnail ) {
-			$thumbresource         = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $thumbnail, array( 'timeout' => 3000 ) ) : wp_remote_get( $thumbnail, array( 'timeout' => 3000 ) );  // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get, WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
+			$thumbresource         = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $thumbnail, '', 3, 3 ) : wp_remote_get( $thumbnail, array( 'timeout' => 30 ) );  // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get, WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 			$thumbinfo             = pathinfo( $thumbnail );
 			$temp_name             = $thumbinfo['basename'];
 			$temp_name             = urldecode( $temp_name );
@@ -935,8 +935,15 @@ class RT_Transcoder_Handler {
 							$new_wp_attached_file_pathinfo = pathinfo( $download_url );
 							$post_mime_type                = 'mp4' === $new_wp_attached_file_pathinfo['extension'] ? 'video/mp4' : 'audio/mp3';
 							$attachemnt_url                = wp_get_attachment_url( $attachment_id );
+
+							$timeout = 5;
+
+							if ( 'video/mp4' === $post_mime_type ) {
+								$timeout = 30;
+							}
+
 							try {
-								$response = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $download_url, '', 3, 3 ) : wp_remote_get( $download_url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+								$response = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $download_url, '', 3, 3 ) : wp_remote_get( $download_url, array( 'timeout' => $timeout ) ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 							} catch ( Exception $e ) {
 								$flag = $e->getMessage();
 							}
@@ -1028,6 +1035,7 @@ class RT_Transcoder_Handler {
 							} else {
 								$uploads = wp_upload_dir();
 							}
+
 							if ( 'video/mp4' === $post_mime_type ) {
 								$media_type = 'mp4';
 							} elseif ( 'audio/mp3' === $post_mime_type ) {
