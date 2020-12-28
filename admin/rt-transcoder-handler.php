@@ -778,7 +778,7 @@ class RT_Transcoder_Handler {
 		$failed_thumbnails      = false;
 
 		foreach ( $post_thumbs_array['thumbnail'] as $thumbnail ) {
-			$thumbresource         = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $thumbnail, '', 3, 3 ) : wp_remote_get( $thumbnail, array( 'timeout' => 30 ) );  // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get, WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
+			$thumbresource         = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $thumbnail, '', 3, 3 ) : wp_remote_get( $thumbnail, array( 'timeout' => 120 ) );  // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get, WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 			$thumbinfo             = pathinfo( $thumbnail );
 			$temp_name             = $thumbinfo['basename'];
 			$temp_name             = urldecode( $temp_name );
@@ -939,7 +939,7 @@ class RT_Transcoder_Handler {
 							$timeout = 5;
 
 							if ( 'video/mp4' === $post_mime_type ) {
-								$timeout = 30;
+								$timeout = 120;
 							}
 
 							try {
