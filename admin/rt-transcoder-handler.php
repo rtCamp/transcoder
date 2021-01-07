@@ -357,7 +357,7 @@ class RT_Transcoder_Handler {
 		if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
 			$validation_page = vip_safe_wp_remote_get( $validate_url, '', 3, 3 );
 		} else {
-			$validation_page = wp_remote_get( $validate_url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+			$validation_page = wp_safe_remote_get( $validate_url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 		}
 		if ( ! is_wp_error( $validation_page ) ) {
 			$validation_info = json_decode( $validation_page['body'] );
@@ -385,7 +385,7 @@ class RT_Transcoder_Handler {
 		if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
 			$usage_page = vip_safe_wp_remote_get( $usage_url, '', 3, 3 );
 		} else {
-			$usage_page = wp_remote_get( $usage_url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+			$usage_page = wp_safe_remote_get( $usage_url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 		}
 		if ( ! is_wp_error( $usage_page ) ) {
 			$usage_info = json_decode( $usage_page['body'] );
@@ -1500,7 +1500,7 @@ class RT_Transcoder_Handler {
 			if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
 				$status_page = vip_safe_wp_remote_get( $status_url, '', 3, 3 );
 			} else {
-				$status_page = wp_remote_get( $status_url, array( 'timeout' => 120 ) ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get, WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
+				$status_page = wp_safe_remote_get( $status_url, array( 'timeout' => 120 ) ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get, WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 			}
 
 			if ( ! is_wp_error( $status_page ) ) {
