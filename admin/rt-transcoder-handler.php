@@ -963,8 +963,14 @@ class RT_Transcoder_Handler {
 								 *
 								 * @param string $new_wp_attached_file_pathinfo['basename']  Contains the file public name
 								 */
-								$video_url   = apply_filters( 'transcoded_video_filename', $new_wp_attached_file_pathinfo['basename'] );
-								$upload_info = wp_upload_bits( $video_url, null, $file_content );
+								$file_name = apply_filters( 'transcoded_video_filename', $new_wp_attached_file_pathinfo['basename'] );
+
+								// Verify Extension.
+								if ( empty( pathinfo( $file_name, PATHINFO_EXTENSION ) ) ) {
+									$file_name .= '.' . $new_wp_attached_file_pathinfo['extension'];
+								}
+
+								$upload_info = wp_upload_bits( $file_name, null, $file_content );
 
 								/**
 								 * Allow users to filter/perform action on uploaded transcoded file.
