@@ -1,10 +1,10 @@
 === Transcoder ===
-Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode, thrijith, devikvekariya, sagarnasit, sudhiryadav, sid177, pooja1210
+Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode, thrijith, devikvekariya, sagarnasit, sudhiryadav, sid177, pooja1210, vaishu.agola27,ravatparmar
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 5.5
-Stable tag: 1.3.1
+Tested up to: 5.6
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,15 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.3.2 [January 12, 2021] =
+
+* FIXED
+
+ * The conflict with temp_filename filter and modified the filter
+ * Compatibility issues with WordPress 5.6
+ * Conflicts with WP Job Manager plugin
+ * PHP Notices and Warnings
+
 = 1.3.1 [August 14, 2020] =
 
 * ENHANCEMENTS
@@ -188,5 +197,5 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
-= 1.3.1 =
-Transcoder 1.3.1, with WordPress 5.5 compatibility and media thumbnails auto update feature after transcoding is completed on rtMedia pages.
+= 1.3.2 =
+Transcoder 1.3.2, with WordPress 5.6 compatibility and some minor fixes and modification of transcoded_temp_filename filter.
