@@ -9,7 +9,7 @@ Transcoding services for ANY WordPress website. Convert audio/video files of any
  <img src="https://rtmedia.io/wp-content/uploads/2016/08/trancoder-banner-01.png" alt="Transcoder Banner"/>
 </p>
 
-* **Contributors:** [rtcamp] (http://profiles.wordpress.org/rtcamp), [mangeshp] (http://profiles.wordpress.org/mangeshp), [chandrapatel] (http://profiles.wordpress.org/chandrapatel), [manishsongirkar36] (http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90] (http://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode] (http://profiles.wordpress.org/kiranpotphode), [thrijith] (http://profiles.wordpress.org/thrijith), [devikvekariya] (http://profiles.wordpress.org/devikvekariya), [sagarnasit] (http://profiles.wordpress.org/sagarnasit), [sudhiryadav] (http://profiles.wordpress.org/sudhiryadav), [sid177] (https://profiles.wordpress.org/sid177/), [pooja1210] (https://profiles.wordpress.org/pooja1210/)
+* **Contributors:** [rtcamp] (http://profiles.wordpress.org/rtcamp), [mangeshp] (http://profiles.wordpress.org/mangeshp), [chandrapatel] (http://profiles.wordpress.org/chandrapatel), [manishsongirkar36] (http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90] (http://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode] (http://profiles.wordpress.org/kiranpotphode), [thrijith] (http://profiles.wordpress.org/thrijith), [devikvekariya] (http://profiles.wordpress.org/devikvekariya), [sagarnasit] (http://profiles.wordpress.org/sagarnasit), [sudhiryadav] (http://profiles.wordpress.org/sudhiryadav), [sid177] (https://profiles.wordpress.org/sid177/), [pooja1210] (https://profiles.wordpress.org/pooja1210/), [vaishu.agola27] (https://profiles.wordpress.org/vaishuagola27/)
 
 * **License:** [GPL v2 or later] ( http://www.gnu.org/licenses/gpl-2.0.html)
 
@@ -65,6 +65,15 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 ## Changelog ##
+#### 1.3.2 [January 12, 2021] ####
+
+* FIXED
+
+ * The conflict with temp_filename filter and modified the filter
+ * Compatibility issues with WordPress 5.6
+ * Conflicts with WP Job Manager plugin
+ * PHP Notices and Warnings
+
 #### 1.3.1 [August 14, 2020] ####
 
 * ENHANCEMENTS
@@ -190,4 +199,4 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 #### 1.0.0 ####
 Initial release
 
-Transcoder 1.3.1, with WordPress 5.5 compatibility and media thumbnails auto update feature after transcoding is completed on rtMedia pages.
+Transcoder 1.3.2, with WordPress 5.6 compatibility and some minor fixes and modification of transcoded_temp_filename filter.
