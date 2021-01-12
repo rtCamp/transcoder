@@ -34,8 +34,9 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 			$this->namespace_prefix . $this->version,
 			'/amp-media/(?P<id>\d+)',
 			array(
-				'methods'  => WP_REST_Server::READABLE,
-				'callback' => array( $this, 'get_media_data' ),
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_media_data' ),
+				'permission_callback' => '__return_true',
 			)
 		);
 
@@ -44,8 +45,9 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 			$this->namespace_prefix . $this->version,
 			'/amp-rtmedia',
 			array(
-				'methods'  => WP_REST_Server::READABLE,
-				'callback' => array( $this, 'get_rtmedia_data' ),
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_rtmedia_data' ),
+				'permission_callback' => '__return_true',
 			)
 		);
 	}

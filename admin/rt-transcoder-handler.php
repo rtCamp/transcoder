@@ -357,7 +357,7 @@ class RT_Transcoder_Handler {
 		if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
 			$validation_page = vip_safe_wp_remote_get( $validate_url, '', 3, 3 );
 		} else {
-			$validation_page = wp_remote_get( $validate_url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+			$validation_page = wp_safe_remote_get( $validate_url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 		}
 		if ( ! is_wp_error( $validation_page ) ) {
 			$validation_info = json_decode( $validation_page['body'] );
@@ -385,7 +385,7 @@ class RT_Transcoder_Handler {
 		if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
 			$usage_page = vip_safe_wp_remote_get( $usage_url, '', 3, 3 );
 		} else {
-			$usage_page = wp_remote_get( $usage_url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+			$usage_page = wp_safe_remote_get( $usage_url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 		}
 		if ( ! is_wp_error( $usage_page ) ) {
 			$usage_info = json_decode( $usage_page['body'] );
@@ -775,15 +775,36 @@ class RT_Transcoder_Handler {
 		$largest_thumb          = false;
 		$largest_thumb_url      = false;
 		$upload_thumbnail_array = array();
+		$failed_thumbnails      = false;
 
 		foreach ( $post_thumbs_array['thumbnail'] as $thumbnail ) {
-			$thumbresource         = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $thumbnail ) : wp_remote_get( $thumbnail );  // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+			$thumbresource         = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $thumbnail, '', 3, 3 ) : wp_remote_get( $thumbnail, array( 'timeout' => 120 ) );  // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get, WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 			$thumbinfo             = pathinfo( $thumbnail );
 			$temp_name             = $thumbinfo['basename'];
 			$temp_name             = urldecode( $temp_name );
 			$temp_name_array       = explode( '/', $temp_name );
-			$temp_name             = $temp_name_array[ count( $temp_name_array ) - 1 ];
-			$thumbinfo['basename'] = apply_filters( 'transcoded_temp_filename', $temp_name );
+			$thumbinfo['basename'] = $temp_name_array[ count( $temp_name_array ) - 1 ];
+
+			/**
+			 * Filter: 'transcoded_temp_filename' - Allows changes for the thumbnail name.
+			 *
+			 * @deprecated 1.3.2. Use the {@see 'transcoded_thumb_filename'} filter instead.
+			 */
+			$thumbinfo['basename'] = apply_filters_deprecated( 'transcoded_temp_filename', array( $thumbinfo['basename'] ), '1.3.2', 'transcoded_thumb_filename', __( 'Use transcoded_thumb_filename filter to modify video thumbnail name and transcoded_video_filename filter to modify video file name.', 'transcoder' ) );
+
+			/**
+			 * Allows users/plugins to filter the thumbnail Name
+			 *
+			 * @since 1.3.2
+			 *
+			 * @param string $temp_name Contains the thumbnail public name
+			 */
+			$thumbinfo['basename'] = apply_filters( 'transcoded_thumb_filename', $thumbinfo['basename'] );
+
+			// Verify Extension.
+			if ( empty( pathinfo( $thumbinfo['basename'], PATHINFO_EXTENSION ) ) ) {
+				$thumbinfo['basename'] .= '.' . $thumbinfo['extension'];
+			}
 
 			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
 				add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
@@ -791,6 +812,11 @@ class RT_Transcoder_Handler {
 
 			// Create a file in the upload folder with given content.
 			$thumb_upload_info = wp_upload_bits( $thumbinfo['basename'], null, $thumbresource['body'] );
+
+			// Check error.
+			if ( ! empty( $thumb_upload_info['error'] ) ) {
+				$failed_thumbnails = $thumb_upload_info;
+			}
 
 			/**
 			 * Allow users to filter/perform action on uploaded transcoded file.
@@ -802,7 +828,6 @@ class RT_Transcoder_Handler {
 			 *                                  and $thumb_upload_info['file'] contains the file physical path
 			 * @param int  $post_id             Contains the attachment ID for which transcoded file is uploaded
 			 */
-
 			$thumb_upload_info = apply_filters( 'transcoded_file_stored', $thumb_upload_info, $post_id );
 
 			if ( 'wp-media' !== $post_thumbs_array['job_for'] ) {
@@ -832,6 +857,10 @@ class RT_Transcoder_Handler {
 				$largest_thumb      = $thumb_upload_info['url'];            // Absolute URL of the thumb.
 				$largest_thumb_url  = $file ? $file : '';                   // Relative URL of the thumb.
 			}
+		}
+
+		if ( false !== $failed_thumbnails && ! empty( $failed_thumbnails['error'] ) ) {
+			$this->nofity_transcoding_failed( $post_array['job_id'], sprintf( 'Failed saving of Thumbnail for %1$s.', $post_array['file_name'] ) );
 		}
 
 		update_post_meta( $post_id, '_rt_media_source', $post_thumbs_array['job_for'] );
@@ -906,8 +935,15 @@ class RT_Transcoder_Handler {
 							$new_wp_attached_file_pathinfo = pathinfo( $download_url );
 							$post_mime_type                = 'mp4' === $new_wp_attached_file_pathinfo['extension'] ? 'video/mp4' : 'audio/mp3';
 							$attachemnt_url                = wp_get_attachment_url( $attachment_id );
+
+							$timeout = 5;
+
+							if ( 'video/mp4' === $post_mime_type ) {
+								$timeout = 120;
+							}
+
 							try {
-								$response = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $download_url, '', 3, 3 ) : wp_remote_get( $download_url ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+								$response = function_exists( 'vip_safe_wp_remote_get' ) ? vip_safe_wp_remote_get( $download_url, '', 3, 3 ) : wp_remote_get( $download_url, array( 'timeout' => $timeout ) ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 							} catch ( Exception $e ) {
 								$flag = $e->getMessage();
 							}
@@ -920,7 +956,21 @@ class RT_Transcoder_Handler {
 									add_filter( 'upload_dir', array( $this, 'upload_dir' ) );
 								}
 
-								$upload_info = wp_upload_bits( $new_wp_attached_file_pathinfo['basename'], null, $file_content );
+								/**
+								 * Allows users/plugins to filter the transcoded file Name
+								 *
+								 * @since 1.3.2
+								 *
+								 * @param string $new_wp_attached_file_pathinfo['basename']  Contains the file public name
+								 */
+								$file_name = apply_filters( 'transcoded_video_filename', $new_wp_attached_file_pathinfo['basename'] );
+
+								// Verify Extension.
+								if ( empty( pathinfo( $file_name, PATHINFO_EXTENSION ) ) ) {
+									$file_name .= '.' . $new_wp_attached_file_pathinfo['extension'];
+								}
+
+								$upload_info = wp_upload_bits( $file_name, null, $file_content );
 
 								/**
 								 * Allow users to filter/perform action on uploaded transcoded file.
@@ -991,6 +1041,7 @@ class RT_Transcoder_Handler {
 							} else {
 								$uploads = wp_upload_dir();
 							}
+
 							if ( 'video/mp4' === $post_mime_type ) {
 								$media_type = 'mp4';
 							} elseif ( 'audio/mp3' === $post_mime_type ) {
@@ -1129,7 +1180,11 @@ class RT_Transcoder_Handler {
 				die();
 			}
 		} else {
-			if ( isset( $job_id ) && class_exists( 'RTDBModel' ) ) {
+
+			// To check if request is sumitted from the WP Job Manager plugin ( https://wordpress.org/plugins/wp-job-manager/ ).
+			$job_manager_form = transcoder_filter_input( INPUT_POST, 'job_manager_form', FILTER_SANITIZE_STRING );
+
+			if ( isset( $job_id ) && ! empty( $job_id ) && class_exists( 'RTDBModel' ) && empty( $job_manager_form ) ) {
 
 				$has_thumbs = isset( $thumbnail ) ? true : false;
 				$flag       = false;
@@ -1451,7 +1506,7 @@ class RT_Transcoder_Handler {
 			if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
 				$status_page = vip_safe_wp_remote_get( $status_url, '', 3, 3 );
 			} else {
-				$status_page = wp_remote_get( $status_url, array( 'timeout' => 120 ) ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get, WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
+				$status_page = wp_safe_remote_get( $status_url, array( 'timeout' => 120 ) ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get, WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 			}
 
 			if ( ! is_wp_error( $status_page ) ) {
