@@ -935,42 +935,26 @@ function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_i
 add_action( 'rtmedia_actions_before_description', 'rtt_add_transcoding_process_status_button_single_media_page', 10, 1 );
 
 /**
- * To resize video container of media single page when video is being transcoded .
- *
- * @since 1.2
+ * Do not show the video if it is undergos transcoding.
  *
  * @param string $html html markup.
  * @param object $rtmedia_media rtmedia media object.
  *
  * @return string html markup
  */
-function rtt_filter_single_media_page_video_markup( $html, $rtmedia_media ) {
+function rtt_filter_no_video_on_transcoding( $html, $rtmedia_media ) {
 	if ( empty( $rtmedia_media ) || empty( $rtmedia_media->media_type ) || empty( $rtmedia_media->media_id ) ) {
 		return $html;
 	}
 	if ( 'video' === $rtmedia_media->media_type && is_file_being_transcoded( $rtmedia_media->media_id ) ) {
 
-		$youtube_url = get_rtmedia_meta( $rtmedia_media->id, 'video_url_uploaded_from' );
-		$html        = "<div id='rtm-mejs-video-container'>";
-
-		if ( empty( $youtube_url ) ) {
-
-			$html_video = '<video poster="%s" src="%s" type="video/mp4" class="wp-video-shortcode" id="rt_media_video_%s" controls="controls" preload="metadata"></video>';
-			$html      .= sprintf( $html_video, esc_url( $rtmedia_media->cover_art ), esc_url( wp_get_attachment_url( $rtmedia_media->media_id ) ), esc_attr( $rtmedia_media->id ) );
-
-		} else {
-
-			$html_video = '<video width="640" height="360" class="url-video" id="video-id-%s" preload="none"><source type="video/youtube" src="%s" /></video>';
-			$html      .= sprintf( $html_video, esc_attr( $rtmedia_media->id ), esc_url( wp_get_attachment_url( $rtmedia_media->media_id ) ) );
-
-		}
-
-		$html .= '</div>';
+		$html = '<p class="transcoding-in-progress"> ' . esc_html__( 'This video is being transcoded. Please wait.', 'transcoder' ) . '</p>';
 	}
+
 	return $html;
 }
 
-add_filter( 'rtmedia_single_content_filter', 'rtt_filter_single_media_page_video_markup', 10, 2 );
+add_filter( 'rtmedia_single_content_filter', 'rtt_filter_no_video_on_transcoding', 10, 2 );
 
 /**
  *
