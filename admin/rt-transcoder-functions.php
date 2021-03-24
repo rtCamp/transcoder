@@ -948,7 +948,7 @@ function rtt_filter_no_video_on_transcoding( $html, $rtmedia_media ) {
 	}
 	if ( 'video' === $rtmedia_media->media_type && is_file_being_transcoded( $rtmedia_media->media_id ) ) {
 
-		$html = '<p class="transcoding-in-progress"> ' . esc_html__( 'This video is being transcoded. Please wait.', 'transcoder' ) . '</p>';
+		$html = '<p class="transcoding-in-progress"> ' . esc_html__( 'Please wait while we\'re processing this video.', 'transcoder' ) . '</p>';
 	}
 
 	return $html;
