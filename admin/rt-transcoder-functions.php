@@ -935,7 +935,7 @@ function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_i
 add_action( 'rtmedia_actions_before_description', 'rtt_add_transcoding_process_status_button_single_media_page', 10, 1 );
 
 /**
- * Do not show the video if it is undergos transcoding.
+ * Do not render <video> if the video is transcoding.
  *
  * @param string $html html markup.
  * @param object $rtmedia_media rtmedia media object.
