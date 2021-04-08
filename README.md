@@ -65,6 +65,12 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 ## Changelog ##
+#### 1.3.3 [April 08, 2021] ####
+
+* FIXED
+
+ * License cannot be saved if the WordPress installation is in the sub-directory
+
 #### 1.3.2 [January 12, 2021] ####
 
 * FIXED
