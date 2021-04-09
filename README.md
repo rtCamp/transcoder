@@ -9,9 +9,9 @@ Transcoding services for ANY WordPress website. Convert audio/video files of any
  <img src="https://rtmedia.io/wp-content/uploads/2016/08/trancoder-banner-01.png" alt="Transcoder Banner"/>
 </p>
 
-* **Contributors:** [rtcamp] (http://profiles.wordpress.org/rtcamp), [mangeshp] (http://profiles.wordpress.org/mangeshp), [chandrapatel] (http://profiles.wordpress.org/chandrapatel), [manishsongirkar36] (http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90] (http://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode] (http://profiles.wordpress.org/kiranpotphode), [thrijith] (http://profiles.wordpress.org/thrijith), [devikvekariya] (http://profiles.wordpress.org/devikvekariya), [sagarnasit] (http://profiles.wordpress.org/sagarnasit), [sudhiryadav] (http://profiles.wordpress.org/sudhiryadav), [sid177] (https://profiles.wordpress.org/sid177/), [pooja1210] (https://profiles.wordpress.org/pooja1210/), [vaishu.agola27] (https://profiles.wordpress.org/vaishuagola27/), [ravatparmar] (https://profiles.wordpress.org/ravatparmar/)
+* **Contributors:** [rtcamp](http://profiles.wordpress.org/rtcamp), [mangeshp](http://profiles.wordpress.org/mangeshp), [chandrapatel](http://profiles.wordpress.org/chandrapatel), [manishsongirkar36](http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90](http://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode](http://profiles.wordpress.org/kiranpotphode), [thrijith](http://profiles.wordpress.org/thrijith), [devikvekariya](http://profiles.wordpress.org/devikvekariya), [sagarnasit](http://profiles.wordpress.org/sagarnasit), [sudhiryadav](http://profiles.wordpress.org/sudhiryadav), [sid177](https://profiles.wordpress.org/sid177/), [pooja1210](https://profiles.wordpress.org/pooja1210/), [vaishu.agola27](https://profiles.wordpress.org/vaishuagola27/), [ravatparmar](https://profiles.wordpress.org/ravatparmar/), [tremidkhar](https://profiles.wordpress.org/tremidkhar/)
 
-* **License:** [GPL v2 or later] ( http://www.gnu.org/licenses/gpl-2.0.html)
+* **License:** [GPL v2 or later]( http://www.gnu.org/licenses/gpl-2.0.html)
 
 ## Description ##
 Transcoder easily converts all audio and video files uploaded to your website to a web-friendly format.
@@ -65,6 +65,12 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 ## Changelog ##
+#### 1.3.3 [April 08, 2021] ####
+
+* FIXED
+
+ * License cannot be saved if the WordPress installation is in the sub-directory
+
 #### 1.3.2 [January 12, 2021] ####
 
 * FIXED

@@ -1,10 +1,10 @@
 === Transcoder ===
-Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode, thrijith, devikvekariya, sagarnasit, sudhiryadav, sid177, pooja1210, vaishu.agola27,ravatparmar
+Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode, thrijith, devikvekariya, sagarnasit, sudhiryadav, sid177, pooja1210, vaishu.agola27, ravatparmar, tremidkhar
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 5.6
-Stable tag: 1.3.2
+Tested up to: 5.7
+Stable tag: 1.3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,12 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.3.3 [April 8, 2021] =
+
+* FIXED
+
+ * License cannot be saved if the WordPress installation is in the sub-directory
+
 = 1.3.2 [January 12, 2021] =
 
 * FIXED
@@ -197,5 +203,5 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
-= 1.3.2 =
-Transcoder 1.3.2, with WordPress 5.6 compatibility and some minor fixes and modification of transcoded_temp_filename filter.
+= 1.3.3 =
+Transcoder 1.3.3, with WordPress 5.7 compatibility and fix for license key not getting saved for WordPress installed in sub-directory.

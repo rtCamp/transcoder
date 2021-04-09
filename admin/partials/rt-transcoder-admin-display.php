@@ -31,7 +31,7 @@ $current_page = transcoder_filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRI
 	<div class="transcoder-settings-boxes-wrapper">
 		<div id="transcoder-settings-boxes" class="transcoder-settings-boxes-container transcoder-setting-container">
 			<p>
-			<form method="get" action="/wp-admin/admin.php">
+			<form method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>">
 				<label for="new-api-key">
 					<?php esc_html_e( 'Enter License Key', 'transcoder' ); ?>
 				</label>
