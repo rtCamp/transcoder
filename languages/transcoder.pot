@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://community.rtcamp.com/\n"
-"POT-Creation-Date: 2021-04-13 11:35:10+00:00\n"
+"POT-Creation-Date: 2021-07-26 06:48:11+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -207,7 +207,7 @@ msgstr ""
 
 #: admin/rt-retranscode-admin.php:119 admin/rt-retranscode-admin.php:120
 #: admin/rt-retranscode-admin.php:192 admin/rt-retranscode-admin.php:213
-#: admin/rt-retranscode-admin.php:233 admin/rt-retranscode-admin.php:285
+#: admin/rt-retranscode-admin.php:233 admin/rt-retranscode-admin.php:284
 msgid "Retranscode Media"
 msgstr ""
 
@@ -215,40 +215,40 @@ msgstr ""
 msgid "Retranscode this single media"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:293
+#: admin/rt-retranscode-admin.php:292
 msgid "Cheatin&#8217; uh?"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:327
+#: admin/rt-retranscode-admin.php:326
 #. translators: Link to the media page.
 msgid "Unable to find any media. Are you sure <a href='%s'>some exist</a>?"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:353
+#: admin/rt-retranscode-admin.php:352
 msgid "There are no media available to send for transcoding."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:363
+#: admin/rt-retranscode-admin.php:362
 msgid "You do not have sufficient bandwidth remaining to perform the transcoding."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:364
+#: admin/rt-retranscode-admin.php:363
 msgid "Your remaining bandwidth is : "
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:365
+#: admin/rt-retranscode-admin.php:364
 msgid "Required bandwidth is: "
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:369
+#: admin/rt-retranscode-admin.php:368
 msgid "You can select the files manually and try again."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:376 admin/rt-retranscode-admin.php:390
+#: admin/rt-retranscode-admin.php:375 admin/rt-retranscode-admin.php:389
 msgid "Proceed with retranscoding"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:404
+#: admin/rt-retranscode-admin.php:403
 msgid ""
 "Your files are being re-transcoded. Do not navigate away from this page "
 "until the process is completed, as doing so will prematurely abort the "
@@ -256,7 +256,7 @@ msgid ""
 "can view the progress below."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:411
+#: admin/rt-retranscode-admin.php:410
 #. translators: Count of media which were successfully transcoded with the time
 #. in seconds.
 msgid ""
@@ -264,7 +264,7 @@ msgid ""
 "href=\"#\">click here</a>."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:414
+#: admin/rt-retranscode-admin.php:413
 #. translators: Count of media which were successfully and media which were
 #. failed transcoded with the time in seconds and previout page link.
 msgid ""
@@ -273,7 +273,7 @@ msgid ""
 "again, <a href=\"%4$s\">click here</a>. %5$s"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:416
+#: admin/rt-retranscode-admin.php:415
 #. translators: Count of media which were successfully transcoded with the time
 #. in seconds and previout page link.
 msgid ""
@@ -281,59 +281,59 @@ msgid ""
 "seconds and there were 0 failures. %3$s"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:420 admin/rt-retranscode-admin.php:600
+#: admin/rt-retranscode-admin.php:419 admin/rt-retranscode-admin.php:599
 msgid "You must enable Javascript in order to proceed!"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:426
+#: admin/rt-retranscode-admin.php:425
 msgid "Abort the Operation"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:428
+#: admin/rt-retranscode-admin.php:427
 msgid "Debugging Information"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:433
+#: admin/rt-retranscode-admin.php:432
 #. translators: Total count of the media.
 msgid "Total Media: %s"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:438
+#: admin/rt-retranscode-admin.php:437
 #. translators: Count of media which were successfully sent to the transcoder
 #. server.
 msgid "Media Sent for Retranscoding: %s"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:443
+#: admin/rt-retranscode-admin.php:442
 #. translators: Count of media which were failed while sending to the
 #. transcoder server.
 msgid "Failed While Sending: %s"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:475
+#: admin/rt-retranscode-admin.php:474
 msgid "Stopping..."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:532
+#: admin/rt-retranscode-admin.php:531
 #. translators: Media ID.
 msgid ""
 "The resize request was abnormally terminated (ID %s). This is likely due to "
 "the media exceeding available memory or some other type of fatal error."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:585
+#: admin/rt-retranscode-admin.php:584
 msgid ""
 "This tool will retranscode ALL audio/video media uploaded to your website. "
 "This can be handy if you need to transcode media files uploaded in the past."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:587
+#: admin/rt-retranscode-admin.php:586
 msgid ""
 "Sending your entire media library for retranscoding can consume a lot of "
 "your bandwidth allowance, so use this tool with care."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:592
+#: admin/rt-retranscode-admin.php:591
 #. translators: Placeholder is for admin media section link.
 msgid ""
 "You can retranscode specific media files (rather than ALL media) from the "
@@ -341,50 +341,50 @@ msgid ""
 "a specific media (audio/video) file."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:596
+#: admin/rt-retranscode-admin.php:595
 msgid "To begin, just press the button below."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:598
+#: admin/rt-retranscode-admin.php:597
 msgid "Retranscode All Media"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:635
+#: admin/rt-retranscode-admin.php:634
 #. translators: Media id of the invalid media type.
 msgid "Sending Failed: %d is an invalid media ID/type."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:640
+#: admin/rt-retranscode-admin.php:639
 #. translators: Placeholder is for Media Name and ID of media.
 msgid ""
 "&quot;%1$s&quot; (ID %2$s) is MP3 file already. No need to send for "
 "transcoding"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:644
+#: admin/rt-retranscode-admin.php:643
 msgid "Your user account doesn't have permission to transcode"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:649
+#: admin/rt-retranscode-admin.php:648
 msgid "The media is already being transcoded"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:696
+#: admin/rt-retranscode-admin.php:695
 msgid "Unknown failure reason."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:702
+#: admin/rt-retranscode-admin.php:701
 #. translators: Media name, Media id and success message for successfull
 #. transcode.
 msgid "&quot;%1$s&quot; (ID %2$s) was successfully sent in %3$s seconds."
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:714
+#: admin/rt-retranscode-admin.php:713
 #. translators: Media name, Media ID and message for failed transcode.
 msgid "&quot;%1$s&quot; (ID %2$s) failed to sent. The error message was: %3$s"
 msgstr ""
 
-#: admin/rt-retranscode-admin.php:736
+#: admin/rt-retranscode-admin.php:735
 msgid "Insufficient bandwidth!"
 msgstr ""
 
