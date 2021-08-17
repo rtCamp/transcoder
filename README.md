@@ -65,6 +65,13 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 ## Changelog ##
+#### 1.3.4 [August 17, 2021] ####
+
+* FIXED
+
+ * Transcoder plugin preventing read more from expanding
+ * Compatibility with WordPress 5.8 and PHP 8.0
+
 #### 1.3.3 [April 13, 2021] ####
 
 * FIXED

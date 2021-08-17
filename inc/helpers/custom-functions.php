@@ -8,13 +8,12 @@
 /**
  * This method is an improved version of PHP's filter_input() and
  * works well on PHP CLI as well which PHP default method does not.
- * Also Provide support INPUT_REQUEST.
  *
  * Reference:
  * - https://bugs.php.net/bug.php?id=49184
  * - https://bugs.php.net/bug.php?id=54672
  *
- * @param int    $type          One of INPUT_GET, INPUT_POST, INPUT_REQUEST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV.
+ * @param int    $type          One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV.
  * @param string $variable_name Name of a variable to get.
  * @param int    $filter        The ID of the filter to apply.
  * @param mixed  $options       filter to apply.
@@ -23,21 +22,6 @@
  *               variable_name variable is not set.
  */
 function transcoder_filter_input( $type, $variable_name, $filter = FILTER_DEFAULT, $options = null ) {
-
-	/**
-	 * Provide support of INPUT_REQUEST
-	 *
-	 * Reference: https://bugs.php.net/bug.php?id=54672
-	 */
-	if ( INPUT_REQUEST === $type ) {
-		if ( isset( $_POST[ $variable_name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$type = INPUT_POST;
-		} elseif ( isset( $_GET[ $variable_name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$type = INPUT_GET;
-		} else {
-			return null;
-		}
-	}
 
 	if ( php_sapi_name() !== 'cli' ) {
 

@@ -1,10 +1,10 @@
 === Transcoder ===
-Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode, thrijith, devikvekariya, sagarnasit, sudhiryadav, sid177, pooja1210, vaishu.agola27, ravatparmar, tremidkhar
+Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode, thrijith, devikvekariya, sagarnasit, sudhiryadav, sid177, pooja1210, vaishu.agola27, ravatparmar, tremidkhar, kapilpaul
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 5.7
-Stable tag: 1.3.3
+Tested up to: 5.8
+Stable tag: 1.3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,13 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.3.4 [August 17, 2021] =
+
+* FIXED
+
+ * Transcoder plugin preventing read more from expanding
+ * Compatibility with WordPress 5.8 and PHP 8.0
+
 = 1.3.3 [April 13, 2021] =
 
 * FIXED
@@ -203,5 +210,8 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
+= 1.3.4 =
+Transcoder 1.3.4, with added fix for plugin preventing read more from expanding in activity page and WordPress 5.8 and PHP 8.0 compatibility.
+
 = 1.3.3 =
 Transcoder 1.3.3, with WordPress 5.7 compatibility and fix for license key not getting saved for WordPress installed in sub-directory.

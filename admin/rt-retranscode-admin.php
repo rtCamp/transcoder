@@ -242,10 +242,9 @@ class RetranscodeMedia {
 	 * @return void
 	 */
 	public function bulk_action_handler() {
-
-		$action  = transcoder_filter_input( INPUT_REQUEST, 'action', FILTER_SANITIZE_STRING );
-		$action2 = transcoder_filter_input( INPUT_REQUEST, 'action2', FILTER_SANITIZE_STRING );
-		$media   = transcoder_filter_input( INPUT_REQUEST, 'media', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY );
+		$action  = transcoder_filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
+		$action2 = transcoder_filter_input( INPUT_GET, 'action2', FILTER_SANITIZE_STRING );
+		$media   = transcoder_filter_input( INPUT_GET, 'media', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY );
 
 		if ( empty( $action ) || empty( $media ) || ! is_array( $media ) ||
 			( 'bulk_retranscode_media' !== $action && 'bulk_retranscode_media' !== $action2 )

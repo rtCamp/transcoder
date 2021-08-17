@@ -385,12 +385,12 @@ add_filter( 'media_send_to_editor', 'rtt_generate_video_shortcode', 100, 3 );
  *
  * @since 1.0.1
  *
- * @param string $content  HTML contents of the activity.
- * @param object $activity Activity object.
+ * @param string      $content  HTML contents of the activity.
+ * @param object|null $activity Activity object.
  *
  * @return string
  */
-function rtt_bp_get_activity_content( $content, $activity ) {
+function rtt_bp_get_activity_content( $content, $activity = null ) {
 
 	if ( empty( $activity ) || empty( $content ) ) {
 		return $content;
