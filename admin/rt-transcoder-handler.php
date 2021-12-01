@@ -167,7 +167,7 @@ class RT_Transcoder_Handler {
 						}
 
 						/* Do not let the user to upload non supported media types on localhost */
-						$blacklist   = array( '127.0.0.1', '::1' );
+						$blacklist   = rtt_get_blacklist_ip_addresses();
 						$remote_addr = rtt_get_remote_ip_address();
 						if ( ! in_array( wp_unslash( $remote_addr ), $blacklist, true ) ) {
 							add_filter( 'rtmedia_plupload_files_filter', array( $this, 'allowed_types' ), 10, 1 );
@@ -494,7 +494,7 @@ class RT_Transcoder_Handler {
 
 		if ( ! empty( $apikey ) && is_admin() && ! empty( $page ) && ( 'rt-transcoder' === $page ) ) {
 			/* Do not activate transcoding service on localhost */
-			$blacklist   = array( '127.0.0.1', '::1' );
+			$blacklist   = rtt_get_blacklist_ip_addresses();
 			$remote_addr = rtt_get_remote_ip_address();
 			if ( in_array( wp_unslash( $remote_addr ), $blacklist, true ) ) {
 				$return_page = add_query_arg(
