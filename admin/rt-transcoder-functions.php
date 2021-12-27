@@ -1022,3 +1022,17 @@ function get_server_var( $server_key, $filter_type = FILTER_SANITIZE_STRING ) {
 	}
 	return $server_val;
 }
+
+/**
+ * Get local ip addresses for block.
+ *
+ * @return array
+ */
+function rtt_get_blacklist_ip_addresses() {
+	// If custom API URL added then don't block local ips.
+	if ( defined( 'TRANSCODER_API_URL' ) ) {
+		return array();
+	}
+
+	return array( '127.0.0.1', '::1' );
+}
