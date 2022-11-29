@@ -51,16 +51,7 @@ class RetranscodeMedia {
 
 		// Do not activate re-transcoding without valid license key
 		// Or usage are fully utilized.
-		if ( empty( $this->api_key ) ) {
-			return;
-		}
-		if ( isset( $this->usage_info ) && is_array( $this->usage_info ) && array_key_exists( $this->api_key, $this->usage_info ) ) {
-			if ( is_object( $this->usage_info[ $this->api_key ] ) && isset( $this->usage_info[ $this->api_key ]->status ) && $this->usage_info[ $this->api_key ]->status ) {
-				if ( isset( $this->usage_info[ $this->api_key ]->remaining ) && $this->usage_info[ $this->api_key ]->remaining <= 0 ) {
-					return;
-				}
-			}
-		} else {
+		if (! isset($this->usage_info[$this->api_key]->remaining) or $this->usage_info[$this->api_key]->remaining <= 0 ) {
 			return;
 		}
 
