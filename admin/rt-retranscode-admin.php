@@ -645,7 +645,7 @@ class RetranscodeMedia {
 
 		// Check if media is already being transcoded.
 		if ( is_file_being_transcoded( $media->ID ) ) {
-			$this->die_json_error_msg( $media->ID, sprintf( __('This file is already sent for transcoded again, File is in the queue please wait for some time.', 'transcoder' ) ) );
+			$this->die_json_error_msg( $media->ID, sprintf( __('This file is already sent for transcoding again, File is in the queue please wait for some time.', 'transcoder' ) ) );
 		}
 
 		/**
