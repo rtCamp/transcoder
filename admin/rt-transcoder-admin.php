@@ -71,9 +71,9 @@ class RT_Transcoder_Admin {
 		//  This Plugin HTTP request and Repose handler 
 		$this->transcoder_handler = new RT_Transcoder_Handler();
 
-		if(is_admin()){
-			// Admin menu Hook for creating admin page || 
-			add_action('admin_menu', array( $this, 'menu' ));
+		if( is_admin() ){
+			// Admin menu Hook for creating admin page 
+			add_action( 'admin_menu', array( $this, 'menu' ) );
 			// Admin init HOOK
 			add_action( 'admin_init', array( $this, 'register_transcoder_settings' ) );
 			if ( class_exists( 'RTMediaEncoding' ) ) {
@@ -89,17 +89,17 @@ class RT_Transcoder_Admin {
 			// Adding admin notice hook
 			add_action( 'admin_notices', array( $this, 'subscribe_transcoder_admin_notice' ) );
 			// Adding footer function for JS uncheck all checkboxes except one clicked
-			add_filter( 'admin_footer', array( $this,'admin_footer_for_attachment_edit_page'));
+			add_filter( 'admin_footer', array( $this,'admin_footer_for_attachment_edit_page' ) );
 		}
 
 		if ( class_exists( 'RTMedia' ) ) {
-			if(! function_exists( 'get_plugin_data' )){
+			if( ! function_exists( 'get_plugin_data' ) ){
 				include_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
 			$rtmedia_plugin_info = get_plugin_data( RTMEDIA_PATH . 'index.php' );
 
 			// Show admin notice when Transcoder pluign active and user using rtMedia version 4.0.7.
-			if(version_compare( $rtmedia_plugin_info['Version'], '4.0.7', '<=' )){
+			if( version_compare( $rtmedia_plugin_info['Version'], '4.0.7', '<=' ) ){
 				if(is_multisite()){
 					add_action( 'network_admin_notices', array( $this, 'transcoder_admin_notice' ) );
 				}
@@ -212,13 +212,13 @@ class RT_Transcoder_Admin {
 	 * @return 	string
 	 */
 	public function transcoding_subscription_button( $name = 'No Name', $price = '0', $force = false ) {
-		if($this->api_key){
+		if( $this->api_key ){
 			$this->transcoder_handler->update_usage( $this->api_key );
 		}
 		// Getting uses data from site option
 		$usage_details = get_site_option( 'rt-transcoding-usage' );
 		// 
-		if (isset($usage_details[ $this->api_key ]->plan->name ) && (strtolower( $usage_details[ $this->api_key ]->plan->name ) === strtolower( $name )) && $usage_details[ $this->api_key ]->sub_status && ! $force ) {
+		if ( isset( $usage_details[ $this->api_key ]->plan->name ) && ( strtolower( $usage_details[ $this->api_key ]->plan->name ) === strtolower( $name ) ) && $usage_details[ $this->api_key ]->sub_status && ! $force ) {
 			$form      = '<button disabled="disabled" type="submit" class="button button-primary bpm-unsubscribe">' . esc_html__( 'Current Plan', 'transcoder' ) . '</button>';
 		} else {
 			$plan_name = 'free' === $name ? 'Try Now' : 'Subscribe';
@@ -234,31 +234,31 @@ class RT_Transcoder_Admin {
 	 * @param 	WP_Post $post         The WP_Post attachment object.
 	 * @return 	array   $form_fields
 	 */
-	public function show_video_thumbnail_in_attachment_edit_page($form_fields, $post) {
+	public function show_video_thumbnail_in_attachment_edit_page( $form_fields, $post ) {
 		// If post mime type is not video, this feature is only for videos.
-		if(! isset(explode( '/', $post->post_mime_type)[0]) OR explode('/', $post->post_mime_type)[0] !== 'video'){
+		if(! isset(explode( '/', $post->post_mime_type)[0]) OR explode('/', $post->post_mime_type)[0] !== 'video' ){
             return $form_fields;
         }
 		// Getting attachment thumbnail list that was created by our Plugin.
-		$thumbnailArray = get_post_meta($post->ID, '_rt_media_thumbnails', true);
+		$thumbnailArray = get_post_meta( $post->ID, '_rt_media_thumbnails', true );
 		// Getting option.
-		$thumbnailArray = empty($thumbnailArray) ? get_post_meta($post->ID, 'rtmedia_media_thumbnails', true) : $thumbnailArray;
+		$thumbnailArray = empty( $thumbnailArray ) ? get_post_meta( $post->ID, 'rtmedia_media_thumbnails', true ) : $thumbnailArray;
 		// Saved or selected thumbnail is that was saved in attachment option.
 		$preSelectedThumbnail = get_post_meta($post->ID, '_rt_media_video_thumbnail', true);
 		// checking thumbnail Array is array and not empty 
-		if(! is_array($thumbnailArray) OR empty($thumbnailArray)){
+		if(! is_array( $thumbnailArray ) OR empty( $thumbnailArray ) ){
 			return $form_fields;
 		}
 		// Backward compatibility.
-		$uploads = function_exists('wp_get_upload_dir') ? wp_get_upload_dir() : wp_upload_dir();
+		$uploads = function_exists( 'wp_get_upload_dir' ) ? wp_get_upload_dir() : wp_upload_dir();
 		// HTML buffer holder.
 		$htmlString  = "";
 		// Creating HTML output buffering, starts.
 		$htmlString .= "<ul>";
 		// Looping the thumbnail array.
-		foreach ($thumbnailArray as $key => $thumbnailLink){
+		foreach ( $thumbnailArray as $key => $thumbnailLink ) {
 			// Checked status.
-			$preSelectionStatus = ($thumbnailLink === $preSelectedThumbnail) ? 'checked=checked' : '';
+			$preSelectionStatus = ( $thumbnailLink === $preSelectedThumbnail ) ? 'checked=checked' : '';
 			// String concatenation.
 			$htmlString .= "<li style='width: 150px;display: inline-block;'>";
 			$htmlString .= "<label for='rtmedia-upload-select-thumbnail-'" . esc_attr($key + 1) . "'>";
@@ -285,78 +285,77 @@ class RT_Transcoder_Admin {
 	 * This Function also Save selected video thumbnail in attachment meta in attached video file.
 	 * This Function will also connected to rtMedia Plugin.
 	 * Selected thumbnail use as cover art for buddyPress activity if video was uploaded in activity.
-	 *
 	 * @since   1.0.0
 	 * @param 	array $post  An array of post data.
 	 * @return 	array $form_fields
 	 */
 	public function save_video_thumbnail( $post ) {
 		// Attachment edit page selected Thumbnail file name.
-		$rtMediaSelectedThumbnail = (isset($post['rtmedia-thumbnail']) AND !empty($post['rtmedia-thumbnail'])) ? sanitize_text_field($post['rtmedia-thumbnail']) : NULL;
+		$rtMediaSelectedThumbnail = ( isset( $post['rtmedia-thumbnail'] ) AND !empty( $post['rtmedia-thumbnail'] ) ) ? sanitize_text_field( $post['rtmedia-thumbnail'] ) : NULL;
 		// Video attachment ID.
-		$postId  = (isset($post['ID']) AND !empty($post['ID'])) ? intval( sanitize_text_field($post['ID']) ) : NULL;
+		$post_id  = ( isset( $post['ID'] ) AND !empty( $post['ID'] ) ) ? intval( sanitize_text_field( $post['ID'] ) ) : NULL;
 		// Empty check for thumbnail image file name and post id
-		if(! $rtMediaSelectedThumbnail OR ! $postId){
+		if (! $rtMediaSelectedThumbnail OR ! $post_id ) {
 			return $post;
 		}
 		// === This is old code [legacy code starts] ===
 		// if  rtMedia Plugin is exist Do this block 
-		if (class_exists( 'rtMedia' )){
-			$uploads        = function_exists('wp_get_upload_dir') ? wp_get_upload_dir() : wp_upload_dir();
-			$final_file_url = (strpos($rtMediaSelectedThumbnail, $uploads['baseurl']) === false) ? $rtMediaSelectedThumbnail : $uploads['baseurl'] . '/' . $rtMediaSelectedThumbnail;
+		if ( class_exists( 'rtMedia' ) ){
+			$uploads        = function_exists( 'wp_get_upload_dir' ) ? wp_get_upload_dir() : wp_upload_dir();
+			$final_file_url = ( strpos( $rtMediaSelectedThumbnail, $uploads['baseurl'] ) === false ) ? $rtMediaSelectedThumbnail : $uploads['baseurl'] . '/' . $rtMediaSelectedThumbnail;
 			$rtmedia_model  = new RTMediaModel();
-			$media          = $rtmedia_model->get(array('media_id' => $postId));
+			$media          = $rtmedia_model->get( array( 'media_id' => $post_id ) );
 			$media_id       = $media[0]->id;
-			$rtmedia_model->update(array('cover_art' => $final_file_url ), array('media_id' => $postId));
+			$rtmedia_model->update( array( 'cover_art' => $final_file_url ), array( 'media_id' => $post_id) );
 			rtt_update_activity_after_thumb_set( $media_id );
 		}
 		// Updating post meta.
-		update_post_meta($postId, '_rt_media_video_thumbnail', $rtMediaSelectedThumbnail);
+		update_post_meta( $post_id, '_rt_media_video_thumbnail', $rtMediaSelectedThumbnail );
 		// === This is old code [legacy code ends] ===
 		# I am creating thumbnail entry because when transcoder sent the data it create only first thumbnail of the video 
 		// Getting all meta File name that was created by this Plugin
-		$thumbnailListArray = get_post_meta($postId, '_rt_media_thumbnails', true);
+		$thumbnailListArray = get_post_meta( $post_id, '_rt_media_thumbnails', true );
 		//  Check is empty or not array.
-		if(! is_array($thumbnailListArray) OR empty($thumbnailListArray)){
+		if ( ! is_array( $thumbnailListArray ) OR empty( $thumbnailListArray ) ) {
 			return $post;
 		}
 		// Global database object 
 		global $wpdb;
 		// Looping the thumbnails array 
-		foreach ($thumbnailListArray as $fileLastHalfPath){
+		foreach ( $thumbnailListArray as $fileLastHalfPath ) {
 			// Running database query to see thumbnail already exist in the database 
-			$firstPreviousEntryID = $wpdb->get_var("SELECT * FROM ".$wpdb->prefix."posts WHERE post_type = 'attachment' AND post_title = '". pathinfo($fileLastHalfPath, PATHINFO_FILENAME) ."'");
-			// if Thumbnail is not in the database than insert the thubnail to the database 
-			if(! $firstPreviousEntryID){
+			$firstPreviousEntryID = $wpdb->get_var( "SELECT * FROM ".$wpdb->prefix."posts WHERE post_type = 'attachment' AND post_title = '". pathinfo( $fileLastHalfPath, PATHINFO_FILENAME ) ."'" );
+			// if Thumbnail is not in the database than insert the thumbnail to the database 
+			if ( ! $firstPreviousEntryID ){
 				// Getting upload directory details.
-				$uploadsDir = function_exists('wp_get_upload_dir') ? wp_get_upload_dir() : wp_upload_dir();
+				$uploadsDir = function_exists( 'wp_get_upload_dir' ) ? wp_get_upload_dir() : wp_upload_dir();
 				// File Upload path 
-				$filePath = (isset($uploadsDir['basedir']) AND !empty($uploadsDir['basedir'])) ? $uploadsDir['basedir'] .'/'. $fileLastHalfPath : "";
+				$filePath = ( isset( $uploadsDir['basedir'] ) AND !empty( $uploadsDir['basedir'] ) ) ? $uploadsDir['basedir'] .'/'. $fileLastHalfPath : "";
 				// sCheck to see File exist in the path if exist than create a thumbnail with that file, this file was uploaded by transcode but database was not updated
-				if(file_exists($filePath)){
+				if(file_exists( $filePath )){
 					// Prepare an array of post data for the attachment.
 					$attachment = array(
 						'guid'           => $uploadsDir['url'] . '/' .  basename( $filePath ), 
-						'post_mime_type' => (isset(wp_check_filetype(basename($filePath), null)['type']) AND ! empty(wp_check_filetype(basename($filePath), null)['type'])) ? wp_check_filetype(basename($filePath), null)['type'] : "image/jpeg",
+						'post_mime_type' => ( isset( wp_check_filetype( basename( $filePath ), null )['type'] ) AND ! empty(wp_check_filetype( basename( $filePath ), null )['type'] ) ) ? wp_check_filetype( basename( $filePath ), null )['type'] : "image/jpeg",
 						'post_title'     => pathinfo($filePath, PATHINFO_FILENAME),
 						'post_content'   => '',
 						'post_status'    => 'inherit'
 					);
 					// Insert the attachment to the database entry.
-					$new_attachment_id = wp_insert_attachment($attachment, $filePath, $postId);
+					$new_attachment_id = wp_insert_attachment( $attachment, $filePath, $post_id );
 					// Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
 					require_once( ABSPATH . 'wp-admin/includes/image.php' );
 					// Generate the metadata for the attachment, and update the database record.
-					$attach_data = wp_generate_attachment_metadata($new_attachment_id, $filePath);
+					$attach_data = wp_generate_attachment_metadata( $new_attachment_id, $filePath );
 					// Updating attachment Information 
-					wp_update_attachment_metadata($new_attachment_id, $attach_data);
+					wp_update_attachment_metadata( $new_attachment_id, $attach_data );
 				}
 			} 
 		}
 		// getting the selected image thumbnail database id for setting the thumbnail image
-		$selectedThumbnailsId = $wpdb->get_var("SELECT ID FROM ".$wpdb->prefix."posts WHERE post_type = 'attachment' AND post_title = '". pathinfo($rtMediaSelectedThumbnail, PATHINFO_FILENAME) ."'");
+		$selectedThumbnailsId = $wpdb->get_var( "SELECT ID FROM ".$wpdb->prefix."posts WHERE post_type = 'attachment' AND post_title = '". pathinfo( $rtMediaSelectedThumbnail, PATHINFO_FILENAME ) ."'" );
 		// Setting selected image to the Parent file featured image.
-		if( $selectedThumbnailsId AND ! is_float($selectedThumbnailsId)){
+		if ( $selectedThumbnailsId AND ! is_float( $selectedThumbnailsId ) ) {
 			$post['_thumbnail_id'] =  $selectedThumbnailsId;
 		}
 
@@ -398,7 +397,7 @@ class RT_Transcoder_Admin {
 	 * Display subscribe to the transcoding service
 	*/
 	public function subscribe_transcoder_admin_notice() {
-		if(! empty( $this->api_key )){
+		if( ! empty( $this->api_key ) ){
 			return false;
 		}
 		$settings_page_link = 'admin.php?page=rt-transcoder';
@@ -418,7 +417,7 @@ class RT_Transcoder_Admin {
 	 * @since   1.0.0
 	 */
 	public function transcoder_hide_admin_notice() {
-		if(check_ajax_referer( '_transcoder_hide_notice_', 'transcoder_notice_nonce' )){
+		if ( check_ajax_referer( '_transcoder_hide_notice_', 'transcoder_notice_nonce' ) ) {
 			update_site_option( 'transcoder_admin_notice', '0' );
 		}
 		die();
@@ -449,7 +448,6 @@ class RT_Transcoder_Admin {
 		return sprintf( '<a class="no-popup" href="%1$s">%1$s</a>', esc_url( $url ) );
 	}
 
-
 	/**
 	 * This function will add JS to the admin Footer, if Thumbnail is selection is clicked then select the clicked one and deselect rest of the checkboxes.
 	 * @since  1.0.0
@@ -461,8 +459,8 @@ class RT_Transcoder_Admin {
 		?>
 		<script type="text/javascript">
 			function yepShowAlert(checkBox) {
-				var get = document.getElementsByName('rtmedia-thumbnail');
-				for(var i=0; i<get.length; i++) {
+				var get = document.getElementsByName( 'rtmedia-thumbnail' );
+				for( var i=0; i<get.length; i++ ) {
 					if( get[i].id == checkBox.id ){
 						get[i].checked = checkBox.checked;
 					} else {
