@@ -70,10 +70,8 @@ class RT_Transcoder_Admin {
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
 
-		add_filter( 'attachment_fields_to_edit', array( $this, 'display_video_thumbnail' ), 11, 2 );
-
+		add_filter( 'attachment_fields_to_edit', array( $this, 'edit_video_thumbnail' ), 11, 2 );
 		add_filter( 'attachment_fields_to_save', array( $this, 'save_video_thumbnail' ), 11, 1 );
-
 		add_action( 'admin_notices', array( $this, 'add_settings_errors' ) );
 
 		$this->transcoder_handler = new RT_Transcoder_Handler();
@@ -249,50 +247,124 @@ class RT_Transcoder_Admin {
 	 * @param WP_Post $post         The WP_Post attachment object.
 	 * @return array $form_fields
 	 */
-	public function display_video_thumbnail( $form_fields, $post ) {
-        # if post mime type is not video, this feature is only for videos
-		if(! isset(explode( '/', $post->post_mime_type)[0]) OR explode('/', $post->post_mime_type)[0] !== 'video' ){
-            return $form_fields;
-        }
-		# getting attachment thumbnail that was created by our Plugin 
-		$thumbnailArray = get_post_meta($post->ID, '_rt_media_thumbnails', true);
-		# getting option 
-		$thumbnailArray = empty($thumbnailArray) ? get_post_meta($post->ID, 'rtmedia_media_thumbnails', true) : $thumbnailArray;
-		# saved or selected thumbnail is that was saved in attachment option
-		$preSelectedThumbnail = get_post_meta($post->ID, '_rt_media_video_thumbnail', true);
-		# HTML buffer holder 
-		$htmlString = "";
-		# check and balance 
-		if (is_array($thumbnailArray) AND ! empty($thumbnailArray)){
-			# backward compatibility
-			$uploads = function_exists('wp_get_upload_dir') ? wp_get_upload_dir() : wp_upload_dir();
-			# creating HTML output buffering, starts
-			$htmlString .= "<ul>";
-			# looping the thumbnail array
-			foreach ($thumbnailArray as $key => $thumbnailLink){
-				# checked status
-				$preSelectionStatus = ($thumbnailLink === $preSelectedThumbnail) ? 'checked=checked' : '';
-				# string concatenation
-				$htmlString .= "<li style='width: 150px;display: inline-block;'>";
-				$htmlString .= "<label for='rtmedia-upload-select-thumbnail-'" . esc_attr($key + 1) . "'>";
-				$htmlString .= "<input type='radio'". $preSelectionStatus ." id='rtmedia-upload-select-thumbnail-". esc_attr($key + 1) ."' value='". esc_attr($thumbnailLink) ."' name='rtmedia-thumbnail' />";
-				$htmlString .= "<img src='". esc_url($uploads['baseurl'] .'/'. $thumbnailLink) ."' style='max-height: 120px;max-width: 120px; vertical-align: middle;'/>";
-				$htmlString .= "</label></li>";
-				$htmlString .= "</li>";
+	public function edit_video_thumbnail( $form_fields, $post ) {
+
+		if ( isset( $post->post_mime_type ) ) {
+			$media_type = explode( '/', $post->post_mime_type );
+			if ( is_array( $media_type ) && 'video' === $media_type[0] ) {
+				$media_id        = $post->ID;
+				$thumbnail_array = get_post_meta( $media_id, '_rt_media_thumbnails', true );
+
+				if ( empty( $thumbnail_array ) ) {
+					$thumbnail_array = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
+				}
+
+				$wp_video_thumbnail = get_post_meta( $media_id, '_rt_media_video_thumbnail', true );
+
+				$video_thumb_html = '';
+				if ( is_array( $thumbnail_array ) ) {
+					$video_thumb_html .= '<ul> ';
+					/* for WordPress backward compatibility */
+					if ( function_exists( 'wp_get_upload_dir' ) ) {
+						$uploads = wp_get_upload_dir();
+					} else {
+						$uploads = wp_upload_dir();
+					}
+
+					foreach ( $thumbnail_array as $key => $thumbnail_src ) {
+						$checked          = false;
+						$thumbnail_src_og = $thumbnail_src;
+						if ( $wp_video_thumbnail === $thumbnail_src ) {
+							$checked = 'checked=checked';
+						}
+
+						$file_url = $thumbnail_src;
+
+						if ( 0 === strpos( $file_url, $uploads['baseurl'] ) ) {
+							$thumbnail_src = $file_url;
+						} else {
+							$thumbnail_src = $uploads['baseurl'] . '/' . $file_url;
+						}
+						$thumbnail_src     = apply_filters( 'transcoded_file_url', $thumbnail_src, $media_id );
+						$count             = $key + 1;
+						$video_thumb_html .= '<li style="width: 150px;display: inline-block;"> ' .
+							'<label for="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '"> ' .
+							'<input type="radio" ' . esc_attr( $checked ) . ' id="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '" value="' . esc_attr( $thumbnail_src_og ) . '" name="rtmedia-thumbnail" /> ' .
+							'<img src=" ' . esc_url( $thumbnail_src ) . '" style="max-height: 120px;max-width: 120px; vertical-align: middle;" /> ' .
+							'</label></li>';
+					}
+
+					$video_thumb_html                      .= '</ul>';
+					$form_fields['rtmedia_video_thumbnail'] = array(
+						'label' => 'Video Thumbnails',
+						'input' => 'html',
+						'html'  => $video_thumb_html,
+					);
+				}
 			}
-			# html output buffering ends  
-			$htmlString .= "</ul>";
-			# custom HTML output 
-			$form_fields['rtmedia_video_thumbnail'] = array(
-				'label' => 'Video Thumbnails',
-				'input' => 'html',
-				'html'  => $htmlString,
-			);
 		}
-		# return parameter array value 
 		return $form_fields;
 	}
 
+	/**
+	 * Display all video thumbnails on attachment edit page.
+	 *
+	 * @since   1.0.0
+	 *
+	 * @param array   $form_fields  An array of attachment form fields.
+	 * @param WP_Post $post         The WP_Post attachment object.
+	 * @return array $form_fields
+	 */
+	public function edit_video_thumbnail_( $form_fields, $post ) {
+		if ( isset( $post->post_mime_type ) ) {
+			$media_type = explode( '/', $post->post_mime_type );
+			if ( is_array( $media_type ) && 'video' === $media_type[0] ) {
+				$media_id        = $post->ID;
+				$thumbnail_array = get_post_meta( $media_id, '_rt_media_thumbnails', true );
+
+				if ( empty( $thumbnail_array ) ) {
+					$thumbnail_array = get_post_meta( $media_id, 'rtmedia_media_thumbnails', true );
+				}
+
+				$rtmedia_model    = new RTMediaModel();
+				$rtmedia_media    = $rtmedia_model->get( array( 'media_id' => $media_id ) );
+				$video_thumb_html = '';
+				if ( is_array( $thumbnail_array ) ) {
+
+					/* for WordPress backward compatibility */
+					if ( function_exists( 'wp_get_upload_dir' ) ) {
+						$uploads = wp_get_upload_dir();
+					} else {
+						$uploads = wp_upload_dir();
+					}
+					$base_url = $uploads['baseurl'];
+
+					$video_thumb_html .= '<ul> ';
+
+					foreach ( $thumbnail_array as $key => $thumbnail_src ) {
+						$checked           = checked( $thumbnail_src, $rtmedia_media[0]->cover_art, false );
+						$count             = $key + 1;
+						$final_file_url    = $base_url . '/' . $thumbnail_src;
+						$final_file_url    = apply_filters( 'transcoded_file_url', $final_file_url, $media_id );
+						$video_thumb_html .= '<li style="width: 150px;display: inline-block;">
+								<label for="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '">
+								<input type="radio" ' . esc_attr( $checked ) . ' id="rtmedia-upload-select-thumbnail-' . esc_attr( $count ) . '" value="' . esc_attr( $thumbnail_src ) . '" name="rtmedia-thumbnail" />
+								<img src=" ' . esc_url( $final_file_url ) . '" style="max-height: 120px;max-width: 120px; vertical-align: middle;" />
+								</label></li> ';
+					}
+
+					$video_thumb_html                      .= '  </ul>';
+					$form_fields['rtmedia_video_thumbnail'] = array(
+						'label' => 'Video Thumbnails',
+						'input' => 'html',
+						'html'  => $video_thumb_html,
+					);
+				}
+			}
+		}
+
+		return $form_fields;
+	}
 
 	/**
 	 * Save selected video thumbnail in attachment meta.
