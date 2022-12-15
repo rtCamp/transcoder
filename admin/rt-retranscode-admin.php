@@ -317,13 +317,13 @@ class RetranscodeMedia {
 				}
 			} else {
 				add_filter( 'posts_where', array( $this, 'add_search_mime_types' ) );
-				$query = new WP_Query( array( 'post_type' => 'attachments' ) );
+				$query = new WP_Query( array( 'post_type' => 'attachment', 'post_status' => 'any' ) );
 				$media = $query->get_posts();
 				remove_filter( 'posts_where', array( $this, 'add_search_mime_types' ) );
 				if ( empty( $media ) || is_wp_error( $media ) ) {
 
 					// translators: Link to the media page.
-					echo '	<p>' . sprintf( esc_html__( "Unable to find any media. Are you sure <a href='%s'>some exist</a>?", 'transcoder' ), esc_url( admin_url( 'upload.php' ) ) ) . '</p></div>';
+					echo '	<p>' . sprintf( __( "Unable to find any media. Are you sure <a href='%s'>some exist</a>?", 'transcoder' ), esc_url( admin_url( 'upload.php' ) ) ) . '</p></div>';
 					return;
 				}
 
@@ -1012,7 +1012,7 @@ class RetranscodeMedia {
 	 * @return string The WHERE clause of the query.
 	 */
 	public function add_search_mime_types( $where ) {
-		$where .= " AND post_mime_type LIKE 'audio/%' OR post_mime_type LIKE 'video/%'";
+		$where .= " AND ( post_mime_type LIKE 'audio/%' OR post_mime_type LIKE 'video/%' )";
 		return $where;
 	}
 
