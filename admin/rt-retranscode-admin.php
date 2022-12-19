@@ -302,9 +302,9 @@ class RetranscodeMedia {
 			$usage_info = get_site_option( 'rt-transcoding-usage' );
 			$ids        = transcoder_filter_input( INPUT_GET, 'ids', FILTER_SANITIZE_STRING );
 			if ( ! empty( $ids ) ) {
-				$media = array_map( 'intval', explode( ',', trim( $ids, ',' ) ) );
-				$ids   = implode( ',', $media );
-				foreach ( $media as $key => $each ) {
+				$attachments = array_map( 'intval', explode( ',', trim( $ids, ',' ) ) );
+				$ids         = implode( ',', $attachments );
+				foreach ( $attachments as $key => $each ) {
 					$path = get_attached_file( $each );
 					if ( file_exists( $path ) ) {
 						$current_file_size = filesize( $path );
