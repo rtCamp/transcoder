@@ -317,10 +317,31 @@ class RetranscodeMedia {
 				}
 			} else {
 				add_filter( 'posts_where', array( $this, 'add_search_mime_types' ) );
-				$query = new WP_Query( array( 'post_type' => 'attachment', 'post_status' => 'any' ) );
-				$media = $query->get_posts();
+
+				$args  = array(
+					'post_type'              => 'attachment',
+					'post_status'            => 'any',
+					'posts_per_page'         => 1000,
+					'paged'                  => 0,
+					'no_found_rows'          => true,
+					'update_post_meta_cache' => false,
+					'update_post_term_cache' => false,
+				);
+
+				$attachments = [];
+				do {
+					$args['paged'] ++;
+					$query = new WP_Query( $args );
+
+					if ( empty( $query->posts ) ) {
+						break;
+					}
+
+					$attachments = array_merge( $attachments, $query->posts );
+				} while ( ! empty( $query->posts ) );
+
 				remove_filter( 'posts_where', array( $this, 'add_search_mime_types' ) );
-				if ( empty( $media ) || is_wp_error( $media ) ) {
+				if ( empty( $attachments ) ) {
 
 					// translators: Link to the media page.
 					echo '	<p>' . sprintf( __( "Unable to find any media. Are you sure <a href='%s'>some exist</a>?", 'transcoder' ), esc_url( admin_url( 'upload.php' ) ) ) . '</p></div>';
@@ -329,20 +350,16 @@ class RetranscodeMedia {
 
 				// Generate the list of IDs.
 				$ids = array();
-				foreach ( $media as $i => $each ) {
-					if ( ! in_array( $each->post_mime_type, array( 'audio/mp3', 'audio/mpeg' ), true ) ) {
-						$ids[] = $each->ID;
-						$path  = get_attached_file( $each->ID );
-						if ( file_exists( $path ) ) {
-							$current_file_size  = filesize( $path );
-							$file_size          = $file_size + $current_file_size;
-							$files[ $each->ID ] = array(
-								'name' => esc_html( get_the_title( $each->ID ) ),
-								'size' => $current_file_size,
-							);
-						}
-					} elseif ( in_array( $each->post_mime_type, array( 'audio/mp3', 'audio/mpeg' ), true ) ) {
-						unset( $media[ $i ] );
+				foreach ( $attachments as $attachment ) {
+					$ids[] = $attachment->ID;
+					$path  = get_attached_file( $attachment->ID );
+					if ( file_exists( $path ) ) {
+						$current_file_size        = filesize( $path );
+						$file_size                = $file_size + $current_file_size;
+						$files[ $attachment->ID ] = array(
+							'name' => esc_html( $attachment->post_title ),
+							'size' => $current_file_size,
+						);
 					}
 				}
 				$ids = implode( ',', $ids );
@@ -403,7 +420,7 @@ class RetranscodeMedia {
 			<p><?php esc_html_e( 'Your files are being re-transcoded. Do not navigate away from this page until the process is completed, as doing so will prematurely abort the script. Retranscoding can take a while, especially for larger files. You can view the progress below.', 'transcoder' ); ?></p>
 
 			<?php
-			$count = count( $media );
+			$count = count( $attachments );
 
 
 			// translators: Count of media which were successfully transcoded with the time in seconds.
@@ -1012,7 +1029,7 @@ class RetranscodeMedia {
 	 * @return string The WHERE clause of the query.
 	 */
 	public function add_search_mime_types( $where ) {
-		$where .= " AND ( post_mime_type LIKE 'audio/%' OR post_mime_type LIKE 'video/%' )";
+		$where .= " AND ( post_mime_type LIKE 'audio/%' OR post_mime_type LIKE 'video/%' ) AND ( post_mime_type NOT IN ( 'audio/mp3', 'audio/mpeg' ) ) ";
 		return $where;
 	}
 
