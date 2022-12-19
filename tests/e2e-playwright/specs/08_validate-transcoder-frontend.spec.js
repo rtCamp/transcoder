@@ -2,7 +2,7 @@
  * WordPress dependencies
  */
 const { test, expect } = require('@wordpress/e2e-test-utils-playwright');
-const SITE_URL = 'https://alvi-tazwar.rt.gw/activity/';
+const SITE_URL = 'https://alvi.rt.gw/activity/';
 test.describe('Validate Transcoder Settings', () => {
     test.beforeEach(async ({ admin }) => {
         await admin.visitAdminPage('/');
@@ -34,6 +34,5 @@ test.describe('Validate Transcoder Settings', () => {
         }
         const checkStatus = page.locator("button[id*='btn_check_status']");
         expect(checkStatus).not.toBeNull();
-
     });
 });
