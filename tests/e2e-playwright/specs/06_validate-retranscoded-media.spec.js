@@ -38,7 +38,6 @@ test.describe('Validate ReTranscoded  Settings', () => {
         ])
         const item = await page.locator("#wpbody-content > div.wrap > h1");
         await expect(item).toBeVisible();
-        //page.focus("button[class='button button-small copy-attachment-url']")
         const copyButton = "button[class='button button-small copy-attachment-url']";
         if (await page.locator(copyButton).isEnabled()) {
             await page.click(copyButton)
@@ -51,7 +50,7 @@ test.describe('Validate ReTranscoded  Settings', () => {
         // Retranscode
         await page.locator("td.title.column-title.has-row-actions.column-primary > strong > a").first().hover();
         await page.locator("a[title='Retranscode this single media']").first().click();
-        // Validate
+        // Validate with proper visiblity
         const result = await page.locator("div[id='retranscodemedia-bar-percent']").innerText();
         if (result == '100%' && page.locator("div[id='retranscodemedia-bar-percent']").isEnabled()) {
             await page.locator("#toplevel_page_rt-transcoder > a > div.wp-menu-name").click()

@@ -2,6 +2,7 @@
  * WordPress dependencies
  */
 const { test, expect } = require('@wordpress/e2e-test-utils-playwright');
+const { setTimeout } = require('timers');
 const { TransCodeStatus } = require("../utils/locator.js");
 test.describe('Validate mp3 and mp4 ogg, PDF  types and Assert All Steps', () => {
     test.beforeEach(async ({ admin }) => {
@@ -42,9 +43,17 @@ test.describe('Validate mp3 and mp4 ogg, PDF  types and Assert All Steps', () =>
         await page.waitForSelector("div[id*='span_status']");
         const tweets = page.locator("div[id*='span_status']");
         var result = await tweets.evaluate(node => node.innerText);
+        var _hasTimeElasped = false;
+        setTimeout(() => {
+            _hasTimeElasped = true;
+            console.log("Time Elapsed")
+        }, 90000)
         // Loop To Assert Updated Messages
         while (result === TransCodeStatus.Processing || TransCodeStatus.Queue || TransCodeStatus.ServerReady) {
-            //await page.reload();
+            // Loop Breaker After Timeout
+            if (_hasTimeElasped) {
+                break;
+            }
             await checkStatus.click();
             await page.focus("div[id*='span_status']")
             await page.waitForSelector("div[id*='span_status']");
