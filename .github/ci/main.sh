@@ -28,7 +28,7 @@ function create_and_configure_site () {
 
     ee site create $SITE_NAME --wp --php74 
     cd $SITE_ROOT/wp-content/plugins/
-    mkdir mention-links
+    mkdir transcoder
     rsync -azh $GITHUB_WORKSPACE/ $SITE_ROOT/wp-content/plugins/transcoder
     echo "127.0.0.1 $SITE_NAME" >> /etc/hosts
     ls
