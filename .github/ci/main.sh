@@ -33,8 +33,8 @@ function create_and_configure_site () {
     echo "127.0.0.1 $SITE_NAME" >> /etc/hosts
     ls
     wp plugin activate transcoder --allow-root
-    wp user create automation automation@example.com --role=administrator --user_pass=automation --allow-root
-    wp theme activate twentytwentyone --allow-root
+    // wp user create automation automation@example.com --role=administrator --user_pass=automation --allow-root
+    // wp theme activate twentytwentyone --allow-root
     wp plugin install buddypress-media --activate
     wp plugin install buddypress --activate
 }
