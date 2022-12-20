@@ -28,17 +28,20 @@ function create_and_configure_site () {
 
     ee site create $SITE_NAME --wp --php74 
     cd $SITE_ROOT/wp-content/plugins/
-    mkdir transcoder
-    rsync -azh $GITHUB_WORKSPACE/ $SITE_ROOT/wp-content/plugins/transcoder
+#     mkdir transcoder
+#     rsync -azh $GITHUB_WORKSPACE/ $SITE_ROOT/wp-content/plugins/transcoder
     echo "127.0.0.1 $SITE_NAME" >> /etc/hosts
     ls
-    wp plugin activate transcoder --allow-root
+    #wp plugin activate transcoder --allow-root
     # wp user create automation automation@example.com --role=administrator --user_pass=automation --allow-root
     # wp theme activate twentytwentyone --allow-root
    wp plugin install buddypress --allow-root
    wp plugin activate buddypress --allow-root
    wp plugin install buddypress-media --allow-root
    wp plugin activate buddypress-media --allow-root
+   
+      wp plugin install transcoder --allow-root
+   wp plugin activate transcoder --allow-root
 }
 
 
