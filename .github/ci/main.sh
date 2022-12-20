@@ -4,7 +4,7 @@ set -ex
 
 ######################################################
 ######################## VARS ########################
-SITE_NAME='test.local'
+SITE_NAME='transcoder.com'
 SITE_ROOT="/var/www/$SITE_NAME/htdocs"
 SITE_URL="http://$SITE_NAME/"
 function ee() { wo "$@"; }
@@ -34,15 +34,13 @@ function create_and_configure_site () {
     echo "127.0.0.1 $SITE_NAME" >> /etc/hosts
     ls
     wp plugin activate transcoder --allow-root
-    # wp user create automation automation@example.com --role=administrator --user_pass=automation --allow-root
-    # wp theme activate twentytwentyone --allow-root
+    wp user create automation automation@example.com --role=administrator --user_pass=automation --allow-root
+    wp theme activate twentytwentyone --allow-root
    wp plugin install buddypress --allow-root
    wp plugin activate buddypress --allow-root
    wp plugin install buddypress-media --allow-root
    wp plugin activate buddypress-media --allow-root
-   
-#       wp plugin install transcoder --allow-root
-#    wp plugin activate transcoder --allow-root
+
 }
 
 
@@ -68,7 +66,7 @@ function install_playwright(){
 # Run test for new deployed site
 function run_playwright_tests () {
     cd $GITHUB_WORKSPACE/tests/e2e-playwright
-    npm run test-e2e:playwright -- specs/
+    npm run test-e2e:playwright -- specs/01
 }
 
 function maybe_install_node_dep() {
