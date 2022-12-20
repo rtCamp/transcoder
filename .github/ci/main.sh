@@ -35,8 +35,8 @@ function create_and_configure_site () {
     wp plugin activate transcoder --allow-root
     # wp user create automation automation@example.com --role=administrator --user_pass=automation --allow-root
     # wp theme activate twentytwentyone --allow-root
-    wp plugin install buddypress-media --activate
-    wp plugin install buddypress --activate
+    wp plugin install buddypress-media --activate --allow-root
+    wp plugin install buddypress --activate --allow-root
 }
 
 
