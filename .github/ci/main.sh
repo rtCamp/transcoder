@@ -4,7 +4,7 @@ set -ex
 
 ######################################################
 ######################## VARS ########################
-SITE_NAME='transcoder.com'
+SITE_NAME='test.local'
 SITE_ROOT="/var/www/$SITE_NAME/htdocs"
 SITE_URL="http://$SITE_NAME/"
 function ee() { wo "$@"; }
@@ -32,7 +32,7 @@ function create_and_configure_site () {
     rsync -azh $GITHUB_WORKSPACE/ $SITE_ROOT/wp-content/plugins/transcoder
     echo "127.0.0.1 $SITE_NAME" >> /etc/hosts
     ls
-    #wp plugin activate transcoder --allow-root
+    wp plugin activate transcoder --allow-root
     # wp user create automation automation@example.com --role=administrator --user_pass=automation --allow-root
     # wp theme activate twentytwentyone --allow-root
    wp plugin install buddypress --allow-root
