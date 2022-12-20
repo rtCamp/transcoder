@@ -2,7 +2,9 @@
 * WordPress dependencies
 */
 const { test, expect } = require('@wordpress/e2e-test-utils-playwright');
+const { setTimeout } = require('timers');
 const { TransCodeStatus } = require("../utils/locator.js");
+
 test.describe('Validate Webm File upload Asssert All Status', () => {
     test.beforeEach(async ({ admin }) => {
         await admin.visitAdminPage("media-new.php");
@@ -42,18 +44,28 @@ test.describe('Validate Webm File upload Asssert All Status', () => {
         await page.waitForSelector("div[id*='span_status']");
         const tweets = page.locator("div[id*='span_status']");
         var result = await tweets.evaluate(node => node.innerText);
+        // Declaring Variables so that Loops Will break after certain period of time
+        var _hasTimeElasped = false;
+        setTimeout(()=>{
+            _hasTimeElasped =true;
+            console.log("Time Elapsed")
+        }, 90000)
         // Loop To Assert Updated Messages
-        while (result === TransCodeStatus.Processing || TransCodeStatus.Queue || TransCodeStatus.ServerReady) {
-            //await page.reload();
+        while (result == TransCodeStatus.Processing || result == TransCodeStatus.Queue || TransCodeStatus.ServerReady) {
+            // Loop Breaker After Timeout
+            if(_hasTimeElasped){
+                break;
+            }
             await checkStatus.click();
             await page.focus("div[id*='span_status']")
             await page.waitForSelector("div[id*='span_status']");
             const tweets = page.locator("div[id*='span_status']");
             result = await tweets.evaluate(node => node.innerText);
             console.log("Inside Loop:", result);
-            if (result == TransCodeStatus.Completed) {
+            if (result == TransCodeStatus.Completed || result == TransCodeStatus.Error) {
                 break;
             }
+           
         }
         // Final Assertion after completion.
         const comPleteMessage = page.locator("div[id*='span_status']");

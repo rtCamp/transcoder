@@ -2,6 +2,7 @@
 * WordPress dependencies
 */
 const { test, expect } = require('@wordpress/e2e-test-utils-playwright');
+const { setTimeout } = require('timers');
 const { TransCodeStatus } = require("../utils/locator.js");
 test.describe('Validate 3g2 Media types and error message', () => {
     test.beforeEach(async ({ admin }) => {
@@ -43,15 +44,24 @@ test.describe('Validate 3g2 Media types and error message', () => {
         await page.waitForSelector("div[id*='span_status']");
         const tweets = page.locator("div[id*='span_status']");
         var result = await tweets.evaluate(node => node.innerText);
-        while (result === TransCodeStatus.Processing || TransCodeStatus.Queue || TransCodeStatus.ServerReady) {
-            //await page.reload();
+        var _hasTimeElasped = false;
+        setTimeout(() => {
+            _hasTimeElasped = true;
+            console.log("Time Elapsed")
+        }, 90000)
+        // Loop To Assert Updated Messages
+        while (result == TransCodeStatus.Processing || result == TransCodeStatus.Queue || TransCodeStatus.ServerReady) {
+            // Loop Breaker After Timeout
+            if (_hasTimeElasped) {
+                break;
+            }
             await checkStatus.click();
             await page.focus("div[id*='span_status']")
             await page.waitForSelector("div[id*='span_status']");
-            const tweets = page.locator("div[id*='span_status']").first();
-            var result = await tweets.evaluate(node => node.innerText);
+            const tweets = page.locator("div[id*='span_status']");
+            result = await tweets.evaluate(node => node.innerText);
             console.log("Inside Loop:", result);
-            if (result == TransCodeStatus.Error) {
+            if (result == TransCodeStatus.Completed || result == TransCodeStatus.Error) {
                 break;
             }
         }

@@ -9,7 +9,7 @@ test.describe('Validate ReTranscoded  Settings', () => {
     });
     test('Validate All ReTranscoded Options', async ({ admin, page, editor }) => {
         await page.locator("#toplevel_page_rt-transcoder > a > div.wp-menu-name").click();
-        // Check Lisence key Settings Added this to stable the test case and for auto timeout
+        // Check Lisence key Settings Added to stable the test case and for auto timeout
         const licenseSettings = page.locator("input[id='new-api-key']")
         expect(licenseSettings).not.toBeNull();
         await page.locator("role=link[name='Retranscode Media']").click();

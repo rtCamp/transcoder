@@ -2,7 +2,7 @@
  * WordPress dependencies
  */
 const { test, expect } = require('@wordpress/e2e-test-utils-playwright');
-
+const { TransCodeStatus } = require("../utils/locator.js");
 test.describe('Validate Transcoder Settings', () => {
     test.beforeEach(async ({ admin }) => {
         await admin.visitAdminPage('/');
@@ -10,7 +10,7 @@ test.describe('Validate Transcoder Settings', () => {
     test('Check Transcoder settings Options', async ({ admin, page, editor }) => {
 
         await page.locator("#toplevel_page_rt-transcoder > a > div.wp-menu-name").click();
-        // Check Lisence key Settings
+        // Check Lisence key Settings and insert Free key
         const licenseSettings = page.locator("input[id='new-api-key']")
         expect(licenseSettings).not.toBeNull();
         await page.focus("input[id='new-api-key']");
@@ -21,7 +21,7 @@ test.describe('Validate Transcoder Settings', () => {
         await expect(page.locator("div[class='updated']")).not.toBeNull()
         await page.locator("#submit").click();
 
-        // Check Feature plan
+        // Check Feature plan is present on the DOM
         const settingBox = page.locator("div[id='transcoder-settings-boxes']")
         expect(settingBox).not.toBeNull();
 
@@ -49,7 +49,20 @@ test.describe('Validate Transcoder Settings', () => {
         }
         // Save settings and verify
         await page.locator("#submit").click();
-        await expect(page.locator("div[class='updated']")).not.toBeNull()
+        await expect(page.locator("div[class='updated']")).not.toBeNull();
 
+        // Check for Empty Retranscoder
+        await page.locator("role=link[name='Retranscode Media']").click();
+        // Click retranscode all media 
+        await page.locator("role=button[name='Retranscode All Media']").click();
+        // Get Message from DOM
+        const CheckMessage = await page.evaluate(selector => document.querySelector("div.wrap.retranscodemedia > p").innerText.slice(0, 4));
+        // It will assert Both Emtpy and Non Empty Media For ReTranscoding.
+        if (CheckMessage == TransCodeStatus.NotNull) {
+            console.log("Already Media Exist")
+        }
+        else if (CheckMessage == TransCodeStatus.EmptyMedia) {
+            console.log("No Media is present For Transcoding")
+        }
     });
 });
