@@ -68,7 +68,6 @@ function run_playwright_tests () {
     cd $GITHUB_WORKSPACE/tests/e2e-playwright
     npm run test-e2e:playwright -- specs/01_
 }
-
 function maybe_install_node_dep() {
 
 	if [[ -n "$NODE_VERSION" ]]; then
