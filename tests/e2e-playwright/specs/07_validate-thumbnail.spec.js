@@ -1,6 +1,6 @@
- /**
- * WordPress dependencies
- */
+/**
+* WordPress dependencies
+*/
 const { test, expect } = require('@wordpress/e2e-test-utils-playwright');
 const { TransCodeStatus } = require("../utils/locator.js");
 test.describe('Thumbnail Scenarios', () => {
@@ -8,7 +8,7 @@ test.describe('Thumbnail Scenarios', () => {
         await admin.visitAdminPage("media-new.php");
     });
     test('Check Thumbnail is generated after transcoding', async ({ admin, page, editor }) => {
-       
+
         const videoPath = "assets/3gp-sample.3gp";
         const [fileChooser] = await Promise.all([
             // It is important to call waitForEvent before click to set up waiting.

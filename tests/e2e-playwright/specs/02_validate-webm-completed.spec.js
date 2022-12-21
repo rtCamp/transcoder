@@ -46,14 +46,14 @@ test.describe('Validate Webm File upload Asssert All Status', () => {
         var result = await tweets.evaluate(node => node.innerText);
         // Declaring Variables so that Loops Will break after certain period of time
         var _hasTimeElasped = false;
-        setTimeout(()=>{
-            _hasTimeElasped =true;
+        setTimeout(() => {
+            _hasTimeElasped = true;
             console.log("Time Elapsed")
         }, 90000)
         // Loop To Assert Updated Messages
         while (result == TransCodeStatus.Processing || result == TransCodeStatus.Queue || TransCodeStatus.ServerReady) {
             // Loop Breaker After Timeout
-            if(_hasTimeElasped){
+            if (_hasTimeElasped) {
                 break;
             }
             await checkStatus.click();
@@ -65,7 +65,7 @@ test.describe('Validate Webm File upload Asssert All Status', () => {
             if (result == TransCodeStatus.Completed || result == TransCodeStatus.Error) {
                 break;
             }
-           
+
         }
         // Final Assertion after completion.
         const comPleteMessage = page.locator("div[id*='span_status']");

@@ -14,7 +14,6 @@ test.describe('Validate ReTranscoded  Settings', () => {
         expect(licenseSettings).not.toBeNull();
         await page.locator("role=link[name='Retranscode Media']").click();
 
-
         // Goto Retranscode Media
         await page.locator("role=button[name='Retranscode All Media']").click();
         // Validate Retranscoded media to in menu page.
@@ -23,7 +22,7 @@ test.describe('Validate ReTranscoded  Settings', () => {
             await page.locator("#toplevel_page_rt-transcoder > a > div.wp-menu-name").click()
         }
     });
-    
+
     test('Validate new retranscoded Settings', async ({ admin, page, editor }) => {
         await admin.visitAdminPage("media-new.php")
         const pdfPath = "assets/pdf-sample.pdf";

@@ -1,6 +1,6 @@
- /**
- * WordPress dependencies
- */
+/**
+* WordPress dependencies
+*/
 const { test, expect } = require('@wordpress/e2e-test-utils-playwright');
 const { setTimeout } = require('timers');
 const { TransCodeStatus } = require("../utils/locator.js");
@@ -8,7 +8,7 @@ test.describe('Validate mp3 and mp4 ogg, PDF  types and Assert All Steps', () =>
     test.beforeEach(async ({ admin }) => {
         await admin.visitAdminPage("media-new.php");
     });
-   
+
     test('Check ogg sample', async ({ admin, page, editor }) => {
         const oggPath = "assets/ogg-sample.ogg";
         const [fileChooser] = await Promise.all([
@@ -67,7 +67,7 @@ test.describe('Validate mp3 and mp4 ogg, PDF  types and Assert All Steps', () =>
         // Final Assertion after completion.
         const comPleteMessage = page.locator("div[id*='span_status']");
         expect(await comPleteMessage.evaluate(node => node.innerText)).toContain(TransCodeStatus.Processed);
-      
+
     });
 
     test('Check mp3 sample', async ({ admin, page, editor }) => {
@@ -94,14 +94,12 @@ test.describe('Validate mp3 and mp4 ogg, PDF  types and Assert All Steps', () =>
         await page.locator("a[id='view-switch-list']").click();
         const checkStatus = page.locator("button[id^='btn_check_status']").first();
         expect(checkStatus).not.toBeNull();
-        //await checkStatus.click();
 
         // Check File is already transcoded 
         const checkMessage = page.locator("div[id*='span_status']").first();
         expect(checkMessage).not.toBeNull();
-  
-    });
 
+    });
 
     test('Check mp4 sample', async ({ admin, page, editor }) => {
         const mp4Path = "assets/mp4-sample.mp4";
@@ -141,7 +139,6 @@ test.describe('Validate mp3 and mp4 ogg, PDF  types and Assert All Steps', () =>
         ])
         const item = await page.locator("#wpbody-content > div.wrap > h1");
         await expect(item).toBeVisible();
-        //page.focus("button[class='button button-small copy-attachment-url']")
         const copyButton = "button[class='button button-small copy-attachment-url']";
         if (await page.locator(copyButton).isEnabled()) {
             await page.click(copyButton)

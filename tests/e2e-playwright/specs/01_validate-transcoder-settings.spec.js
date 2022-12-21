@@ -16,7 +16,7 @@ test.describe('Validate Transcoder Settings', () => {
         await page.focus("input[id='new-api-key']");
         await licenseSettings.fill("8c1a107c6c89bd9dda666a635f441890");
         await page.locator("button[id='api-key-submit']").click();
-        await page.screenshot({path: "uploads/uploads.png"})
+        await page.screenshot({ path: "uploads/uploads.png" })
         //verify Save key
         await expect(page.locator("div[class='updated']")).not.toBeNull()
         await page.locator("#submit").click();

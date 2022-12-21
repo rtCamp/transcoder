@@ -7,10 +7,10 @@ const Media_URL = 'https://transcoder-test.rt.gw/members/automation/media/'
 test.describe('Validate Transcoder In frontend', () => {
     test.beforeEach(async ({ admin }) => {
         await admin.visitAdminPage('/');
-        
+
     });
     test('Check Transcoder settings In Activity', async ({ admin, page, editor }) => {
-        await page.goto(SITE_URL, {waitUntil:'load'});
+        await page.goto(SITE_URL, { waitUntil: 'load' });
         await page.locator("#whats-new").click();
         //Upload
         const videoPath = "assets/3gp-sample.3gp";
@@ -28,22 +28,21 @@ test.describe('Validate Transcoder In frontend', () => {
         await expect(item).toBeVisible();
         await item.click();
         // Wait for upload
-        if (page.locator("div.activity-content").first().isEnabled())
-        {
-            await page.locator("div.rtmedia-item-title a").first().click()   
+        if (page.locator("div.activity-content").first().isEnabled()) {
+            await page.locator("div.rtmedia-item-title a").first().click()
         }
         const checkStatus = page.locator("button[id*='btn_check_status']");
         expect(checkStatus).not.toBeNull();
     });
 
-    test('Check Transcoder settings In Media Page', async ({page }) => {
+    test('Check Transcoder settings In Media Page', async ({ page }) => {
         // Goto Media Page
         await page.goto(Media_URL, { waitUntil: 'load' });
         // Wait for NavBar to stable the page.
         await page.waitForSelector("#object-nav");
         // Click Upload Button for opening up upload panel
         await page.locator("#rtm_show_upload_ui").click();
-        
+
         //Upload
         const videoPath = "assets/mp4-sample.mp4";
         const [fileChooser] = await Promise.all([
@@ -67,11 +66,10 @@ test.describe('Validate Transcoder In frontend', () => {
         const checkStatus = page.locator("button[id*='btn_check_status']");
         expect(checkStatus).not.toBeNull();
         // Check Status 
-        if (page.locator("button[id*='btn_check_status']").isVisible()){
-           console.log("Transcoding is in Progress")
+        if (page.locator("button[id*='btn_check_status']").isVisible()) {
+            console.log("Transcoding is in Progress")
         }
-        else if (page.locator("button[id*='btn_check_status']").isHidden())
-        {
+        else if (page.locator("button[id*='btn_check_status']").isHidden()) {
             console.log("Transcoding Complete")
         }
 

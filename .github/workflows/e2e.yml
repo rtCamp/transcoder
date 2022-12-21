@@ -1,62 +1,60 @@
-# e2e test for Transcoder
+# e2e test for transcoder
 
-name: CI for e2e test
+name: CI for Transcoder
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the Selected branch
+  # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [action/directUrl]
+    branches: 
+      - automation/playwright
+      - action/directUrl
   pull_request:
-    branches: [action/directUrl]
-
+    branches: 
+      - automation/playwright
+      - action/directUrl
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
 jobs:
-  e2e-test:
+  Run-wpe2e-TestCase:
     # The type of runner that the job will run on
-    name: Run e2e test automation
+    name: Run Transcoder Jobs 
     runs-on: ubuntu-latest
-    env:
-      working-directory: tests/e2e-playwright
+    env: 
       SHA: ${{ github.event.pull_request.head.sha }}
       COMMIT_SHA: ${{ github.sha }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
+      working-directory: ./tests/e2e-playwright
+     
 
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+     
+      - uses: actions/checkout@v3
         with:
-          node-version: 16
-          cache: "npm"
-          cache-dependency-path: tests/e2e-playwright/package-lock.json
+          ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Install npm dependencies
-        run: npm install
-        working-directory: ${{env.working-directory}}
+      # Check node version
+      - name: Current directory and listings
+        run: |
+          pwd
+          ls -al
+      #   # Install config site
+      # - name: Install and config site
+      #   uses: docker://rtcamp/base-wo:v1.0.0
+      #   env:
+      #     NODE_VERSION: 16
+      #     RCLONE_CONFIG: ${{ secrets.RCLONE_CONFIG }}
 
-      - name: Build Playwright utils dependencies
-        run: npm run build
-        working-directory: ${{env.working-directory}}
-
-      - name: Install browser
-        run: npx playwright install chromium --with-deps
-        working-directory: ${{env.working-directory}}
-
-
-      - name: Run End To End tests 
-        run: npm run test-e2e:playwright -- test
-        working-directory: ${{env.working-directory}}
-
-
-      - name: Make reports available
+      - name: Archive HTML Report on failure
+        if: failure()
         uses: actions/upload-artifact@v1
-        if: success() || failure()
         with:
-          name: playwright-report
-          retention-days: 2
-          path: tests/e2e-Playwright/playwright-report
+          name: report
+          path: ./tests/e2e-playwright/uploads
+
+     
+
+      - name: Cleanup
+        if: ${{ always() }}
+        uses: rtCamp/action-cleanup@master
