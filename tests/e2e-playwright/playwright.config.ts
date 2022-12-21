@@ -26,7 +26,7 @@ const config: PlaywrightTestConfig = {
         new URL('./config/global-setup.ts', 'file:' + __filename).href
     ),
     use: {
-        baseURL: 'https://transcoder.com', //https://transcoder.com
+        baseURL: 'https://transcoder-test.rt.gw/', //https://transcoder.com
         headless: true,
         viewport: {
             width: 960,

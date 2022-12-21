@@ -2,8 +2,8 @@
  * WordPress dependencies
  */
 const { test, expect } = require('@wordpress/e2e-test-utils-playwright');
-const SITE_URL = 'https://alvi.rt.gw/activity'; //'http://transcoder.com/activity/';
-const Media_URL = 'https://alvi.rt.gw/members/automation/media/'
+const SITE_URL = 'https://transcoder-test.rt.gw/activity'; //'http://transcoder.com/activity/';
+const Media_URL = 'https://transcoder-test.rt.gw/members/automation/media/'
 test.describe('Validate Transcoder In frontend', () => {
     test.beforeEach(async ({ admin }) => {
         await admin.visitAdminPage('/');
