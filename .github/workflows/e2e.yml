@@ -60,14 +60,20 @@ jobs:
       
       # - name: run PR status
       #   if: ${{ always() }}
-      #   run: node ./tests/e2e-Playwright/bin/pr-status.js
+      #   run: node ./tests/e2e-playwright/bin/pr-status.js
       #   working-directory: ${{env.working_directory}}
 
-      - name: Make reports available
-        uses: actions/upload-artifact@v2
-        if: success() || failure()
+      # - name: Make reports available
+      #   uses: actions/upload-artifact@v2
+      #   if: success() || failure()
+      #   with:
+      #     name: playwright-report
+      #     retention-days: 2
+      #     path: |
+      #       ${{ github.workspace }}/tests/e2e-playwright/playwright-report
+       - name: Archive HTML Report on failure
+        if: failure()
+        uses: actions/upload-artifact@v1
         with:
-          name: playwright-report
-          retention-days: 2
-          path: |
-            ${{ github.workspace }}/tests/e2e-playwright/playwright-report
+          name: report
+          path: ./tests/e2e-playwright/uploads
