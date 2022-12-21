@@ -35,7 +35,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 17
+          node-version: 18
           cache: "npm"
           cache-dependency-path: tests/e2e-playwright/package-lock.json
 
