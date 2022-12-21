@@ -71,9 +71,4 @@ jobs:
       #     retention-days: 2
       #     path: |
       #       ${{ github.workspace }}/tests/e2e-playwright/playwright-report
-       - name: Archive HTML Report on failure
-        if: failure()
-        uses: actions/upload-artifact@v1
-        with:
-          name: report
-          path: ./tests/e2e-playwright/uploads
+       
