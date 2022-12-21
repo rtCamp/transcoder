@@ -68,7 +68,7 @@ test.describe('Validate Transcoder In frontend', () => {
         expect(checkStatus).not.toBeNull();
         // Check Status 
         if (page.locator("button[id*='btn_check_status']").isVisible()){
-           console.log("Transcoding in Progress")
+           console.log("Transcoding is in Progress")
         }
         else if (page.locator("button[id*='btn_check_status']").isHidden())
         {

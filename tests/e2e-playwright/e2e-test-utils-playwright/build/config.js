@@ -6,7 +6,7 @@ const WP_ADMIN_USER = {
     password: 'automation',
 };
 exports.WP_ADMIN_USER = WP_ADMIN_USER;
-const { WP_USERNAME = WP_ADMIN_USER.username, WP_PASSWORD = WP_ADMIN_USER.password, WP_BASE_URL = 'https://alvi.rt.gw/', //   http://transcoder.com
+const { WP_USERNAME = WP_ADMIN_USER.username, WP_PASSWORD = WP_ADMIN_USER.password, WP_BASE_URL = 'https://transcoder.com', //   http://transcoder.com
  } = process.env;
 exports.WP_USERNAME = WP_USERNAME;
 exports.WP_PASSWORD = WP_PASSWORD;
