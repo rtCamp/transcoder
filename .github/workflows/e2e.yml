@@ -34,27 +34,39 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      # Check node version
-      - name: Current directory and listings
-        run: |
-          pwd
-          ls -al
-      #   # Install config site
-      # - name: Install and config site
-      #   uses: docker://rtcamp/base-wo:v1.0.0
-      #   env:
-      #     NODE_VERSION: 16
-      #     RCLONE_CONFIG: ${{ secrets.RCLONE_CONFIG }}
-
-      - name: Archive HTML Report on failure
-        if: failure()
-        uses: actions/upload-artifact@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          name: report
-          path: ./tests/e2e-playwright/uploads
+          node-version: 17
+          cache: "npm"
+          cache-dependency-path: tests/e2e-playwright/package-lock.json
 
-     
+      - name: Install npm dependencies
+        run: npm install
+        working-directory: ${{env.working-directory}}
 
-      - name: Cleanup
-        if: ${{ always() }}
-        uses: rtCamp/action-cleanup@master
+      - name: Build Playwright utils dependencies
+        run: npm run build
+        working-directory: ${{env.working-directory}}
+
+      - name: Install browser
+        run: npx playwright install chromium --with-deps
+        working-directory: ${{env.working-directory}}
+
+      - name: Run backend tests
+        run: npm run test-e2e:playwright -- specs/01_
+        working-directory: ${{env.working-directory}}
+      
+      # - name: run PR status
+      #   if: ${{ always() }}
+      #   run: node ./tests/e2e-Playwright/bin/pr-status.js
+      #   working-directory: ${{env.working_directory}}
+
+      - name: Make reports available
+        uses: actions/upload-artifact@v2
+        if: success() || failure()
+        with:
+          name: playwright-report
+          retention-days: 2
+          path: |
+            ${{ github.workspace }}/playwright-report
