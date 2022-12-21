@@ -48,7 +48,7 @@ jobs:
         working-directory: ${{env.working-directory}}
 
       - name: Install browser
-        run: npx playwright install chromium --with-deps
+        run: npx playwright install --with-deps
         working-directory: ${{env.working-directory}}
 
 
