@@ -4,7 +4,7 @@ name: CI for e2e test
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the develop branch
+  # Triggers the workflow on push or pull request events but only for the Selected branch
   push:
     branches: [action/directUrl]
   pull_request:
@@ -19,7 +19,7 @@ jobs:
     name: Run e2e test automation
     runs-on: ubuntu-latest
     env:
-      working-directory: ./tests/e2e-playwright
+      working-directory: tests/e2e-playwright
       SHA: ${{ github.event.pull_request.head.sha }}
       COMMIT_SHA: ${{ github.sha }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -31,7 +31,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 17
+          node-version: 16
           cache: "npm"
           cache-dependency-path: tests/e2e-playwright/package-lock.json
 
@@ -47,9 +47,6 @@ jobs:
         run: npx playwright install chromium --with-deps
         working-directory: ${{env.working-directory}}
 
-      # - name: Run backend tests
-      #   run: npm run test-e2e:playwright -- backend/blog-create-validate.spec.js
-      #   working-directory: ${{env.working-directory}}
 
       - name: Run End To End tests 
         run: npm run test-e2e:playwright -- test
@@ -62,4 +59,4 @@ jobs:
         with:
           name: playwright-report
           retention-days: 2
-          path: ./tests/e2e-Playwright/playwright-report
+          path: tests/e2e-Playwright/playwright-report
