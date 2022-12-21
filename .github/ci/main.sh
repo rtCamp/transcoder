@@ -26,7 +26,7 @@ function start_services() {
 # Create, setup and populate learn.rtcamp.com base site with data
 function create_and_configure_site () {
 
-    ee site create $SITE_NAME --wp --php74 --letsencrypt 
+    ee site create $SITE_NAME --wp --php74 --letsencrypt --force
     cd $SITE_ROOT/wp-content/plugins/
     wp config set FS_METHOD direct  --allow-root
     mkdir transcoder
