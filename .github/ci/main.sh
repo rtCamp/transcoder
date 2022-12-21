@@ -27,6 +27,7 @@ function start_services() {
 function create_and_configure_site () {
 
     ee site create $SITE_NAME --wp --php74 --letsencrypt --force
+    acme.sh --set-default-ca  --server  letsencrypt
     cd $SITE_ROOT/wp-content/plugins/
     wp config set FS_METHOD direct  --allow-root
     mkdir transcoder
