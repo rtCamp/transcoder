@@ -37,7 +37,7 @@ jobs:
         with:
           node-version: 17
           cache: "npm"
-          cache-dependency-path: tests/e2e-Playwright/package-lock.json
+          cache-dependency-path: tests/e2e-playwright/package-lock.json
 
       - name: Install npm dependencies
         run: npm install
@@ -70,4 +70,4 @@ jobs:
           name: playwright-report
           retention-days: 2
           path: |
-            ${{ github.workspace }}/tests/e2e-Playwright/playwright-report
+            ${{ github.workspace }}/tests/e2e-playwright/playwright-report
