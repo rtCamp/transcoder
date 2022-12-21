@@ -23,7 +23,7 @@ jobs:
     name: Run e2e test automation
     runs-on: ubuntu-latest
     env:
-      working-directory: ./tests/e2e-Playwright
+      working-directory: ./tests/e2e-playwright
       SHA: ${{ github.event.pull_request.head.sha }}
       COMMIT_SHA: ${{ github.sha }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
