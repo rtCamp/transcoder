@@ -83,6 +83,9 @@ test.describe('Thumbnail Scenarios', () => {
         // Click update and save
         await page.locator("#publish").click();
         // verify assertion
-        await expect(page.locator("#message")).toContainText(/Media file updated./)
+        await expect(page.locator("#message")).toContainText(/Media file updated./);
+        // Delete media After testing
+        page.on('dialog', dialog => dialog.accept());
+        await page.locator("#delete-action > a").click();
     });
 });

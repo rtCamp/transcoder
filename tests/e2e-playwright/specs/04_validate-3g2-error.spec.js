@@ -71,5 +71,6 @@ test.describe('Validate 3g2 Media types and error message', () => {
         await page.locator("role=link[name='“3g2-sample” (Edit)']").first().hover();
         page.on('dialog', dialog => dialog.accept());
         await page.locator("role=button[name='Delete “3g2-sample” permanently']").click();
+        await expect(checkStatus).toBeHidden();
     });
 });

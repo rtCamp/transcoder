@@ -7,22 +7,6 @@ test.describe('Validate ReTranscoded  Settings', () => {
     test.beforeEach(async ({ admin }) => {
         await admin.visitAdminPage('/');
     });
-    test('Validate All ReTranscoded Options', async ({ admin, page, editor }) => {
-        await page.locator("#toplevel_page_rt-transcoder > a > div.wp-menu-name").click();
-        // Check Lisence key Settings Added to stable the test case and for auto timeout
-        const licenseSettings = page.locator("input[id='new-api-key']")
-        expect(licenseSettings).not.toBeNull();
-        await page.locator("role=link[name='Retranscode Media']").click();
-
-        // Goto Retranscode Media
-        await page.locator("role=button[name='Retranscode All Media']").click();
-        // Validate Retranscoded media to in menu page.
-        const result = await page.locator("div[id='retranscodemedia-bar-percent']").innerText();
-        if (result == '100%' && page.locator("div[id='retranscodemedia-bar-percent']").isEnabled()) {
-            await page.locator("#toplevel_page_rt-transcoder > a > div.wp-menu-name").click()
-        }
-    });
-
     test('Validate new retranscoded Settings', async ({ admin, page, editor }) => {
         await admin.visitAdminPage("media-new.php")
         const pdfPath = "assets/pdf-sample.pdf";
@@ -55,4 +39,21 @@ test.describe('Validate ReTranscoded  Settings', () => {
             await page.locator("#toplevel_page_rt-transcoder > a > div.wp-menu-name").click()
         }
     });
+    
+    test('Validate All ReTranscoded Options', async ({ admin, page, editor }) => {
+        await page.locator("#toplevel_page_rt-transcoder > a > div.wp-menu-name").click();
+        // Check Lisence key Settings Added to stable the test case and for auto timeout
+        const licenseSettings = page.locator("input[id='new-api-key']")
+        expect(licenseSettings).not.toBeNull();
+        await page.locator("role=link[name='Retranscode Media']").click();
+
+        // Goto Retranscode Media
+        await page.locator("role=button[name='Retranscode All Media']").click();
+        // Validate Retranscoded media to in menu page.
+        const result = await page.locator("div[id='retranscodemedia-bar-percent']").innerText();
+        if (result == '100%' && page.locator("div[id='retranscodemedia-bar-percent']").isEnabled()) {
+            await page.locator("#toplevel_page_rt-transcoder > a > div.wp-menu-name").click()
+        }
+    });
+
 });
