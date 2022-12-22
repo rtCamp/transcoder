@@ -47,7 +47,7 @@ test.describe('Validate mp3 and mp4 ogg, PDF  types and Assert All Steps', () =>
         setTimeout(() => {
             _hasTimeElasped = true;
             console.log("Time Elapsed")
-        }, 60000)
+        }, 20000)
         // Loop To Assert Updated Messages
         while (result === TransCodeStatus.Processing || TransCodeStatus.Queue || TransCodeStatus.ServerReady) {
             // Loop Breaker After Timeout
