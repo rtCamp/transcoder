@@ -53,8 +53,8 @@ jobs:
         run: npx playwright install chromium 
         working-directory: ${{env.working-directory}}
 
-      - name: Run backend tests
-        run: npm run test-e2e:playwright -- specs/01_
+      - name: Run End to End tests
+        run: npm run test-e2e:playwright -- test
         working-directory: ${{env.working-directory}}
       
       # - name: run PR status
