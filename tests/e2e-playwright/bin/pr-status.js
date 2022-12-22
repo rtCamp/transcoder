@@ -9,7 +9,7 @@ const octokit = new Octokit({
 });
 
 octokit.request("POST /repos/{org}/{repo}/statuses/{sha}", {
-    org: "alvitazwar",
+    org: "rtCamp",
     repo: "transcoder",
     sha: process.env.SHA ? process.env.SHA : process.env.COMMIT_SHA,
     state: "success",
