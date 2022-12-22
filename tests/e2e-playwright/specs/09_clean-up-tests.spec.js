@@ -1,9 +1,8 @@
 /**
 * WordPress dependencies
 */
-const { test, expect } = require('@wordpress/e2e-test-utils-playwright');
+const { test } = require('@wordpress/e2e-test-utils-playwright');
 
-const { TransCodeStatus } = require("../utils/locator.js");
 test.describe('Clear All data after testing', () => {
     test.beforeEach(async ({ admin }) => {
         await admin.visitAdminPage("upload.php");
