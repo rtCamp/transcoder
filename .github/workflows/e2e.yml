@@ -25,6 +25,8 @@ jobs:
       COMMIT_SHA: ${{ github.sha }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
       working-directory: ./tests/e2e-playwright
+      TESRESULT_TOKEN: ${{ secrets.TESRESULT_TOKEN }}
+      TOKEN: ${{ secrets.GITHUB_TOKEN }}
      
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -57,10 +59,10 @@ jobs:
         run: npm run test-e2e:playwright -- test
         working-directory: ${{env.working-directory}}
       
-      # - name: run PR status
-      #   if: ${{ always() }}
-      #   run: node ./tests/e2e-Playwright/bin/pr-status.js
-      #   working-directory: ${{env.working_directory}}
+      - name: run PR status
+        if: ${{ always() }}
+        run: node ./tests/e2e-playwright/bin/pr-status.js
+        working-directory: ${{env.working_directory}}
 
       - name: Make reports available
         uses: actions/upload-artifact@v2

@@ -48,7 +48,7 @@ test.describe('Validate 3g2 Media types and error message', () => {
         setTimeout(() => {
             _hasTimeElasped = true;
             console.log("Time Elapsed")
-        }, 90000)
+        }, 30000)
         // Loop To Assert Updated Messages
         while (result == TransCodeStatus.Processing || result == TransCodeStatus.Queue || TransCodeStatus.ServerReady) {
             // Loop Breaker After Timeout
@@ -61,7 +61,7 @@ test.describe('Validate 3g2 Media types and error message', () => {
             const tweets = page.locator("div[id*='span_status']");
             result = await tweets.evaluate(node => node.innerText);
             console.log("Inside Loop:", result);
-            if (result == TransCodeStatus.Completed || result == TransCodeStatus.Error) {
+            if (result == TransCodeStatus.Error) {
                 break;
             }
         }
