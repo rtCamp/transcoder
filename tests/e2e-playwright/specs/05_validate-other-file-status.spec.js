@@ -172,8 +172,7 @@ test.describe('Validate mp3 and mp4 ogg, PDF  types and Assert All Steps', () =>
         await page.locator("role=link[name='“mp4-sample” (Edit)']").first().hover();
         page.on('dialog', dialog => dialog.accept());
         await page.locator("role=button[name='Delete “mp4-sample” permanently']").first().click();
-        await expect(checkStatus).toBeHidden();
-        
+        await expect(checkStatus).toBeHidden();   
     });
     test('Check pdf sample', async ({ admin, page, editor }) => {
         const pdfPath = "assets/pdf-sample.pdf";
