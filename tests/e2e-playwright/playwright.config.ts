@@ -9,7 +9,6 @@ import type { PlaywrightTestConfig } from '@playwright/test';
 const STORAGE_STATE_PATH =
     process.env.STORAGE_STATE_PATH ||
     path.join(process.cwd(), 'artifacts/storage-states/admin.json');
-
 const config: PlaywrightTestConfig = {
     // reporter: process.env.CI
     //     ? [['github'], ['./config/flaky-tests-reporter.ts']]
