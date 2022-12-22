@@ -50,7 +50,7 @@ jobs:
         working-directory: ${{env.working-directory}}
 
       - name: Install browser
-        run: npx playwright install chromium --with-deps
+        run: npx playwright install chromium 
         working-directory: ${{env.working-directory}}
 
       - name: Run backend tests
