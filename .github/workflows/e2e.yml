@@ -5,14 +5,14 @@ name: CI for Transcoder
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
-  # push:
-  #   branches: 
-  #     - automation/playwright
-  #     - action/directUrl
+  push:
+    branches: 
+      - master
+      
   pull_request:
     branches: 
-      - automation/playwright
-      - action/directUrl
+      - master
+      
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 jobs:
