@@ -70,5 +70,9 @@ test.describe('Validate Webm File upload Asssert All Status', () => {
         // Final Assertion after completion.
         const comPleteMessage = page.locator("div[id*='span_status']");
         expect(await comPleteMessage.evaluate(node => node.innerText)).toContain('Your file is transcoded successfully.');
+        // Delete The media to Execute the next Test cases
+        await page.locator("role=link[name='“webm-sample” (Edit)']").first().hover();
+        page.on('dialog', dialog => dialog.accept());
+        await page.locator("role=button[name='Delete “webm-sample” permanently']").click();
     });
 });

@@ -70,7 +70,6 @@ test.describe('Validate 3gp File Upload and assert All transcoded Status', () =>
         // Final Assertion after completion.
         const comPleteMessage = page.locator("div[id*='span_status']");
         expect(await comPleteMessage.evaluate(node => node.innerText)).toContain('Your file is transcoded successfully.');
-        await page.reload();
         await expect(checkStatus).toBeHidden();
         // Delete The media to Execute the next Test cases
         await page.locator("role=link[name='“3gp-sample” (Edit)']").first().hover();
