@@ -72,5 +72,10 @@ test.describe('Validate 3gp File Upload and assert All transcoded Status', () =>
         expect(await comPleteMessage.evaluate(node => node.innerText)).toContain('Your file is transcoded successfully.');
         await page.reload();
         await expect(checkStatus).toBeHidden();
+        // Delete The media to Execute the next Test cases
+        await page.locator("role=link[name='“3gp-sample” (Edit)']").first().hover();
+        page.on('dialog', dialog => dialog.accept());
+        await page.locator("role=button[name='Delete “3gp-sample” permanently']").click();
+        
     });
 });
