@@ -14,8 +14,7 @@ octokit.request("POST /repos/{org}/{repo}/statuses/{sha}", {
     sha: process.env.SHA ? process.env.SHA : process.env.COMMIT_SHA,
     state: "success",
     conclusion: "success",
-    target_url:
-        "https://www.tesults.com/results/rsp/view/status/project/0c8b70a6-8f6c-4b0d-9bfc-e410f6e83568",
+    target_url:"https://www.tesults.com/results/rsp/view/status/project/0c8b70a6-8f6c-4b0d-9bfc-e410f6e83568",
     description: "Successfully synced to Tesults",
     context: "E2E Test Result",
 });
