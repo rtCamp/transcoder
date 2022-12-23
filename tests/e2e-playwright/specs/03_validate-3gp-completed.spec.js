@@ -67,14 +67,15 @@ test.describe('Validate 3gp File Upload and assert All transcoded Status', () =>
                 break;
             }
         }
-        // Final Assertion after completion.
-        const comPleteMessage = page.locator("div[id*='span_status']");
-        expect(await comPleteMessage.evaluate(node => node.innerText)).toContain('Your file is transcoded successfully.');
-        await expect(checkStatus).toBeHidden();
         // Delete The media to Execute the next Test cases
-        await page.locator("role=link[name='“3gp-sample” (Edit)']").first().hover();
+        await page.locator("td.title.column-title.has-row-actions.column-primary ").first().hover();
+        await page.locator("td.title.column-title.has-row-actions.column-primary > div > span.edit").first().click();
+        // Wait for New page to load 
+        await page.waitForSelector("#title");
+        await page.waitForSelector("#attachment_caption");
+        await expect(page).toHaveURL(/action=edit/)
+        // Delete media After testing
         page.on('dialog', dialog => dialog.accept());
-        await page.locator("role=button[name='Delete “3gp-sample” permanently']").click();
-        
+        await page.locator("#delete-action > a").click();
     });
 });

@@ -44,12 +44,12 @@ test.describe('Validate Webm File upload Asssert All Status', () => {
         await page.waitForSelector("div[id*='span_status']");
         const tweets = page.locator("div[id*='span_status']");
         var result = await tweets.evaluate(node => node.innerText);
-        // Declaring Variables so that Loops Will break after certain period of time
+        // Declaring Variables so that Loops Will break after Successfull Execution
         var _hasTimeElasped = false;
         setTimeout(() => {
             _hasTimeElasped = true;
             console.log("Time Elapsed")
-        }, 90000)
+        }, 60000)
         // Loop To Assert Updated Messages
         while (result == TransCodeStatus.Processing || result == TransCodeStatus.Queue || TransCodeStatus.ServerReady) {
             // Loop Breaker After Timeout
@@ -65,14 +65,16 @@ test.describe('Validate Webm File upload Asssert All Status', () => {
             if (result == TransCodeStatus.Completed || result == TransCodeStatus.Error) {
                 break;
             }
-
         }
-        // Final Assertion after completion.
-        const comPleteMessage = page.locator("div[id*='span_status']");
-        expect(await comPleteMessage.evaluate(node => node.innerText)).toContain('Your file is transcoded successfully.');
         // Delete The media to Execute the next Test cases
-        await page.locator("role=link[name='“webm-sample” (Edit)']").first().hover();
+        await page.locator("td.title.column-title.has-row-actions.column-primary ").first().hover();
+        await page.locator("td.title.column-title.has-row-actions.column-primary > div > span.edit").first().click();
+        // Wait for New page to load 
+        await page.waitForSelector("#title");
+        await page.waitForSelector("#attachment_caption");
+        await expect(page).toHaveURL(/action=edit/)
+        // Delete media After testing
         page.on('dialog', dialog => dialog.accept());
-        await page.locator("role=button[name='Delete “webm-sample” permanently']").click();
+        await page.locator("#delete-action > a").click();
     });
 });
