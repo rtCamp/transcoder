@@ -65,12 +65,15 @@ test.describe('Validate 3g2 Media types and error message', () => {
                 break;
             }
         }
-        const comPleteMessage = page.locator("div[id*='span_status']");
-        expect(await comPleteMessage.evaluate(node => node.innerText)).toContain('Transcoder failed to transcode this file.');
         // Delete The media to Execute the next Test cases
-        await page.locator("role=link[name='“3g2-sample” (Edit)']").first().hover();
+        await page.locator("td.title.column-title.has-row-actions.column-primary ").first().hover();
+        await page.locator("td.title.column-title.has-row-actions.column-primary > div > span.edit").first().click();
+        // Wait for New page to load 
+        await page.waitForSelector("#title");
+        await page.waitForSelector("#attachment_caption");
+        await expect(page).toHaveURL(/action=edit/)
+        // Delete media After testing
         page.on('dialog', dialog => dialog.accept());
-        await page.locator("role=button[name='Delete “3g2-sample” permanently']").click();
-        await expect(checkStatus).toBeHidden();
+        await page.locator("#delete-action > a").click();
     });
 });

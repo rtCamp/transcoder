@@ -64,14 +64,16 @@ test.describe('Validate mp3 and mp4 ogg, PDF  types and Assert All Steps', () =>
                 break;
             }
         }
-        // Final Assertion after completion.
-        const comPleteMessage = page.locator("div[id*='span_status']");
-        expect(await comPleteMessage.evaluate(node => node.innerText)).toContain('processed');
-        // Delete The media to Execute the next Test cases
-        await page.locator("role=link[name='“ogg-sample” (Edit)']").first().hover();
+        // Delete the media and verify Media can be accessed
+        await page.locator("td.title.column-title.has-row-actions.column-primary ").first().hover();
+        await page.locator("td.title.column-title.has-row-actions.column-primary > div > span.edit").first().click();
+        // Wait for New page to load 
+        await page.waitForSelector("#title");
+        await page.waitForSelector("#attachment_caption");
+        await expect(page).toHaveURL(/action=edit/)
+        // Delete media After testing
         page.on('dialog', dialog => dialog.accept());
-        await page.locator("role=button[name='Delete “ogg-sample” permanently']").first().click();
-        await expect(checkStatus).toBeHidden();
+        await page.locator("#delete-action > a").click();
     });
 
     test('Check mp3 sample', async ({ admin, page, editor }) => {
@@ -102,10 +104,15 @@ test.describe('Validate mp3 and mp4 ogg, PDF  types and Assert All Steps', () =>
         // Check File is already transcoded 
         const checkMessage = page.locator("div[id*='span_status']").first();
         expect(checkMessage).not.toBeNull();
-        // Delete The media to Execute the next Test cases
-        await page.locator("role=link[name='“Impact Moderato” (Edit)']").first().hover();
+        await page.locator("td.title.column-title.has-row-actions.column-primary ").first().hover();
+        await page.locator("td.title.column-title.has-row-actions.column-primary > div > span.edit").first().click();
+        // Wait for New page to load 
+        await page.waitForSelector("#title");
+        await page.waitForSelector("#attachment_caption");
+        await expect(page).toHaveURL(/action=edit/)
+        // Delete media After testing
         page.on('dialog', dialog => dialog.accept());
-        await page.locator("role=button[name='Delete “Impact Moderato” permanently']").first().click();
+        await page.locator("#delete-action > a").click();
     });
 
     test('Check mp4 sample', async ({ admin, page, editor }) => {
@@ -166,13 +173,15 @@ test.describe('Validate mp3 and mp4 ogg, PDF  types and Assert All Steps', () =>
             }
         }
         // Final Assertion after completion.
-        const comPleteMessage = page.locator("div[id*='span_status']");
-        expect(await comPleteMessage.evaluate(node => node.innerText)).toContain('processed');
-         //Delete The media to Execute the next Test cases
-        await page.locator("role=link[name='“mp4-sample” (Edit)']").first().hover();
+        await page.locator("td.title.column-title.has-row-actions.column-primary ").first().hover();
+        await page.locator("td.title.column-title.has-row-actions.column-primary > div > span.edit").first().click();
+        // Wait for New page to load 
+        await page.waitForSelector("#title");
+        await page.waitForSelector("#attachment_caption");
+        await expect(page).toHaveURL(/action=edit/)
+        // Delete media After testing
         page.on('dialog', dialog => dialog.accept());
-        await page.locator("role=button[name='Delete “mp4-sample” permanently']").first().click();
-        await expect(checkStatus).toBeHidden();   
+        await page.locator("#delete-action > a").click();
     });
     test('Check pdf sample', async ({ admin, page, editor }) => {
         const pdfPath = "assets/pdf-sample.pdf";
@@ -205,16 +214,16 @@ test.describe('Validate mp3 and mp4 ogg, PDF  types and Assert All Steps', () =>
         expect(checkMessage).not.toBeNull();
 
         // Check For Transcoding status and wait until File is getting transcoded
-        await checkStatus.click();
-        await page.focus("div[id*='span_status']")
-        await page.waitForSelector("div[id*='span_status']");
+        // await checkStatus.click();
+        // await page.focus("div[id*='span_status']")
+        // await page.waitForSelector("div[id*='span_status']");
         const tweets = page.locator("div[id*='span_status']");
         var result = await tweets.evaluate(node => node.innerText);
         var _hasTimeElasped = false;
         setTimeout(() => {
             _hasTimeElasped = true;
             console.log("Time Elapsed")
-        }, 10000)
+        }, 20000)
         // Loop To Assert Updated Messages
         while (result == TransCodeStatus.Processing || result == TransCodeStatus.Queue || TransCodeStatus.ServerReady) {
             // Loop Breaker After Timeout
@@ -232,12 +241,15 @@ test.describe('Validate mp3 and mp4 ogg, PDF  types and Assert All Steps', () =>
             }
         }
         // Final Assertion after completion.
-        const comPleteMessage = page.locator("div[id*='span_status']");
-        expect(await comPleteMessage.evaluate(node => node.innerText)).toContain('Your file is transcoded successfully. Please refresh the page.');
-        // Delete The media to Execute the next Test cases
-        await page.locator("role=link[name='“pdf-sample” (Edit)']").first().hover();
+        await page.locator("td.title.column-title.has-row-actions.column-primary ").first().hover();
+        await page.locator("td.title.column-title.has-row-actions.column-primary > div > span.edit").first().click();
+        // Wait for New page to load 
+        await page.waitForSelector("#title");
+        await page.waitForSelector("#attachment_caption");
+        await expect(page).toHaveURL(/action=edit/)
+        // Delete media After testing
         page.on('dialog', dialog => dialog.accept());
-        await page.locator("role=button[name='Delete “pdf-sample” permanently']").first().click();
+        await page.locator("#delete-action > a").click();
         
     });
 });
