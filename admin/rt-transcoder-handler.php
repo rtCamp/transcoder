@@ -650,7 +650,7 @@ class RT_Transcoder_Handler {
 		}
 
 		if ( ! empty( $api_key ) ) {
-			if ( $usage_details && isset( $usage_details[ $api_key ]->status ) && $usage_details[ $api_key ]->status ) {
+			if ( $usage_details && isset( $usage_details[ $api_key ]->status ) && $usage_details[ $api_key ]->status && 'error' !== $usage_details[ $api_key ]->status ) {
 
 				if ( isset( $usage_details[ $api_key ]->plan->name ) ) {
 					$plan_name = strtolower( $usage_details[ $api_key ]->plan->name );
