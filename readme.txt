@@ -3,7 +3,7 @@ Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 5.8
+Tested up to: 6.1
 Stable tag: 1.3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
