@@ -52,6 +52,7 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 	}
 
 	$mime_type = explode( '/', $type );
+	$media_url = '';
 
 	if ( 'video' === $mime_type[0] ) {
 
@@ -80,6 +81,10 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 		}
 
 		$content = do_shortcode( "[audio {$audio_shortcode_attributes}]" );
+
+	} elseif ( 'image' === $mime_type[0] ) {
+
+		$content = '<p>' . esc_html__( 'Image attachments are not handled by Transcoder plugin.', 'transcoder' ) . '</p>';
 
 	}
 
