@@ -317,13 +317,29 @@ class RetranscodeMedia {
 				}
 			} else {
 				add_filter( 'posts_where', array( $this, 'add_search_mime_types' ) );
-				$query = new WP_Query( array( 'post_type' => 'attachments' ) );
+				$query = new WP_Query(
+					array(
+						'post_type'   => 'attachment',
+						'post_status' => 'any',
+					)
+				);
 				$media = $query->get_posts();
 				remove_filter( 'posts_where', array( $this, 'add_search_mime_types' ) );
 				if ( empty( $media ) || is_wp_error( $media ) ) {
 
-					// translators: Link to the media page.
-					echo '	<p>' . sprintf( esc_html__( "Unable to find any media. Are you sure <a href='%s'>some exist</a>?", 'transcoder' ), esc_url( admin_url( 'upload.php' ) ) ) . '</p></div>';
+					echo sprintf(
+						'<p>' .
+						wp_kses(
+							// Translators: %s is a link to media page.
+							__( 'Unable to find media. Are you sure <a href="%s">some exists</a>?', 'transcoder' ),
+							array(
+								'a' => array( 'href' => array() ),
+							)
+						)
+							. '</p>',
+						esc_url( admin_url( 'upload.php' ) )
+					);
+
 					return;
 				}
 
