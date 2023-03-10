@@ -175,7 +175,7 @@ class RetranscodeMedia {
 				'video/' !== substr( $post->post_mime_type, 0, 6 ) &&
 				'application/pdf' !== $post->post_mime_type
 			) ||
-			'audio/mpeg' === $post->post_mime_type ||
+			( 'audio/mpeg' === $post->post_mime_type && 'mp3' === pathinfo( $post->guid, PATHINFO_EXTENSION ) ) ||
 			! current_user_can( $this->capability )
 		) {
 			return $actions;
