@@ -1,16 +1,17 @@
 /**
  * WordPress dependencies
  */
-const { test, expect } = require('@wordpress/e2e-test-utils-playwright');
-const SITE_URL = 'https://transcoder-test.rt.gw/activity'; //'http://transcoder.com/activity/';
-const Media_URL = 'https://transcoder-test.rt.gw/members/automation/media/'
+const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
 test.describe('Validate Transcoder In frontend', () => {
     test.beforeEach(async ({ admin }) => {
         await admin.visitAdminPage('/');
 
     });
-    test('Check Transcoder settings In Activity', async ({ admin, page, editor }) => {
-        await page.goto(SITE_URL, { waitUntil: 'load' });
+    test('Check Transcoder settings In Activity', async ({ page }) => {
+        await page.hover("#wp-admin-bar-my-account");
+        const navigationPromise = page.waitForNavigation();
+        await page.locator("#wp-admin-bar-my-account-activity").click();
+        await navigationPromise;
         await page.locator("#whats-new").click();
         //Upload
         const videoPath = "assets/3gp-sample.3gp";
@@ -36,8 +37,11 @@ test.describe('Validate Transcoder In frontend', () => {
     });
 
     test('Check Transcoder settings In Media Page', async ({ page }) => {
-        // Goto Media Page
-        await page.goto(Media_URL, { waitUntil: 'load' });
+        await page.hover("#wp-admin-bar-my-account");
+        await page.hover("#wp-admin-bar-my-account-media");
+        const navigationPromise = page.waitForNavigation();
+        await page.locator("#wp-admin-bar-my-account-media").click();
+        await navigationPromise;
         // Wait for NavBar to stable the page.
         await page.waitForSelector("#object-nav");
         // Click Upload Button for opening up upload panel
