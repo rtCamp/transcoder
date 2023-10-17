@@ -244,7 +244,7 @@ if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
 			$activity_text               = bp_activity_get_meta( $activity_id, 'bp_activity_text' );
 			$obj_activity->activity_text = $activity_text;
 			global $wpdb;
-			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery	
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 				$bp->activity->table_name,
 				array(
 					'type'    => 'rtmedia_update',
@@ -1013,7 +1013,7 @@ add_filter( 'wp_generate_attachment_metadata', 'rtt_media_update_usage', 10, 2 )
  *
  * @return string Filtered value if supports.
  */
-function get_server_var( $server_key, $filter_type = FILTER_SANITIZE_STRING ) {
+function get_server_var( $server_key, $filter_type = FILTER_SANITIZE_FULL_SPECIAL_CHARS ) {
 	$server_val = '';
 	if ( function_exists( 'filter_input' ) && filter_has_var( INPUT_SERVER, $server_key ) ) {
 		$server_val = transcoder_filter_input( INPUT_SERVER, $server_key, $filter_type );

@@ -242,8 +242,8 @@ class RetranscodeMedia {
 	 * @return void
 	 */
 	public function bulk_action_handler() {
-		$action  = transcoder_filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
-		$action2 = transcoder_filter_input( INPUT_GET, 'action2', FILTER_SANITIZE_STRING );
+		$action  = transcoder_filter_input( INPUT_GET, 'action', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$action2 = transcoder_filter_input( INPUT_GET, 'action2', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 		$media   = transcoder_filter_input( INPUT_GET, 'media', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY );
 
 		if ( empty( $action ) || empty( $media ) || ! is_array( $media ) ||
@@ -300,7 +300,7 @@ class RetranscodeMedia {
 
 			// Create the list of image IDs.
 			$usage_info = get_site_option( 'rt-transcoding-usage' );
-			$ids        = transcoder_filter_input( INPUT_GET, 'ids', FILTER_SANITIZE_STRING );
+			$ids        = transcoder_filter_input( INPUT_GET, 'ids', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 			if ( ! empty( $ids ) ) {
 				$media = array_map( 'intval', explode( ',', trim( $ids, ',' ) ) );
 				$ids   = implode( ',', $media );
