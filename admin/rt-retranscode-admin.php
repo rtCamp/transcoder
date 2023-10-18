@@ -1025,5 +1025,3 @@ function retranscode_media() { // phpcs:ignore Universal.Files.SeparateFunctions
 
 	$RetranscodeMedia = new RetranscodeMedia(); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 }
-
-?>
