@@ -319,7 +319,6 @@ class RT_Transcoder_Handler {
 		$thumb_count = apply_filters( 'rt_media_total_video_thumbnails', $thumb_count, $attachment_id );
 
 		return $thumb_count > 10 ? 10 : $thumb_count;
-
 	}
 
 	/**
@@ -489,8 +488,10 @@ class RT_Transcoder_Handler {
 			add_action( 'admin_notices', array( $this, 'public_host_needed_notice' ) );
 		}
 
-		$apikey = trim( transcoder_filter_input( INPUT_GET, 'apikey', FILTER_SANITIZE_STRING ) );
-		$page   = transcoder_filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+		$filtered_apikey = transcoder_filter_input( INPUT_GET, 'apikey', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$apikey          = ! empty( $filtered_apikey ) ? trim( $filtered_apikey ) : '';
+
+		$page = transcoder_filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 		if ( ! empty( $apikey ) && is_admin() && ! empty( $page ) && ( 'rt-transcoder' === $page ) ) {
 			/* Do not activate transcoding service on localhost */
@@ -1332,14 +1333,12 @@ class RT_Transcoder_Handler {
 				$rtmedia_upload_prefix = 'groups/';
 				$id                    = $this->uploaded['context_id'];
 			}
-		} else {
-			if ( 'group' !== $rtmedia_interaction->context->type ) {
+		} elseif ( 'group' !== $rtmedia_interaction->context->type ) {
 				$rtmedia_upload_prefix = 'users/';
 				$id                    = $this->uploaded['media_author'];
-			} else {
-				$rtmedia_upload_prefix = 'groups/';
-				$id                    = $rtmedia_interaction->context->id;
-			}
+		} else {
+			$rtmedia_upload_prefix = 'groups/';
+			$id                    = $rtmedia_interaction->context->id;
 		}
 
 		if ( ! $id ) {
@@ -1366,9 +1365,13 @@ class RT_Transcoder_Handler {
 	 * @param  string  $message         Email message.
 	 * @param  boolean $include_admin   If true then send an email to admin also else not.
 	 */
-	public function send_notification( $email_ids = array(), $subject, $message, $include_admin = true ) {
+	public function send_notification( $email_ids, $subject, $message, $include_admin = true ) {
 		if ( defined( 'RT_TRANSCODER_NO_MAIL' ) ) {
 			return;
+		}
+
+		if ( ! is_array( $email_ids ) ) {
+			$email_ids = array();
 		}
 
 		if ( empty( $subject ) || empty( $message ) ) {
@@ -1629,7 +1632,6 @@ class RT_Transcoder_Handler {
 		}
 
 		$this->wp_media_transcoding( array( 'mime_type' => 'application/pdf' ), $post_id );
-
 	}
 
 	/**
