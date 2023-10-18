@@ -165,7 +165,6 @@ function rt_media_get_video_thumbnail( $attachment_id ) {
 	}
 
 	return false;
-
 }
 
 /**
@@ -204,7 +203,6 @@ function rtt_get_media_url( $attachment_id, $media_type = 'mp4' ) {
 	}
 
 	return $final_file_url;
-
 }
 
 if ( ! function_exists( 'rtt_update_activity_after_thumb_set' ) ) {
@@ -460,7 +458,7 @@ function rtt_bp_get_activity_content( $content, $activity = null ) {
 			}
 			// If media is sent to the transcoder then show the message.
 			if ( is_file_being_transcoded( $media->media_id ) ) {
-				if ( current_user_can( 'administrator' ) && '1' === get_option( 'rtt_client_check_status_button', false ) ) {
+				if ( current_user_can( 'manage_options' ) && '1' === get_option( 'rtt_client_check_status_button', false ) ) {
 
 					$check_button_text = __( 'Check Status', 'transcoder' );
 
@@ -706,7 +704,6 @@ function rtt_add_status_columns_head( $defaults ) {
 
 	$defaults['convert_status'] = __( 'Transcode Status', 'transcoder' );
 	return $defaults;
-
 }
 
 add_filter( 'manage_media_columns', 'rtt_add_status_columns_head' );
@@ -765,7 +762,6 @@ function rtt_status_column_register_sortable( $columns ) {
 
 	$columns['convert_status'] = 'convert_status';
 	return $columns;
-
 }
 
 add_filter( 'manage_upload_sortable_columns', 'rtt_status_column_register_sortable' );
@@ -778,11 +774,11 @@ add_filter( 'manage_upload_sortable_columns', 'rtt_status_column_register_sortab
  */
 function rtt_enqueue_scripts() {
 
-	if ( current_user_can( 'administrator' ) ) {
+	if ( current_user_can( 'manage_options' ) ) {
 		wp_register_script( 'rt_transcoder_js', plugins_url( 'js/rt-transcoder.min.js', __FILE__ ), array(), RT_TRANSCODER_VERSION, false );
 
 		$translation_array = array(
-			'load_flag'      => current_user_can( 'administrator' ),
+			'load_flag'      => true,
 			'security_nonce' => esc_js( wp_create_nonce( 'check-transcoding-status-ajax-nonce' ) ),
 		);
 
@@ -859,7 +855,6 @@ function rtt_ajax_process_check_status_request() {
 	}
 
 	wp_die();
-
 }
 
 // Action added to handle check_status onclick request.
@@ -916,7 +911,7 @@ function rtt_add_transcoding_process_status_button_single_media_page( $rtmedia_i
 
 	if ( is_file_being_transcoded( $post_id ) ) {
 
-		if ( current_user_can( 'administrator' ) && '1' === get_option( 'rtt_client_check_status_button', false ) ) {
+		if ( current_user_can( 'manage_options' ) && '1' === get_option( 'rtt_client_check_status_button', false ) ) {
 			$message = sprintf(
 				'<div class="transcoding-in-progress"><button id="btn_check_status%1$s" class="btn_check_transcode_status" name="check_status_btn" data-value="%1$s">%2$s</button> <div class="transcode_status_box" id="span_status%1$s">%3$s</div></div>',
 				esc_attr( $post_id ),
@@ -988,7 +983,7 @@ add_filter( 'rtmedia_single_content_filter', 'rtt_filter_single_media_page_video
  * @param int    $attachment_id  ID of attachment.
  * @param string $autoformat     If true then generating thumbs only else trancode video.
  */
-function rtt_media_update_usage( $wp_metadata, $attachment_id, $autoformat = true ) {
+function rtt_media_update_usage( $wp_metadata, $attachment_id, $autoformat = true ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 	$stored_key     = get_site_option( 'rt-transcoding-api-key' );
 	$transient_flag = get_transient( 'rtt_usage_update_flag' );
@@ -1018,7 +1013,7 @@ add_filter( 'wp_generate_attachment_metadata', 'rtt_media_update_usage', 10, 2 )
  *
  * @return string Filtered value if supports.
  */
-function get_server_var( $server_key, $filter_type = FILTER_SANITIZE_STRING ) {
+function get_server_var( $server_key, $filter_type = FILTER_SANITIZE_FULL_SPECIAL_CHARS ) {
 	$server_val = '';
 	if ( function_exists( 'filter_input' ) && filter_has_var( INPUT_SERVER, $server_key ) ) {
 		$server_val = transcoder_filter_input( INPUT_SERVER, $server_key, $filter_type );
