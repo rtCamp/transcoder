@@ -122,7 +122,6 @@ class RetranscodeMedia {
 			'rt-retranscoder',
 			array( $this, 'retranscode_interface' )
 		);
-
 	}
 
 	/**
@@ -230,7 +229,7 @@ class RetranscodeMedia {
 		?>
 		<script type="text/javascript">
 			jQuery(document).ready(function($){
-				$('select[name^="action"] option:last-child').before('<option value="bulk_retranscode_media"><?php echo esc_attr( __( 'Retranscode Media', 'transcoder' ) ); ?></option>');
+				$('select[name^="action"] option:last-child').before('<option value="bulk_retranscode_media"><?php esc_html_e( 'Retranscode Media', 'transcoder' ); ?></option>');
 			});
 		</script>
 		<?php
@@ -242,8 +241,8 @@ class RetranscodeMedia {
 	 * @return void
 	 */
 	public function bulk_action_handler() {
-		$action  = transcoder_filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
-		$action2 = transcoder_filter_input( INPUT_GET, 'action2', FILTER_SANITIZE_STRING );
+		$action  = transcoder_filter_input( INPUT_GET, 'action', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$action2 = transcoder_filter_input( INPUT_GET, 'action2', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 		$media   = transcoder_filter_input( INPUT_GET, 'media', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY );
 
 		if ( empty( $action ) || empty( $media ) || ! is_array( $media ) ||
@@ -300,7 +299,7 @@ class RetranscodeMedia {
 
 			// Create the list of image IDs.
 			$usage_info = get_site_option( 'rt-transcoding-usage' );
-			$ids        = transcoder_filter_input( INPUT_GET, 'ids', FILTER_SANITIZE_STRING );
+			$ids        = transcoder_filter_input( INPUT_GET, 'ids', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 			if ( ! empty( $ids ) ) {
 				$media = array_map( 'intval', explode( ',', trim( $ids, ',' ) ) );
 				$ids   = implode( ',', $media );
@@ -372,7 +371,7 @@ class RetranscodeMedia {
 									<table border=0>
 									?>
 										<tr>
-											<td><input type="submit" class="button button-primary button-small" value="<?php echo esc_html__( 'Proceed with retranscoding', 'transcoder' ); ?>"></td>
+											<td><input type="submit" class="button button-primary button-small" value="<?php esc_attr_e( 'Proceed with retranscoding', 'transcoder' ); ?>"></td>
 											<td></td>
 										</tr>
 									<?php
@@ -386,7 +385,7 @@ class RetranscodeMedia {
 									}
 									?>
 										<tr>
-											<td><input type="submit" class="button button-primary button-small" value="<?php esc_html_e( 'Proceed with retranscoding', 'transcoder' ); ?>" ></td>
+											<td><input type="submit" class="button button-primary button-small" value="<?php esc_attr_e( 'Proceed with retranscoding', 'transcoder' ); ?>" ></td>
 											<td></td>
 										</tr>
 									</table>
@@ -422,7 +421,7 @@ class RetranscodeMedia {
 		<div id="retranscodemedia-bar-percent" style="position:absolute;left:50%;top:50%;width:300px;margin-left:-150px;height:25px;margin-top:-9px;font-weight:bold;text-align:center;"></div>
 	</div>
 
-	<p><input type="button" class="button hide-if-no-js" name="retranscodemedia-stop" id="retranscodemedia-stop" value="<?php esc_html_e( 'Abort the Operation', 'transcoder' ); ?>" /></p>
+	<p><input type="button" class="button hide-if-no-js" name="retranscodemedia-stop" id="retranscodemedia-stop" value="<?php esc_attr_e( 'Abort the Operation', 'transcoder' ); ?>" /></p>
 
 	<h3 class="title"><?php esc_html_e( 'Debugging Information', 'transcoder' ); ?></h3>
 
@@ -594,7 +593,7 @@ class RetranscodeMedia {
 
 	<p><?php esc_html_e( 'To begin, just press the button below.', 'transcoder' ); ?></p>
 
-	<p><input type="submit" class="button hide-if-no-js button button-primary" name="rt-retranscoder" id="rt-retranscoder" value="<?php esc_html_e( 'Retranscode All Media', 'transcoder' ); ?>" /></p>
+	<p><input type="submit" class="button hide-if-no-js button button-primary" name="rt-retranscoder" id="rt-retranscoder" value="<?php esc_attr_e( 'Retranscode All Media', 'transcoder' ); ?>" /></p>
 
 	<noscript><p><em><?php esc_html_e( 'You must enable Javascript in order to proceed!', 'transcoder' ); ?></em></p></noscript>
 
@@ -717,10 +716,10 @@ class RetranscodeMedia {
 	/**
 	 * Helper function to escape quotes in strings for use in Javascript
 	 *
-	 * @param string $string String to escape quotes from.
+	 * @param string $str String to escape quotes from.
 	 */
-	public function esc_quotes( $string ) {
-		return str_replace( '"', '\"', $string );
+	public function esc_quotes( $str ) {
+		return str_replace( '"', '\"', $str );
 	}
 
 	/**
@@ -744,7 +743,7 @@ class RetranscodeMedia {
 	 * @param  number $media_id     Post ID of the media.
 	 * @param  array  $post_request Post request coming for the transcoder API.
 	 */
-	public function rtt_before_thumbnail_store( $media_id = '', $post_request = '' ) {
+	public function rtt_before_thumbnail_store( $media_id = '', $post_request = '' ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		if ( empty( $media_id ) ) {
 			return;
 		}
@@ -767,7 +766,6 @@ class RetranscodeMedia {
 			rtt_delete_transcoded_files( $previous_thumbs );
 		}
 		delete_post_meta( $media_id, '_rt_media_thumbnails' );
-
 	}
 
 	/**
@@ -776,7 +774,7 @@ class RetranscodeMedia {
 	 * @param  number $media_id     Post ID of the media.
 	 * @param  array  $transcoded_files Post request coming for the transcoder API.
 	 */
-	public function rtt_before_transcoded_media_store( $media_id = '', $transcoded_files = '' ) {
+	public function rtt_before_transcoded_media_store( $media_id = '', $transcoded_files = '' ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		if ( empty( $media_id ) ) {
 			return;
 		}
@@ -791,7 +789,6 @@ class RetranscodeMedia {
 			}
 		}
 		delete_post_meta( $media_id, '_rt_media_transcoded_files' );
-
 	}
 
 	/**
@@ -872,7 +869,7 @@ class RetranscodeMedia {
 	 * @param  number $attachment_id      Post ID of the media.
 	 * @param  string $job_id             Unique job ID of the transcoding request.
 	 */
-	public function rtt_handle_callback_finished( $attachment_id = '', $job_id = '' ) {
+	public function rtt_handle_callback_finished( $attachment_id = '', $job_id = '' ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		if ( empty( $attachment_id ) ) {
 			return;
 		}
@@ -884,7 +881,6 @@ class RetranscodeMedia {
 			delete_post_meta( $attachment_id, '_rt_retranscoding_sent' );
 
 		}
-
 	}
 
 	/**
@@ -1015,7 +1011,6 @@ class RetranscodeMedia {
 		$where .= " AND post_mime_type LIKE 'audio/%' OR post_mime_type LIKE 'video/%'";
 		return $where;
 	}
-
 }
 
 // Start up this plugin.
@@ -1024,11 +1019,9 @@ add_action( 'init', 'retranscode_media' );
 /**
  * Execute RetranscodeMedia constructor.
  */
-function retranscode_media() {
+function retranscode_media() { // phpcs:ignore Universal.Files.SeparateFunctionsFromOO.Mixed
 
 	global $RetranscodeMedia; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 
 	$RetranscodeMedia = new RetranscodeMedia(); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 }
-
-?>

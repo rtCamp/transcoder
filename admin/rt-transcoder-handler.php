@@ -464,9 +464,9 @@ class RT_Transcoder_Handler {
 	 * @since   1.0.0
 	 */
 	public function save_api_key() {
-		$is_api_key_updated     = transcoder_filter_input( INPUT_GET, 'api-key-updated', FILTER_SANITIZE_STRING );
-		$is_invalid_license_key = transcoder_filter_input( INPUT_GET, 'invalid-license-key', FILTER_SANITIZE_STRING );
-		$is_localhost           = transcoder_filter_input( INPUT_GET, 'need-public-host', FILTER_SANITIZE_STRING );
+		$is_api_key_updated     = transcoder_filter_input( INPUT_GET, 'api-key-updated', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$is_invalid_license_key = transcoder_filter_input( INPUT_GET, 'invalid-license-key', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$is_localhost           = transcoder_filter_input( INPUT_GET, 'need-public-host', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 		if ( $is_api_key_updated ) {
 			if ( is_multisite() ) {
@@ -588,7 +588,7 @@ class RT_Transcoder_Handler {
 		<div class="updated">
 			<p>
 				<?php
-				$api_key_updated = transcoder_filter_input( INPUT_GET, 'api-key-updated', FILTER_SANITIZE_STRING );
+				$api_key_updated = transcoder_filter_input( INPUT_GET, 'api-key-updated', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 				printf(
 					wp_kses(
 						__( 'You have successfully subscribed.', 'transcoder' ),
@@ -1115,12 +1115,12 @@ class RT_Transcoder_Handler {
 	public function handle_callback() {
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 
-		$job_id      = transcoder_filter_input( INPUT_POST, 'job_id', FILTER_SANITIZE_STRING );
-		$file_status = transcoder_filter_input( INPUT_POST, 'file_status', FILTER_SANITIZE_STRING );
-		$error_msg   = transcoder_filter_input( INPUT_POST, 'error_msg', FILTER_SANITIZE_STRING );
-		$job_for     = transcoder_filter_input( INPUT_POST, 'job_for', FILTER_SANITIZE_STRING );
-		$thumbnail   = transcoder_filter_input( INPUT_POST, 'thumbnail', FILTER_SANITIZE_STRING );
-		$format      = transcoder_filter_input( INPUT_POST, 'format', FILTER_SANITIZE_STRING );
+		$job_id      = transcoder_filter_input( INPUT_POST, 'job_id', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$file_status = transcoder_filter_input( INPUT_POST, 'file_status', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$error_msg   = transcoder_filter_input( INPUT_POST, 'error_msg', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$job_for     = transcoder_filter_input( INPUT_POST, 'job_for', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$thumbnail   = transcoder_filter_input( INPUT_POST, 'thumbnail', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$format      = transcoder_filter_input( INPUT_POST, 'format', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 		if ( ! empty( $job_id ) && ! empty( $file_status ) && ( 'error' === $file_status ) ) {
 			$this->nofity_transcoding_failed( $job_id, $error_msg );
@@ -1183,7 +1183,7 @@ class RT_Transcoder_Handler {
 		} else {
 
 			// To check if request is sumitted from the WP Job Manager plugin ( https://wordpress.org/plugins/wp-job-manager/ ).
-			$job_manager_form = transcoder_filter_input( INPUT_POST, 'job_manager_form', FILTER_SANITIZE_STRING );
+			$job_manager_form = transcoder_filter_input( INPUT_POST, 'job_manager_form', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 			if ( isset( $job_id ) && ! empty( $job_id ) && class_exists( 'RTDBModel' ) && empty( $job_manager_form ) ) {
 
@@ -1281,7 +1281,7 @@ class RT_Transcoder_Handler {
 	 * @since 1.0
 	 */
 	public function enter_api_key() {
-		$apikey = transcoder_filter_input( INPUT_GET, 'apikey', FILTER_SANITIZE_STRING );
+		$apikey = transcoder_filter_input( INPUT_GET, 'apikey', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 		if ( ! empty( $apikey ) ) {
 			echo wp_json_encode( array( 'apikey' => $apikey ) );
 		} else {
@@ -1641,16 +1641,16 @@ class RT_Transcoder_Handler {
 		$post_var = $_POST; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		$filter_post_args = array(
-			'job_id'       => FILTER_SANITIZE_STRING,
-			'job_type'     => FILTER_SANITIZE_STRING,
-			'job_for'      => FILTER_SANITIZE_STRING,
-			'format'       => FILTER_SANITIZE_STRING,
+			'job_id'       => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+			'job_type'     => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+			'job_for'      => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+			'format'       => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 			'download_url' => FILTER_SANITIZE_URL,
-			'file_name'    => FILTER_SANITIZE_STRING,
+			'file_name'    => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 			'thumb_count'  => FILTER_SANITIZE_NUMBER_INT,
-			'status'       => FILTER_SANITIZE_STRING,
-			'error_msg'    => FILTER_SANITIZE_STRING,
-			'error_code'   => FILTER_SANITIZE_STRING,
+			'status'       => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+			'error_msg'    => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+			'error_code'   => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 		);
 
 		$post_array          = filter_input_array( INPUT_POST, $filter_post_args );
