@@ -38,7 +38,7 @@ function transcoder_filter_input( $type, $variable_name, $filter = FILTER_DEFAUL
 		 * Code is not running on PHP Cli and we are in clear.
 		 * Use the PHP method and bail out.
 		 */
-		if ( ! empty( $sanitized_variable ) && FILTER_SANITIZE_STRING === $filter ) {
+		if ( ! empty( $sanitized_variable ) && FILTER_SANITIZE_FULL_SPECIAL_CHARS === $filter ) {
 			$sanitized_variable = sanitize_text_field( $sanitized_variable );
 		}
 
