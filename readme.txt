@@ -1,10 +1,10 @@
 === Transcoder ===
-Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode, thrijith, devikvekariya, sagarnasit, sudhiryadav, sid177, pooja1210, vaishu.agola27, ravatparmar, tremidkhar, kapilpaul
+Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode, thrijith, devikvekariya, sagarnasit, sudhiryadav, sid177, pooja1210, vaishu.agola27, ravatparmar, tremidkhar, kapilpaul, utsavladani, vishalkakadiya, pavanpatil1, akrocks, hrithikd
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 6.1
-Stable tag: 1.3.4
+Tested up to: 6.3
+Stable tag: 1.3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,16 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+= 1.3.5 [October 19, 2023] =
+
+* FIXED
+
+ * Compatible with PHP8.1
+ * Enhance security checks and fixed deprecation errors.
+ * Fixed rtMedia attachment shortcode issue.
+ * Fixed cancelled the subscription message issue.
+ * Add support for custom API endpoint to transcode media.
+
 = 1.3.4 [August 17, 2021] =
 
 * FIXED
@@ -210,6 +220,9 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
+= 1.3.5 =
+Transcoder 1.3.5, with add support for custom API endpoint to transcode media, enhance security checks, fix minor bugs, and compatibility with PHP 8.1.
+
 = 1.3.4 =
 Transcoder 1.3.4, with added fix for plugin preventing read more from expanding in activity page and WordPress 5.8 and PHP 8.0 compatibility.
 
