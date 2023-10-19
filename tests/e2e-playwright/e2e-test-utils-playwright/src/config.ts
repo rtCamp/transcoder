@@ -1,6 +1,6 @@
 const WP_ADMIN_USER = {
 	username: 'automation',
-	password: 'automation',
+	password: '@automation00520019',
 } as const;
 
 const {
