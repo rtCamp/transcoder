@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.WP_BASE_URL = exports.WP_PASSWORD = exports.WP_USERNAME = exports.WP_ADMIN_USER = void 0;
 const WP_ADMIN_USER = {
     username: 'automation',
-    password: 'automation',
+    password: '@automation00520019',
 };
 exports.WP_ADMIN_USER = WP_ADMIN_USER;
 const { WP_USERNAME = WP_ADMIN_USER.username, WP_PASSWORD = WP_ADMIN_USER.password, WP_BASE_URL = 'https://transcoder-test.rt.gw/', //   http://transcoder.com
