@@ -65,7 +65,7 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 ## Changelog ##
-#### 1.3.5 [October 19, 2023] ####
+#### 1.3.5 [October 20, 2023] ####
 
 * FIXED
 
