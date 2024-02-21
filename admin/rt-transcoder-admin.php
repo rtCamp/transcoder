@@ -202,7 +202,7 @@ class RT_Transcoder_Admin {
 			'enable_encoding'      => esc_html__( 'Are you sure you want to enable the transcoding service?', 'transcoder' ),
 			'something_went_wrong' => esc_html__( 'Something went wrong. Please ', 'transcoder' ) . '<a href onclick="location.reload();">' . esc_html__( 'refresh', 'transcoder' ) . '</a>' . esc_html__( ' page.', 'transcoder' ),
 			'error_empty_key'      => esc_html__( 'Please enter the license key.', 'transcoder' ),
-			'security_nonce'       => esc_js( wp_create_nonce( 'check-transcoder-ajax-nonce' ) )
+			'security_nonce'       => esc_js( wp_create_nonce( 'check-transcoder-ajax-nonce' ) ),
 		);
 
 		wp_localize_script( 'rt-transcoder-main', 'rt_transcoder_script', $localize_script_data );
