@@ -45,7 +45,8 @@
 					if ( confirm( rt_transcoder_script.disable_encoding ) ) {
 
 						var data = {
-							action: 'rt_disable_transcoding'
+							action: 'rt_disable_transcoding',
+							security: rt_transcoder_script.security_nonce
 						};
 
 						if ( $( this ).next( 'img' ).length === 0 ) {

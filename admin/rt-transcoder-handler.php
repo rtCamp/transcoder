@@ -1269,6 +1269,7 @@ class RT_Transcoder_Handler {
 	 * @since 1.0.0
 	 */
 	public function hide_transcoding_notice() {
+		check_ajax_referer( 'check-transcoder-ajax-nonce', 'security', true );
 		update_site_option( 'rt-transcoding-service-notice', true );
 		update_site_option( 'rt-transcoding-expansion-notice', true );
 		echo true;
@@ -1281,6 +1282,7 @@ class RT_Transcoder_Handler {
 	 * @since 1.0
 	 */
 	public function enter_api_key() {
+		check_ajax_referer( 'check-transcoder-ajax-nonce', 'security', true );
 		$apikey = transcoder_filter_input( INPUT_GET, 'apikey', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 		if ( ! empty( $apikey ) ) {
 			echo wp_json_encode( array( 'apikey' => $apikey ) );
@@ -1296,6 +1298,7 @@ class RT_Transcoder_Handler {
 	 * @since 1.0.0
 	 */
 	public function disable_transcoding() {
+		check_ajax_referer( 'check-transcoder-ajax-nonce', 'security', true );
 		update_site_option( 'rt-transcoding-api-key', '' );
 		esc_html_e( 'Transcoding disabled successfully.', 'transcoder' );
 		die();
@@ -1307,6 +1310,7 @@ class RT_Transcoder_Handler {
 	 * @since 1.0.0
 	 */
 	public function enable_transcoding() {
+		check_ajax_referer( 'check-transcoder-ajax-nonce', 'security', true );
 		update_site_option( 'rt-transcoding-api-key', $this->stored_api_key );
 		esc_html_e( 'Transcoding enabled successfully.', 'transcoder' );
 		die();
