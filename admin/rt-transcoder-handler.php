@@ -1296,7 +1296,7 @@ class RT_Transcoder_Handler {
 	 * @since 1.0.0
 	 */
 	public function disable_transcoding() {
-		check_ajax_referer( 'rt_disable_transcoding', 'rt_transcoder_security', true );
+		check_ajax_referer( 'rt_disable_transcoding', 'rt_transcoder_nonce', true );
 		update_site_option( 'rt-transcoding-api-key', '' );
 		esc_html_e( 'Transcoding disabled successfully.', 'transcoder' );
 		die();
@@ -1308,7 +1308,7 @@ class RT_Transcoder_Handler {
 	 * @since 1.0.0
 	 */
 	public function enable_transcoding() {
-		check_ajax_referer( 'rt_enable_transcoding', 'rt_transcoder_security', true );
+		check_ajax_referer( 'rt_enable_transcoding', 'rt_transcoder_nonce', true );
 		update_site_option( 'rt-transcoding-api-key', $this->stored_api_key );
 		esc_html_e( 'Transcoding enabled successfully.', 'transcoder' );
 		die();
