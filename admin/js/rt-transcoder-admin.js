@@ -46,7 +46,7 @@
 
 						var data = {
 							action: 'rt_disable_transcoding',
-							rt_transcoder_security: rt_transcoder_script.security_nonce
+							rt_transcoder_security: rt_transcoder_script.security_nonce_for_disabling_encoding
 						};
 
 						if ( $( this ).next( 'img' ).length === 0 ) {
@@ -85,7 +85,8 @@
 					if ( confirm( rt_transcoder_script.enable_encoding ) ) {
 
 						var data = {
-							action: 'rt_enable_transcoding'
+							action: 'rt_enable_transcoding',
+							rt_transcoder_security: rt_transcoder_script.security_nonce_for_enabling_encoding
 						};
 
 						if ( $( this ).next( 'img' ).length === 0 ) {
