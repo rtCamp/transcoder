@@ -9,7 +9,7 @@ Transcoding services for ANY WordPress website. Convert audio/video files of any
  <img src="https://rtmedia.io/wp-content/uploads/2016/08/trancoder-banner-01.png" alt="Transcoder Banner"/>
 </p>
 
-* **Contributors:** [rtcamp](http://profiles.wordpress.org/rtcamp), [mangeshp](http://profiles.wordpress.org/mangeshp), [chandrapatel](http://profiles.wordpress.org/chandrapatel), [manishsongirkar36](http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90](http://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode](http://profiles.wordpress.org/kiranpotphode), [thrijith](http://profiles.wordpress.org/thrijith), [devikvekariya](http://profiles.wordpress.org/devikvekariya), [sagarnasit](http://profiles.wordpress.org/sagarnasit), [sudhiryadav](http://profiles.wordpress.org/sudhiryadav), [sid177](https://profiles.wordpress.org/sid177/), [pooja1210](https://profiles.wordpress.org/pooja1210/), [vaishu.agola27](https://profiles.wordpress.org/vaishuagola27/), [ravatparmar](https://profiles.wordpress.org/ravatparmar/), [tremidkhar](https://profiles.wordpress.org/tremidkhar/), [utsavladani](https://profiles.wordpress.org/utsavladani/), [vishalkakadiya](https://profiles.wordpress.org/vishalkakadiya/), [pavanpatil1](https://profiles.wordpress.org/pavanpatil1/), [akrocks](https://profiles.wordpress.org/akrocks/), [hrithikd](https://profiles.wordpress.org/hrithikd/)
+* **Contributors:** [rtcamp](http://profiles.wordpress.org/rtcamp), [mangeshp](http://profiles.wordpress.org/mangeshp), [chandrapatel](http://profiles.wordpress.org/chandrapatel), [manishsongirkar36](http://profiles.wordpress.org/manishsongirkar36), [bhargavbhandari90](http://profiles.wordpress.org/bhargavbhandari90), [kiranpotphode](http://profiles.wordpress.org/kiranpotphode), [thrijith](http://profiles.wordpress.org/thrijith), [devikvekariya](http://profiles.wordpress.org/devikvekariya), [sagarnasit](http://profiles.wordpress.org/sagarnasit), [sudhiryadav](http://profiles.wordpress.org/sudhiryadav), [sid177](https://profiles.wordpress.org/sid177/), [pooja1210](https://profiles.wordpress.org/pooja1210/), [vaishu.agola27](https://profiles.wordpress.org/vaishuagola27/), [ravatparmar](https://profiles.wordpress.org/ravatparmar/), [tremidkhar](https://profiles.wordpress.org/tremidkhar/), [utsavladani](https://profiles.wordpress.org/utsavladani/), [vishalkakadiya](https://profiles.wordpress.org/vishalkakadiya/), [pavanpatil1](https://profiles.wordpress.org/pavanpatil1/), [akrocks](https://profiles.wordpress.org/akrocks/), [hrithikd](https://profiles.wordpress.org/hrithikd/), [sohampate1](https://profiles.wordpress.org/sohampate1/)
 
 * **License:** [GPL v2 or later]( http://www.gnu.org/licenses/gpl-2.0.html)
 
@@ -65,6 +65,13 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 ## Changelog ##
+#### 1.3.6 [February 26, 2024] ####
+
+* FIXED
+
+ * Enhance security checks.
+
+
 #### 1.3.5 [October 20, 2023] ####
 
 * FIXED
