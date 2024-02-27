@@ -62,7 +62,7 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
-= 1.3.6 [February 26, 2024] =
+= 1.3.6 [February 27, 2024] =
 
 * FIXED
 
