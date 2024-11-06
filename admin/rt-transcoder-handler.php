@@ -1111,6 +1111,7 @@ class RT_Transcoder_Handler {
 	 * @since 1.0.0
 	 */
 	public function handle_callback() {
+		// TODO: Refactor this function into REST API.
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 
 		$job_id      = transcoder_filter_input( INPUT_POST, 'job_id', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
@@ -1610,7 +1611,7 @@ class RT_Transcoder_Handler {
 	/**
 	 * Sanitize transcoder post respopnse array.
 	 */
-	private function filter_transcoder_response() {
+	public function filter_transcoder_response() {
 		$post_var = $_POST; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		$filter_post_args = array(
