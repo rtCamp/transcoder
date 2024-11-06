@@ -79,32 +79,32 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 				'callback'            => array( $this, 'handle_callback' ),
 				'permission_callback' => '__return_true',
 				'args'                => array(
-					'job_id'         => array(
+					'job_id'           => array(
 						'required'          => true,
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'file_status'    => array(
+					'file_status'      => array(
 						'required'          => true,
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'error_msg'      => array(
+					'error_msg'        => array(
 						'required'          => false,
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'job_for'        => array(
+					'job_for'          => array(
 						'required'          => false,
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'thumbnail'      => array(
+					'thumbnail'        => array(
 						'required'          => false,
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'format'         => array(
+					'format'           => array(
 						'required'          => false,
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
