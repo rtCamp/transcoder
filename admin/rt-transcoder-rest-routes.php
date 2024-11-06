@@ -41,6 +41,10 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 	 */
 	public function __construct() {
 		$this->rt_transcoder_handler = new RT_Transcoder_Handler( true );
+
+		if ( ! defined( 'RT_TRANSCODER_CALLBACK_URL' ) ) {
+			define( 'RT_TRANSCODER_CALLBACK_URL', $this->get_callback_url() );
+		}
 	}
 
 	/**
@@ -84,28 +88,58 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
+					'job_type'         => array(
+						'required'          => true,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'job_for'          => array(
+						'required'          => true,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'format'           => array(
+						'required'          => true,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'download_url'     => array(
+						'required'          => true,
+						'type'              => 'string',
+						'sanitize_callback' => 'esc_url_raw',
+					),
+					'file_name'        => array(
+						'required'          => true,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'thumbnail_count'  => array(
+						'required'          => true,
+						'type'              => 'integer',
+						'sanitize_callback' => 'absint',
+					),
+					'status'           => array(
+						'required'          => true,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'files'            => array(
+						'required'          => true,
+						'type'              => 'array',
+						'sanitize_callback' => 'esc_url_raw',
+					),
 					'file_status'      => array(
 						'required'          => true,
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'error_msg'        => array(
-						'required'          => false,
-						'type'              => 'string',
-						'sanitize_callback' => 'sanitize_text_field',
-					),
-					'job_for'          => array(
-						'required'          => false,
-						'type'              => 'string',
-						'sanitize_callback' => 'sanitize_text_field',
-					),
 					'thumbnail'        => array(
-						'required'          => false,
-						'type'              => 'string',
-						'sanitize_callback' => 'sanitize_text_field',
+						'required'          => true,
+						'type'              => 'array',
+						'sanitize_callback' => 'esc_url_raw',
 					),
-					'format'           => array(
-						'required'          => false,
+					'error_msg'        => array(
+						'required'          => true,
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
@@ -117,6 +151,15 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Return the callback URL for the transcoder.
+	 * 
+	 * @return string
+	 */
+	public function get_callback_url() {
+		return rest_url( $this->namespace_prefix . $this->version . '/transcoder-callback' );
 	}
 
 	/**
@@ -261,7 +304,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 					}
 
 					if ( isset( $format ) && 'thumbnail' === $format ) {
-						return new WP_REST_Response( $post_array, 200 );
+						return new WP_REST_Response( esc_html_e( 'Thumbnail created successfully.', 'transcoder' ), 200 );
 					}
 
 					if ( ! empty( $post_array['files'] ) ) {
@@ -288,7 +331,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 					}
 					return new WP_Error( 'transcoder_error', $flag, array( 'status' => 500 ) );
 				} else {
-					return new WP_REST_Response( $post_array, 200 );
+					return new WP_REST_Response( esc_html_e( 'Media transcoded successfully.', 'transcoder' ), 200 );
 				}
 			}
 		} else {
@@ -330,7 +373,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 					}
 
 					if ( isset( $format ) && 'thumbnail' === $format ) {
-						return new WP_REST_Response( $post_array, 200 );
+						return new WP_REST_Response( esc_html_e( 'Thumbnail created successfully.', 'transcoder' ), 200 );
 					}
 
 					if ( ! empty( $post_array['files'] ) ) {
@@ -358,7 +401,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 					return new WP_Error( 'transcoder_error', $flag, array( 'status' => 500 ) );
 
 				} else {
-					return new WP_REST_Response( $post_array, 200 );
+					return new WP_REST_Response( esc_html_e( 'Media transcoded successfully.', 'transcoder' ), 200 );
 				}
 			}
 		}
