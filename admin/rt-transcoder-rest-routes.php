@@ -253,7 +253,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 
 				if ( ! empty( $id ) && is_numeric( $id ) ) {
 					$attachment_id         = $id;
-					$post_array            = $this->rt_transcoder_handler->filter_transcoder_response();
+					$post_array            = $this->rt_transcoder_handler->filter_transcoder_response_json( $request );
 					$post_array['post_id'] = $attachment_id;
 
 					if ( $has_thumbs && ! empty( $post_array['thumbnail'] ) ) {
@@ -261,7 +261,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 					}
 
 					if ( isset( $format ) && 'thumbnail' === $format ) {
-						return new WP_REST_Response( 'Done', 200 );
+						return new WP_REST_Response( $post_array, 200 );
 					}
 
 					if ( ! empty( $post_array['files'] ) ) {
@@ -275,7 +275,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 
 				if ( $flag && $mail ) {
 					$subject = 'Transcoding: Download Failed';
-					$message = '<p><a href="' . rtt_get_edit_post_link( $attachment_id ) . '">Media</a> was successfully encoded but there was an error while downloading:</p><p><code>' . $flag . '</code></p>';
+					$message = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'transcoder' ) . '</a> ' . esc_html__( ' was successfully encoded but there was an error while downloading:', 'transcoder' ) . '</p><p><code>' . esc_html( $flag ) . '</code></p>';
 					$users   = get_users( array( 'role' => 'administrator' ) );
 					if ( $users ) {
 						$admin_email_ids = array();
@@ -288,7 +288,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 					}
 					return new WP_Error( 'transcoder_error', $flag, array( 'status' => 500 ) );
 				} else {
-					return new WP_REST_Response( 'Done', 200 );
+					return new WP_REST_Response( $post_array, 200 );
 				}
 			}
 		} else {
@@ -322,7 +322,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 					$attachment_id      = $media[0]->media_id;
 
 					$post_array            = $this->rt_transcoder
-					->filter_transcoder_response();
+					->filter_transcoder_response_json( $request );
 					$post_array['post_id'] = $attachment_id;
 
 					if ( $has_thumbs ) {
@@ -330,7 +330,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 					}
 
 					if ( isset( $format ) && 'thumbnail' === $format ) {
-						return new WP_REST_Response( 'Done', 200 );
+						return new WP_REST_Response( $post_array, 200 );
 					}
 
 					if ( ! empty( $post_array['files'] ) ) {
@@ -344,7 +344,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 
 				if ( $flag && $mail ) {
 					$subject = 'Transcoding: Download Failed';
-					$message = '<p><a href="' . rtt_get_edit_post_link( $attachment_id ) . '">Media</a> was successfully transcoded but there was an error while downloading:</p><p><code>' . $flag . '</code></p><p>';
+					$message = '<p><a href="' . esc_url( rtt_get_edit_post_link( $attachment_id ) ) . '">' . esc_html__( 'Media', 'transcoder' ) . '</a> ' . esc_html__( ' was successfully transcoded but there was an error while downloading:', 'transcoder' ) . '</p><p><code>' . esc_html( $flag ) . '</code></p><p>';
 					$users   = get_users( array( 'role' => 'administrator' ) );
 					if ( $users ) {
 						$admin_email_ids = array();
@@ -358,7 +358,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 					return new WP_Error( 'transcoder_error', $flag, array( 'status' => 500 ) );
 
 				} else {
-					return new WP_REST_Response( 'Done', 200 );
+					return new WP_REST_Response( $post_array, 200 );
 				}
 			}
 		}

@@ -1644,4 +1644,28 @@ class RT_Transcoder_Handler {
 
 		return $post_array;
 	}
+
+	/**
+	 * Sanitize transcoder post respopnse array for JSON.
+	 * 
+	 * @param WP_REST_Request $request Request object.
+	 * 
+	 * @return array $post_array Sanitized post array.
+	 */
+	public function filter_transcoder_response_json( $request ) {
+		return array(
+			'job_id'       => sanitize_text_field( wp_unslash( $request->get_param( 'job_id' ) ) ),
+			'job_type'     => sanitize_text_field( wp_unslash( $request->get_param( 'job_type' ) ) ),
+			'job_for'      => sanitize_text_field( wp_unslash( $request->get_param( 'job_for' ) ) ),
+			'format'       => sanitize_text_field( wp_unslash( $request->get_param( 'format' ) ) ),
+			'download_url' => esc_url_raw( $request->get_param( 'download_url' ) ),
+			'file_name'    => sanitize_text_field( wp_unslash( $request->get_param( 'file_name' ) ) ),
+			'thumb_count'  => absint( $request->get_param( 'thumb_count' ) ),
+			'status'       => sanitize_text_field( wp_unslash( $request->get_param( 'status' ) ) ),
+			'files'        => array_map( 'esc_url_raw', (array) $request->get_param( 'files' ) ),
+			'file_status'  => sanitize_text_field( wp_unslash( $request->get_param( 'file_status' ) ) ),
+			'thumbnail'    => array_map( 'esc_url_raw', (array) $request->get_param( 'thumbnail' ) ),
+			'error_msg'    => sanitize_text_field( wp_unslash( $request->get_param( 'error_msg' ) ) ),
+		);
+	}
 }
