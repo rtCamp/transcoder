@@ -22,7 +22,7 @@ import { useBlockProps } from '@wordpress/block-editor';
  * @return {HTMLElement} Element to render.
  */
 export default function save( { attributes } ) {
-	const { videoUrl, videoAlt, videoSize, videoPosterUrl, useCustomSize } = attributes;
+	const { videoUrl, videoAlt, videoSize, videoType, videoPosterUrl, useCustomSize } = attributes;
 
 	const videoSetupOptions = {
 		controls: true,
@@ -44,7 +44,7 @@ export default function save( { attributes } ) {
 						width={ useCustomSize ? videoSize.width : '100%' }
 						height={ useCustomSize ? videoSize.height : 'auto' }
 					>
-						<source src={ videoUrl } type="video/mp4" />
+						<source src={ videoUrl } type={ videoType } />
 					</video>
 				</div>
 			) }
