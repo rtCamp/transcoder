@@ -2,6 +2,7 @@
 **/*.build.js
 **/node_modules/**
 **/vendor/**
+assets/**
 build
 node_modules
 Gruntfile.js

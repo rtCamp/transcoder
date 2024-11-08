@@ -1,81 +1,76 @@
 /**
- * Webpack configuration file.
- *
- * @package transcoder
+ * External dependencies
  */
+const path = require('path');
+const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts');
 
-/* global process */
+/**
+ * WordPress dependencies
+ */
+const defaultConfig = require('@wordpress/scripts/config/webpack.config');
 
-const webpack = require( 'webpack' );
-const glob = require( 'glob' );
-const UglifyJsPlugin = require( 'uglifyjs-webpack-plugin' );
-
-const externals = {
-	react: 'React',
-	'react-dom': 'ReactDOM',
-	'react-dom/server': 'ReactDOMServer',
-	tinymce: 'tinymce',
-	moment: 'moment',
-	jquery: 'jQuery',
-	'@wordpress/components': 'wp.components' // Not really a package.
+// Extend the default config
+const sharedConfig = {
+  ...defaultConfig,
+  plugins: [
+    ...defaultConfig.plugins.map((plugin) => {
+      if (plugin.constructor.name === 'MiniCssExtractPlugin') {
+        plugin.options.filename = '../css/[name].css';
+      }
+      return plugin;
+    }),
+    new RemoveEmptyScriptsPlugin(),
+  ],
+  optimization: {
+    ...defaultConfig.optimization,
+    splitChunks: {
+      ...defaultConfig.optimization.splitChunks,
+    },
+  },
 };
 
-module.exports = [
-	{
-		entry: {
-			blocks: glob.sync( './admin/js/rt-transcoder-block-editor-support.js' )
-		},
-		output: {
-			filename: './admin/js/build/rt-transcoder-block-editor-support.build.js',
-			path: __dirname
-		},
-		externals,
-		resolve: {
-			modules: [
-				__dirname,
-				'node_modules'
-			]
-		},
-		module: {
-			rules: [
-				{
-					test: /.js?$/,
-					loader: 'babel-loader',
-					exclude: /node_modules/
-				}
-			]
-		},
-		plugins: [
-			new webpack.DefinePlugin( {
-				'process.env.NODE_ENV': JSON.stringify( process.env.NODE_ENV || 'development' )
-			} )
-		]
-	},
-	{
-		entry: './public-assets/js/transcoder.js',
-		output: {
-			filename: './public-assets/js/build/transcoder.min.js',
-			path: __dirname
-		}
-	}
-];
+// Configuration for the block editor support script
+const blockEditorSupport = {
+  ...sharedConfig,
+  entry: {
+    blocks: path.resolve(
+      process.cwd(),
+      'admin',
+      'js',
+      'rt-transcoder-block-editor-support.js'
+    ),
+  },
+  output: {
+    filename: 'rt-transcoder-block-editor-support.build.js',
+    path: path.resolve(__dirname, 'admin', 'js', 'build'),
+  },
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    'react-dom/server': 'ReactDOMServer',
+    tinymce: 'tinymce',
+    moment: 'moment',
+    jquery: 'jQuery',
+    '@wordpress/components': 'wp.components',
+  },
+};
 
-if ( process.env.NODE_ENV === 'production' ) {
-	for ( var moduleConfig of module.exports ) {
-		moduleConfig.plugins = (
-			moduleConfig.plugins || []
-		).concat(
-			[
-				new UglifyJsPlugin( {
-					sourceMap: true,
-					uglifyOptions: {
-						ecma: 8,
-						compress: {
-							warnings: false
-						}
-					}
-				} )
-			]
-		);
-	}
-}
+// Configuration for the public-facing transcoder script
+const transcoderJS = {
+  ...sharedConfig,
+  entry: {
+    'transcoder.min': path.resolve(
+      process.cwd(),
+      'public-assets',
+      'js',
+      'transcoder.js'
+    ),
+  },
+  output: {
+    filename: '[name].js',
+    path: path.resolve(__dirname, 'public-assets', 'js', 'build'),
+  },
+};
+
+// Export the configurations
+module.exports = [blockEditorSupport, transcoderJS];
