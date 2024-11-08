@@ -46,6 +46,27 @@ if ( ! defined( 'RT_TRANSCODER_NO_MAIL' ) && defined( 'VIP_GO_APP_ENVIRONMENT' )
 	define( 'RT_TRANSCODER_NO_MAIL', true );
 }
 
+if ( ! defined( 'TRANSCODER_ASSETS_BUILD' ) ) {
+	/**
+	 * The build directory for assets
+	 */
+	define( 'TRANSCODER_ASSETS_BUILD', RT_TRANSCODER_PATH . 'assets/build' );
+}
+
+if ( ! defined( 'TRANSCODER_BLOCK_SRC' ) ) {
+	/**
+	 * The source directory for blocks
+	 */
+	define( 'TRANSCODER_BLOCK_SRC', RT_TRANSCODER_PATH . 'assets/src/blocks' );
+}
+
+if ( ! defined( 'TRANSCODER_BLOCK_BUILD' ) ) {
+	/**
+	 * The build directory for blocks
+	 */
+	define( 'TRANSCODER_BLOCK_BUILD', RT_TRANSCODER_PATH . 'assets/build/blocks' );
+}
+
 require_once RT_TRANSCODER_PATH . 'inc/helpers/autoloader.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 require_once RT_TRANSCODER_PATH . 'inc/helpers/custom-functions.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 require_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-functions.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
@@ -57,6 +78,11 @@ global $rt_transcoder_admin;
  * Initiate file system.
  */
 \Transcoder\Inc\FileSystem::get_instance();
+
+/**
+ * Initiate blocks.
+ */
+\Transcoder\Inc\Blocks::get_instance();
 
 $rt_transcoder_admin = new RT_Transcoder_Admin();
 
