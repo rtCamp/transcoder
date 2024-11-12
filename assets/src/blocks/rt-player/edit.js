@@ -21,6 +21,7 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { Button, PanelBody, PanelRow, TextControl, ToggleControl, Placeholder } from '@wordpress/components';
 import { useEffect, useRef } from '@wordpress/element';
+import apiFetch from '@wordpress/api-fetch'; // **Import apiFetch**
 
 /**
  * External dependencies
@@ -136,7 +137,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const onSelectVideo = ( media ) => {
 		setAttributes( {
 			mediaId: media.id,
-			videoUrl: media.url,
+			videoUrl: null,
 			videoAlt: media.alt || media.title,
 			videoSize: {
 				width: media.width,
@@ -145,6 +146,26 @@ export default function Edit( { attributes, setAttributes } ) {
 			videoType: media.mime,
 			videoPosterUrl: media.thumb?.src || media.image?.src,
 		} );
+
+		// Fetch transcoded URL from media meta.
+		const fetchTranscodedUrl = async () => {
+			try {
+				const response = await apiFetch( { path: `/wp/v2/media/${ media.id }` } );
+				if ( response && response.meta && response.meta._rt_transcoded_url ) {
+					const transcodedUrl = response.meta._rt_transcoded_url;
+					setAttributes( { videoUrl: transcodedUrl } );
+				} else {
+					// If meta not present, use media url.
+					setAttributes( { videoUrl: media.url } );
+				}
+			} catch ( error ) {
+				console.error( 'Error fetching media meta:', error );
+				// On error, use media url.
+				setAttributes( { videoUrl: media.url } );
+			}
+		};
+
+		fetchTranscodedUrl();
 	};
 
 	const onSelectPoster = ( media ) => {
