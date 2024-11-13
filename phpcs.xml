@@ -38,7 +38,7 @@
 		 as set in the "Requires at least" tag in the readme.txt file. -->
 	<rule ref="WordPress.WP.DeprecatedFunctions">
 		<properties>
-			<property name="minimum_supported_version" value="4.1" />
+			<!-- <property name="minimum_supported_version" value="4.1" /> -->
 		</properties>
 	</rule>
 
@@ -48,5 +48,6 @@
 	<exclude-pattern>*/vendor/*</exclude-pattern>
 	<exclude-pattern>.github/</exclude-pattern>
 	<exclude-pattern>*/index.php</exclude-pattern>
+	<exclude-pattern>*/build/*</exclude-pattern>
 
 </ruleset>

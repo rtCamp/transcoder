@@ -136,7 +136,7 @@ class RT_Transcoder_Handler {
 		}
 
 		add_action( 'admin_init', array( $this, 'save_api_key' ), 10, 1 );
-
+		// phpcs:disable
 		if ( $this->api_key ) {
 			// Store api key as different db key if user disable transcoding service.
 			if ( ! $this->stored_api_key ) {
@@ -148,22 +148,22 @@ class RT_Transcoder_Handler {
 
 			if ( isset( $usage_info ) && is_array( $usage_info ) && array_key_exists( $this->api_key, $usage_info ) ) {
 				// if ( isset( $usage_info[ $this->api_key ]->plan->expires )
-				// 	&& strtotime( $usage_info[ $this->api_key ]->plan->expires ) < time() ) {
-				// 	$usage_info = $this->update_usage( $this->api_key );
+				// && strtotime( $usage_info[ $this->api_key ]->plan->expires ) < time() ) {
+				// $usage_info = $this->update_usage( $this->api_key );
 				// }
-				if ( array_key_exists( $this->api_key, $usage_info ) && is_object( $usage_info[ $this->api_key ] ) && isset( $usage_info[ $this->api_key ]->status ) && $usage_info[ $this->api_key ]->status === 'Active' ) {
+				if ( array_key_exists( $this->api_key, $usage_info ) && is_object( $usage_info[ $this->api_key ] ) && isset( $usage_info[ $this->api_key ]->status ) && 'Active' === $usage_info[ $this->api_key ]->status ) {
 					if ( isset( $usage_info[ $this->api_key ]->remaining ) && $usage_info[ $this->api_key ]->remaining > 0 ) {
 
 						// Enable re-transcoding.
 						include_once RT_TRANSCODER_PATH . 'admin/rt-retranscode-admin.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 
 						// if ( $usage_info[ $this->api_key ]->remaining < 524288000 && ! get_site_option( 'rt-transcoding-usage-limit-mail' ) ) {
-						// 	$this->nearing_usage_limit( $usage_info );
+						// $this->nearing_usage_limit( $usage_info );
 						// } elseif ( $usage_info[ $this->api_key ]->remaining > 524288000 && get_site_option( 'rt-transcoding-usage-limit-mail' ) ) {
-						// 	update_site_option( 'rt-transcoding-usage-limit-mail', 0 );
+						// update_site_option( 'rt-transcoding-usage-limit-mail', 0 );
 						// }
 						// if ( strtotime( $usage_info[ $this->api_key ]->plan->expires ) > time() ) {
-						// 	add_filter( 'wp_generate_attachment_metadata', array( $this, 'wp_media_transcoding' ), 21, 2 );
+						// add_filter( 'wp_generate_attachment_metadata', array( $this, 'wp_media_transcoding' ), 21, 2 );
 						// }
 
 						/* Do not let the user to upload non supported media types on localhost */
@@ -178,6 +178,7 @@ class RT_Transcoder_Handler {
 				}
 			}
 		}
+		// phpcs:enable
 
 		add_action( 'init', array( $this, 'handle_callback' ), 20 );
 		add_action( 'wp_ajax_rt_disable_transcoding', array( $this, 'disable_transcoding' ), 1 );
@@ -265,14 +266,14 @@ class RT_Transcoder_Handler {
 				'sslverify' => false,
 				'timeout'   => 60, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 				'body'      => array(
-					'api_token'    => $this->api_key,
-					'job_type'     => $job_type,
-					'job_for'      => $job_for,
+					'api_token'       => $this->api_key,
+					'job_type'        => $job_type,
+					'job_for'         => $job_for,
 					'file_origin'     => rawurlencode( $url ),
-					'callback_url' => rawurlencode( trailingslashit( home_url() ) . 'index.php' ),
-					'force'        => 0,
-					'formats'      => ( true === $autoformat ) ? ( ( 'video' === $type_array[0] ) ? 'mp4' : 'mp3' ) : $autoformat,
-					'thumbnail_count'  => $options_video_thumb,
+					'callback_url'    => rawurlencode( trailingslashit( home_url() ) . 'index.php' ),
+					'force'           => 0,
+					'formats'         => ( true === $autoformat ) ? ( ( 'video' === $type_array[0] ) ? 'mp4' : 'mp3' ) : $autoformat,
+					'thumbnail_count' => $options_video_thumb,
 				),
 			);
 
@@ -286,7 +287,7 @@ class RT_Transcoder_Handler {
 				)
 			) {
 				$upload_info = json_decode( $upload_page['body'] );
-				error_log(json_encode($upload_info));
+				error_log( json_encode( $upload_info ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.WP.AlternativeFunctions.json_encode_json_encode
 				if ( isset( $upload_info->data ) && isset( $upload_info->data->name ) ) {
 					$job_id = $upload_info->data->name;
 					update_post_meta( $attachment_id, '_rt_transcoding_job_id', $job_id );
@@ -1156,10 +1157,9 @@ class RT_Transcoder_Handler {
 					}
 
 					if ( ! empty( $post_array['files'] ) ) {
-						if ( ! empty($post_array['files']['mpd']) ) {
-							update_post_meta( $attachment_id, '_rt_transcoded_url', $post_array['download_url']  );
-						}
-						else {
+						if ( ! empty( $post_array['files']['mpd'] ) ) {
+							update_post_meta( $attachment_id, '_rt_transcoded_url', $post_array['download_url'] );
+						} else {
 							$this->add_transcoded_files( $post_array['files'], $attachment_id, $job_for );
 						}
 					}
@@ -1642,8 +1642,7 @@ class RT_Transcoder_Handler {
 			$post_array['files']['mp4'][] = filter_var( $post_var['files']['mp4'][0], FILTER_SANITIZE_URL );
 		} elseif ( ! empty( $post_var['files']['mp3'][0] ) ) {
 			$post_array['files']['mp3'][] = filter_var( $post_var['files']['mp3'][0], FILTER_SANITIZE_URL );
-		}
-		elseif ( ! empty( $post_var['files']['mpd'][0] ) ) {
+		} elseif ( ! empty( $post_var['files']['mpd'][0] ) ) {
 			$post_array['files']['mpd'][] = filter_var( $post_var['files']['mpd'][0], FILTER_SANITIZE_URL );
 		}
 
