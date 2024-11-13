@@ -276,6 +276,33 @@ $current_page = transcoder_filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL
 								</span>
 							</td>
 						</tr>
+						<tr valign="top">
+							<td scope="row">
+								<?php esc_html_e( 'Enable Adaptive Bitrate Streaming', 'transcoder' ); ?>
+							</td>
+							<td>
+								<?php
+								$rtt_enable_adaptive_bitrate = get_option( 'rtt_adaptive_bitrate_streaming', false );
+
+								// Check if the user has an active paid subscription.
+								$usage_details = get_site_option( 'rt-transcoding-usage' );
+								$has_access    = isset( $usage_details[ $this->api_key ]->sub_status ) && $usage_details[ $this->api_key ]->sub_status;
+								?>
+								<input type="checkbox" name="rtt_adaptive_bitrate_streaming" value="1" <?php checked( $rtt_enable_adaptive_bitrate, 1 ); ?> <?php disabled( ! $has_access ); ?> />
+								<span class="rtm-tooltip">
+									<i class="dashicons dashicons-info" style="padding-top:3px"></i>
+									<span class="rtm-tip">
+										<?php
+										esc_html_e( 'If enabled, Transcoder will generate multiple video files with different bitrates for adaptive streaming. This will improve video streaming performance on slow internet connections.', 'transcoder' );
+										?>
+									</span>
+								</span>
+								<?php if ( ! $has_access ) : ?>
+									<br/>
+									<p class="description"><?php esc_html_e( 'This feature is available for paid members only.', 'transcoder' ); ?></p>
+								<?php endif; ?>
+							</td>
+						</tr>
 					</table>
 					<p>
 						<?php

@@ -137,6 +137,42 @@ class RT_Transcoder_Admin {
 		register_setting( 'rt-transcoder-settings-group', 'number_of_thumbs' );
 		register_setting( 'rt-transcoder-settings-group', 'rtt_override_thumbnail' );
 		register_setting( 'rt-transcoder-settings-group', 'rtt_client_check_status_button' );
+
+		// Check if the user has an active paid subscription.
+		$usage_details = get_site_option( 'rt-transcoding-usage' );
+		$has_access    = isset( $usage_details[ $this->api_key ]->sub_status ) && $usage_details[ $this->api_key ]->sub_status;
+
+		// Register adaptive bitrate streaming setting with conditional default.
+		register_setting(
+			'rt-transcoder-settings-group',
+			'rtt_adaptive_bitrate_streaming',
+			array(
+				'type'              => 'boolean',
+				'description'       => __( 'Enable adaptive bitrate streaming for videos.', 'transcoder' ),
+				'sanitize_callback' => array( $this, 'sanitize_adaptive_bitrate' ),
+				'default'           => $has_access,
+			)
+		);
+	}
+
+	/**
+	 * Sanitize adaptive bitrate streaming setting.
+	 *
+	 * @since    1.0.0
+	 *
+	 * @param bool $value The value to sanitize.
+	 * @return bool
+	 */
+	public function sanitize_adaptive_bitrate( $value ) {
+		$usage_details = get_site_option( 'rt-transcoding-usage' );
+		$has_access    = isset( $usage_details[ $this->api_key ]->sub_status ) && $usage_details[ $this->api_key ]->sub_status;
+
+		if ( ! $has_access ) {
+			add_settings_error( 'rt-transcoder-settings-group', 'rtt_adaptive_bitrate_streaming', __( 'You need to have an active subscription to enable adaptive bitrate streaming.', 'transcoder' ), 'error' );
+			return false;
+		}
+
+		return isset( $value ) && ( '1' === $value || 1 === $value || true === $value );
 	}
 
 	/**
