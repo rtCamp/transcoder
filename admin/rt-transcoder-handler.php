@@ -1658,7 +1658,7 @@ class RT_Transcoder_Handler {
 	}
 
 	/**
-	 * Sanitize transcoder post respopnse array for JSON.
+	 * Sanitize transcoder post response array for JSON.
 	 * 
 	 * @param WP_REST_Request $request Request object.
 	 * 
@@ -1672,7 +1672,7 @@ class RT_Transcoder_Handler {
 			'format'          => sanitize_text_field( wp_unslash( $request->get_param( 'format' ) ) ),
 			'download_url'    => esc_url_raw( $request->get_param( 'download_url' ) ),
 			'file_name'       => sanitize_text_field( wp_unslash( $request->get_param( 'file_name' ) ) ),
-			'thumbnail_count' => absint( $request->get_param( 'thumbnail_count' ) ),
+			'thumb_count' => absint( $request->get_param( 'thumbnail_count' ) ),
 			'status'          => sanitize_text_field( wp_unslash( $request->get_param( 'status' ) ) ),
 			'files'           => array_map( 'esc_url_raw', (array) $request->get_param( 'files' ) ),
 			'file_status'     => sanitize_text_field( wp_unslash( $request->get_param( 'file_status' ) ) ),
