@@ -113,7 +113,7 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'thumb_count'  => array(
+					'thumb_count'      => array(
 						'required'          => true,
 						'type'              => 'integer',
 						'sanitize_callback' => 'absint',
