@@ -7,6 +7,9 @@
 
         const progressBars = new Map();
 
+        // Check for existing video files in the media library.
+        setTimeout(checkExistingVideoProgress, 500);
+
         // Listen for new files added to the queue.
         wp.Uploader.queue.on('add', function(file) {
             wp.Uploader.queue.on('reset', function() {
@@ -26,7 +29,9 @@
         function initializeProgressBar(attachmentId) {
             const progressBar = $(
                 `<div class="transcoder-progress-bar">
-                    <div class="progress" style="width: 0%;"></div>
+                    <div class="progress" style="width: 0%;">
+                        <span class="progress-text">0%</span>
+                    </div>
                 </div>`
             );
 
@@ -37,6 +42,27 @@
             progressBars.set(attachmentId, progressBar);
             monitorProgress(attachmentId);
         }
+
+
+        /**
+         * Check for existing video files in the media.
+         * 
+         */
+        function checkExistingVideoProgress() {
+            const videoQuery = wp.media.query({
+                type: 'video',
+                posts_per_page: -1,
+            });
+
+            videoQuery.more().done(function() {
+                const videoAttachments = videoQuery.models;
+                videoAttachments.forEach(function(attachment) {
+                    const attachmentId = attachment.id;
+                    initializeProgressBar(attachmentId);
+                })
+            });
+        }
+    
 
         /**
          * Monitor the transcoding progress of the given attachment.
@@ -54,14 +80,13 @@
                 success: function(data) {
                     const progress = parseFloat(data.progress) || 0;
                     progressBar.find('.progress').css('width', `${progress}%`);
+                    progressBar.find('.progress-text').text(`${progress}%`);
 
                     if (progress < 100) {
                         setTimeout(() => monitorProgress(attachmentId), 5000);
                     } else {
-                        progressBar.fadeOut(400, function() {
-                            progressBar.remove();
-                            progressBars.delete(attachmentId);
-                        });
+                        progressBar.remove();
+                        progressBars.delete(attachmentId);
                     }
                 },
                 error: function() {
