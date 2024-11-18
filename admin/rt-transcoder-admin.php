@@ -245,6 +245,34 @@ class RT_Transcoder_Admin {
 		wp_localize_script( 'rt-transcoder-main', 'rt_transcoder_script', $localize_script_data );
 
 		wp_enqueue_script( 'rt-transcoder-main' );
+
+		wp_register_script(
+			'rt-transcoder-uploader',
+			RT_TRANSCODER_URL . 'admin/js/rt-transcoder-uploader.js',
+			array( 'jquery' ),
+			RT_TRANSCODER_VERSION,
+			true
+		);
+		
+		wp_localize_script(
+			'rt-transcoder-uploader',
+			'transcoderSettings',
+			array(
+				'restUrl' => esc_url_raw( rest_url( 'transcoder/v1/transcoding-status' ) ),
+				'nonce'   => wp_create_nonce( 'wp_rest' ),
+			)
+		);
+		
+		wp_enqueue_script( 'rt-transcoder-uploader' );
+		
+		wp_register_style(
+			'rt-progress-bar',
+			RT_TRANSCODER_URL . 'admin/css/rt-progress-bar.css',
+			array(),
+			RT_TRANSCODER_VERSION
+		);
+
+		wp_enqueue_style( 'rt-progress-bar' );
 	}
 
 	/**

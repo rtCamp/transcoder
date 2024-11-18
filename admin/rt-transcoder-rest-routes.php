@@ -25,6 +25,25 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 	public $namespace_prefix = 'transcoder/v';
 
 	/**
+	 * RT Transcoder Handler object.
+	 * 
+	 * @var RT_Transcoder_Handler
+	 */
+	public $rt_transcoder_handler;
+
+	/**
+	 * Constructor
+	 *
+	 * @since   1.0.0
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function __construct() {
+		$this->rt_transcoder_handler = new RT_Transcoder_Handler( true );
+	}
+
+	/**
 	 * Function to register routes.
 	 */
 	public function register_routes() {
@@ -47,6 +66,17 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_rtmedia_data' ),
+				'permission_callback' => '__return_true',
+			)
+		);
+
+		// Register `transcoding-status` route to get transcoding status of a media.
+		register_rest_route(
+			$this->namespace_prefix . $this->version,
+			'/transcoding-status/(?P<id>\d+)',
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_transcoding_status' ),
 				'permission_callback' => '__return_true',
 			)
 		);
@@ -150,5 +180,142 @@ class Transcoder_Rest_Routes extends WP_REST_Controller {
 			'poster'          => get_the_post_thumbnail_url( $media_id ),
 			'transcodedMedia' => $final_file_url,
 		);
+	}
+
+	/**
+	 * Return transcoding status of a media.
+	 *
+	 * @since 1.2
+	 *
+	 * @param WP_REST_Request $request REST request object.
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function get_transcoding_status( WP_REST_Request $request ) {
+		$post_id = (int) $request['id'];
+
+		if ( empty( $post_id ) ) {
+			return new WP_Error(
+				'invalid_post_id',
+				__( 'Something went wrong. Please try again!', 'transcoder' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		$job_id            = get_post_meta( $post_id, '_rt_transcoding_job_id', true );
+		$transcoded_files  = get_post_meta( $post_id, '_rt_media_transcoded_files', true );
+		$transcoded_thumbs = get_post_meta( $post_id, '_rt_media_thumbnails', true );
+		$thumbnail         = get_post_meta( $post_id, '_rt_media_video_thumbnail', true );
+
+		$status_url = trailingslashit( $this->rt_transcoder_handler->transcoding_api_url ) . 'job/status/' . $job_id . '/' . get_site_option( 'rt-transcoding-api-key-stored' );
+
+		$message  = '';
+		$response = array();
+		$status   = 'running';
+		$progress = 0;
+
+		if ( ! empty( $transcoded_files ) && ! empty( $transcoded_thumbs ) ) {
+
+			$message    = __( 'Your file is transcoded successfully. Please refresh the page.', 'transcoder' );
+			$status     = 'Success';
+			$progress   = 100;
+			$upload_dir = wp_upload_dir();
+
+			$response['files']     = $upload_dir['baseurl'] . '/' . $transcoded_files['mp4'][0];
+			$response['thumbnail'] = $upload_dir['baseurl'] . '/' . $thumbnail;
+
+			global $wpdb;
+			$media_id = wp_cache_get( 'post_' . $post_id, 'transcoder' );
+			if ( empty( $media_id ) ) {
+				$results  = $wpdb->get_results( $wpdb->prepare( 'SELECT id FROM ' . $wpdb->prefix . 'rt_rtm_media WHERE media_id = %d', $post_id ), OBJECT ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+				$media_id = $results[0]->id;
+				wp_cache_set( 'post_' . $post_id, $media_id, 'transcoder', 3600 );
+			}
+			$response['media_id'] = $media_id;
+
+		} else {
+
+			if ( function_exists( 'vip_safe_wp_remote_get' ) ) {
+				$status_page = vip_safe_wp_remote_get( $status_url, '', 3, 3 );
+			} else {
+				$status_page = wp_safe_remote_get( $status_url, array( 'timeout' => 120 ) ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get, WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
+			}
+
+			if ( ! is_wp_error( $status_page ) ) {
+				$status_info = json_decode( $status_page['body'] );
+			} else {
+				$status_info = null;
+			}
+
+			$messages = array(
+				'null-response'  => __( 'Looks like the server is taking too long to respond, Please try again in sometime.', 'transcoder' ),
+				'failed'         => __( 'Unfortunately, Transcoder failed to transcode this file.', 'transcoder' ),
+				'running'        => __( 'Your file is getting transcoded. Please refresh after some time.', 'transcoder' ),
+				'in-queue'       => __( 'This file is still in the queue. Please refresh after some time.', 'transcoder' ),
+				'receiving-back' => __( 'Your server should be ready to receive the transcoded file.', 'transcoder' ),
+				'success'        => __( 'Your file is transcoded successfully. Please refresh the page.', 'transcoder' ),
+			);
+
+			/**
+			 * Filters the transcoding process status messages.
+			 *
+			 * @since 1.2
+			 *
+			 * @param array $messages Default transcoding process status messages.
+			 */
+			$messages = apply_filters( 'rtt_transcoder_status_message', $messages );
+
+			if ( empty( $status_info ) || ! is_object( $status_info ) || empty( $status_info->job_id ) ) {
+
+				$message = $messages['null-response'];
+
+			} elseif ( ! empty( $status_info->error_code ) && ! empty( $status_info->error_msg ) ) {
+
+				$message = $messages['failed'];
+
+			} elseif ( 'processing' === $status_info->status && empty( $status_info->error_code ) && empty( $status_info->error_msg ) ) {
+
+				$message  = $messages['running'];
+				$progress = ! empty( $status_info->progress ) ? floatval( $status_info->progress ) : 0;
+
+			} elseif ( 'processing' !== $status_info->status && '100' !== $status_info->progress && empty( $status_info->error_code ) && empty( $status_info->error_msg ) ) {
+
+				$message  = $messages['in-queue'];
+				$progress = ! empty( $status_info->progress ) ? floatval( $status_info->progress ) : 0;
+
+			} elseif ( 'processed' === $status_info->status && 'video' === $status_info->job_type && ( empty( $transcoded_files ) || empty( $transcoded_thumbs ) ) ) {
+
+				$message  = $messages['receiving-back'];
+				$progress = 100;
+
+			} elseif ( 'processed' === $status_info->status && ! empty( $transcoded_thumbs ) && ( ! empty( $transcoded_files ) || 'thumbnail' === $status_info->job_type ) ) {
+
+				$message  = $messages['success'];
+				$status   = 'Success';
+				$progress = 100;
+
+				$upload_dir            = wp_upload_dir();
+				$response['files']     = $upload_dir['baseurl'] . '/' . $transcoded_files['mp4'][0];
+				$response['thumbnail'] = $upload_dir['baseurl'] . '/' . $thumbnail;
+
+				global $wpdb;
+				$results              = $wpdb->get_results( $wpdb->prepare( 'SELECT id FROM ' . $wpdb->prefix . 'rt_rtm_media WHERE media_id = %d', $post_id ), OBJECT ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+				$response['media_id'] = $results[0]->id;
+
+			} elseif ( 'processed' === $status_info->status && 'pdf' === $status_info->job_type ) {
+				$message  = $messages['success'];
+				$status   = 'Success';
+				$progress = 100;
+
+			} elseif ( ! empty( $status_info ) ) {
+				$message = $status_info->status;
+			}
+		}
+
+		$response['message']  = esc_html( $message );
+		$response['status']   = esc_html( $status );
+		$response['progress'] = $progress;
+
+		return rest_ensure_response( $response );
 	}
 }

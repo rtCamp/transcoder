@@ -29,7 +29,7 @@ class RT_Transcoder_Handler {
 	 * @access   protected
 	 * @var      string    $transcoding_api_url    The URL of the api.
 	 */
-	protected $transcoding_api_url = 'http://frappe-transcoder-api.rt.gw/api/';
+	public $transcoding_api_url = 'http://frappe-transcoder-api.rt.gw/api/';
 
 	/**
 	 * The URL of the EDD store.
