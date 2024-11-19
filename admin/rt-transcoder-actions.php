@@ -249,15 +249,15 @@ function add_transcoded_url_field( $form_fields, $post ) {
 	$form_fields['transcoded_url'] = array(
 		'label' => __( 'Transcoded MPD URL', 'transcoder' ),
 		'input' => 'html',
-		'html'  => '<input type="text" name="attachments[' . $post->ID . '][transcoded_url]" id="attachments-' . $post->ID . '-transcoded_url" value="' . esc_url( $transcoded_url ) . '" ' . disabled( ! $adaptive_bitrate_enabled, true, false ) . ' />',
+		'html'  => '<input type="text" name="attachments[' . $post->ID . '][transcoded_url]" id="attachments-' . $post->ID . '-transcoded_url" value="' . esc_url( $transcoded_url ) . '" ' . disabled( false ) . ' />',
 		'value' => esc_url( $transcoded_url ),
 		'helps' => __( 'Enter or edit the URL of the transcoded .mpd file stored on Amazon S3.', 'transcoder' ),
 	);
 
 	// Add a note if adaptive bitrate streaming is disabled.
-	if ( ! $adaptive_bitrate_enabled ) {
-		$form_fields['transcoded_url']['helps'] = __( 'This feature is available only when adaptive bitrate streaming is enabled.', 'transcoder' );
-	}
+	// if ( ! $adaptive_bitrate_enabled ) {
+	// $form_fields['transcoded_url']['helps'] = __( 'This feature is available only when adaptive bitrate streaming is enabled.', 'transcoder' );
+	// }
 
 	return $form_fields;
 }
@@ -291,3 +291,22 @@ function save_transcoded_url_field( $post, $attachment ) {
 }
 
 add_filter( 'attachment_fields_to_save', 'save_transcoded_url_field', 10, 2 );
+
+/**
+ * Register the transcoded URL meta field.
+ */
+function register_rt_transcoded_url_meta() {
+	register_post_meta(
+		'attachment',
+		'_rt_transcoded_url',
+		array(
+			'type'          => 'string',
+			'single'        => true,
+			'show_in_rest'  => true,
+			'auth_callback' => function () {
+				return current_user_can( 'edit_posts' );
+			},
+		) 
+	);
+}
+add_action( 'init', 'register_rt_transcoded_url_meta' );
