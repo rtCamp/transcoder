@@ -28,7 +28,7 @@
          */
         function initializeProgressBar(attachmentId) {
             const progressBar = $(
-                `<div class="transcoder-progress-bar">
+                `<div class="transcoder-progress-bar" style="display: none;">
                     <div class="progress" style="width: 0%;">
                         <span class="progress-text">0%</span>
                     </div>
@@ -79,6 +79,7 @@
                 beforeSend: xhr => xhr.setRequestHeader('X-WP-Nonce', transcoderSettings.nonce),
                 success: function(data) {
                     const progress = parseFloat(data.progress) || 0;
+                    progressBar.show();
                     progressBar.find('.progress').css('width', `${progress}%`);
                     progressBar.find('.progress-text').text(`${progress}%`);
 
