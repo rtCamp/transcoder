@@ -310,3 +310,54 @@ function register_rt_transcoded_url_meta() {
 	);
 }
 add_action( 'init', 'register_rt_transcoded_url_meta' );
+
+/**
+ * Add a watermark to the video using FFmpeg.
+ * 
+ * @param array $upload The uploaded file data.
+ * 
+ * @return array The modified uploaded file data.
+ */
+function add_text_watermark_to_video( $upload ) {
+
+	// Check if the uploaded file is a video.
+	$file_type = wp_check_filetype( $upload['file'] );
+	if ( ! in_array( $file_type['ext'], array( 'mp4', 'mov', 'avi', 'mkv' ) ) ) {
+		return $upload;
+	}
+
+	// Check if the watermark is enabled.
+	$watermark_enabled = get_option( 'rtt_watermark', false );
+	if ( ! $watermark_enabled ) {
+		return $upload;
+	}
+
+	// Get the watermark text from settings.
+	$watermark_text = get_option( 'rtt_watermark_text', 'Your Watermark' );
+	if ( empty( $watermark_text ) ) {
+		return $upload;
+	}
+
+	// Define paths.
+	$uploaded_file_path = $upload['file'];
+	$output_file_path   = str_replace( '.', '-watermarked.', $uploaded_file_path );
+
+	// Create the FFmpeg command for text overlay.
+	$ffmpeg_path    = '/opt/homebrew/bin/ffmpeg'; // TODO: Update the path to FFmpeg.
+	$ffmpeg_command = $ffmpeg_path . ' -i ' . escapeshellarg( $uploaded_file_path ) .
+		" -vf \"drawtext=text='" . addslashes( $watermark_text ) .
+		"':fontcolor=white:fontsize=32:x=w-text_w-20:y=h-text_h-20\" " .
+		escapeshellarg( $output_file_path );
+
+	// Execute the FFmpeg command.
+	exec( $ffmpeg_command, $output, $return_var );
+
+	if ( 0 === $return_var && file_exists( $output_file_path ) ) {
+		unlink( $uploaded_file_path );
+		rename( $output_file_path, $uploaded_file_path );
+	}
+
+	return $upload;
+}
+
+add_filter( 'wp_handle_upload', 'add_text_watermark_to_video' );

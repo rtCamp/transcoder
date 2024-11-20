@@ -9,6 +9,12 @@
  */
 
 $current_page = transcoder_filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+
+// Check if the user has access to the transcoding service.
+$usage_details = get_site_option( 'rt-transcoding-usage' );
+$has_access    = isset( $usage_details[ $this->api_key ]->sub_status ) && $usage_details[ $this->api_key ]->sub_status;
+// Temporarily allow access to all users.
+$has_access = true;
 ?>
 <div class="wrap">
 	<h1 class="rtm-option-title">
@@ -283,26 +289,58 @@ $current_page = transcoder_filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL
 							<td>
 								<?php
 								$rtt_enable_adaptive_bitrate = get_option( 'rtt_adaptive_bitrate_streaming', false );
-
-								// Check if the user has an active paid subscription.
-								$usage_details = get_site_option( 'rt-transcoding-usage' );
-								$has_access    = isset( $usage_details[ $this->api_key ]->sub_status ) && $usage_details[ $this->api_key ]->sub_status;
 								?>
 								<input type="checkbox" name="rtt_adaptive_bitrate_streaming" value="1" <?php checked( $rtt_enable_adaptive_bitrate, 1 ); ?> <?php disabled( ! $has_access ); ?> />
 								<span class="rtm-tooltip">
 									<i class="dashicons dashicons-info" style="padding-top:3px"></i>
 									<span class="rtm-tip">
 										<?php
-										esc_html_e( 'If enabled, Transcoder will generate multiple video files with different bitrates for adaptive streaming. This will improve video streaming performance on slow internet connections.', 'transcoder' );
+										esc_html_e( 'If enabled, Transcoder will generate multiple video files with different bitrates for adaptive streaming. This feature is only available for paid subscriptions.', 'transcoder' );
 										?>
 									</span>
 								</span>
-								<?php if ( ! $has_access ) : ?>
-									<br/>
-									<p class="description"><?php esc_html_e( 'This feature is available for paid members only.', 'transcoder' ); ?></p>
-								<?php endif; ?>
 							</td>
 						</tr>
+						<tr valign="top">
+							<td scope="row">
+								<?php esc_html_e( 'Enable Watermark', 'transcoder' ); ?>
+							</td>
+							<td>
+								<?php
+								$rtt_watermark = get_option( 'rtt_watermark', false );
+								?>
+								<input type="checkbox" name="rtt_watermark" value="1" <?php checked( $rtt_watermark, 1 ); ?> <?php disabled( ! $has_access ); ?> />
+								<span class="rtm-tooltip">
+									<i class="dashicons dashicons-info" style="padding-top:3px"></i>
+									<span class="rtm-tip">
+										<?php
+										esc_html_e( 'If enabled, Transcoder will add a watermark to the transcoded video. This feature is only available for paid subscriptions.', 'transcoder' );
+										?>
+									</span>
+								</span>
+							</td>
+						</tr>
+						<?php if ( $rtt_watermark ) : ?>
+							<tr valign="top">
+								<td scope="row">
+									<?php esc_html_e( 'Watermark Text', 'transcoder' ); ?>
+								</td>
+								<td>
+									<?php
+									$rtt_watermark_text = get_option( 'rtt_watermark_text', '' );
+									?>
+									<input type="text" name="rtt_watermark_text" value="<?php echo esc_attr( $rtt_watermark_text ); ?>" <?php disabled( false ); ?> />
+									<span class="rtm-tooltip">
+										<i class="dashicons dashicons-info" style="padding-top:3px"></i>
+										<span class="rtm-tip">
+											<?php
+											esc_html_e( 'Enter the text that you want to display as a watermark on the transcoded video. This feature is only available for paid subscriptions.', 'transcoder' );
+											?>
+										</span>
+									</span>
+								</td>
+							</tr>
+					<?php endif; ?>
 					</table>
 					<p>
 						<?php

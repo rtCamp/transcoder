@@ -153,6 +153,30 @@ class RT_Transcoder_Admin {
 				'default'           => $has_access,
 			)
 		);
+
+		// Register watermark settings.
+		register_setting(
+			'rt-transcoder-settings-group',
+			'rtt_watermark',
+			array(
+				'type'              => 'boolean',
+				'description'       => __( 'Enable watermark on uploaded media.', 'transcoder' ),
+				'sanitize_callback' => 'absint',
+				'default'           => 0,
+			)
+		);
+
+		// Register watermark text setting.
+		register_setting(
+			'rt-transcoder-settings-group',
+			'rtt_watermark_text',
+			array(
+				'type'              => 'string',
+				'description'       => __( 'Enter watermark text.', 'transcoder' ),
+				'sanitize_callback' => 'sanitize_text_field',
+				'default'           => '',
+			)
+		);
 	}
 
 	/**
@@ -166,6 +190,8 @@ class RT_Transcoder_Admin {
 	public function sanitize_adaptive_bitrate( $value ) {
 		$usage_details = get_site_option( 'rt-transcoding-usage' );
 		$has_access    = isset( $usage_details[ $this->api_key ]->sub_status ) && $usage_details[ $this->api_key ]->sub_status;
+		// Temporarily allow access to all users.
+		$has_access = true;
 
 		if ( ! $has_access ) {
 			add_settings_error( 'rt-transcoder-settings-group', 'rtt_adaptive_bitrate_streaming', __( 'You need to have an active subscription to enable adaptive bitrate streaming.', 'transcoder' ), 'error' );
