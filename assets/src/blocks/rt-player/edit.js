@@ -27,7 +27,6 @@ import apiFetch from '@wordpress/api-fetch'; // **Import apiFetch**
  * External dependencies
  */
 import videojs from 'video.js';
-import 'videojs-contrib-quality-levels';
 import 'videojs-contrib-quality-menu';
 import 'video.js/dist/video-js.css';
 import 'videojs-contrib-quality-menu/dist/videojs-contrib-quality-menu.css';
@@ -85,14 +84,8 @@ export default function Edit( { attributes, setAttributes } ) {
 				type: videoType,
 			} ],
 			preload: 'auto',
-		} );
-
-		// Initialize the Quality Menu plugin after the player is ready.
-		player.ready( () => {
-			if ( typeof player.qualityMenu === 'function' ) {
-				player.qualityMenu();
-			} else {
-				console.error( 'Quality Menu plugin is not available.' );
+			plugins: {
+				qualityMenu: {}
 			}
 		} );
 
@@ -153,7 +146,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				const response = await apiFetch( { path: `/wp/v2/media/${ media.id }` } );
 				if ( response && response.meta && response.meta._rt_transcoded_url ) {
 					const transcodedUrl = response.meta._rt_transcoded_url;
-					setAttributes( { videoUrl: transcodedUrl } );
+					setAttributes( { videoUrl: transcodedUrl, videoType: transcodedUrl.endsWith('.mpd') ? 'application/dash+xml' : media.mime } );
 				} else {
 					// If meta not present, use media url.
 					setAttributes( { videoUrl: media.url } );

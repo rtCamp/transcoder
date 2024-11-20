@@ -273,10 +273,10 @@ add_filter( 'attachment_fields_to_edit', 'add_transcoded_url_field', 10, 2 );
  */
 function save_transcoded_url_field( $post, $attachment ) {
 	// Check if adaptive bitrate streaming is enabled.
-	$adaptive_bitrate_enabled = get_option( 'rtt_adaptive_bitrate_streaming', false );
-	if ( ! $adaptive_bitrate_enabled ) {
-		return $post;
-	}
+	// $adaptive_bitrate_enabled = get_option( 'rtt_adaptive_bitrate_streaming', false );
+	// if ( ! $adaptive_bitrate_enabled ) {
+	// return $post;
+	// }
 
 	if ( isset( $attachment['transcoded_url'] ) ) {
 		// Check the user's permissions.

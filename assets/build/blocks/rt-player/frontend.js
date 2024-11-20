@@ -1,2 +1,2 @@
-document.addEventListener("DOMContentLoaded",(()=>{document.querySelectorAll(".video-js").forEach((e=>{const n=videojs(e);n.ready((()=>{"function"==typeof n.qualityMenu?n.qualityMenu():console.error("Quality Menu plugin is not available.")}))}))}));
+document.addEventListener("DOMContentLoaded",(()=>{document.querySelectorAll(".video-js").forEach((e=>{const t=JSON.parse(e.getAttribute("data-attributes"));videojs(e,{...t,plugins:{qualityMenu:{}}})}))}));
 //# sourceMappingURL=frontend.js.map

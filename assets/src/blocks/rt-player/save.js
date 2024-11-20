@@ -40,7 +40,7 @@ export default function save( { attributes } ) {
 						className="video-js vjs-big-play-centered"
 						alt={ videoAlt }
 						poster={ videoPosterUrl }
-						data-setup={ JSON.stringify( videoSetupOptions ) }
+						data-attributes={ JSON.stringify( videoSetupOptions ) }
 						width={ useCustomSize ? videoSize.width : '100%' }
 						height={ useCustomSize ? videoSize.height : 'auto' }
 					>

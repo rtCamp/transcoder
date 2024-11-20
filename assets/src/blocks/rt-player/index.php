@@ -58,6 +58,13 @@ class RT_Player {
 				'8.19.1'
 			);
 
+			wp_enqueue_style(
+				'videojs-quality-menu-css',
+				$lib_path . '/css/videojs-contrib-quality-menu.min.css',
+				array(),
+				'1.0.3',
+			);
+
 			// Enqueue Video.js core script.
 			wp_enqueue_script(
 				'videojs',
@@ -67,29 +74,11 @@ class RT_Player {
 				true
 			);
 
-			// Enqueue DASH plugin for Video.js.
-			wp_enqueue_script(
-				'videojs-dash',
-				$lib_path . '/js/videojs-dash.min.js',
-				array( 'videojs' ),
-				'5.1.1',
-				true
-			);
-
-			// Enqueue Quality Levels plugin.
-			wp_enqueue_script(
-				'videojs-quality-levels',
-				$lib_path . '/js/videojs-contrib-quality-levels.min.js',
-				array( 'videojs' ),
-				'4.1.0',
-				true
-			);
-
 			// Enqueue Quality Menu plugin.
 			wp_enqueue_script(
 				'videojs-quality-menu',
 				$lib_path . '/js/videojs-contrib-quality-menu.min.js',
-				array( 'videojs', 'videojs-quality-levels' ),
+				array( 'videojs' ),
 				'1.0.3',
 				true
 			);

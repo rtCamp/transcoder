@@ -10,15 +10,13 @@ document.addEventListener( 'DOMContentLoaded', () => rtPlayerFn() );
 function rtPlayerFn() {
 	const players = document.querySelectorAll( '.video-js' );
 	players.forEach( ( playerEl ) => {
-		const player = videojs( playerEl );
+		const videoSetupOptions = JSON.parse( playerEl.getAttribute( 'data-attributes' ) );
 
-		// Initialize the quality menu.
-		player.ready( () => {
-			if ( typeof player.qualityMenu === 'function' ) {
-				player.qualityMenu();
-			} else {
-				console.error( 'Quality Menu plugin is not available.' );
+		const player = videojs( playerEl, {
+			...videoSetupOptions,
+			plugins: {
+				qualityMenu: {}
 			}
-		} );
+		});
 	} );
 }

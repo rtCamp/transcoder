@@ -1,24 +1,23 @@
 {
 	"name": "transcoder",
 	"scripts": {
-	"build": "webpack --config webpack.config.js --mode production && npm run build:blocks",
-	"build:assets": "webpack --config webpack.config.js --mode production",
-	"start": "webpack --config webpack.config.js --watch --progress",
-	"create:block": "./bin/block-scaffold/block.js",
-	"start:blocks": "wp-scripts start --config ./node_modules/@wordpress/scripts/config/webpack.config.js --webpack-src-dir=./assets/src/blocks/ --output-path=./assets/build/blocks/",
-	"build:blocks": "wp-scripts build --config ./node_modules/@wordpress/scripts/config/webpack.config.js --webpack-src-dir=./assets/src/blocks/ --output-path=./assets/build/blocks/ --mode production",
-	"test": "npm-run-all --parallel test:*",
-	"test:js": "wp-scripts test-unit-js --config=tests/js/jest.config.js --passWithNoTests",
-	"test:js:watch": "npm run test:js -- --watch",
-	"lint": "npm-run-all --parallel lint:*",
-	"lint:js": "wp-scripts lint-js ./assets/src",
-	"lint:js:fix": "npm run lint:js -- --fix ./assets/src"
+		"build": "webpack --config webpack.config.js --mode production && npm run build:blocks",
+		"build:assets": "webpack --config webpack.config.js --mode production",
+		"start": "webpack --config webpack.config.js --watch --progress",
+		"create:block": "./bin/block-scaffold/block.js",
+		"start:blocks": "wp-scripts start --config ./node_modules/@wordpress/scripts/config/webpack.config.js --webpack-src-dir=./assets/src/blocks/ --output-path=./assets/build/blocks/",
+		"build:blocks": "wp-scripts build --config ./node_modules/@wordpress/scripts/config/webpack.config.js --webpack-src-dir=./assets/src/blocks/ --output-path=./assets/build/blocks/ --mode production",
+		"test": "npm-run-all --parallel test:*",
+		"test:js": "wp-scripts test-unit-js --config=tests/js/jest.config.js --passWithNoTests",
+		"test:js:watch": "npm run test:js -- --watch",
+		"lint": "npm-run-all --parallel lint:*",
+		"lint:js": "wp-scripts lint-js ./assets/src",
+		"lint:js:fix": "npm run lint:js -- --fix ./assets/src"
 	},
 	"dependencies": {
 		"@wordpress/api-fetch": "^7.7.0",
 		"video.js": "^8.19.1",
 		"videojs-contrib-dash": "^5.1.1",
-		"videojs-contrib-quality-levels": "^4.1.0",
 		"videojs-contrib-quality-menu": "^1.0.3"
 	},
 	"devDependencies": {
