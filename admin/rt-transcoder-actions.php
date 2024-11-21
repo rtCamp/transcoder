@@ -249,15 +249,15 @@ function add_transcoded_url_field( $form_fields, $post ) {
 	$form_fields['transcoded_url'] = array(
 		'label' => __( 'Transcoded MPD URL', 'transcoder' ),
 		'input' => 'html',
-		'html'  => '<input type="text" name="attachments[' . $post->ID . '][transcoded_url]" id="attachments-' . $post->ID . '-transcoded_url" value="' . esc_url( $transcoded_url ) . '" ' . disabled( false ) . ' />',
+		'html'  => '<input type="text" name="attachments[' . $post->ID . '][transcoded_url]" id="attachments-' . $post->ID . '-transcoded_url" value="' . esc_url( $transcoded_url ) . '" ' . disabled( ! $adaptive_bitrate_enabled, true, false ) . '>',
 		'value' => esc_url( $transcoded_url ),
 		'helps' => __( 'Enter or edit the URL of the transcoded .mpd file stored on Amazon S3.', 'transcoder' ),
 	);
 
 	// Add a note if adaptive bitrate streaming is disabled.
-	// if ( ! $adaptive_bitrate_enabled ) {
-	// $form_fields['transcoded_url']['helps'] = __( 'This feature is available only when adaptive bitrate streaming is enabled.', 'transcoder' );
-	// }
+	if ( ! $adaptive_bitrate_enabled ) {
+		$form_fields['transcoded_url']['helps'] = __( 'This feature is available only when adaptive bitrate streaming is enabled.', 'transcoder' );
+	}
 
 	return $form_fields;
 }
@@ -273,10 +273,10 @@ add_filter( 'attachment_fields_to_edit', 'add_transcoded_url_field', 10, 2 );
  */
 function save_transcoded_url_field( $post, $attachment ) {
 	// Check if adaptive bitrate streaming is enabled.
-	// $adaptive_bitrate_enabled = get_option( 'rtt_adaptive_bitrate_streaming', false );
-	// if ( ! $adaptive_bitrate_enabled ) {
-	// return $post;
-	// }
+	$adaptive_bitrate_enabled = get_option( 'rtt_adaptive_bitrate_streaming', false );
+	if ( ! $adaptive_bitrate_enabled ) {
+		return $post;
+	}
 
 	if ( isset( $attachment['transcoded_url'] ) ) {
 		// Check the user's permissions.
@@ -312,17 +312,24 @@ function register_rt_transcoded_url_meta() {
 add_action( 'init', 'register_rt_transcoded_url_meta' );
 
 /**
- * Add a watermark to the video using FFmpeg.
+ * Add a watermark to the media using FFmpeg.
  * 
  * @param array $upload The uploaded file data.
  * 
  * @return array The modified uploaded file data.
  */
-function add_text_watermark_to_video( $upload ) {
+function add_text_watermark_to_media( $upload ) {
 
-	// Check if the uploaded file is a video.
-	$file_type = wp_check_filetype( $upload['file'] );
-	if ( ! in_array( $file_type['ext'], array( 'mp4', 'mov', 'avi', 'mkv' ) ) ) {
+	// Check if the uploaded file is a video or image.
+	$file_type        = wp_check_filetype( $upload['file'] );
+	$video_extensions = array( 'mp4', 'mov', 'avi', 'mkv' );
+	$image_extensions = array( 'jpg', 'jpeg', 'png', 'gif', 'bmp' );
+
+	if ( in_array( $file_type['ext'], $video_extensions ) ) {
+		$is_video = true;
+	} elseif ( in_array( $file_type['ext'], $image_extensions ) ) {
+		$is_video = false;
+	} else {
 		return $upload;
 	}
 
@@ -342,12 +349,20 @@ function add_text_watermark_to_video( $upload ) {
 	$uploaded_file_path = $upload['file'];
 	$output_file_path   = str_replace( '.', '-watermarked.', $uploaded_file_path );
 
-	// Create the FFmpeg command for text overlay.
-	$ffmpeg_path    = '/opt/homebrew/bin/ffmpeg'; // TODO: Update the path to FFmpeg.
-	$ffmpeg_command = $ffmpeg_path . ' -i ' . escapeshellarg( $uploaded_file_path ) .
-		" -vf \"drawtext=text='" . addslashes( $watermark_text ) .
-		"':fontcolor=white:fontsize=32:x=w-text_w-20:y=h-text_h-20\" " .
+	// Define the FFmpeg command.
+	$ffmpeg_path     = '/opt/homebrew/bin/ffmpeg'; // TODO: Update the path to FFmpeg.
+	$drawtext_filter = "drawtext=text='" . addslashes( $watermark_text ) .
+		"':fontcolor=white:fontsize=32:x=w-text_w-20:y=h-text_h-20";
+
+	if ( $is_video ) {
+		$ffmpeg_command = $ffmpeg_path . ' -i ' . escapeshellarg( $uploaded_file_path ) .
+		' -vf "' . $drawtext_filter . '" -codec:a copy -codec:v libx264 -crf 18 -preset veryfast ' .
 		escapeshellarg( $output_file_path );
+	} else {
+		$ffmpeg_command = $ffmpeg_path . ' -i ' . escapeshellarg( $uploaded_file_path ) .
+			' -vf "' . $drawtext_filter . '" ' .
+			escapeshellarg( $output_file_path );
+	}
 
 	// Execute the FFmpeg command.
 	exec( $ffmpeg_command, $output, $return_var );
@@ -360,4 +375,4 @@ function add_text_watermark_to_video( $upload ) {
 	return $upload;
 }
 
-add_filter( 'wp_handle_upload', 'add_text_watermark_to_video' );
+add_filter( 'wp_handle_upload', 'add_text_watermark_to_media' );
