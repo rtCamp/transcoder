@@ -140,7 +140,13 @@ class RT_Transcoder_Admin {
 
 		// Check if the user has an active paid subscription.
 		$usage_details = get_site_option( 'rt-transcoding-usage' );
-		$has_access    = isset( $usage_details[ $this->api_key ]->sub_status ) && $usage_details[ $this->api_key ]->sub_status;
+		$usage         = $usage_details[ $this->api_key ] ?? null;
+		$has_access    = ! empty( $this->api_key ) &&
+						is_object( $usage ) &&
+						! empty( $usage->status ) &&
+						( ! isset( $usage->remaining ) || $usage->remaining > 0 );
+		// Temporarily allow access to all users.
+		$has_access = true;
 
 		// Register adaptive bitrate streaming setting with conditional default.
 		register_setting(
@@ -189,7 +195,11 @@ class RT_Transcoder_Admin {
 	 */
 	public function sanitize_adaptive_bitrate( $value ) {
 		$usage_details = get_site_option( 'rt-transcoding-usage' );
-		$has_access    = isset( $usage_details[ $this->api_key ]->sub_status ) && $usage_details[ $this->api_key ]->sub_status;
+		$usage         = $usage_details[ $this->api_key ] ?? null;
+		$has_access    = ! empty( $this->api_key ) &&
+						is_object( $usage ) &&
+						! empty( $usage->status ) &&
+						( ! isset( $usage->remaining ) || $usage->remaining > 0 );
 		// Temporarily allow access to all users.
 		$has_access = true;
 
@@ -249,7 +259,7 @@ class RT_Transcoder_Admin {
 
 		$page = transcoder_filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
-		if ( 'admin.php' !== $pagenow || 'rt-transcoder' !== $page ) {
+		if ( 'upload.php' !== $pagenow && ( 'admin.php' !== $pagenow && 'rt-transcoder' !== $page ) ) {
 			return;
 		}
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';

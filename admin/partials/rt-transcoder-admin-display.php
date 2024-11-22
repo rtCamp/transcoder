@@ -12,7 +12,11 @@ $current_page = transcoder_filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL
 
 // Check if the user has access to the transcoding service.
 $usage_details = get_site_option( 'rt-transcoding-usage' );
-$has_access    = isset( $usage_details[ $this->api_key ]->sub_status ) && $usage_details[ $this->api_key ]->sub_status;
+$usage         = $usage_details[ $this->api_key ] ?? null;
+$has_access    = ! empty( $this->api_key ) &&
+				is_object( $usage ) &&
+				! empty( $usage->status ) &&
+				( ! isset( $usage->remaining ) || $usage->remaining > 0 );
 // Temporarily allow access to all users.
 $has_access = true;
 ?>

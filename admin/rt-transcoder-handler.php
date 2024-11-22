@@ -118,6 +118,9 @@ class RT_Transcoder_Handler {
 		$this->api_key        = get_site_option( 'rt-transcoding-api-key' );
 		$this->stored_api_key = get_site_option( 'rt-transcoding-api-key-stored' );
 
+		// Temporarily inclduing rt-retranscode-admin.php file here.
+		include_once RT_TRANSCODER_PATH . 'admin/rt-retranscode-admin.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
+
 		/**
 		 * Allow other plugin and wp-config to overwrite API URL.
 		 */
@@ -136,6 +139,7 @@ class RT_Transcoder_Handler {
 		}
 
 		add_action( 'admin_init', array( $this, 'save_api_key' ), 10, 1 );
+		
 		// phpcs:disable
 		if ( $this->api_key ) {
 			// Store api key as different db key if user disable transcoding service.
