@@ -134,7 +134,7 @@
 
 .transcoder-setting-form .form-table td {
 	font-size: 13px;
-	padding: 0 0 5px;
+	padding: 5px;
 	display: inline-flex;
 	align-items: center;
 	flex-wrap: wrap;
@@ -243,4 +243,10 @@
 
 #adminmenu li.menu-top.current .wp-menu-image img {
 	opacity: 1;
+}
+
+.rtt-premium-feature {
+	opacity: 0.9;
+	background-color: rgba(250, 235, 215, 0.63);
+	border-radius: 0.5rem;
 }

@@ -125,7 +125,14 @@ class RT_Transcoder_Admin {
 	 * @since    1.0.0
 	 */
 	public function menu() {
-		add_menu_page( 'Transcoder', 'Transcoder', 'manage_options', 'rt-transcoder', array( $this, 'settings_page' ), RT_TRANSCODER_URL . 'admin/images/menu-icon.png', '40.2222' );
+		add_submenu_page( 
+			'upload.php', 
+			__( 'EasyDAM Settings', 'transcoder' ),
+			__( 'EasyDAM Settings', 'transcoder' ),
+			'manage_options',
+			'rt-transcoder',
+			array( $this, 'settings_page' )
+		);
 	}
 
 	/**
