@@ -1,2 +1,1 @@
 document.addEventListener("DOMContentLoaded",(()=>{document.querySelectorAll(".video-js").forEach((e=>{const t=JSON.parse(e.getAttribute("data-attributes"));videojs(e,{...t,plugins:{qualityMenu:{}}})}))}));
-//# sourceMappingURL=frontend.js.map

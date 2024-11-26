@@ -19,7 +19,7 @@ $has_access    = ! empty($this->api_key) &&
 	! empty($usage->status) &&
 	(! isset($usage->remaining) || $usage->remaining > 0);
 // Temporarily allow access to all users.
-$has_access = true;
+// $has_access = true;
 ?>
 <div class="wrap">
 	<h1 class="rtm-option-title">
@@ -312,7 +312,7 @@ $has_access = true;
 							</td>
 							<td>
 								<?php
-								$rtt_watermark = get_option('rtt_watermark', false);
+								$rtt_watermark = get_option('rtt_watermark', true);
 								?>
 								<input type="checkbox" id="watermark-checkbox" name="rtt_watermark" value="1" <?php checked($rtt_watermark, 1); ?> <?php echo disabled( ! $has_access ); ?> />
 								<span class="rtm-tooltip">
@@ -331,7 +331,7 @@ $has_access = true;
 							</td>
 							<td>
 								<?php
-								$rtt_watermark_text = get_option('rtt_watermark_text', '');
+								$rtt_watermark_text = get_option('rtt_watermark_text', 'EasyDAM');
 								?>
 								<input type="text" id="watermark-text" name="rtt_watermark_text" value="<?php echo esc_attr( $rtt_watermark_text ); ?>" <?php echo disabled( ! $has_access ); ?> />
 								<span class="rtm-tooltip">

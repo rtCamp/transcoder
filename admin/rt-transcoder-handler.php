@@ -265,6 +265,12 @@ class RT_Transcoder_Handler {
 				}
 			}
 
+			// Media settings.
+			$rtt_adaptive_bitrate_streaming = $rtt_enable_adaptive_bitrate = get_option('rtt_adaptive_bitrate_streaming', false);
+			$rtt_watermark = get_option('rtt_watermark', false);
+			$rtt_watermark_text = get_option('rtt_watermark_text', false);
+			$rtt_watermark_text = sanitize_text_field( $rtt_watermark_text );
+
 			$args = array(
 				'method'    => 'POST',
 				'sslverify' => false,
@@ -278,6 +284,9 @@ class RT_Transcoder_Handler {
 					'force'           => 0,
 					'formats'         => ( true === $autoformat ) ? ( ( 'video' === $type_array[0] ) ? 'mp4' : 'mp3' ) : $autoformat,
 					'thumbnail_count' => $options_video_thumb,
+					'stream'          => boolval($rtt_adaptive_bitrate_streaming),
+					'watermark'       => boolval($rtt_watermark),
+					'watermark_text'  => $rtt_watermark_text,
 				),
 			);
 
