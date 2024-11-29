@@ -22,7 +22,6 @@ class Blocks {
 	protected function __construct() {
 
 		$this->setup_hooks();
-		$this->register_blocks();
 	}
 
 	/**
@@ -41,15 +40,10 @@ class Blocks {
 	 */
 	public function register_blocks() {
 
-		$transcoder_block_files = glob( TRANSCODER_BLOCK_SRC . '/**/index.php' );
+		// Register example-block Block.
+		register_block_type(
+			RT_TRANSCODER_PATH . '/assets/build/blocks/easydam-player/'
+		);
 
-		if ( ! empty( $transcoder_block_files ) && is_array( $transcoder_block_files ) ) {
-
-			foreach ( $transcoder_block_files as $transcoder_block ) {
-
-				require_once $transcoder_block;
-
-			}
-		}
 	}
 }

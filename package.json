@@ -3,7 +3,7 @@
 	"scripts": {
 		"build": "webpack --config webpack.config.js --mode production && npm run build:blocks",
 		"build:assets": "webpack --config webpack.config.js --mode production",
-		"start": "webpack --config webpack.config.js --watch --progress",
+		"start": "npm-run-all --parallel start:*",
 		"create:block": "./bin/block-scaffold/block.js",
 		"start:blocks": "wp-scripts start --config ./node_modules/@wordpress/scripts/config/webpack.config.js --webpack-src-dir=./assets/src/blocks/ --output-path=./assets/build/blocks/",
 		"build:blocks": "wp-scripts build --config ./node_modules/@wordpress/scripts/config/webpack.config.js --webpack-src-dir=./assets/src/blocks/ --output-path=./assets/build/blocks/ --mode production",
@@ -16,9 +16,13 @@
 	},
 	"dependencies": {
 		"@wordpress/api-fetch": "^7.7.0",
+		"@wordpress/icons": "10.13.0",
+		"clsx": "2.1.1",
 		"video.js": "^8.19.1",
 		"videojs-contrib-dash": "^5.1.1",
-		"videojs-contrib-quality-menu": "^1.0.3"
+		"videojs-contrib-quality-levels": "4.1.0",
+		"videojs-contrib-quality-menu": "^1.0.3",
+		"videojs-hls-quality-selector": "2.0.0"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.24.5",
