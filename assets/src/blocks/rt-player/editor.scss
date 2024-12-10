@@ -1,0 +1,22 @@
+/**
+ * The following styles get applied inside the editor only.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+.block-editor-block-inspector {
+
+	.components-panel__row {
+		margin-bottom: 1em;
+
+		.upload-controls {
+			display: flex;
+			flex-direction: column;
+			gap: 1em;
+		}
+	}
+}
+
+.wp-block-trascoder-rt-player {
+	// Add editor styles here.
+}

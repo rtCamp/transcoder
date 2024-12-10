@@ -134,9 +134,15 @@
 
 .transcoder-setting-form .form-table td {
 	font-size: 13px;
-	padding: 0 0 5px;
-	vertical-align: top;
-}
+	padding: 5px;
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+  
+	& > p {
+	  margin: 0;
+	}
+  }
 
 .rtm-button-container {
 	margin-left: -20px;
@@ -167,7 +173,7 @@
 .transcoder-setting-form .dashicons-info {
 	color: #aaa;
 	font-size: 14px;
-	height: 26px;
+	height: 100%;
 	line-height: 14px;
 	position: relative;
 }
@@ -237,4 +243,10 @@
 
 #adminmenu li.menu-top.current .wp-menu-image img {
 	opacity: 1;
+}
+
+.rtt-premium-feature {
+	opacity: 0.9;
+	background-color: rgba(250, 235, 215, 0.63);
+	border-radius: 0.5rem;
 }

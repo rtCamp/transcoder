@@ -1,0 +1,20 @@
+.transcoder-progress-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.1);
+}
+.transcoder-progress-bar .progress {
+  height: 100%;
+  background: #21759b;
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.transcoder-progress-bar .progress .progress-text {
+  color: #fff;
+}
