@@ -196,12 +196,14 @@ class RT_Transcoder_Admin {
 		wp_register_script( 'rt-transcoder-main', RT_TRANSCODER_URL . 'admin/js/rt-transcoder-admin' . $suffix . '.js', array( 'jquery' ), RT_TRANSCODER_VERSION, true );
 
 		$localize_script_data = array(
-			'admin_url'            => esc_url( admin_url() ),
-			'loader_image'         => esc_url( admin_url( 'images/loading.gif' ) ),
-			'disable_encoding'     => esc_html__( 'Are you sure you want to disable the transcoding service?', 'transcoder' ),
-			'enable_encoding'      => esc_html__( 'Are you sure you want to enable the transcoding service?', 'transcoder' ),
-			'something_went_wrong' => esc_html__( 'Something went wrong. Please ', 'transcoder' ) . '<a href onclick="location.reload();">' . esc_html__( 'refresh', 'transcoder' ) . '</a>' . esc_html__( ' page.', 'transcoder' ),
-			'error_empty_key'      => esc_html__( 'Please enter the license key.', 'transcoder' ),
+			'admin_url'                             => esc_url( admin_url() ),
+			'loader_image'                          => esc_url( admin_url( 'images/loading.gif' ) ),
+			'disable_encoding'                      => esc_html__( 'Are you sure you want to disable the transcoding service?', 'transcoder' ),
+			'enable_encoding'                       => esc_html__( 'Are you sure you want to enable the transcoding service?', 'transcoder' ),
+			'something_went_wrong'                  => esc_html__( 'Something went wrong. Please ', 'transcoder' ) . '<a href onclick="location.reload();">' . esc_html__( 'refresh', 'transcoder' ) . '</a>' . esc_html__( ' page.', 'transcoder' ),
+			'error_empty_key'                       => esc_html__( 'Please enter the license key.', 'transcoder' ),
+			'security_nonce_for_enabling_encoding'  => wp_create_nonce( 'rt_enable_transcoding' ),
+			'security_nonce_for_disabling_encoding' => wp_create_nonce( 'rt_disable_transcoding' ),
 		);
 
 		wp_localize_script( 'rt-transcoder-main', 'rt_transcoder_script', $localize_script_data );
