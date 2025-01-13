@@ -9,6 +9,7 @@ on:
     branches: 
       - master
       - develop
+      - update/artifact-version
       
   pull_request:
     branches: 
@@ -67,7 +68,7 @@ jobs:
         working-directory: ${{env.working_directory}}
 
       - name: Make reports available
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
           name: playwright-report
