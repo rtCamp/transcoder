@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "transcoder/rt-player",
+  "version": "1.0.0",
+  "title": "RT Player",
+  "category": "media",
+  "icon": "video-alt3",
+  "description": "A block for embedding videos with a custom player.",
+  "supports": {
+    "html": false
+  },
+  "attributes": {
+    "videoId": {
+      "type": "string"
+    },
+    "videoUrl": {
+      "type": "string"
+    },
+    "videoAlt": {
+      "type": "string"
+    },
+    "useCustomSize": {
+      "type": "boolean",
+      "default": false
+    },
+    "videoSize": {
+      "type": "object",
+      "default": {}
+    },
+    "videoType": {
+      "type": "string"
+    },
+    "videoPosterUrl": {
+      "type": "string"
+    }
+  },
+  "textdomain": "transcoder",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "viewScript": "file:./frontend.js"
+}

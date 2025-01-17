@@ -114,6 +114,18 @@
 					}
 				}
 			);
+
+			$( document ).on(
+				'click',
+				'#watermark-checkbox',
+				function( e ) {
+					if ( $( this ).is( ':checked' ) ) {
+						$( '#watermark-text' ).closest('tr').show();
+					} else {
+						$( '#watermark-text' ).closest('tr').hide();
+					}
+				}
+			);
 		}
 	);
 

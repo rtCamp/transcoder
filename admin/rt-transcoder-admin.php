@@ -125,7 +125,14 @@ class RT_Transcoder_Admin {
 	 * @since    1.0.0
 	 */
 	public function menu() {
-		add_menu_page( 'Transcoder', 'Transcoder', 'manage_options', 'rt-transcoder', array( $this, 'settings_page' ), RT_TRANSCODER_URL . 'admin/images/menu-icon.png', '40.2222' );
+		add_submenu_page( 
+			'upload.php', 
+			__( 'EasyDAM Settings', 'transcoder' ),
+			__( 'EasyDAM Settings', 'transcoder' ),
+			'manage_options',
+			'rt-transcoder',
+			array( $this, 'settings_page' )
+		);
 	}
 
 	/**
@@ -137,6 +144,78 @@ class RT_Transcoder_Admin {
 		register_setting( 'rt-transcoder-settings-group', 'number_of_thumbs' );
 		register_setting( 'rt-transcoder-settings-group', 'rtt_override_thumbnail' );
 		register_setting( 'rt-transcoder-settings-group', 'rtt_client_check_status_button' );
+
+		// Check if the user has an active paid subscription.
+		$usage_details = get_site_option( 'rt-transcoding-usage' );
+		$usage         = $usage_details[ $this->api_key ] ?? null;
+		$has_access    = ! empty( $this->api_key ) &&
+						is_object( $usage ) &&
+						! empty( $usage->status ) &&
+						( ! isset( $usage->remaining ) || $usage->remaining > 0 );
+		// Temporarily allow access to all users.
+		$has_access = true;
+
+		// Register adaptive bitrate streaming setting with conditional default.
+		register_setting(
+			'rt-transcoder-settings-group',
+			'rtt_adaptive_bitrate_streaming',
+			array(
+				'type'              => 'boolean',
+				'description'       => __( 'Enable adaptive bitrate streaming for videos.', 'transcoder' ),
+				'sanitize_callback' => array( $this, 'sanitize_adaptive_bitrate' ),
+				'default'           => $has_access,
+			)
+		);
+
+		// Register watermark settings.
+		register_setting(
+			'rt-transcoder-settings-group',
+			'rtt_watermark',
+			array(
+				'type'              => 'boolean',
+				'description'       => __( 'Enable watermark on uploaded media.', 'transcoder' ),
+				'sanitize_callback' => 'absint',
+				'default'           => 0,
+			)
+		);
+
+		// Register watermark text setting.
+		register_setting(
+			'rt-transcoder-settings-group',
+			'rtt_watermark_text',
+			array(
+				'type'              => 'string',
+				'description'       => __( 'Enter watermark text.', 'transcoder' ),
+				'sanitize_callback' => 'sanitize_text_field',
+				'default'           => '',
+			)
+		);
+	}
+
+	/**
+	 * Sanitize adaptive bitrate streaming setting.
+	 *
+	 * @since    1.0.0
+	 *
+	 * @param bool $value The value to sanitize.
+	 * @return bool
+	 */
+	public function sanitize_adaptive_bitrate( $value ) {
+		$usage_details = get_site_option( 'rt-transcoding-usage' );
+		$usage         = $usage_details[ $this->api_key ] ?? null;
+		$has_access    = ! empty( $this->api_key ) &&
+						is_object( $usage ) &&
+						! empty( $usage->status ) &&
+						( ! isset( $usage->remaining ) || $usage->remaining > 0 );
+		// Temporarily allow access to all users.
+		$has_access = true;
+
+		if ( ! $has_access ) {
+			add_settings_error( 'rt-transcoder-settings-group', 'rtt_adaptive_bitrate_streaming', __( 'You need to have an active subscription to enable adaptive bitrate streaming.', 'transcoder' ), 'error' );
+			return false;
+		}
+
+		return isset( $value ) && ( '1' === $value || 1 === $value || true === $value );
 	}
 
 	/**
@@ -187,13 +266,13 @@ class RT_Transcoder_Admin {
 
 		$page = transcoder_filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
-		if ( 'admin.php' !== $pagenow || 'rt-transcoder' !== $page ) {
+		if ( 'upload.php' !== $pagenow && ( 'admin.php' !== $pagenow && 'rt-transcoder' !== $page ) ) {
 			return;
 		}
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_style( 'rt-transcoder-admin-css', RT_TRANSCODER_URL . 'admin/css/rt-transcoder-admin' . $suffix . '.css', array(), RT_TRANSCODER_VERSION );
-		wp_register_script( 'rt-transcoder-main', RT_TRANSCODER_URL . 'admin/js/rt-transcoder-admin' . $suffix . '.js', array( 'jquery' ), RT_TRANSCODER_VERSION, true );
+		wp_enqueue_style( 'rt-transcoder-admin-css', RT_TRANSCODER_URL . 'admin/css/rt-transcoder-admin' . $suffix . '.css', array(), filemtime( RT_TRANSCODER_PATH . 'admin/css/rt-transcoder-admin' . $suffix . '.css' ) );
+		wp_register_script( 'rt-transcoder-main', RT_TRANSCODER_URL . 'admin/js/rt-transcoder-admin' . $suffix . '.js', array( 'jquery' ), filemtime( RT_TRANSCODER_PATH . 'admin/js/rt-transcoder-admin' . $suffix . '.js' ), true );
 
 		$localize_script_data = array(
 			'admin_url'                             => esc_url( admin_url() ),
@@ -209,6 +288,34 @@ class RT_Transcoder_Admin {
 		wp_localize_script( 'rt-transcoder-main', 'rt_transcoder_script', $localize_script_data );
 
 		wp_enqueue_script( 'rt-transcoder-main' );
+
+		wp_register_script(
+			'rt-transcoder-uploader',
+			RT_TRANSCODER_URL . 'admin/js/rt-transcoder-uploader.js',
+			array( 'jquery' ),
+			RT_TRANSCODER_VERSION,
+			true
+		);
+		
+		wp_localize_script(
+			'rt-transcoder-uploader',
+			'transcoderSettings',
+			array(
+				'restUrl' => esc_url_raw( rest_url( 'transcoder/v1/transcoding-status' ) ),
+				'nonce'   => wp_create_nonce( 'wp_rest' ),
+			)
+		);
+		
+		wp_enqueue_script( 'rt-transcoder-uploader' );
+		
+		wp_register_style(
+			'rt-progress-bar',
+			RT_TRANSCODER_URL . 'admin/css/rt-progress-bar.css',
+			array(),
+			RT_TRANSCODER_VERSION
+		);
+
+		wp_enqueue_style( 'rt-progress-bar' );
 	}
 
 	/**

@@ -1,81 +1,132 @@
 /**
- * Webpack configuration file.
- *
- * @package transcoder
+ * External dependencies
  */
+const path = require('path');
+const glob = require('glob');
+const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
-/* global process */
+/**
+ * WordPress dependencies
+ */
+const defaultConfig = require('@wordpress/scripts/config/webpack.config');
 
-const webpack = require( 'webpack' );
-const glob = require( 'glob' );
-const UglifyJsPlugin = require( 'uglifyjs-webpack-plugin' );
-
-const externals = {
-	react: 'React',
-	'react-dom': 'ReactDOM',
-	'react-dom/server': 'ReactDOMServer',
-	tinymce: 'tinymce',
-	moment: 'moment',
-	jquery: 'jQuery',
-	'@wordpress/components': 'wp.components' // Not really a package.
+// Extend the default config.
+const sharedConfig = {
+  ...defaultConfig,
+  devtool: false,
+  plugins: [
+    ...defaultConfig.plugins.map((plugin) => {
+      if (plugin.constructor.name === 'MiniCssExtractPlugin') {
+        return new MiniCssExtractPlugin({
+          filename: '[name].min.css',
+        });
+      }
+      return plugin;
+    }),
+    new RemoveEmptyScriptsPlugin(),
+  ],
+  optimization: {
+    ...defaultConfig.optimization,
+    minimizer: [
+      '...',
+      new CssMinimizerPlugin(),
+    ],
+    splitChunks: {
+      ...defaultConfig.optimization.splitChunks,
+    },
+  },
 };
 
-module.exports = [
-	{
-		entry: {
-			blocks: glob.sync( './admin/js/rt-transcoder-block-editor-support.js' )
-		},
-		output: {
-			filename: './admin/js/build/rt-transcoder-block-editor-support.build.js',
-			path: __dirname
-		},
-		externals,
-		resolve: {
-			modules: [
-				__dirname,
-				'node_modules'
-			]
-		},
-		module: {
-			rules: [
-				{
-					test: /.js?$/,
-					loader: 'babel-loader',
-					exclude: /node_modules/
-				}
-			]
-		},
-		plugins: [
-			new webpack.DefinePlugin( {
-				'process.env.NODE_ENV': JSON.stringify( process.env.NODE_ENV || 'development' )
-			} )
-		]
-	},
-	{
-		entry: './public-assets/js/transcoder.js',
-		output: {
-			filename: './public-assets/js/build/transcoder.min.js',
-			path: __dirname
-		}
-	}
+// Configuration for the block editor support script.
+const blockEditorSupport = {
+  ...sharedConfig,
+  entry: {
+    blocks: path.resolve(
+      process.cwd(),
+      'admin',
+      'js',
+      'rt-transcoder-block-editor-support.js'
+    ),
+  },
+  output: {
+    filename: 'rt-transcoder-block-editor-support.build.js',
+    path: path.resolve(__dirname, 'admin', 'js', 'build'),
+  },
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    'react-dom/server': 'ReactDOMServer',
+    tinymce: 'tinymce',
+    moment: 'moment',
+    jquery: 'jQuery',
+    '@wordpress/components': 'wp.components',
+  },
+};
+
+// Configuration for the public-facing transcoder script.
+const transcoderJS = {
+  ...sharedConfig,
+  entry: {
+    'transcoder.min': path.resolve(
+      process.cwd(),
+      'public-assets',
+      'js',
+      'transcoder.js'
+    ),
+  },
+  output: {
+    filename: '[name].js',
+    path: path.resolve(__dirname, 'public-assets', 'js', 'build'),
+  },
+};
+
+// Configuration for processing all admin JS and CSS files.
+const jsFiles = glob.sync('./admin/js/**/!(*.min).js', {
+  ignore: [
+    './admin/js/build/**/*.js',
+  ],
+});
+
+const cssFiles = glob.sync('./admin/css/**/!(*.min).css');
+
+const files = [...jsFiles, ...cssFiles];
+
+// Create an entries object mapping names to file paths.
+const entries = {};
+const skipFiles = [
+  'jquery-ui-1.7.2.custom.css',
+  'rt-transcoder-block-editor-support.js',
 ];
 
-if ( process.env.NODE_ENV === 'production' ) {
-	for ( var moduleConfig of module.exports ) {
-		moduleConfig.plugins = (
-			moduleConfig.plugins || []
-		).concat(
-			[
-				new UglifyJsPlugin( {
-					sourceMap: true,
-					uglifyOptions: {
-						ecma: 8,
-						compress: {
-							warnings: false
-						}
-					}
-				} )
-			]
-		);
-	}
-}
+files.forEach((file) => {
+  if (skipFiles.some((skipFile) => file.includes(skipFile))) {
+    return;
+  }
+  const extname = path.extname(file);
+  const relativePath = path
+    .relative(path.resolve(__dirname, 'admin'), file)
+    .replace(extname, '')
+    .replace(/\\/g, '/');
+  entries[relativePath] = path.resolve(__dirname, file);
+});
+
+// Configuration for processing all admin JS and CSS files.
+const adminAssetsConfig = {
+  ...sharedConfig,
+  entry: entries,
+  output: {
+    filename: '[name].min.js',
+    path: path.resolve(__dirname, 'admin'),
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: '[name].min.css',
+    }),
+    new RemoveEmptyScriptsPlugin(),
+  ],
+};
+
+// Export the configurations.
+module.exports = [blockEditorSupport, transcoderJS, adminAssetsConfig];
