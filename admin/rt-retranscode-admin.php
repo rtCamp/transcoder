@@ -17,6 +17,13 @@ class RetranscodeMedia {
 	 */
 	public $menu_id;
 
+    /**
+	 * capability of user required to retranscode.
+	 *
+	 *  @var string
+	 */
+	public $capability;
+
 	/**
 	 * API key of transcoder subscription.
 	 *
@@ -64,6 +71,9 @@ class RetranscodeMedia {
 			return;
 		}
 
+		// Allow people to change what capability is required to use this feature.
+		$this->capability = apply_filters( 'retranscode_media_cap', 'manage_options' );
+
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueues' ) );
 		add_action( 'wp_ajax_retranscodemedia', array( $this, 'ajax_process_retranscode_request' ) );
@@ -78,8 +88,6 @@ class RetranscodeMedia {
 		add_filter( 'amp_story_allowed_video_types', array( $this, 'add_amp_video_extensions' ) ); // Extend allowed video mime type extensions for AMP Story Background.
 		add_filter( 'render_block', array( $this, 'update_amp_story_video_url' ), 10, 2 ); // Filter block content and replace video URLs.
 
-		// Allow people to change what capability is required to use this feature.
-		$this->capability = apply_filters( 'retranscode_media_cap', 'manage_options' );
 
 		// Load Rest Endpoints.
 		$this->load_rest_endpoints();
