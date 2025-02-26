@@ -5,15 +5,15 @@ name: End-to-End Tests
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: 
-      - master
-      - develop
+#   push:
+#     branches: 
+#       - master
+#       - develop
       
-  pull_request:
-    branches: 
-      - master
-      - develop
+#   pull_request:
+#     branches: 
+#       - master
+#       - develop
       
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -67,7 +67,7 @@ jobs:
         working-directory: ${{env.working_directory}}
 
       - name: Make reports available
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
           name: playwright-report
