@@ -33,6 +33,7 @@
 		"@playwright/test": "1.50.1",
 		"@types/lodash": "^4.17.15",
 		"@wordpress/e2e-test-utils-playwright": "file:e2e-test-utils-playwright",
+		"concurrently": "^9.1.2",
 		"eslint-plugin-playwright": "0.8.0",
 		"filenamify": "4.2.0",
 		"typescript": "5.7.3",
