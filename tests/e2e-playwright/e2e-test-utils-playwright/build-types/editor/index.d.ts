@@ -2,7 +2,7 @@
  * External dependencies
  */
 import type { Browser, Page, BrowserContext, Frame } from '@playwright/test';
-type EditorConstructorProps = {
+declare type EditorConstructorProps = {
     page: Page;
     hasIframe?: boolean;
 };

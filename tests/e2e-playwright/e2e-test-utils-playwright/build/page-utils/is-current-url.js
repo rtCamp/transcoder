@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isCurrentURL = isCurrentURL;
+exports.isCurrentURL = void 0;
 /**
  * Internal dependencies
  */
@@ -18,4 +18,5 @@ function isCurrentURL(path) {
     const expectedURL = new URL(path, config_1.WP_BASE_URL);
     return expectedURL.pathname === currentURL.pathname;
 }
+exports.isCurrentURL = isCurrentURL;
 //# sourceMappingURL=is-current-url.js.map

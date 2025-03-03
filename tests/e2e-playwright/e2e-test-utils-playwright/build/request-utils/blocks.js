@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAllBlocks = deleteAllBlocks;
+exports.deleteAllBlocks = void 0;
 /**
  * Delete all blocks using REST API.
  *
@@ -26,4 +26,5 @@ async function deleteAllBlocks() {
         path: `/wp/v2/blocks/${block.id}?force=true`,
     })));
 }
+exports.deleteAllBlocks = deleteAllBlocks;
 //# sourceMappingURL=blocks.js.map

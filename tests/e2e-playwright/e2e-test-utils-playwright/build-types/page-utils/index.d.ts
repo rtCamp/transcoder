@@ -3,7 +3,8 @@
  */
 import type { Browser, Page, BrowserContext } from '@playwright/test';
 import { pressKeyTimes } from './press-key-times';
-type PageUtilConstructorParams = {
+import { setBrowserViewport } from './set-browser-viewport';
+declare type PageUtilConstructorParams = {
     page: Page;
 };
 declare class PageUtils {
@@ -13,8 +14,8 @@ declare class PageUtils {
     constructor({ page }: PageUtilConstructorParams);
     isCurrentURL: (path: string) => boolean;
     pressKeyTimes: typeof pressKeyTimes;
-    pressKeyWithModifier: (modifier: import("@wordpress/keycodes").WPKeycodeModifier, key: string) => Promise<void>;
-    setBrowserViewport: (viewport: import("./set-browser-viewport").WPViewport) => Promise<void>;
+    pressKeyWithModifier: (modifier: import("@wordpress/keycodes/build-types").WPKeycodeModifier, key: string) => Promise<void>;
+    setBrowserViewport: typeof setBrowserViewport;
     setClipboardData: (args_0: {
         plainText: string;
         html: string;

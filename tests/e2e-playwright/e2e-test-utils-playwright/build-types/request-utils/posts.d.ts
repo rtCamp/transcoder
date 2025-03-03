@@ -3,5 +3,5 @@
  *
  * @this {import('./index').RequestUtils}
  */
-export function deleteAllPosts(this: import("./index").RequestUtils): Promise<void>;
+export function deleteAllPosts(): Promise<void>;
 //# sourceMappingURL=posts.d.ts.map

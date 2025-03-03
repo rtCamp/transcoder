@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.selectBlocks = selectBlocks;
+exports.selectBlocks = void 0;
 async function selectBlocks(startSelectorOrLocator, endSelectorOrLocator) {
     const startBlock = typeof startSelectorOrLocator === 'string'
         ? this.canvas.locator(startSelectorOrLocator)
@@ -25,4 +25,5 @@ async function selectBlocks(startSelectorOrLocator, endSelectorOrLocator) {
         }, [startClientId]);
     }
 }
+exports.selectBlocks = selectBlocks;
 //# sourceMappingURL=select-blocks.js.map

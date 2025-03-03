@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.openDocumentSettingsSidebar = openDocumentSettingsSidebar;
+exports.openDocumentSettingsSidebar = void 0;
 const { expect } = require('../test');
 /**
  * Clicks on the button in the header which opens Document Settings sidebar when it is closed.
@@ -14,4 +14,5 @@ async function openDocumentSettingsSidebar() {
         await expect(editorSettings).toBeVisible();
     }
 }
+exports.openDocumentSettingsSidebar = openDocumentSettingsSidebar;
 //# sourceMappingURL=open-document-settings-sidebar.js.map

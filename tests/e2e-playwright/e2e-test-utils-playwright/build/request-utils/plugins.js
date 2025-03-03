@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPluginsMap = getPluginsMap;
-exports.activatePlugin = activatePlugin;
-exports.deactivatePlugin = deactivatePlugin;
+exports.deactivatePlugin = exports.activatePlugin = exports.getPluginsMap = void 0;
 /**
  * External dependencies
  */
@@ -29,6 +27,7 @@ async function getPluginsMap(forceRefetch = false) {
     }
     return this.pluginsMap;
 }
+exports.getPluginsMap = getPluginsMap;
 /**
  * Activates an installed plugin.
  *
@@ -47,6 +46,7 @@ async function activatePlugin(slug) {
         data: { status: 'active' },
     });
 }
+exports.activatePlugin = activatePlugin;
 /**
  * Deactivates an active plugin.
  *
@@ -65,4 +65,5 @@ async function deactivatePlugin(slug) {
         data: { status: 'inactive' },
     });
 }
+exports.deactivatePlugin = deactivatePlugin;
 //# sourceMappingURL=plugins.js.map

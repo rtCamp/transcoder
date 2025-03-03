@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.activateTheme = activateTheme;
+exports.activateTheme = void 0;
 const config_1 = require("../config");
 const THEMES_URL = new URL('/wp-admin/themes.php', config_1.WP_BASE_URL).href;
 async function activateTheme(themeSlug) {
@@ -19,4 +19,5 @@ async function activateTheme(themeSlug) {
     response = await this.request.get(activateLink);
     await response.dispose();
 }
+exports.activateTheme = activateTheme;
 //# sourceMappingURL=themes.js.map

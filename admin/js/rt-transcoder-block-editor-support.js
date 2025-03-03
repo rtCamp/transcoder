@@ -1,4 +1,4 @@
-npm /**
+/**
  * Gutenberg support for transcoder.
  *
  * @package transcoder

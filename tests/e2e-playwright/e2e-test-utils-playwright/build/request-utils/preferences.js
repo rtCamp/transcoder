@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPreferences = resetPreferences;
+exports.resetPreferences = void 0;
 /**
  * Reset user preferences
  *
@@ -17,4 +17,5 @@ async function resetPreferences() {
         },
     });
 }
+exports.resetPreferences = resetPreferences;
 //# sourceMappingURL=preferences.js.map

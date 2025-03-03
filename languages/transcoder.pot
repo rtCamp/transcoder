@@ -1,14 +1,14 @@
-# Copyright (C) 2025 
+# Copyright (C) 2024 
 # This file is distributed under the same license as the  package.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://community.rtcamp.com/\n"
-"POT-Creation-Date: 2025-02-28 08:06:26+00:00\n"
+"POT-Creation-Date: 2024-02-27 06:14:22+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2024-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Transcoder <support@rtcamp.com>\n"
 "Language-Team: Transcoder <support@rtcamp.com>\n"
 "Language: en\n"

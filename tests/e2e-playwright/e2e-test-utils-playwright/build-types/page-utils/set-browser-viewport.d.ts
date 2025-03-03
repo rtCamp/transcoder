@@ -9,7 +9,7 @@
  * @this {import('./').PageUtils}
  * @param {WPViewport} viewport Viewport name or dimensions object to assign.
  */
-export function setBrowserViewport(this: import("./").PageUtils, viewport: WPViewport): Promise<void>;
+export function setBrowserViewport(viewport: WPViewport): Promise<void>;
 /**
  * Valid argument argument type from which to derive viewport dimensions.
  */

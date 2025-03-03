@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.clickBlockToolbarButton = clickBlockToolbarButton;
+exports.clickBlockToolbarButton = void 0;
 /**
  * Clicks a block toolbar button.
  *
@@ -13,4 +13,5 @@ async function clickBlockToolbarButton(label) {
     const button = blockToolbar.locator(`role=button[name="${label}"]`);
     await button.click();
 }
+exports.clickBlockToolbarButton = clickBlockToolbarButton;
 //# sourceMappingURL=click-block-toolbar-button.js.map

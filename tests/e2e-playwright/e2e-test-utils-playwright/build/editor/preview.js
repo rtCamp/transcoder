@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.openPreviewPage = openPreviewPage;
+exports.openPreviewPage = void 0;
 /**
  * Opens the preview page of an edited post.
  *
@@ -18,4 +18,5 @@ async function openPreviewPage() {
     ]);
     return previewPage;
 }
+exports.openPreviewPage = openPreviewPage;
 //# sourceMappingURL=preview.js.map

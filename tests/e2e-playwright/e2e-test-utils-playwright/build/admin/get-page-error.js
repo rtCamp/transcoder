@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPageError = getPageError;
+exports.getPageError = void 0;
 /**
  * Regular expression matching a displayed PHP error within a markup string.
  *
@@ -27,4 +27,5 @@ async function getPageError() {
     const match = content.match(REGEXP_PHP_ERROR);
     return match ? match[0] : null;
 }
+exports.getPageError = getPageError;
 //# sourceMappingURL=get-page-error.js.map

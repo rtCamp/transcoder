@@ -5,7 +5,7 @@
  * @typedef {"large"|"medium"|"small"} WPDimensionsName
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setBrowserViewport = setBrowserViewport;
+exports.setBrowserViewport = void 0;
 /**
  * Viewport dimensions object.
  *
@@ -43,4 +43,5 @@ async function setBrowserViewport(viewport) {
         : viewport;
     await this.page.setViewportSize(dimensions);
 }
+exports.setBrowserViewport = setBrowserViewport;
 //# sourceMappingURL=set-browser-viewport.js.map

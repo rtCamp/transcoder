@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getEditedPostContent = getEditedPostContent;
+exports.getEditedPostContent = void 0;
 /**
  * Returns a promise which resolves with the edited post content (HTML string).
  *
@@ -13,4 +13,5 @@ async function getEditedPostContent() {
     // @ts-ignore (Reason: wp isn't typed)
     window.wp.data.select('core/editor').getEditedPostContent());
 }
+exports.getEditedPostContent = getEditedPostContent;
 //# sourceMappingURL=get-edited-post-content.js.map

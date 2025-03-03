@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAllWidgets = deleteAllWidgets;
-exports.addWidgetBlock = addWidgetBlock;
+exports.addWidgetBlock = exports.deleteAllWidgets = void 0;
 /**
  * Delete all the widgets in the widgets screen.
  *
@@ -23,6 +22,7 @@ async function deleteAllWidgets() {
         data: { id: sidebar.id, widgets: [] },
     })));
 }
+exports.deleteAllWidgets = deleteAllWidgets;
 /**
  * Add a widget block to the widget area.
  *
@@ -58,4 +58,5 @@ async function addWidgetBlock(serializedBlock, widgetAreaId) {
         },
     });
 }
+exports.addWidgetBlock = addWidgetBlock;
 //# sourceMappingURL=widgets.js.map

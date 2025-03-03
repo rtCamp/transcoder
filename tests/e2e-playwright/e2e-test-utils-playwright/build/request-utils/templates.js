@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAllTemplates = deleteAllTemplates;
+exports.deleteAllTemplates = void 0;
 const PATH_MAPPING = {
     wp_template: '/wp/v2/templates',
     wp_template_part: '/wp/v2/template-parts',
@@ -41,4 +41,5 @@ async function deleteAllTemplates(type) {
         }
     }
 }
+exports.deleteAllTemplates = deleteAllTemplates;
 //# sourceMappingURL=templates.js.map

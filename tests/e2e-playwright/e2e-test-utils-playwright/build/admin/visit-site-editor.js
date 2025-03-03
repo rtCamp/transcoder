@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.visitSiteEditor = visitSiteEditor;
+exports.visitSiteEditor = void 0;
 /**
  * WordPress dependencies
  */
@@ -35,4 +35,5 @@ async function visitSiteEditor(query, skipWelcomeGuide = true) {
         });
     }
 }
+exports.visitSiteEditor = visitSiteEditor;
 //# sourceMappingURL=visit-site-editor.js.map

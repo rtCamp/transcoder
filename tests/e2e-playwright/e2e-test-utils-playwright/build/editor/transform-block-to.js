@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.transformBlockTo = transformBlockTo;
+exports.transformBlockTo = void 0;
 /**
  * Clicks the default block appender.
  *
@@ -23,4 +23,5 @@ async function transformBlockTo(name) {
         window.wp.blocks.switchToBlockType(blocks, blockName));
     }, [name]);
 }
+exports.transformBlockTo = transformBlockTo;
 //# sourceMappingURL=transform-block-to.js.map
