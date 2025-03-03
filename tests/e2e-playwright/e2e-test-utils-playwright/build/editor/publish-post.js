@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.publishPost = void 0;
+exports.publishPost = publishPost;
 /**
  * Publishes the post, resolving once the request is complete (once a notice
  * is displayed).
@@ -23,5 +23,4 @@ async function publishPost() {
     const postId = url.searchParams.get('p');
     return typeof postId === 'string' ? parseInt(postId, 10) : null;
 }
-exports.publishPost = publishPost;
 //# sourceMappingURL=publish-post.js.map

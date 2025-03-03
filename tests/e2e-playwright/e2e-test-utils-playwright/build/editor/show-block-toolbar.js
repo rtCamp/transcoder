@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.showBlockToolbar = void 0;
+exports.showBlockToolbar = showBlockToolbar;
 /**
  * The block toolbar is not always visible while typing.
  * Call this function to reveal it.
@@ -16,5 +16,4 @@ async function showBlockToolbar() {
     await this.page.mouse.move(75, 75);
     await this.page.mouse.move(100, 100);
 }
-exports.showBlockToolbar = showBlockToolbar;
 //# sourceMappingURL=show-block-toolbar.js.map

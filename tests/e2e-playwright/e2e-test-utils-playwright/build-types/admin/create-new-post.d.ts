@@ -9,7 +9,7 @@
  * @param {string}  [object.excerpt]          Excerpt of the new post.
  * @param {boolean} [object.showWelcomeGuide] Whether to show the welcome guide.
  */
-export function createNewPost({ postType, title, content, excerpt, showWelcomeGuide, }?: {
+export function createNewPost(this: any, { postType, title, content, excerpt, showWelcomeGuide, }?: {
     postType?: string | undefined;
     title?: string | undefined;
     content?: string | undefined;

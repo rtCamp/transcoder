@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.visitAdminPage = void 0;
+exports.visitAdminPage = visitAdminPage;
 /**
  * External dependencies
  */
@@ -29,5 +29,4 @@ async function visitAdminPage(adminPath, query) {
         throw new Error('Unexpected error in page content: ' + error);
     }
 }
-exports.visitAdminPage = visitAdminPage;
 //# sourceMappingURL=visit-admin-page.js.map

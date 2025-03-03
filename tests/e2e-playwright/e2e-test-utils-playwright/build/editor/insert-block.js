@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.insertBlock = void 0;
+exports.insertBlock = insertBlock;
 /**
  * Insert a block.
  *
@@ -18,5 +18,4 @@ async function insertBlock(blockRepresentation) {
         window.wp.data.dispatch('core/block-editor').insertBlock(block);
     }, blockRepresentation);
 }
-exports.insertBlock = insertBlock;
 //# sourceMappingURL=insert-block.js.map

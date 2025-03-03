@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.batchRest = exports.getMaxBatchSize = exports.rest = exports.setupRest = void 0;
+exports.setupRest = setupRest;
+exports.rest = rest;
+exports.getMaxBatchSize = getMaxBatchSize;
+exports.batchRest = batchRest;
 /**
  * External dependencies
  */
@@ -49,7 +52,6 @@ async function setupRest() {
     this.storageState = storageState;
     return storageState;
 }
-exports.setupRest = setupRest;
 async function rest(options) {
     const { path, ...fetchOptions } = options;
     if (!path) {
@@ -87,7 +89,6 @@ async function rest(options) {
         throw error;
     }
 }
-exports.rest = rest;
 /**
  * Get the maximum batch size for the REST API.
  *
@@ -105,7 +106,6 @@ async function getMaxBatchSize(forceRefetch = false) {
     this.maxBatchSize = response.endpoints[0].args.requests.maxItems;
     return this.maxBatchSize;
 }
-exports.getMaxBatchSize = getMaxBatchSize;
 async function batchRest(requests) {
     const maxBatchSize = await this.getMaxBatchSize();
     if (requests.length > maxBatchSize) {
@@ -126,5 +126,4 @@ async function batchRest(requests) {
     }
     return batchResponses.responses;
 }
-exports.batchRest = batchRest;
 //# sourceMappingURL=rest.js.map

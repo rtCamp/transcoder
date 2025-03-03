@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAllPosts = void 0;
+exports.deleteAllPosts = deleteAllPosts;
 /**
  * Delete all posts using REST API.
  *
@@ -28,5 +28,4 @@ async function deleteAllPosts() {
         },
     })));
 }
-exports.deleteAllPosts = deleteAllPosts;
 //# sourceMappingURL=posts.js.map

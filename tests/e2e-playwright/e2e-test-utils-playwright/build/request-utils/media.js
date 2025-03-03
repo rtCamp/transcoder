@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAllMedia = exports.deleteMedia = exports.uploadMedia = exports.listMedia = void 0;
+exports.listMedia = listMedia;
+exports.uploadMedia = uploadMedia;
+exports.deleteMedia = deleteMedia;
+exports.deleteAllMedia = deleteAllMedia;
 /**
  * External dependencies
  */
@@ -21,7 +24,6 @@ async function listMedia() {
     });
     return response;
 }
-exports.listMedia = listMedia;
 /**
  * Upload a media file.
  *
@@ -42,7 +44,6 @@ async function uploadMedia(filePathOrData) {
     });
     return response;
 }
-exports.uploadMedia = uploadMedia;
 /**
  * delete a media file.
  *
@@ -58,7 +59,6 @@ async function deleteMedia(mediaId) {
     });
     return response;
 }
-exports.deleteMedia = deleteMedia;
 /**
  * delete all media files.
  *
@@ -70,5 +70,4 @@ async function deleteAllMedia() {
     const responses = await Promise.all(files.map((media) => this.deleteMedia(media.id)));
     return responses;
 }
-exports.deleteAllMedia = deleteAllMedia;
 //# sourceMappingURL=media.js.map

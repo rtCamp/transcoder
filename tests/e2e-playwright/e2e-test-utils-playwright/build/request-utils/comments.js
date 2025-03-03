@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAllComments = exports.createComment = void 0;
+exports.createComment = createComment;
+exports.deleteAllComments = deleteAllComments;
 /**
  * Create new comment using the REST API.
  *
@@ -20,7 +21,6 @@ async function createComment(payload) {
     });
     return comment;
 }
-exports.createComment = createComment;
 /**
  * Delete all comments using the REST API.
  *
@@ -48,5 +48,4 @@ async function deleteAllComments() {
         },
     })));
 }
-exports.deleteAllComments = deleteAllComments;
 //# sourceMappingURL=comments.js.map

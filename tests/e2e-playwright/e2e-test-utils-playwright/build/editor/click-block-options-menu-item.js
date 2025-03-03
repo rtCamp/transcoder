@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.clickBlockOptionsMenuItem = void 0;
+exports.clickBlockOptionsMenuItem = clickBlockOptionsMenuItem;
 /**
  * Clicks a block toolbar button.
  *
@@ -13,5 +13,4 @@ async function clickBlockOptionsMenuItem(label) {
         .locator(`role=menu[name="Options"i] >> role=menuitem[name="${label}"i]`)
         .click();
 }
-exports.clickBlockOptionsMenuItem = clickBlockOptionsMenuItem;
 //# sourceMappingURL=click-block-options-menu-item.js.map

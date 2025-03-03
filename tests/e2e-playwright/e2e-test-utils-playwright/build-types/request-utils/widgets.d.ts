@@ -3,7 +3,7 @@
  *
  * @this {import('./index').RequestUtils}
  */
-export function deleteAllWidgets(): Promise<void>;
+export function deleteAllWidgets(this: import("./index").RequestUtils): Promise<void>;
 /**
  * Add a widget block to the widget area.
  *
@@ -11,5 +11,5 @@ export function deleteAllWidgets(): Promise<void>;
  * @param {string} serializedBlock The serialized content of the inserted block HTML.
  * @param {string} widgetAreaId    The ID of the widget area.
  */
-export function addWidgetBlock(serializedBlock: string, widgetAreaId: string): Promise<void>;
+export function addWidgetBlock(this: import("./index").RequestUtils, serializedBlock: string, widgetAreaId: string): Promise<void>;
 //# sourceMappingURL=widgets.d.ts.map

@@ -1,10 +1,7 @@
-/// <reference types="node" />
 import type { APIRequestContext, Cookie } from '@playwright/test';
 import type { User } from './login';
 import { rest, batchRest } from './rest';
 import { deleteAllBlocks } from './blocks';
-import { deleteAllPosts } from './posts';
-import { deleteAllWidgets, addWidgetBlock } from './widgets';
 interface StorageState {
     cookies: Cookie[];
     nonce: string;
@@ -39,11 +36,11 @@ declare class RequestUtils {
     deactivatePlugin: (slug: string) => Promise<void>;
     activateTheme: (themeSlug: string) => Promise<void>;
     deleteAllBlocks: typeof deleteAllBlocks;
-    deleteAllPosts: typeof deleteAllPosts;
+    deleteAllPosts: () => Promise<void>;
     createComment: (payload: import("./comments").CreateCommentPayload) => Promise<import("./comments").Comment>;
     deleteAllComments: () => Promise<void>;
-    deleteAllWidgets: typeof deleteAllWidgets;
-    addWidgetBlock: typeof addWidgetBlock;
+    deleteAllWidgets: () => Promise<void>;
+    addWidgetBlock: (serializedBlock: string, widgetAreaId: string) => Promise<void>;
     deleteAllTemplates: (type: "wp_template" | "wp_template_part") => Promise<void>;
     resetPreferences: () => Promise<void>;
     listMedia: () => Promise<import("./media").Media[]>;

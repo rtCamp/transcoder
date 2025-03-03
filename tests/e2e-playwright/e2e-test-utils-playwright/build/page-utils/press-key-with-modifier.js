@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.pressKeyWithModifier = exports.setClipboardData = void 0;
+exports.setClipboardData = setClipboardData;
+exports.pressKeyWithModifier = pressKeyWithModifier;
 /**
  * External dependencies
  */
@@ -28,7 +29,6 @@ function setClipboardData({ plainText = '', html = '' }) {
         html,
     };
 }
-exports.setClipboardData = setClipboardData;
 async function emulateClipboard(page, type) {
     clipboardDataHolder = await page.evaluate(([_type, _clipboardData]) => {
         const clipboardDataTransfer = new DataTransfer();
@@ -87,5 +87,4 @@ async function pressKeyWithModifier(modifier, key) {
     const mappedModifiers = overWrittenModifiers[modifier](isAppleOS).map((keycode) => (keycode === keycodes_1.CTRL ? 'Control' : (0, lodash_1.capitalize)(keycode)));
     await this.page.keyboard.press(`${mappedModifiers.join('+')}+${key}`);
 }
-exports.pressKeyWithModifier = pressKeyWithModifier;
 //# sourceMappingURL=press-key-with-modifier.js.map

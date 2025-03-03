@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.pressKeyTimes = void 0;
+exports.pressKeyTimes = pressKeyTimes;
 /**
  * Presses the given keyboard key a number of times in sequence.
  *
@@ -12,5 +12,4 @@ async function pressKeyTimes(key, count) {
         await this.page.keyboard.press(key);
     }
 }
-exports.pressKeyTimes = pressKeyTimes;
 //# sourceMappingURL=press-key-times.js.map

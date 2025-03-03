@@ -2,7 +2,7 @@
  * Internal dependencies
  */
 import type { RequestUtils } from './index';
-declare type TemplateType = 'wp_template' | 'wp_template_part';
+type TemplateType = 'wp_template' | 'wp_template_part';
 /**
  * Delete all the templates of given type.
  *

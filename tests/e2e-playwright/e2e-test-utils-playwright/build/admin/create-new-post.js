@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createNewPost = void 0;
+exports.createNewPost = createNewPost;
 /**
  * WordPress dependencies
  */
@@ -45,5 +45,4 @@ async function createNewPost({ postType, title, content, excerpt, showWelcomeGui
         await this.page.waitForSelector('body:not(.is-fullscreen-mode)');
     }
 }
-exports.createNewPost = createNewPost;
 //# sourceMappingURL=create-new-post.js.map

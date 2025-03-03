@@ -1,7 +1,7 @@
 import type { APIRequestContext } from '@playwright/test';
 import type { RequestUtils, StorageState } from './index';
 declare function setupRest(this: RequestUtils): Promise<StorageState>;
-declare type RequestFetchOptions = Exclude<Parameters<APIRequestContext['fetch']>[1], undefined>;
+type RequestFetchOptions = Exclude<Parameters<APIRequestContext['fetch']>[1], undefined>;
 export interface RestOptions extends RequestFetchOptions {
     path: string;
 }
