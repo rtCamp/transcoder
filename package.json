@@ -44,5 +44,6 @@
 	},
 	"dependencies": {
 		"@wordpress/api-fetch": "7.18.0"
+
 	}
 }
