@@ -1,6 +1,6 @@
 {
 	"presets": [
-		[ "env", {
+		[ "@babel/preset-env", {
 			"modules": false,
 			"targets": {
 				"browsers": [
@@ -19,8 +19,8 @@
 		} ]
 	],
 	"plugins": [
-		"transform-object-rest-spread",
-		[ "transform-react-jsx", {
+		"@babel/plugin-transform-object-rest-spread",
+		[ "@babel/plugin-transform-react-jsx", {
 			"pragma": "wp.element.createElement"
 		} ]
 	],
@@ -28,8 +28,8 @@
 		"default": {
 			"plugins": [
 				"lodash",
-				"transform-runtime"
+				"@babel/plugin-transform-runtime"
 			]
-		},
+		}
 	}
 }

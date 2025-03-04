@@ -17,24 +17,27 @@
 		"url": ""
 	},
 	"engines": {
-		"node": ">=12"
+		"node": ">=20"
 	},
 	"dependencies": {
+		"@es-joy/jsdoccomment": "^0.50.0",
+		"@types/node": "^20.17.19",
 		"@wordpress/api-fetch": "6.10.0",
 		"@wordpress/keycodes": "3.13.0",
-		"@wordpress/scripts": "23.5.0",
+		"@wordpress/scripts": "^30.11.0",
 		"@wordpress/url": "3.14.0",
 		"form-data": "^4.0.0",
 		"lodash": "^4.17.21"
 	},
 	"devDependencies": {
-		"@playwright/test": "1.22.2",
-		"@types/lodash": "^4.14.182",
+		"@playwright/test": "1.50.1",
+		"@types/lodash": "^4.17.15",
 		"@wordpress/e2e-test-utils-playwright": "file:e2e-test-utils-playwright",
+		"concurrently": "^9.1.2",
 		"eslint-plugin-playwright": "0.8.0",
 		"filenamify": "4.2.0",
-		"worker-farm": "1.7.0",
-		"typescript": "4.4.2"
+		"typescript": "5.7.3",
+		"worker-farm": "1.7.0"
 	},
 	"peerDependencies": {
 		"@playwright/test": ">=1"

@@ -8,7 +8,7 @@
 
 const webpack = require( 'webpack' );
 const glob = require( 'glob' );
-const UglifyJsPlugin = require( 'uglifyjs-webpack-plugin' );
+const TerserPlugin = require( 'terser-webpack-plugin' );
 
 const externals = {
 	react: 'React',
@@ -60,22 +60,25 @@ module.exports = [
 	}
 ];
 
-if ( process.env.NODE_ENV === 'production' ) {
-	for ( var moduleConfig of module.exports ) {
-		moduleConfig.plugins = (
-			moduleConfig.plugins || []
-		).concat(
-			[
-				new UglifyJsPlugin( {
-					sourceMap: true,
-					uglifyOptions: {
+if (process.env.NODE_ENV === 'production') {
+	for (var moduleConfig of module.exports) {
+		moduleConfig.optimization = {
+			minimize: true,
+			minimizer: [
+				new TerserPlugin({
+					extractComments: false,
+					terserOptions: {
 						ecma: 8,
 						compress: {
 							warnings: false
-						}
+						},
+						output: {
+							comments: false
+						},
+						sourceMap: true
 					}
-				} )
+				})
 			]
-		);
+		};
 	}
 }
