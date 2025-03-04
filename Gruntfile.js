@@ -6,12 +6,12 @@ module.exports = function( grunt ) {
     require( 'load-grunt-tasks' )( grunt );
 
     grunt.initConfig( {
-		// Watch for changes and trigger autoprefixer, cssmin and uglify
-		// Ref. https://www.npmjs.com/package/grunt-contrib-watch
+        // Watch for changes and trigger postcss, cssmin and uglify
+        // Ref. https://www.npmjs.com/package/grunt-contrib-watch
         watch: {
             css: {
-                files: [ 'admin/css/rt-transcoder-admin.css' ],
-                tasks: [ 'autoprefixer', 'cssmin' ]
+                files: [ 'admin/css/rt-transcoder-admin.css', 'admin/css/rt-transcoder-client.css' ],
+                tasks: [ 'postcss', 'cssmin' ]
             },
             js: {
                 files: [
@@ -35,15 +35,15 @@ module.exports = function( grunt ) {
                 }
             }
         },
-        // Autoprefixer - Parse CSS and add vendor-prefixed CSS properties using the Can I Use database.
-        // Ref. https://www.npmjs.com/package/grunt-autoprefixer
-        autoprefixer: {
+        // PostCSS with autoprefixer
+        // Ref. https://www.npmjs.com/package/grunt-postcss
+        postcss: {
+            options: {
+                config: {
+                    path: './postcss.config.js'
+                }
+            },
             dist: {
-                options: {
-                    browsers: [ 'last 2 versions', 'ie 9', 'ie 10', 'ios 6', 'android 4' ],
-                    expand: true,
-                    flatten: true
-                },
                 files: {
                     'admin/css/rt-transcoder-admin.css': 'admin/css/rt-transcoder-admin.css',
                     'admin/css/rt-transcoder-client.css': 'admin/css/rt-transcoder-client.css'
@@ -94,11 +94,11 @@ module.exports = function( grunt ) {
             target: {
                 files: [ {
                     src: [
-                            '*.php',
-                            '**/*.php',
-                            '!node_modules/**',
-                            '!tests/**'
-                        ], //All php
+                        '*.php',
+                        '**/*.php',
+                        '!node_modules/**',
+                        '!tests/**'
+                    ], //All php
                     expand: true
                 } ]
             }
@@ -114,11 +114,11 @@ module.exports = function( grunt ) {
                     mainFile: 'index.php', // Main project file.
                     potFilename: 'transcoder.pot', // Name of the POT file.
                     potHeaders: { // Headers to add to the generated POT file.
-						poedit: true, // Includes common Poedit headers.
-						'Last-Translator': 'Transcoder <support@rtcamp.com>',
-						'Language-Team': 'Transcoder <support@rtcamp.com>',
-						'report-msgid-bugs-to': 'http://community.rtcamp.com/',
-						'x-poedit-keywordslist': true // Include a list of all possible gettext functions.
+                        poedit: true, // Includes common Poedit headers.
+                        'Last-Translator': 'Transcoder <support@rtcamp.com>',
+                        'Language-Team': 'Transcoder <support@rtcamp.com>',
+                        'report-msgid-bugs-to': 'http://community.rtcamp.com/',
+                        'x-poedit-keywordslist': true // Include a list of all possible gettext functions.
                     },
                     type: 'wp-plugin', // Type of project (wp-plugin or wp-theme).
                     updateTimestamp: true // Whether the POT-Creation-Date should be updated without other changes.
@@ -127,6 +127,10 @@ module.exports = function( grunt ) {
         }
 
     } );
-    // Register task
-    grunt.registerTask( 'default', [ 'autoprefixer', 'cssmin', 'uglify', 'checktextdomain', 'makepot', 'watch' ] );
+    // Register default task
+    grunt.registerTask( 'default', [ 'postcss', 'cssmin', 'uglify', 'checktextdomain', 'makepot' ] );
+    // Register a CSS-only task
+    grunt.registerTask( 'css', [ 'postcss', 'cssmin' ] );
+    // Register a JS-only task
+    grunt.registerTask( 'js', [ 'uglify' ] );
 };
