@@ -70,7 +70,7 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 
 * ENHANCEMENTS
 
- * Changed the admin notice for users.
+ * Changed the admin notice for users on transcoder tabs and main dashboard page.
  * Removed the subscription reminder notice shown when no API key is configured.
 
 #### 1.3.6 [February 27, 2024] ####
