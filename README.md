@@ -66,7 +66,7 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 
 ## Changelog ##
 
-#### 1.3.7 [April 18, 2025] ####
+#### 1.3.8 [April 18, 2025] ####
 
 * ENHANCEMENTS
 
