@@ -87,11 +87,9 @@ class RT_Transcoder_Admin {
 				add_action( 'init', array( $this, 'disable_encoding' ) );
 			}
 			if ( is_multisite() ) {
-				add_action( 'network_admin_notices', array( $this, 'subscribe_transcoder_admin_notice' ) );
 				add_action( 'network_admin_notices', array( $this, 'install_godam_admin_notice' ) );
 				add_action( 'network_admin_enqueue_scripts', array( $this, 'enqueue_thickbox_on_transcoder_settings' ) );
 			}
-			add_action( 'admin_notices', array( $this, 'subscribe_transcoder_admin_notice' ) );
 			add_action( 'admin_notices', array( $this, 'install_godam_admin_notice' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_thickbox_on_transcoder_settings' ) );
 
@@ -445,25 +443,6 @@ class RT_Transcoder_Admin {
 		</script>
 			<?php
 		endif;
-	}
-
-	/**
-	 * Display subscribe to the transcoding service
-	 */
-	public function subscribe_transcoder_admin_notice() {
-		if ( ! empty( $this->api_key ) ) {
-			return false;
-		}
-		$settings_page_link = 'admin.php?page=rt-transcoder';
-		$class              = 'notice notice-error';
-		$valid_tags         = array(
-			'div'    => array( 'class' => array() ),
-			'p'      => array(),
-			'strong' => array(),
-			'a'      => array( 'href' => array() ),
-		);
-		// translators: Markup to show the info about plugin subscription if no API key is there.
-		printf( wp_kses( __( '<div class="%1$s"><p><strong>IMPORTANT!</strong> The Transcoder plugin works with active transcoding services subscription plan. <a href="%2$s">Click here</a> to subscribe or enable.</p></div>', 'transcoder' ), $valid_tags ), esc_attr( $class ), esc_url( admin_url( $settings_page_link ) ) );
 	}
 
 	/**
