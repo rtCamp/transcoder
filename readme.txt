@@ -1,5 +1,5 @@
 === Transcoder ===
-Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode, thrijith, devikvekariya, sagarnasit, sudhiryadav, sid177, pooja1210, vaishu.agola27, ravatparmar, tremidkhar, kapilpaul, utsavladani, vishalkakadiya, pavanpatil1, akrocks, hrithikd, sohampate1
+Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari90, kiranpotphode, thrijith, devikvekariya, sagarnasit, sudhiryadav, sid177, pooja1210, vaishu.agola27, ravatparmar, tremidkhar, kapilpaul, utsavladani, vishalkakadiya, pavanpatil1, akrocks, hrithikd, sohampate1, krishana79
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
@@ -62,6 +62,14 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+
+= 1.3.7 [April 18, 2025] =
+
+* ENHANCEMENTS
+
+ * Changed the admin notice for users.
+ * Removed the subscription reminder notice shown when no API key is configured.
+
 = 1.3.6 [February 27, 2024] =
 
 * FIXED
@@ -226,6 +234,10 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
+
+= 1.3.7 =
+Transcoder 1.3.7, with admin notice to install our new GoDAM plugin – with a powerful Digital Asset Management features along with video transcoding services.
+
 = 1.3.6 =
 Transcoder 1.3.6, with enhanced security.
 
