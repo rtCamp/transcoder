@@ -88,8 +88,13 @@ class RT_Transcoder_Admin {
 			}
 			if ( is_multisite() ) {
 				add_action( 'network_admin_notices', array( $this, 'subscribe_transcoder_admin_notice' ) );
+				add_action( 'network_admin_notices', array( $this, 'install_godam_admin_notice' ) );
+				add_action( 'network_admin_enqueue_scripts', array( $this, 'enqueue_thickbox_on_transcoder_settings' ) );
 			}
 			add_action( 'admin_notices', array( $this, 'subscribe_transcoder_admin_notice' ) );
+			add_action( 'admin_notices', array( $this, 'install_godam_admin_notice' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_thickbox_on_transcoder_settings' ) );
+
 		}
 
 		if ( class_exists( 'RTMedia' ) ) {
@@ -500,5 +505,65 @@ class RT_Transcoder_Admin {
 	 */
 	public function mediaelement_add_class( $output, $url ) {
 		return sprintf( '<a class="no-popup" href="%1$s">%1$s</a>', esc_url( $url ) );
+	}
+
+	/**
+	 * Display GoDAM installation recommendation admin notice on specific pages.
+	 */
+	public function install_godam_admin_notice() {
+		$current_screen = get_current_screen();
+
+		// Define allowed pages
+		$allowed_pages = array(
+			'rt-transcoder',
+			'rt-retranscoder',
+			'dashboard',
+		);
+
+		// Check if we’re on allowed page using screen ID or $_GET['page']
+		$current_page = isset( $_GET['page'] ) ? $_GET['page'] : '';
+		$screen_id    = isset( $current_screen->id ) ? $current_screen->id : '';
+
+		// Skip if not in our allowed pages
+		if (
+			( ! in_array( $current_page, $allowed_pages, true ) && ! in_array( $screen_id, $allowed_pages, true ) ) ||
+			get_user_meta( get_current_user_id(), '_godam_notice_dismissed', true )
+		) {
+			return;
+		}
+
+		// Check if GoDAM is already active
+		if ( is_plugin_active( 'godam/godam.php' ) ) {
+			return;
+		}
+
+		$plugin_slug = 'godam';
+		$plugin_modal_url = is_multisite()
+			? network_admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin_slug . '&TB_iframe=true&width=772&height=666' )
+			: admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin_slug . '&TB_iframe=true&width=772&height=666' );
+
+		$class = 'notice notice-info';
+		$valid_tags = array(
+			'div'    => array( 'class' => array(), 'id' => array() ),
+			'p'      => array(),
+			'strong' => array(),
+			'a'      => array( 'href' => array(), 'class' => array(), 'target' => array() ),
+		);
+
+		printf(
+			wp_kses(
+				__( '<div class="%1$s"><p><strong>NOTICE:</strong> Transcoder plugin will be retired on <strong>May 31, 2025</strong>. We recommend removing this plugin and switching to our new plugin, <a href="https://godam.io/" target="_blank">GoDAM</a> which includes powerful Digital Asset Management features along with video transcoding services. <a href="%2$s" class="thickbox open-plugin-details-modal">Install GoDAM now</a>!</p></div>', 'transcoder' ),
+				$valid_tags
+			),
+			esc_attr( $class ),
+			esc_url( $plugin_modal_url )
+		);
+	}
+
+	/**
+	 * Enqueue thickbox on transcoder settings page.
+	 */
+	public function enqueue_thickbox_on_transcoder_settings() {
+		add_thickbox();
 	}
 }
