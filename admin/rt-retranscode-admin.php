@@ -633,7 +633,7 @@ class RetranscodeMedia {
 			die( wp_json_encode( array( 'error' => sprintf( __( 'Sending Failed: %d is an invalid media ID/type.', 'transcoder' ), intval( $id ) ) ) ) );
 		}
 
-		if ( 'audio/mpeg' === $media->post_mime_type ) {
+		if ( 'audio/mpeg' === $media->post_mime_type && 'mp3' === pathinfo( $media->guid, PATHINFO_EXTENSION ) ) {
 			// translators: Placeholder is for Media Name and ID of media.
 			die( wp_json_encode( array( 'error' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) is MP3 file already. No need to send for transcoding', 'transcoder' ), esc_html( get_the_title( $media->ID ) ), $media->ID ) ) ) );
 		}
