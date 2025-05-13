@@ -4,7 +4,7 @@ Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
 Tested up to: 6.8
-Stable tag: 1.3.7
+Stable tag: 1.3.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,7 +63,7 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 
 == Changelog ==
 
-= 1.3.7 [April 18, 2025] =
+= 1.3.8 [April 18, 2025] =
 
 * ENHANCEMENTS
 
@@ -235,8 +235,8 @@ Initial release
 
 == Upgrade Notice ==
 
-= 1.3.7 =
-Transcoder 1.3.7, with admin notice to install our new GoDAM plugin – with a powerful Digital Asset Management features along with video transcoding services.
+= 1.3.8 =
+Transcoder 1.3.8, with admin notice to install our new GoDAM plugin – with a powerful Digital Asset Management features along with video transcoding services.
 
 = 1.3.6 =
 Transcoder 1.3.6, with enhanced security.

@@ -497,6 +497,8 @@ class RT_Transcoder_Admin {
 			'rt-transcoder',
 			'rt-retranscoder',
 			'dashboard',
+			'plugins',
+			'plugins-network'
 		);
 
 		// Check if we’re on allowed page using screen ID or $_GET['page']
@@ -521,17 +523,18 @@ class RT_Transcoder_Admin {
 			? network_admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin_slug . '&TB_iframe=true&width=772&height=666' )
 			: admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin_slug . '&TB_iframe=true&width=772&height=666' );
 
-		$class = 'notice notice-info';
+		$class = 'notice notice-warning';
 		$valid_tags = array(
 			'div'    => array( 'class' => array(), 'id' => array() ),
 			'p'      => array(),
 			'strong' => array(),
 			'a'      => array( 'href' => array(), 'class' => array(), 'target' => array() ),
+			'span'   => array( 'class' => array(), 'style' => array() ),
 		);
 
 		printf(
 			wp_kses(
-				__( '<div class="%1$s"><p><strong>NOTICE:</strong> Transcoder plugin will be retired on <strong>May 31, 2025</strong>. We recommend removing this plugin and switching to our new plugin, <a href="https://godam.io/" target="_blank">GoDAM</a> which includes powerful Digital Asset Management features along with video transcoding services. <a href="%2$s" class="thickbox open-plugin-details-modal">Install GoDAM now</a>!</p></div>', 'transcoder' ),
+				__( '<div class="%1$s"><p><span class="dashicons dashicons-warning" style="margin-right: 5px; color: #c28b00;"></span><strong>NOTICE:</strong> Transcoder plugin will be retired on <strong>May 31, 2025</strong>. We recommend removing this plugin and switching to our new plugin, <a href="https://godam.io/?utm_source=transcoder-plugin&utm_medium=wp-admin&utm_campaign=plugin-notice" target="_blank">GoDAM</a>					which includes powerful Digital Asset Management features along with video transcoding services. <a href="%2$s" class="thickbox open-plugin-details-modal">Install GoDAM now</a>!</p></div>', 'transcoder' ),
 				$valid_tags
 			),
 			esc_attr( $class ),
