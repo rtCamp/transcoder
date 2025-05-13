@@ -66,6 +66,14 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 
 ## Changelog ##
 
+#### 1.3.9 [May 13, 2025] ####
+
+* ENHANCEMENTS
+
+ * Update GoDAM Notice to include UTM parameters.
+ * Update Notice colour and add a dashicon.
+ * Add plugin page visibility for the GoDAM Notice.
+
 #### 1.3.8 [April 18, 2025] ####
 
 * ENHANCEMENTS
