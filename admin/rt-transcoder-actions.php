@@ -163,6 +163,7 @@ if ( ! function_exists( 'rtt_rtmedia_vedio_editor_content' ) ) {
 add_action( 'rtmedia_add_edit_tab_content', 'rtt_rtmedia_vedio_editor_content', 1000 );
 
 if ( ! function_exists( 'rtt_set_video_thumbnail' ) ) {
+	error_log('inside transcoder');
 
 	/**
 	 * Set the video thumbnail
