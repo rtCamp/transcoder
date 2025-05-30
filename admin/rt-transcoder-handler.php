@@ -623,11 +623,11 @@ class RT_Transcoder_Handler {
 		<div class="error">
 			<p>
 			<?php
-				$godam_link = '<a href="https://godam.io/?utm_source=transcoder-plugin&utm_medium=license-notice&utm_campaign=invalid-license" target="_blank">GoDAM</a>';
+				$godam_link = '<a href="https://godam.io/pricing/?utm_source=transcoder-plugin&utm_medium=license-notice&utm_campaign=invalid-license" target="_blank">GoDAM</a>';
 
 				printf(
 					wp_kses(
-						__( 'This license key is invalid. Transcoding is now supported via our new plugin, %s.', 'transcoder' ),
+						__( 'This license key is invalid. Transcoding is now supported via our %s services.', 'transcoder' ),
 						[
 							'a' => [
 								'href' => [],
