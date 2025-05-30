@@ -69,6 +69,7 @@ class RT_Transcoder_Admin {
 		include_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-actions.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
+		add_action( 'admin_notices', [ $this, 'show_transcoding_disabled_notice' ], 12 );
 
 		add_filter( 'attachment_fields_to_edit', array( $this, 'edit_video_thumbnail' ), 11, 2 );
 		add_filter( 'attachment_fields_to_save', array( $this, 'save_video_thumbnail' ), 11, 1 );
@@ -523,7 +524,7 @@ class RT_Transcoder_Admin {
 			? network_admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin_slug . '&TB_iframe=true&width=772&height=666' )
 			: admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin_slug . '&TB_iframe=true&width=772&height=666' );
 
-		$class = 'notice notice-warning';
+		$class = 'notice notice-error';
 		$valid_tags = array(
 			'div'    => array( 'class' => array(), 'id' => array() ),
 			'p'      => array(),
@@ -534,7 +535,10 @@ class RT_Transcoder_Admin {
 
 		printf(
 			wp_kses(
-				__( '<div class="%1$s"><p><span class="dashicons dashicons-warning" style="margin-right: 5px; color: #c28b00;"></span><strong>NOTICE:</strong> Transcoder plugin will be retired on <strong>May 31, 2025</strong>. We recommend removing this plugin and switching to our new plugin, <a href="https://godam.io/?utm_source=transcoder-plugin&utm_medium=wp-admin&utm_campaign=plugin-notice" target="_blank">GoDAM</a>					which includes powerful Digital Asset Management features along with video transcoding services. <a href="%2$s" class="thickbox open-plugin-details-modal">Install GoDAM now</a>!</p></div>', 'transcoder' ),
+				__(
+					'<div class="%1$s"><p><span class="dashicons dashicons-warning" style="margin-right: 5px; color: #d63638;"></span><strong>NOTICE:</strong> Starting <strong>1st June 2025</strong>, the Transcoder plugin will stop working. To continue using video transcoding, switch to our new plugin, <a href="https://godam.io/?utm_source=transcoder-plugin&utm_medium=wp-admin&utm_campaign=plugin-notice" target="_blank">GoDAM</a> which offers powerful Digital Asset Management and transcoding features. <a href="%2$s" class="thickbox open-plugin-details-modal">Install GoDAM now</a>!</p></div>',
+					'transcoder'
+				),
 				$valid_tags
 			),
 			esc_attr( $class ),
@@ -547,5 +551,14 @@ class RT_Transcoder_Admin {
 	 */
 	public function enqueue_thickbox_on_transcoder_settings() {
 		add_thickbox();
+	}
+
+	public function show_transcoding_disabled_notice() {
+		$screen = get_current_screen();
+		if ( $screen && 'upload' === $screen->id ) {
+			echo '<div class="notice notice-error">';
+			echo '<p><strong>Transcoding has been disabled.</strong> Please use GoDAM for media processing.</p>';
+			echo '</div>';
+		}
 	}
 }
