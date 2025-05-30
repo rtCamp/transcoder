@@ -540,7 +540,7 @@ class RT_Transcoder_Admin {
 
 						<!-- Description Paragraph -->
 						<p style="font-size: 15px; color: #50575e;">
-							Switch to the <a href="https://godam.io/pricing?utm_source=transcoder-plugin&utm_medium=wp-admin&utm_campaign=plugin-notice" target="_blank" style="color: #d63638; font-weight: 600; text-decoration: none;">GoDAM</a> services for advanced Digital Asset Management and seamless video transcoding. Subscribe to a GoDAM plan to maintain access to transcoding services.
+							Switch to the <a href="https://godam.io/pricing?utm_source=transcoder-plugin&utm_medium=wp-admin&utm_campaign=plugin-notice" target="_blank" style="color: #d63638; font-weight: 600; text-decoration: none;">GoDAM</a> services for advanced Digital Asset Management and seamless video transcoding. Subscribe to a GoDAM plan to maintain access to transcoding services. Please deactivate and delete the transcoder plugin once GoDAM plugin is installed.
 						</p>
 
 
