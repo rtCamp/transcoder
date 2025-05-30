@@ -195,6 +195,9 @@ class RT_Transcoder_Handler {
 	 * @param string $autoformat        If true then generating thumbs only else trancode video.
 	 */
 	public function wp_media_transcoding( $wp_metadata, $attachment_id, $autoformat = true ) {
+
+		return $wp_metadata;
+
 		if ( empty( $wp_metadata['mime_type'] ) ) {
 			return $wp_metadata;
 		}
@@ -584,20 +587,28 @@ class RT_Transcoder_Handler {
 	public function successfully_subscribed_notice() {
 		?>
 		<div class="updated">
-			<p>
-				<?php
-				$api_key_updated = transcoder_filter_input( INPUT_GET, 'api-key-updated', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-				printf(
-					wp_kses(
-						__( 'You have successfully subscribed.', 'transcoder' ),
-						array(
-							'strong' => array(),
-						)
+		<p>
+		<?php
+		$godam_link = '<a href="https://godam.io/?utm_source=transcoder-plugin&utm_medium=license-notice&utm_campaign=transcoding-disabled" target="_blank">GoDAM</a>';
+
+		$api_key_updated = transcoder_filter_input( INPUT_GET, 'api-key-updated', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+
+		printf(
+			wp_kses(
+				/* translators: %s is the GoDAM plugin link */
+				__( 'You have successfully subscribed. However, transcoding via transcoder has been discontinued. Please use %s for continued transcoding services.', 'transcoder' ),
+				array(
+					'a'      => array(
+						'href'   => array(),
+						'target' => array(),
 					),
-					esc_html( sanitize_text_field( wp_unslash( $api_key_updated ) ) )
-				);
-				?>
-			</p>
+					'strong' => array(),
+				)
+			),
+			$godam_link
+		);
+		?>
+		</p>
 		</div>
 		<?php
 	}
@@ -611,7 +622,22 @@ class RT_Transcoder_Handler {
 		?>
 		<div class="error">
 			<p>
-				<?php esc_html_e( 'This license key is invalid.', 'transcoder' ); ?>
+			<?php
+				$godam_link = '<a href="https://godam.io/?utm_source=transcoder-plugin&utm_medium=license-notice&utm_campaign=invalid-license" target="_blank">GoDAM</a>';
+
+				printf(
+					wp_kses(
+						__( 'This license key is invalid. Transcoding is now supported via our new plugin, %s.', 'transcoder' ),
+						[
+							'a' => [
+								'href' => [],
+								'target' => [],
+							],
+						]
+					),
+					$godam_link
+				);
+				?>
 			</p>
 		</div>
 		<?php
@@ -1515,7 +1541,12 @@ class RT_Transcoder_Handler {
 
 			} elseif ( ! empty( $status_info ) && ! empty( $status_info->error_code ) && ! empty( $status_info->error_msg ) ) {
 
-				$message = $messages['failed'];
+				// New custom handling for error code 301
+				if ( (int) $status_info->error_code === 301 ) {
+					$message = __( 'Transcoding through Transcoder is disabled. Please use GoDAM instead.', 'transcoder' );
+				} else {
+					$message = $messages['failed'];
+				}
 
 			} elseif ( ! empty( $status_info ) && 'processing' === $status_info->status && empty( $status_info->error_code ) && empty( $status_info->error_msg ) ) {
 
