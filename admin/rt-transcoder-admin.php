@@ -70,6 +70,9 @@ class RT_Transcoder_Admin {
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
 		add_action( 'admin_notices', [ $this, 'show_transcoding_disabled_notice' ], 12 );
+		if ( is_multisite() ) {
+			add_action( 'network_admin_notices', [ $this, 'show_transcoding_disabled_notice' ], 12 );
+		}
 
 		add_filter( 'attachment_fields_to_edit', array( $this, 'edit_video_thumbnail' ), 11, 2 );
 		add_filter( 'attachment_fields_to_save', array( $this, 'save_video_thumbnail' ), 11, 1 );
