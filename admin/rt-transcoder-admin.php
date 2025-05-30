@@ -557,23 +557,36 @@ class RT_Transcoder_Admin {
 		$screen = get_current_screen();
 
 		if ( $screen && 'upload' === $screen->id ) {
-			$link = 'https://godam.io/?utm_source=transcoder-plugin&utm_medium=media-library-notice&utm_campaign=transcoding-disabled';
-			$notice = sprintf(
-				wp_kses(
-					/* translators: %s: link to GoDAM plugin */
-					__( '<strong>Transcoding is no longer available through transcoder.</strong> For continued media processing, please install our new plugin, <a href="%s" target="_blank">GoDAM</a>.', 'transcoder' ),
-					array(
-						'strong' => array(),
-						'a'      => array(
-							'href'   => array(),
-							'target' => array(),
-						),
-					)
-				),
-				esc_url( $link )
-			);
+			$info_link       = 'https://godam.io/?utm_source=transcoder-plugin&utm_medium=media-library-notice&utm_campaign=transcoding-disabled';
+			$plugin_slug     = 'godam';
+			$plugin_modal_url = is_multisite()
+				? network_admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin_slug . '&TB_iframe=true&width=772&height=666' )
+				: admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin_slug . '&TB_iframe=true&width=772&height=666' );
 
-			echo '<div class="notice notice-error"><p>' . $notice . '</p></div>';
+			printf(
+				'<div class="notice notice-error"><p>%s</p></div>',
+				sprintf(
+					wp_kses(
+						/* translators: %1$s: GoDAM website link, %2$s: GoDAM plugin modal URL */
+						__( '<span class="dashicons dashicons-warning" style="margin-right: 5px; color: #d63638;"></span><strong>Transcoding is no longer available through Transcoder.</strong> For continued media processing, please install our new <a href="%2$s" class="thickbox open-plugin-details-modal" target="_blank">GoDAM</a> plugin.', 'transcoder' ),
+						array(
+							'span'   => array(
+								'class' => array(),
+								'style' => array(),
+							),
+							'strong' => array(),
+							'a'      => array(
+								'href'   => array(),
+								'class'  => array(),
+								'target' => array(),
+							),
+						)
+					),
+					esc_url( $info_link ),
+					esc_url( $plugin_modal_url )
+				)
+			);
 		}
 	}
+
 }
