@@ -555,10 +555,25 @@ class RT_Transcoder_Admin {
 
 	public function show_transcoding_disabled_notice() {
 		$screen = get_current_screen();
+
 		if ( $screen && 'upload' === $screen->id ) {
-			echo '<div class="notice notice-error">';
-			echo '<p><strong>Transcoding has been disabled.</strong> Please use GoDAM for media processing.</p>';
-			echo '</div>';
+			$link = 'https://godam.io/?utm_source=transcoder-plugin&utm_medium=media-library-notice&utm_campaign=transcoding-disabled';
+			$notice = sprintf(
+				wp_kses(
+					/* translators: %s: link to GoDAM plugin */
+					__( '<strong>Transcoding is no longer available through transcoder.</strong> For continued media processing, please install our new plugin, <a href="%s" target="_blank">GoDAM</a>.', 'transcoder' ),
+					array(
+						'strong' => array(),
+						'a'      => array(
+							'href'   => array(),
+							'target' => array(),
+						),
+					)
+				),
+				esc_url( $link )
+			);
+
+			echo '<div class="notice notice-error"><p>' . $notice . '</p></div>';
 		}
 	}
 }
