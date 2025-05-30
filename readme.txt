@@ -3,8 +3,8 @@ Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 6.8
-Stable tag: 1.3.9
+Tested up to: 6.8.1
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,16 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+
+= 1.4.0 [May 30, 2025]
+
+* REMOVED
+  * Update to users - Discontinuing the Transcoder service and replacing with GoDAM.
+
+* ENHANCEMENTS
+  * Update admin notice for the GoDAM.
+  * Add notice for transcoding disabled on uploads page.
+  * Update messages for license activation.
 
 = 1.3.9 [May 13, 2025] =
 
@@ -243,6 +253,9 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
+
+= 1.4.0 =
+Update to users - Discontinuing the Transcoder service and replacing with GoDAM.
 
 = 1.3.9 =
 Transcoder 1.3.9, with update admin notice to install new GoDAM plugin - with a powerful Digital Asset Management features along with video transcoding services.
