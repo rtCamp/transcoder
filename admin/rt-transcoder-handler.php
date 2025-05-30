@@ -589,7 +589,7 @@ class RT_Transcoder_Handler {
 		<div class="updated">
 		<p>
 		<?php
-		$godam_link = '<a href="https://godam.io/?utm_source=transcoder-plugin&utm_medium=license-notice&utm_campaign=transcoding-disabled" target="_blank">GoDAM</a>';
+		$godam_link = '<a href="https://godam.io/pricing/?utm_source=transcoder-plugin&utm_medium=license-notice&utm_campaign=transcoding-disabled" target="_blank">GoDAM</a>';
 
 		$api_key_updated = transcoder_filter_input( INPUT_GET, 'api-key-updated', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
@@ -623,7 +623,7 @@ class RT_Transcoder_Handler {
 		<div class="error">
 			<p>
 			<?php
-				$godam_link = '<a href="https://godam.io/pricing/?utm_source=transcoder-plugin&utm_medium=license-notice&utm_campaign=invalid-license" target="_blank">GoDAM</a>';
+				$godam_link = '<a href="https://godam.io/pricing/?utm_source=transcoder-plugin&utm_medium=license-notice&utm_campaign=transcoding-disabled" target="_blank">GoDAM</a>';
 
 				printf(
 					wp_kses(
