@@ -553,40 +553,42 @@ class RT_Transcoder_Admin {
 		add_thickbox();
 	}
 
+	/**
+	 * Display a notice in the Media Library indicating that the Transcoder plugin
+	 * no longer provides transcoding functionality and suggesting users subscribe
+	 * to the GoDAM service instead.
+	 *
+	 * This notice only appears on the "Media > Library" page (`upload` screen).
+	 *
+	 * @since 2.0.0
+	 */
 	public function show_transcoding_disabled_notice() {
 		$screen = get_current_screen();
 
 		if ( $screen && 'upload' === $screen->id ) {
-			$info_link       = 'https://godam.io/?utm_source=transcoder-plugin&utm_medium=media-library-notice&utm_campaign=transcoding-disabled';
-			$plugin_slug     = 'godam';
-			$plugin_modal_url = is_multisite()
-				? network_admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin_slug . '&TB_iframe=true&width=772&height=666' )
-				: admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin_slug . '&TB_iframe=true&width=772&height=666' );
+			$info_link = 'https://godam.io/pricing/?utm_source=transcoder-plugin&utm_medium=media-library-notice&utm_campaign=transcoding-disabled';
 
 			printf(
 				'<div class="notice notice-error"><p>%s</p></div>',
-				sprintf(
-					wp_kses(
-						/* translators: %1$s: GoDAM website link, %2$s: GoDAM plugin modal URL */
-						__( '<span class="dashicons dashicons-warning" style="margin-right: 5px; color: #d63638;"></span><strong>Transcoding is no longer available through Transcoder.</strong> For continued media processing, please install our new <a href="%2$s" class="thickbox open-plugin-details-modal" target="_blank">GoDAM</a> plugin.', 'transcoder' ),
-						array(
-							'span'   => array(
-								'class' => array(),
-								'style' => array(),
-							),
-							'strong' => array(),
-							'a'      => array(
-								'href'   => array(),
-								'class'  => array(),
-								'target' => array(),
-							),
-						)
+				wp_kses(
+					sprintf(
+						/* translators: %s: GoDAM pricing link */
+						__( '<span class="dashicons dashicons-warning" style="margin-right: 5px; color: #d63638;"></span><strong>Transcoding is no longer available through Transcoder.</strong> For continued media processing, please subscribe to our <a href="%s" target="_blank">GoDAM</a> services.', 'transcoder' ),
+						esc_url( $info_link )
 					),
-					esc_url( $info_link ),
-					esc_url( $plugin_modal_url )
+					array(
+						'span'   => array(
+							'class' => array(),
+							'style' => array(),
+						),
+						'strong' => array(),
+						'a'      => array(
+							'href'   => array(),
+							'target' => array(),
+						),
+					)
 				)
 			);
 		}
 	}
-
 }
