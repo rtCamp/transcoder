@@ -69,6 +69,10 @@ class RT_Transcoder_Admin {
 		include_once RT_TRANSCODER_PATH . 'admin/rt-transcoder-actions.php'; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
+		add_action( 'admin_notices', [ $this, 'show_transcoding_disabled_notice' ], 12 );
+		if ( is_multisite() ) {
+			add_action( 'network_admin_notices', [ $this, 'show_transcoding_disabled_notice' ], 12 );
+		}
 
 		add_filter( 'attachment_fields_to_edit', array( $this, 'edit_video_thumbnail' ), 11, 2 );
 		add_filter( 'attachment_fields_to_save', array( $this, 'save_video_thumbnail' ), 11, 1 );
@@ -486,9 +490,6 @@ class RT_Transcoder_Admin {
 		return sprintf( '<a class="no-popup" href="%1$s">%1$s</a>', esc_url( $url ) );
 	}
 
-	/**
-	 * Display GoDAM installation recommendation admin notice on specific pages.
-	 */
 	public function install_godam_admin_notice() {
 		$current_screen = get_current_screen();
 
@@ -501,15 +502,14 @@ class RT_Transcoder_Admin {
 			'plugins-network'
 		);
 
-		// Check if we’re on allowed page using screen ID or $_GET['page']
+		// Check if we're on allowed page using screen ID or $_GET['page']
 		$current_page = isset( $_GET['page'] ) ? $_GET['page'] : '';
-		$screen_id    = isset( $current_screen->id ) ? $current_screen->id : '';
+		$screen_id = isset( $current_screen->id ) ? $current_screen->id : '';
 
 		// Skip if not in our allowed pages
-		if (
-			( ! in_array( $current_page, $allowed_pages, true ) && ! in_array( $screen_id, $allowed_pages, true ) ) ||
-			get_user_meta( get_current_user_id(), '_godam_notice_dismissed', true )
-		) {
+		if ( ( ! in_array( $current_page, $allowed_pages, true ) &&
+			   ! in_array( $screen_id, $allowed_pages, true ) ) ||
+			 get_user_meta( get_current_user_id(), '_godam_notice_dismissed', true ) ) {
 			return;
 		}
 
@@ -519,24 +519,47 @@ class RT_Transcoder_Admin {
 		}
 
 		$plugin_slug = 'godam';
-		$plugin_modal_url = is_multisite()
-			? network_admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin_slug . '&TB_iframe=true&width=772&height=666' )
-			: admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin_slug . '&TB_iframe=true&width=772&height=666' );
+		$plugin_modal_url = is_multisite() ?
+			network_admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin_slug . '&TB_iframe=true&width=772&height=666' ) :
+			admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . $plugin_slug . '&TB_iframe=true&width=772&height=666' );
 
-		$class = 'notice notice-warning';
-		$valid_tags = array(
-			'div'    => array( 'class' => array(), 'id' => array() ),
-			'p'      => array(),
-			'strong' => array(),
-			'a'      => array( 'href' => array(), 'class' => array(), 'target' => array() ),
-			'span'   => array( 'class' => array(), 'style' => array() ),
-		);
+		$class = 'notice notice-error';
 
 		printf(
-			wp_kses(
-				__( '<div class="%1$s"><p><span class="dashicons dashicons-warning" style="margin-right: 5px; color: #c28b00;"></span><strong>NOTICE:</strong> Transcoder plugin will be retired on <strong>May 31, 2025</strong>. We recommend removing this plugin and switching to our new plugin, <a href="https://godam.io/?utm_source=transcoder-plugin&utm_medium=wp-admin&utm_campaign=plugin-notice" target="_blank">GoDAM</a>					which includes powerful Digital Asset Management features along with video transcoding services. <a href="%2$s" class="thickbox open-plugin-details-modal">Install GoDAM now</a>!</p></div>', 'transcoder' ),
-				$valid_tags
-			),
+			'<div class="%1$s" style="padding: 0; border-left: 4px solid #d63638; background: #fff;">
+				<div style="display: flex; flex-direction: row; align-items: stretch;">
+					<!-- Icon Container -->
+					<div style="display: flex; align-items: center; justify-content: center; width: 120px; height: 120px;">
+					<span class="dashicons dashicons-warning" style="color: #d63638; font-size: 64px; line-height: 1; width: 64px; text-align: center; margin-left: 25%%"></span>
+
+					</div>
+
+					<!-- Content Container -->
+					<div style="flex: 1; padding: 20px 20px; display: flex; flex-direction: column; justify-content: center;">
+						<!-- Header -->
+						<div style="font-size: 20px; font-weight: 600; color: #1d2327;">
+							Transcoding via the Transcoder plugin is disabled from June 1st, 2025.
+						</div>
+
+						<!-- Description Paragraph -->
+						<p style="font-size: 15px; color: #50575e;">
+							Switch to the <a href="https://godam.io/pricing?utm_source=transcoder-plugin&utm_medium=wp-admin&utm_campaign=plugin-notice" target="_blank" style="color: #d63638; font-weight: 600; text-decoration: none;">GoDAM</a> services for advanced Digital Asset Management and seamless video transcoding. Subscribe to a GoDAM plan to maintain access to transcoding services. Please deactivate and delete the transcoder plugin once GoDAM plugin is installed.
+						</p>
+
+
+						<!-- CTA Buttons -->
+						<div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+							<a href="%2$s" class="thickbox open-plugin-details-modal" style="display: inline-flex; align-items: center; background-color: #d63638; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px; border: none; cursor: pointer; transition: background-color 0.2s;">
+								Get GoDAM
+							</a>
+							<a href="https://rtmedia.io/blog/transcoder-is-discontinued-and-moved-to-godam/?utm_source=transcoder-plugin&utm_medium=wp-admin&utm_campaign=plugin-notice-learn-more" target="_blank" style="display: inline-flex; align-items: center; background-color: transparent; color: #d63638; padding: 10px 24px; text-decoration: none; border: 2px solid #d63638; border-radius: 6px; font-weight: 600; font-size: 14px; transition: all 0.2s;">
+							Learn More
+						</a>
+
+						</div>
+					</div>
+				</div>
+			</div>',
 			esc_attr( $class ),
 			esc_url( $plugin_modal_url )
 		);
@@ -547,5 +570,44 @@ class RT_Transcoder_Admin {
 	 */
 	public function enqueue_thickbox_on_transcoder_settings() {
 		add_thickbox();
+	}
+
+	/**
+	 * Display a notice in the Media Library indicating that the Transcoder plugin
+	 * no longer provides transcoding functionality and suggesting users subscribe
+	 * to the GoDAM service instead.
+	 *
+	 * This notice only appears on the "Media > Library" page (`upload` screen).
+	 *
+	 * @since 2.0.0
+	 */
+	public function show_transcoding_disabled_notice() {
+		$screen = get_current_screen();
+
+		if ( $screen && 'upload' === $screen->id ) {
+			$info_link = 'https://godam.io/pricing/?utm_source=transcoder-plugin&utm_medium=media-library-notice&utm_campaign=transcoding-disabled';
+
+			printf(
+				'<div class="notice notice-error"><p>%s</p></div>',
+				wp_kses(
+					sprintf(
+						/* translators: %s: GoDAM pricing link */
+						__( '<span class="dashicons dashicons-warning" style="margin-right: 5px; color: #d63638;"></span><strong>Transcoding is no longer available through Transcoder.</strong> For continued media processing, please subscribe to our <a href="%s" target="_blank">GoDAM</a> services.', 'transcoder' ),
+						esc_url( $info_link )
+					),
+					array(
+						'span'   => array(
+							'class' => array(),
+							'style' => array(),
+						),
+						'strong' => array(),
+						'a'      => array(
+							'href'   => array(),
+							'target' => array(),
+						),
+					)
+				)
+			);
+		}
 	}
 }
