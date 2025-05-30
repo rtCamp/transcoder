@@ -66,6 +66,16 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 
 ## Changelog ##
 
+#### 1.4.0 [May 30, 2025] ####
+
+* REMOVED
+  * Update to users - Discontinuing the Transcoder service and replacing with GoDAM.
+
+* ENHANCEMENTS
+  * Update admin notice for the GoDAM.
+  * Add notice for transcoding disabled on uploads page.
+  * Update messages for license activation.
+
 #### 1.3.9 [May 13, 2025] ####
 
 * ENHANCEMENTS
