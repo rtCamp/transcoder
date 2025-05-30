@@ -1541,9 +1541,9 @@ class RT_Transcoder_Handler {
 
 			} elseif ( ! empty( $status_info ) && ! empty( $status_info->error_code ) && ! empty( $status_info->error_msg ) ) {
 
-				// New custom handling for error code 301
+				// Custom handling error code 301.
 				if ( (int) $status_info->error_code === 301 ) {
-					$message = __( 'Transcoding through Transcoder is disabled. Please use GoDAM instead.', 'transcoder' );
+					$message = __( 'Transcoding through Transcoder is disabled. Please install GoDAM', 'transcoder' );
 				} else {
 					$message = $messages['failed'];
 				}
