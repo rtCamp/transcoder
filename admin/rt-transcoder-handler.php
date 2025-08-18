@@ -239,7 +239,7 @@ class RT_Transcoder_Handler {
 
 			$job_type = 'video';
 
-			if ( ( ! empty( $type_array ) && 'audio' === $type_array[0] ) || in_array( $extension, explode( ',', $this->audio_extensions ), true ) ) {
+			if ( ( ! empty( $type_array ) && ! empty( $type_array[0] ) && 'audio' === $type_array[0] ) || in_array( $extension, explode( ',', $this->audio_extensions ), true ) ) {
 				$job_type = 'audio';
 			} elseif ( in_array( $extension, explode( ',', $this->other_extensions ), true ) ) {
 				$job_type            = $extension;
@@ -270,7 +270,7 @@ class RT_Transcoder_Handler {
 					'file_url'     => rawurlencode( $url ),
 					'callback_url' => rawurlencode( trailingslashit( home_url() ) . 'index.php' ),
 					'force'        => 0,
-					'formats'      => ( true === $autoformat ) ? ( ( 'video' === $type_array[0] ) ? 'mp4' : 'mp3' ) : $autoformat,
+					'formats'      => ( true === $autoformat ) ? ( ( ! empty( $type_array[0] ) && 'video' === $type_array[0] ) ? 'mp4' : 'mp3' ) : $autoformat,
 					'thumb_count'  => $options_video_thumb,
 				),
 			);
