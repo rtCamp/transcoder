@@ -3,14 +3,16 @@ Contributors: rtcamp, mangeshp, chandrapatel, manishsongirkar36, bhargavbhandari
 Tags: media, multimedia, audio, songs, music, video, ffmpeg, media-node, rtMedia, WordPress, kaltura, transcode, transcoder, encoding, encode
 Donate link: https://rtcamp.com/donate/
 Requires at least: 4.1
-Tested up to: 6.8.1
-Stable tag: 1.4.0
+Tested up to: 6.8.2
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Transcoding services for ANY WordPress website. Convert audio/video files of any format to a web-friendly format (mp3/mp4).
 
 == Description ==
+**Transcoder plugin has been discontinued and no longer maintained**, we recommend to use our new video management solution [GoDAM](https://godam.io/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder) which provides smart transcoding & adaptive bitrate, generate thumbnail, add custom layers, better way to organize media files, serve via CDN and do a lot more. Install the GoDAM plugin from [here](https://wordpress.org/plugins/godam)
+
 Transcoder easily converts all audio and video files uploaded to your website to a web-friendly format.
 
 Transcoder eliminates the need for a dedicated media node- no fiddling with installation, managing dependancies or renting servers! Transcoder also works on shared hosting- just install, subscribe and go!
@@ -62,6 +64,12 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 1. Transcoder Settings
 
 == Changelog ==
+
+= 1.4.1 [August 22, 2025] =
+
+* FIXED
+  * Added validation and sanitization for `[rt_media]` shortcode attributes.
+  * Graceful fallback when media file is unavailable (prevents broken audio/video players).
 
 = 1.4.0 [May 30, 2025]
 
@@ -253,6 +261,9 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 Initial release
 
 == Upgrade Notice ==
+
+= 1.4.1 =
+Transcoder 1.4.1 with improved shortcode security.
 
 = 1.4.0 =
 Update to users - Discontinuing the Transcoder service and replacing with GoDAM.
