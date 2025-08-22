@@ -66,6 +66,12 @@ Read [Documentation](https://rtmedia.io/docs/transcoder/?utm_source=readme&utm_m
 
 ## Changelog ##
 
+#### 1.4.1 [August 22, 2025] ####
+
+* FIXED
+  * Added validation and sanitization for `[rt_media]` shortcode attributes.
+  * Graceful fallback when media file is unavailable (prevents broken audio/video players).
+
 #### 1.4.0 [May 30, 2025] ####
 
 * REMOVED
