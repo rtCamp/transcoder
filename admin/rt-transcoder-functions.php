@@ -68,6 +68,10 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 		// Generate a poster thumbnail for the video.
 		$poster = rt_media_get_video_thumbnail( $attachment_id );
 
+		if ( empty( $media_url ) ) {
+			return '<p>' . esc_html__( 'Media file unavailable.', 'transcoder' ) . '</p>';
+		}
+
 		// Force shortcode to use validated `src` + `poster`.
 		$attrs['src']    = $media_url;
 		$attrs['poster'] = $poster;
@@ -94,6 +98,13 @@ function rt_media_shortcode( $attrs, $content = '' ) {
 
 		// Resolve audio URL (prefer transcoded mp3).
 		$media_url = rtt_get_media_url( $attachment_id, 'mp3' );
+
+
+		// Graceful fallback: if media URL cannot be resolved (e.g. missing file),
+		// show a friendly message instead of rendering a broken player.
+		if ( empty( $media_url ) ) {
+			return '<p>' . esc_html__( 'Media file unavailable.', 'transcoder' ) . '</p>';
+		}
 
 		// Force valid `src` attribute.
 		$attrs['src'] = $media_url;
