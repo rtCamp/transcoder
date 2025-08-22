@@ -24,7 +24,6 @@ function rta() {
  * Builds the [rt_media] shortcode output.
  *
  * If media type is video then display transcoded video (mp4 format) if any else original video.
- *
  * If media type is audio then display transcoded audio (mp3 format) if any else original audio.
  *
  * @since 1.0.0
@@ -35,72 +34,119 @@ function rta() {
  *     @type int $attachment_id     ID of attachment.
  * }
  * @param  string $content  Shortcode content.
- * @return string|void      HTML content to display video.
+ * @return string|void      HTML content to display media.
  */
 function rt_media_shortcode( $attrs, $content = '' ) {
 
+	// Bail early if required attribute is missing.
 	if ( empty( $attrs['attachment_id'] ) ) {
 		return false;
 	}
 
-	$attachment_id = $attrs['attachment_id'];
+	// Sanitize attachment ID (force integer).
+	$attachment_id = absint( $attrs['attachment_id'] );
 
+	// Validate that attachment exists and has a MIME type.
 	$type = get_post_mime_type( $attachment_id );
-
 	if ( empty( $type ) ) {
-		return false;
+		return '<p>' . esc_html__( 'Invalid attachment ID.', 'transcoder' ) . '</p>';
 	}
 
 	$mime_type = explode( '/', $type );
 	$media_url = '';
 
+	// Define whitelist of allowed shortcode attributes
+	// (prevents arbitrary attributes that could lead to XSS).
+	$allowed_video_attrs = array( 'src', 'poster', 'preload', 'autoplay', 'loop', 'muted', 'width', 'height' );
+	$allowed_audio_attrs = array( 'src', 'preload', 'autoplay', 'loop' );
+
 	if ( 'video' === $mime_type[0] ) {
 
-		$video_shortcode_attributes = '';
-		$media_url                  = rtt_get_media_url( $attachment_id );
+		// Resolve video URL (transcoded version if available).
+		$media_url = rtt_get_media_url( $attachment_id );
 
+		// Generate a poster thumbnail for the video.
 		$poster = rt_media_get_video_thumbnail( $attachment_id );
 
+		if ( empty( $media_url ) ) {
+			return '<p>' . esc_html__( 'Media file unavailable.', 'transcoder' ) . '</p>';
+		}
+
+		// Force shortcode to use validated `src` + `poster`.
 		$attrs['src']    = $media_url;
 		$attrs['poster'] = $poster;
 
+		// Build video shortcode attributes securely.
+		$video_shortcode_attributes = '';
 		foreach ( $attrs as $key => $value ) {
-			$video_shortcode_attributes .= ' ' . $key . '="' . $value . '"';
+			if ( in_array( $key, $allowed_video_attrs, true ) ) {
+				// Escape URLs properly for `src` and `poster`.
+				if ( 'src' === $key || 'poster' === $key ) {
+					$value = esc_url( $value );
+				} else {
+					// Escape all other attribute values.
+					$value = esc_attr( $value );
+				}
+				$video_shortcode_attributes .= ' ' . esc_attr( $key ) . '="' . $value . '"';
+			}
 		}
 
+		// Render the final [video] shortcode.
 		$content = do_shortcode( "[video {$video_shortcode_attributes}]" );
 
 	} elseif ( 'audio' === $mime_type[0] ) {
 
+		// Resolve audio URL (prefer transcoded mp3).
 		$media_url = rtt_get_media_url( $attachment_id, 'mp3' );
 
-		$audio_shortcode_attributes = 'src="' . $media_url . '"';
 
-		foreach ( $attrs as $key => $value ) {
-			$audio_shortcode_attributes .= ' ' . $key . '="' . $value . '"';
+		// Graceful fallback: if media URL cannot be resolved (e.g. missing file),
+		// show a friendly message instead of rendering a broken player.
+		if ( empty( $media_url ) ) {
+			return '<p>' . esc_html__( 'Media file unavailable.', 'transcoder' ) . '</p>';
 		}
 
+		// Force valid `src` attribute.
+		$attrs['src'] = $media_url;
+
+		// Build audio shortcode attributes securely.
+		$audio_shortcode_attributes = '';
+		foreach ( $attrs as $key => $value ) {
+			if ( in_array( $key, $allowed_audio_attrs, true ) ) {
+				// Escape URL for `src`, escape attr for others.
+				if ( 'src' === $key ) {
+					$value = esc_url( $value );
+				} else {
+					$value = esc_attr( $value );
+				}
+				$audio_shortcode_attributes .= ' ' . esc_attr( $key ) . '="' . $value . '"';
+			}
+		}
+
+		// Render the final [audio] shortcode.
 		$content = do_shortcode( "[audio {$audio_shortcode_attributes}]" );
 
 	} elseif ( 'image' === $mime_type[0] ) {
 
+		// Transcoder does not support images — return notice.
 		$content = '<p>' . esc_html__( 'Image attachments are not handled by Transcoder plugin.', 'transcoder' ) . '</p>';
 
 	}
 
+	// Add user feedback if file is still being transcoded.
 	if ( is_file_being_transcoded( $attachment_id ) ) {
 		$content .= '<p class="transcoding-in-progress"> ' . esc_html__( 'This file is being transcoded. Please wait.', 'transcoder' ) . '</p>';
 	}
 
 	/**
-	 * Allow user to filter [rt_media] short code content.
+	 * Allow user to filter [rt_media] shortcode output.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $content       Activity content.
-	 * @param int $attachment_id    ID of attachment.
+	 * @param string $content       Shortcode content.
+	 * @param int    $attachment_id Attachment ID.
 	 * @param string $media_url     URL of the media.
-	 * @param string $media_type    Mime type of the media.
+	 * @param string $media_type    Top-level mime type (video|audio|image).
 	 */
 	return apply_filters( 'rt_media_shortcode', $content, $attachment_id, $media_url, $mime_type[0] );
 }
