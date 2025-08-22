@@ -2,6 +2,7 @@
 
 Transcoding services for ANY WordPress website. Convert audio/video files of any format to a web-friendly format (mp3/mp4).
 
+**Transcoder plugin has been discontinued and no longer maintained**, we recommend to use our new video management solution [GoDAM](https://godam.io/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder) which provides smart transcoding & adaptive bitrate, generate thumbnail, add custom layers, better way to organize media files, serve via CDN and do a lot more. Install the GoDAM plugin from [here](https://wordpress.org/plugins/godam)
 
 <a href="https://rtcamp.com/?utm_source=github&utm_medium=readme" rel="nofollow"><img src="https://rtcamp.com/wp-content/uploads/sites/2/2019/04/github-banner@2x.png" alt="Handcrafted Enterprise WordPress Solutions by rtCamp" /></a>
 
@@ -14,7 +15,6 @@ Transcoding services for ANY WordPress website. Convert audio/video files of any
 * **License:** [GPL v2 or later]( http://www.gnu.org/licenses/gpl-2.0.html)
 
 ## Description ##
-**Transcoder plugin has been discontinued and no longer maintained**, we recommend to use our new video management solution [GoDAM](https://godam.io/?utm_source=readme&utm_medium=plugin&utm_campaign=transcoder) which provides smart transcoding & adaptive bitrate, generate thumbnail, add custom layers, better way to organize media files, serve via CDN and do a lot more. Install the GoDAM plugin from [here](https://wordpress.org/plugins/godam)
 
 Transcoder easily converts all audio and video files uploaded to your website to a web-friendly format.
 
